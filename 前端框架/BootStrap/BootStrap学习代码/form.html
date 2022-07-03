@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单</title>
+    <link rel="stylesheet" href="bootStrap/css/bootstrap.min.css">
+</head>
+<body>
+    <!--
+        表单布局：
+            1. 水平表单：设置样式 form-horizontal
+            2. 内联表单：form-inline
+    -->
+    <!--水平表单-->
+    <form action="#" class="form-horizontal" role="form">
+        <h2 style="text-align: center">用户信息表</h2>
+        <!--表单中的表单元素组-->
+        <div class="form-group">
+            <label for="uName" class="control-label col-md-2 col-md-offset-2">姓名</label>
+            <div class="col-md-4">
+                <input type="text" id="uName" class="form-control" placeholder="请输入名字">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="pwd" class="control-label col-md-2 col-md-offset-2">密码</label>
+            <div class="col-md-4">
+                <input type="password" id="pwd" class="form-control" placeholder="请输入名字">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="pwd" class="control-label col-md-2 col-md-offset-2">爱好</label>
+            <div class="col-md-4">
+                <select class="form-control">
+                    <option value="">北京</option>
+                    <option value="">上海</option>
+                    <option value="">深圳</option>
+                    <option value="">广州</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="pwd" class="control-label col-md-2 col-md-offset-2">爱好</label>
+            <div class="col-md-2">
+                <select class="form-control">
+                    <option value="">北京</option>
+                    <option value="">上海</option>
+                    <option value="">深圳</option>
+                    <option value="">广州</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <div>
+                    <label class="checkbox-inline">
+                        <input type="checkbox">游戏
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox">学习
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="hobby">游戏
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="hobby">学习
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="hobby" class="control-label col-md-2 col-md-offset-2">爱好</label>
+            <div class="col-md-4">
+                <textarea class="form-control" id="hobby" placeholder="请输入文字"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-1 col-md-offset-5" style="position: relative;left: 60px">
+                <button class="btn btn-success">提交</button>
+            </div>
+        </div>
+    </form>
+    <!--内联表单:默认所有盒子占一栏-->
+    <div class="form-inline">
+        <div class="form-group">
+            <label for="userName">姓名</label>
+            <input type="text" id="userName" class="form-control" placeholder="请输入信息">
+        </div>
+        <div class="form-group">
+            <label for="password">密码</label>
+            <input type="text" id="password" class="form-control" placeholder="请输入信息">
+        </div>
+        <button class="btn btn-info">登录</button>
+    </div>
+</body>
+</html>

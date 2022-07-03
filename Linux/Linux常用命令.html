@@ -1,0 +1,886 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+
+<link href='https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css' /><style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; --title-bar-height:20px; }
+.mac-os-11 { --title-bar-height:28px; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; inset: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; tab-size: 4; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 36px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+.typora-export .task-list-item input { pointer-events: none; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; image-orientation: from-image; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 4; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-fences-adv-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li blockquote { margin: 1rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; font-variant-ligatures: no-common-ligatures; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  .typora-export #write { break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+  .is-mac table { break-inside: avoid; }
+  .typora-export-show-outline .typora-export-sidebar { display: none; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+#write.first-line-indent p > .md-image:only-child:not(.md-img-error) img { left: -2em; position: relative; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+.MathJax_ref { fill: currentcolor; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus, [contenteditable="false"]:active, [contenteditable="false"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.8; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+mark { background: rgb(255, 255, 0); color: rgb(0, 0, 0); }
+.md-html-inline .md-plain, .md-html-inline strong, mark .md-inline-math, mark strong { color: inherit; }
+.md-expand mark .md-meta { opacity: 0.3 !important; }
+mark .md-meta { color: rgb(0, 0, 0); }
+@media print {
+  .typora-export h1, .typora-export h2, .typora-export h3, .typora-export h4, .typora-export h5, .typora-export h6 { break-inside: avoid; }
+}
+.md-diagram-panel .messageText { stroke: none !important; }
+.md-diagram-panel .start-state { fill: var(--node-fill); }
+.md-diagram-panel .edgeLabel rect { opacity: 1 !important; }
+.md-require-zoom-fix { height: auto; margin-top: 16px; margin-bottom: 16px; }
+.md-require-zoom-fix foreignobject { font-size: var(--mermaid-font-zoom); }
+.md-fences.md-fences-math { font-size: 1em; }
+.md-fences-advanced:not(.md-focus) { padding: 0px; white-space: nowrap; border: 0px; }
+.md-fences-advanced:not(.md-focus) { background: inherit; }
+.typora-export-show-outline .typora-export-content { max-width: 1440px; margin: auto; display: flex; flex-direction: row; }
+.typora-export-sidebar { width: 300px; font-size: 0.8rem; margin-top: 80px; margin-right: 18px; }
+.typora-export-show-outline #write { --webkit-flex:2; flex: 2 1 0%; }
+.typora-export-sidebar .outline-content { position: fixed; top: 0px; max-height: 100%; overflow: hidden auto; padding-bottom: 30px; padding-top: 60px; width: 300px; }
+@media screen and (max-width: 1024px) {
+  .typora-export-sidebar, .typora-export-sidebar .outline-content { width: 240px; }
+}
+@media screen and (max-width: 800px) {
+  .typora-export-sidebar { display: none; }
+}
+.outline-content li, .outline-content ul { margin-left: 0px; margin-right: 0px; padding-left: 0px; padding-right: 0px; list-style: none; }
+.outline-content ul { margin-top: 0px; margin-bottom: 0px; }
+.outline-content strong { font-weight: 400; }
+.outline-expander { width: 1rem; height: 1.42857rem; position: relative; display: table-cell; vertical-align: middle; cursor: pointer; padding-left: 4px; }
+.outline-expander::before { content: ""; position: relative; font-family: Ionicons; display: inline-block; font-size: 8px; vertical-align: middle; }
+.outline-item { padding-top: 3px; padding-bottom: 3px; cursor: pointer; }
+.outline-expander:hover::before { content: ""; }
+.outline-h1 > .outline-item { padding-left: 0px; }
+.outline-h2 > .outline-item { padding-left: 1em; }
+.outline-h3 > .outline-item { padding-left: 2em; }
+.outline-h4 > .outline-item { padding-left: 3em; }
+.outline-h5 > .outline-item { padding-left: 4em; }
+.outline-h6 > .outline-item { padding-left: 5em; }
+.outline-label { cursor: pointer; display: table-cell; vertical-align: middle; text-decoration: none; color: inherit; }
+.outline-label:hover { text-decoration: underline; }
+.outline-item:hover { border-color: rgb(245, 245, 245); background-color: var(--item-hover-bg-color); }
+.outline-item:hover { margin-left: -28px; margin-right: -28px; border-left: 28px solid transparent; border-right: 28px solid transparent; }
+.outline-item-single .outline-expander::before, .outline-item-single .outline-expander:hover::before { display: none; }
+.outline-item-open > .outline-item > .outline-expander::before { content: ""; }
+.outline-children { display: none; }
+.info-panel-tab-wrapper { display: none; }
+.outline-item-open > .outline-children { display: block; }
+.typora-export .outline-item { padding-top: 1px; padding-bottom: 1px; }
+.typora-export .outline-item:hover { margin-right: -8px; border-right: 8px solid transparent; }
+.typora-export .outline-expander::before { content: "+"; font-family: inherit; top: -1px; }
+.typora-export .outline-expander:hover::before, .typora-export .outline-item-open > .outline-item > .outline-expander::before { content: "−"; }
+.typora-export-collapse-outline .outline-children { display: none; }
+.typora-export-collapse-outline .outline-item-open > .outline-children, .typora-export-no-collapse-outline .outline-children { display: block; }
+.typora-export-no-collapse-outline .outline-expander::before { content: "" !important; }
+.typora-export-show-outline .outline-item-active > .outline-item .outline-label { font-weight: 700; }
+.md-inline-math-container mjx-container { zoom: 0.95; }
+
+
+:root {
+    --side-bar-bg-color: #fafafa;
+    --control-text-color: #777;
+}
+
+@include-when-export url(https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext);
+
+/* open-sans-regular - latin-ext_latin */
+  /* open-sans-italic - latin-ext_latin */
+    /* open-sans-700 - latin-ext_latin */
+    /* open-sans-700italic - latin-ext_latin */
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: "Open Sans","Clear Sans", "Helvetica Neue", Helvetica, Arial, 'Segoe UI Emoji', sans-serif;
+    color: rgb(51, 51, 51);
+    line-height: 1.6;
+}
+
+#write {
+    max-width: 860px;
+  	margin: 0 auto;
+  	padding: 30px;
+    padding-bottom: 100px;
+}
+
+@media only screen and (min-width: 1400px) {
+	#write {
+		max-width: 1024px;
+	}
+}
+
+@media only screen and (min-width: 1800px) {
+	#write {
+		max-width: 1200px;
+	}
+}
+
+#write > ul:first-child,
+#write > ol:first-child{
+    margin-top: 30px;
+}
+
+a {
+    color: #4183C4;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    position: relative;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    line-height: 1.4;
+    cursor: text;
+}
+h1:hover a.anchor,
+h2:hover a.anchor,
+h3:hover a.anchor,
+h4:hover a.anchor,
+h5:hover a.anchor,
+h6:hover a.anchor {
+    text-decoration: none;
+}
+h1 tt,
+h1 code {
+    font-size: inherit;
+}
+h2 tt,
+h2 code {
+    font-size: inherit;
+}
+h3 tt,
+h3 code {
+    font-size: inherit;
+}
+h4 tt,
+h4 code {
+    font-size: inherit;
+}
+h5 tt,
+h5 code {
+    font-size: inherit;
+}
+h6 tt,
+h6 code {
+    font-size: inherit;
+}
+h1 {
+    font-size: 2.25em;
+    line-height: 1.2;
+    border-bottom: 1px solid #eee;
+}
+h2 {
+    font-size: 1.75em;
+    line-height: 1.225;
+    border-bottom: 1px solid #eee;
+}
+
+/*@media print {
+    .typora-export h1,
+    .typora-export h2 {
+        border-bottom: none;
+        padding-bottom: initial;
+    }
+
+    .typora-export h1::after,
+    .typora-export h2::after {
+        content: "";
+        display: block;
+        height: 100px;
+        margin-top: -96px;
+        border-top: 1px solid #eee;
+    }
+}*/
+
+h3 {
+    font-size: 1.5em;
+    line-height: 1.43;
+}
+h4 {
+    font-size: 1.25em;
+}
+h5 {
+    font-size: 1em;
+}
+h6 {
+   font-size: 1em;
+    color: #777;
+}
+p,
+blockquote,
+ul,
+ol,
+dl,
+table{
+    margin: 0.8em 0;
+}
+li>ol,
+li>ul {
+    margin: 0 0;
+}
+hr {
+    height: 2px;
+    padding: 0;
+    margin: 16px 0;
+    background-color: #e7e7e7;
+    border: 0 none;
+    overflow: hidden;
+    box-sizing: content-box;
+}
+
+li p.first {
+    display: inline-block;
+}
+ul,
+ol {
+    padding-left: 30px;
+}
+ul:first-child,
+ol:first-child {
+    margin-top: 0;
+}
+ul:last-child,
+ol:last-child {
+    margin-bottom: 0;
+}
+blockquote {
+    border-left: 4px solid #dfe2e5;
+    padding: 0 15px;
+    color: #777777;
+}
+blockquote blockquote {
+    padding-right: 0;
+}
+table {
+    padding: 0;
+    word-break: initial;
+}
+table tr {
+    border: 1px solid #dfe2e5;
+    margin: 0;
+    padding: 0;
+}
+table tr:nth-child(2n),
+thead {
+    background-color: #f8f8f8;
+}
+table th {
+    font-weight: bold;
+    border: 1px solid #dfe2e5;
+    border-bottom: 0;
+    margin: 0;
+    padding: 6px 13px;
+}
+table td {
+    border: 1px solid #dfe2e5;
+    margin: 0;
+    padding: 6px 13px;
+}
+table th:first-child,
+table td:first-child {
+    margin-top: 0;
+}
+table th:last-child,
+table td:last-child {
+    margin-bottom: 0;
+}
+
+.CodeMirror-lines {
+    padding-left: 4px;
+}
+
+.code-tooltip {
+    box-shadow: 0 1px 1px 0 rgba(0,28,36,.3);
+    border-top: 1px solid #eef2f2;
+}
+
+.md-fences,
+code,
+tt {
+    border: 1px solid #e7eaed;
+    background-color: #f8f8f8;
+    border-radius: 3px;
+    padding: 0;
+    padding: 2px 4px 0px 4px;
+    font-size: 0.9em;
+}
+
+code {
+    background-color: #f3f4f4;
+    padding: 0 2px 0 2px;
+}
+
+.md-fences {
+    margin-bottom: 15px;
+    margin-top: 15px;
+    padding-top: 8px;
+    padding-bottom: 6px;
+}
+
+
+.md-task-list-item > input {
+  margin-left: -1.3em;
+}
+
+@media print {
+    html {
+        font-size: 13px;
+    }
+    table,
+    pre {
+        page-break-inside: avoid;
+    }
+    pre {
+        word-wrap: break-word;
+    }
+}
+
+.md-fences {
+	background-color: #f8f8f8;
+}
+#write pre.md-meta-block {
+	padding: 1rem;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border: 0;
+    border-radius: 3px;
+    color: #777777;
+    margin-top: 0 !important;
+}
+
+.mathjax-block>.code-tooltip {
+	bottom: .375rem;
+}
+
+.md-mathjax-midline {
+    background: #fafafa;
+}
+
+#write>h3.md-focus:before{
+	left: -1.5625rem;
+	top: .375rem;
+}
+#write>h4.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+#write>h5.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+#write>h6.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+.md-image>.md-meta {
+    /*border: 1px solid #ddd;*/
+    border-radius: 3px;
+    padding: 2px 0px 0px 4px;
+    font-size: 0.9em;
+    color: inherit;
+}
+
+.md-tag {
+    color: #a7a7a7;
+    opacity: 1;
+}
+
+.md-toc { 
+    margin-top:20px;
+    padding-bottom:20px;
+}
+
+.sidebar-tabs {
+    border-bottom: none;
+}
+
+#typora-quick-open {
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+}
+
+#typora-quick-open-item {
+    background-color: #FAFAFA;
+    border-color: #FEFEFE #e5e5e5 #e5e5e5 #eee;
+    border-style: solid;
+    border-width: 1px;
+}
+
+/** focus mode */
+.on-focus-mode blockquote {
+    border-left-color: rgba(85, 85, 85, 0.12);
+}
+
+header, .context-menu, .megamenu-content, footer{
+    font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.file-node-content:hover .file-node-icon,
+.file-node-content:hover .file-node-open-state{
+    visibility: visible;
+}
+
+.mac-seamless-mode #typora-sidebar {
+    background-color: #fafafa;
+    background-color: var(--side-bar-bg-color);
+}
+
+.md-lang {
+    color: #b4654d;
+}
+
+/*.html-for-mac {
+    --item-hover-bg-color: #E6F0FE;
+}*/
+
+#md-notification .btn {
+    border: 0;
+}
+
+.dropdown-menu .divider {
+    border-color: #e5e5e5;
+    opacity: 0.4;
+}
+
+.ty-preferences .window-content {
+    background-color: #fafafa;
+}
+
+.ty-preferences .nav-group-item.active {
+    color: white;
+    background: #999;
+}
+
+.menu-item-container a.menu-style-btn {
+    background-color: #f5f8fa;
+    background-image: linear-gradient( 180deg , hsla(0, 0%, 100%, 0.8), hsla(0, 0%, 100%, 0)); 
+}
+
+#write .CodeMirror-wrap .CodeMirror-code pre {
+    font-family: Monaco
+}
+.md-toc{
+ 	position: fixed; 
+ 	left: 50px;
+    top: 50px;
+}
+
+ :root {--mermaid-font-zoom:1.25em ;} 
+</style><title>Linux常用命令</title>
+</head>
+<body class='typora-export os-windows'><div class='typora-export-content'>
+<div id='write'  class=''><h1 id='linux常用命令'><span>Linux常用命令</span></h1><p><img src='https://i.loli.net/2021/09/18/9FoAXuMa8Hz1sOh.png'></p><p>&nbsp;</p><h2 id='11-centos开放网络'><span>1.1-centOS开放网络</span></h2><style>
+	blockquote{
+            display: block;
+            padding: 16px;
+            margin: 0 0 24px;
+            border-left: 8px solid #dddfe4;
+            background: #eef0f4;
+            overflow: auto;
+            word-break: break-word!important;
+        }
+    ol{
+    font-family: Monaco;
+    list-style-type: decimal;
+	}
+    code {
+            color: #c7254e;
+            background-color: #f9f2f4;
+            border-radius: 2px;
+            padding: 2px 4px;
+            font-family: Monaco;
+        }
+    table th, table td { 
+		text-align: center;
+		vertical-align: middle!important;
+	}
+ </style>
+<blockquote>
+    <p>
+        首先在命令行里登录，账号是root，再敲入命令nmtui设置网络
+    </p>
+</blockquote><p>&nbsp;</p><p><img src='https://i.loli.net/2021/09/18/5rDBuPR3fMQyaLb.png'></p><p>&nbsp;</p><blockquote>
+    <p>
+        再在这个界面设置开放网络
+    </p>
+</blockquote><p>&nbsp;</p><p><img src='https://i.loli.net/2021/09/18/UmIt6J1M8iCcal9.png'></p><p>&nbsp;</p><blockquote>
+    <p>
+        选择第二个
+    </p>
+</blockquote><p>&nbsp;</p><p><img src='https://i.loli.net/2021/09/18/AoyJCHaZNflEcqQ.png'></p><p>&nbsp;</p><blockquote>
+    <p>
+        返回
+    </p>
+</blockquote><p>&nbsp;</p><p><img src='https://i.loli.net/2021/09/18/AQucCBdGlDV47ES.png'></p><p>&nbsp;</p><blockquote>
+    <p>
+        退出
+    </p>
+</blockquote><p>&nbsp;</p><p><img src='https://i.loli.net/2021/09/18/s3rfZmzgjwSEBGa.png'></p><p>&nbsp;</p><blockquote>
+    <p>
+        在root模式下敲入命令行<code>ip address</code>查看开放的IP地址
+    </p>
+</blockquote><p>&nbsp;</p><p><img src='https://i.loli.net/2021/09/18/i1m5xpNr2wAOz3v.png'></p><p>&nbsp;</p><blockquote>
+    <p>
+        在xshell中设置开放的<code>ip地址</code>
+    </p>
+</blockquote><p><img src='https://i.loli.net/2021/09/18/Rp14WBEF5AQjdfM.png' ></p><p>&nbsp;</p><blockquote>
+    <p>
+        系统的关闭与重启：常用的关机命令是<code>shutdown now</code> 常用的重启命令是<code>reboot</code>
+    </p>
+</blockquote><p>&nbsp;</p><p>&nbsp;</p><h2 id='12-linux常用命令'><span>1.2-Linux常用命令</span></h2><p>&nbsp;</p><div>
+    <strong>
+    Shell启动完成后，显示命令提示符，提示用户可以输入命令了
+    </strong>
+    <ol>
+        <li>对于普通用户来说，系统默认的提示符是:<code>$</code></li>
+        <li>对于root用户，系统默认的提示符是:<code>#</code></li>
+    </ol>
+</div><p>&nbsp;</p><blockquote>
+    <p>
+        Shell命令分类(按照命令的功能分类)
+    </p>
+</blockquote><ul>
+    <li>文件与目录操作&nbsp;(Linux用户必须掌握的<code>基本操作</code>)</li>
+    <li>文本操作&nbsp;(Linux用户必须掌握的<code>基本操作</code>)</li>
+    <li>备份压缩</li>
+    <li>系统监控</li>
+    <li>网络通信</li>
+</ul><h3 id='121-命令的格式'><span>1.2.1-命令的格式</span></h3><blockquote>
+    <p>
+        命令的格式为：命令名[选项一][选项二]...[参数一][参数二]
+    </p>
+</blockquote><p><strong><span>解释：</span></strong></p><ul>
+    <li><code>命令名</code>是命令的名称,表示要执行的操作<code>通常是小写</code></li>
+    <li><code>选项</code>是对命令的特别定义，指出命令的<code>操作方式</code></li>
+    <li><code>方括号</code>括起来的部分表名该项是<code>可选的</code></li>
+</ul><p><strong><span>举个栗子:</span></strong></p><blockquote>
+    <p>
+        在命令行<code>rm -i abc</code>中,<code>rm</code>是命令名,表示<span style="background: yellow">删除文件操作</span>;<code>-i</code>是命令的选项,表示<span style="background: yellow">删除前要提示用户确认</span>;<code>abc</code>是命令参数,表示<span style="background: yellow">要删除的文件</span>
+    </p>
+</blockquote><p>&nbsp;</p><hr><blockquote>
+    <p>
+        命令的自行定义和解释(几乎每个命令都有自行定义和解释)
+    </p>
+</blockquote><p><strong><span>解释：</span></strong></p><ul>
+    <li>单个字符的选项以<code>-</code>开始;&nbsp;&nbsp;例如：<code>rm -i abc</code></li>
+    <li>多个字符的选项以<code>--</code>开始;例如：<code>rm --help</code></li>
+    <li>当一个命令行中带有多个单字符选项时，可将这些选项合并,例如<code>rm -i -v abc</code>可以写成<code>rm -iv abc</code></li>
+</ul><p>&nbsp;</p><hr><blockquote>
+    <p>命令行里的注释</p>
+</blockquote><ul>
+    <li>命令行里的注释用<code>#</code>字符打头,例如<code>rm -i abc #delete a file</code> &nbsp; 注释部分不会被shell解释和执行</li>
+</ul><p>&nbsp;</p><h3 id='122-命令的输入与执行'><span>1.2.2-命令的输入与执行</span></h3><blockquote>
+    <p>常用的Shell命令行编辑键</p>
+</blockquote><div>
+    <table>
+        <thead>
+            <tr>
+                <th>按键</th>
+                <th>功能</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <code>Backspace</code>&nbsp;&nbsp;<code>Delete</code>&nbsp;&nbsp;<code>Ctrl+h</code>
+                </td>
+                <td>
+                    删除字符
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>Ctrl+u</code>&nbsp;&nbsp;<code>Ctrl+k</code>
+                </td>
+                <td>
+                    删除光标前后端的所有字符
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>\</code>
+                </td>
+                <td>
+                    续行符,用于跨行输入长命令
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>Tab</code>
+                </td>
+                <td>
+                    命令补全
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>↑</code>&nbsp;<code>↓</code>
+                </td>
+                <td>
+                    翻找命令历史记录
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>←</code><code>→</code>
+                </td>
+                <td>
+                    前后移动光标
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div><p>&nbsp;</p><hr><blockquote>
+    <p>常用的Shell命令运行控制键</p>
+</blockquote><div>
+    <table>
+        <thead>
+            <tr>
+                <th>按键</th>
+                <th>功能</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <code>Enter</code>&nbsp;&nbsp;<code>Ctrl+j</code>&nbsp;&nbsp;<code>Ctrl+m</code>
+                </td>
+                <td>
+                    提交命令运行
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>Ctrl+s</code>
+                </td>
+                <td>
+                    暂停屏幕输出
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>Ctrl+c</code>
+                </td>
+                <td>
+                    终止命令的运行
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div><p><strong><span>解释：</span></strong></p><ul>
+    <li>在命令执行过程中，如果输出的信息太多太快,可以按<code>Ctrl+s</code>暂停滚屏，之后按任意键恢复</li>
+    <li>在命令执行过程中，如果想要终止命令的运行,可以按<code>Ctrl+c</code></li>
+</ul><hr><h3 id='123-一些简单的命令'><span>1.2.3-一些简单的命令</span></h3><blockquote>
+    <p>who命令</p>
+</blockquote><p><span>功能：显示已登录的用户</span></p><p><span>格式：who[选项]</span></p><p><span>选项：</span></p><ul>
+    <li><code>-H</code>:显示各列的标题</li>
+    <li><code>-q</code>:显示登录的用户名和用户数</li>
+</ul><hr><p><strong><span>举个栗子:</span></strong></p><p><img src="https://i.loli.net/2021/09/19/kQuTBjOprd15eLC.png"/></p><p>&nbsp;</p><p><strong><span>解释：</span></strong></p><ul><li>终端的名称是<code>ttyn</code>&nbsp;&nbsp;<code>n</code>是终端的编号</li></ul><blockquote>
+    <p>echo命令</p>
+</blockquote><p><span>功能：回显字符串(相当于c语言里的printf)</span></p><p><span>格式：echo[选项]字符串...</span></p><p><span>选项：</span></p><ul>
+    <li><code>-n</code>:输出字符串后光标不换行</li>
+</ul><hr><p><strong><span>举个栗子:</span></strong></p><p><img src="https://i.loli.net/2021/09/19/Bdv4WFtUT7ZNYcO.png"/></p><p>&nbsp;</p><blockquote>
+    <p>date命令</p>
+</blockquote><p><span>功能：显示、设置系统日期和时间</span></p><p><span>格式：date [选项] [+格式]</span></p><p><span>选项：</span></p><ul>
+    <li><code>-s</code>:设置时间和日期</li>
+    <li><code>-u</code>:使用格林威治时间</li>
+</ul><p>参数：参数的格式由<code>格式控制字符</code>和<code>其他字符</code>构成的，用于控制输出的格式; 当串有空格时,要用<code>引号</code>括起来</p><ul>
+    <li><code>%r</code>:用hh:mm:ss AM/PM(时:分:秒 上午/下午)的形式显示12小时制时间</li>
+    <li><code>%T</code>:用hh:mm:ss (时:分:秒)的形式显示24小时制时间</li>
+    <li><code>%a</code>:显示星期的缩写,例如 Sun、Mon</li>
+    <li><code>%A</code>:显示星期的全称,例如 Sunday、Monday</li>
+    <li><code>%b</code>:显示月份的缩写,例如 Jan</li>
+    <li><code>%B</code>:显示月份的全称,例如 January</li>
+    <li><code>%m</code>:用2位数字显示月份,例如 02</li>
+    <li><code>%d</code>:用2位数字显示日期,例如 27</li>
+    <li><code>%D</code>:用mm/dd/yy(月/日/年)的形式显示日期,例如 02/27/17</li>
+    <li><code>%y</code>:用2位数字显示年份,例如 21</li>
+    <li><code>%Y</code>:用4位数字显示年份,例如 2021</li>
+</ul><h6>注意：如果不带任何的选项和格式参数，会显示当前日期和本地当前时间。格式为:<code>星期 月 日 时间 时区 年</code></h6><hr><p><strong><span>举个栗子:</span></strong></p><div><span>Linux系统可能需要先修正时间，可以看这篇文章</span><a href="https://www.linuxprobe.com/centos7-ntp-time.html">Centos 7安装配置NTP网络时间同步服务器</a></div><p><img src="https://i.loli.net/2021/09/19/YfJhZ1OXa4VQ9rS.png"/></p><p>&nbsp;</p><blockquote>
+    <p>cal命令</p>
+</blockquote><p><span>功能：显示月份和日期</span></p><p><span>格式：cal [[月份]年份]</span></p><p><span>参数：月份是1-12的数字，年份是1-9999的数字</span></p><p><span>说明：若自带有一个参数，该参数会被解释为月份；若带两个，第一个会被解释为月份，第二个为年份；不带参数时，显示当年当月的日历</span></p><hr><p><strong><span>举个栗子:</span></strong></p><p><img src="https://i.loli.net/2021/09/19/NyvmrLugMtzp7SI.png"/></p><hr><h3 id='124-联机帮助命令'><span>1.2.4-联机帮助命令</span></h3><p><span>Linux命令多如牛毛，每个命令还有众多选项，不可能全部记住，所以我们应该经常翻阅联机帮助文档</span></p><p><strong><span>获取联机帮助文档主要有以下几种方式：</span></strong></p><ul>
+    <li><code>--help选项</code></li>
+    <li><code>man命令</code></li>
+    <li><code>info命令</code></li>
+</ul><blockquote>
+    <p>--help选项</p>
+</blockquote><p><span><span>许多Linux命令都提供了一个--help选项，执行带有--help选项的命令将显示该命令的帮助信息。例如:</span><code><span>date --help</span></code><span>将显示date命令的帮助信息</span></span></p><hr><p><strong><span>举个栗子:</span></strong></p><p><img src="https://i.loli.net/2021/09/19/K3sqMlO9bdHx4kz.png"/></p><p>&nbsp;</p><blockquote>
+    <p>man命令</p>
+</blockquote><p><span>功能：显示联机手册页</span></p><p><span>格式：man 命令名</span></p><p><span>说明：在浏览手册页时，用以下按键翻页、查找和退出</span></p><ul>
+    <li><code>PageUp</code><code>b</code>:向上翻一页</li>
+    <li><code>PageDown</code>&nbsp;<code>space</code>:向下翻一页</li>
+    <li><code>↑</code>:向上滚一行</li>
+    <li><code>↓</code>&nbsp;<code>Enter</code>:向下滚一行</li>
+    <li><code>/string</code>:在手册中查找字符串string</li>
+    <li><code>?string</code>:在手册中向上查找字符串string</li>
+    <li><code>n</code>:查找下一个字符串</li>
+    <li><code>N</code>:查找上一个字符串</li>
+    <li><code>Home</code>:到第一页</li>
+    <li><code>End</code>:到最后一页</li>
+    <li><code>q</code>:退出</li>
+</ul><hr><p><strong><span>举个栗子:</span></strong></p><p><img src="https://i.loli.net/2021/09/19/8uBLiPOvbKQSsdE.png"/></p><p>&nbsp;</p><blockquote>
+    <p>info命令</p>
+</blockquote><p><span>除了联机手册外，Linux系统还提供了大多数命令的超文本格式的联机文档，可用info命令浏览。info命令与man命令的用法类似，但浏览起来更加的方便。info是一种文档格式，也是阅读此格式文档的阅读器;我们常用它来查看Linux命令的info文档。它以主题的形式把几个命令组织在一起，以便于我们阅读;在主题内以node(节点)的形式把本主题的几个命令串联在一起。</span></p><p>&nbsp;</p><p><span>功能：用node(节点)的形式把本主题的几个命令串联在一起，方便参看文档</span></p><p><span>格式：info[选项] [参数]</span></p><p><span>参数：帮助主题，指定需要获得帮助的主题，可以是指令、函数以及配置文件。</span></p><p><strong><span>选项：</span></strong></p><ul>
+    <li><code>-d</code>：添加包含info格式帮助文档的目录;</li>
+    <li><code>-f</code>：指定要读取的info格式的帮助文档;</li>
+    <li><code>-n</code>：指定首先访问的info帮助文件的节点;</li>
+    <li><code>-o</code>：输出被选择的节点内容到指定文件;</li>
+</ul><div><span>关于操作主题的快捷键，可以看这篇文章</span><a href="https://blog.csdn.net/weixin_39884144/article/details/116773187?ops_request_misc=&amp;request_id=&amp;biz_id=102&amp;utm_term=Linux%20info%E5%91%BD%E4%BB%A4%E7%94%A8%E6%B3%95&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-6-116773187.first_rank_v2_pc_rank_v29&amp;spm=1018.2226.3001.4187">info函数linux,Linux命令info的基本用法</a></div><p>&nbsp;</p><h2 id='13-linux文件操作'><span>1.3-Linux文件操作</span></h2><p>&nbsp;</p><h3 id='131-linux系统的文件'><span>1.3.1-Linux系统的文件</span></h3><p><span><span>Linux文件名的最大长度是255个字符，通常由字母、数字、</span><code><span>.</span></code><span>、</span>&nbsp;<code><span>_</span></code></span><span>(下划线)和中划线组成。其中，用&quot;.&quot;开头的文件是隐藏文件</span></p><p><strong><span>Linux文件命名规则:</span></strong></p><ul>
+    <li>大小写敏感</li>
+    <li>除了"/"之外，所有的字符都合法</li>
+    <li>避免使用加号、减号或者"."作为普通文件的第一个字符</li>
+    <li>避免字符<code>@#$%^&amp;*()[]</code></li>
+    <li>Linux文件名中不能含有<code>斜杠字符</code>"/"和<code>空字符</code>"\0",也不能有<code>空格</code>、<code>制表符</code>、<code>控制符</code></li>
+</ul><h3 id='132-文件通配符和正则表达式'><span>1.3.2-文件通配符和正则表达式</span></h3><blockquote>
+    <p>基本的通配符和匹配规则</p>
+</blockquote><p>&nbsp;</p><ul>
+    <li><code>*</code> :匹配任何字符或任何个字符</li>
+    <li><code>?</code> :匹配任何的单个字符</li>
+    <li><code>[]</code>:匹配任何包含在括号里面的单个字符,比如有:file1.txt,file2.txt,file3.exe,file4.txt,要删除file1和file3则可以写为<code>rm file[13].txt</code></li>
+</ul><p><img src="https://gitee.com/fengxian_duck/resources/raw/master/202109191557763.png" referrerpolicy="no-referrer" alt="image-20210919155735658"></p><p>&nbsp;</p><div><span>更多关于Linux文件通配符和正则表达式，可以看这篇文章</span><a href="https://blog.csdn.net/swjtuwyp/article/details/51817472?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522163203641016780357293587%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=163203641016780357293587&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-1-51817472.first_rank_v2_pc_rank_v29&amp;utm_term=Linux+%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F&amp;spm=1018.2226.3001.4187">linux通配符和正则表达式</a></div><p>&nbsp;</p><hr><h6>举个栗子：</h6><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><h2 id='14-vi文本编辑器'><span>1.4-vi文本编辑器</span></h2><h3 id='141-vi的三种操作模式'><span>1.4.1-vi的三种操作模式</span></h3><blockquote>
+    <p><code>命令模式(normal mode)</code>&nbsp;<code>插入模式(insert mode)</code>&nbsp;<code>末行模式(last line mode)</code></p>
+</blockquote><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><h3 id='附录-linux命令速查表'><span>附录-Linux命令速查表</span></h3><hr>
+<ol>
+	<li><code>ip address</code>:查看IP地址</li>
+    <li><code>nmtui</code>:开放网络(方便<code>shell</code>进行管理)</li>
+    <li><code>who</code>:显示已登录用户,<code>-H</code>表示显示各列的标题,<code>-q</code>表示显示登录的用户名和用户数</li>
+    <li><code>echo</code>:回显字符串,添加选项<code>-n</code>表示回显字符串后光标不换行</li>
+    <li><code>date</code>:显示、设置系统日期和时间 常用<code> date '+%Y年 %m月 %d日 %T' </code>显示<code>2021年 09月 19日 12:09:57</code>格式的时间</li>
+    <li><code>find</code>:查找<code>find / -name fengxian</code>表示在根目录下通过名字查找叫fengxian的文件</li>
+</ol><p>&nbsp;</p></div></div>
+</body>
+</html>

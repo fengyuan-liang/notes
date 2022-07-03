@@ -1,0 +1,260 @@
+/* 侧边栏*/
+.sidebar {
+    padding-top: 6px;
+}
+
+aside.sidebar ul li {
+    margin: 0;
+    position: relative;
+}
+
+aside.sidebar ul li ul {
+    margin: 6px 0;
+}
+
+aside.sidebar ul li p {
+    padding-left: 22px;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+aside.sidebar ul li a {
+    line-height: 35px;
+    font-size: 14px;
+    padding: 3px 0 3px 22px;
+}
+
+aside.sidebar ul li.active>a {
+    font-size: 16px !important;
+}
+
+aside.sidebar ul li.active>a:before {
+    content: '' !important;
+    position: absolute !important;
+    margin: 0 !important;
+    width: 10px !important;
+    height: 10px !important;
+    top: 15px !important;
+    left: 0px !important;
+    border-radius: 50% !important;
+    background-color: #fed24a !important;
+    box-shadow: 0 0 0 3px rgba(254, 210, 74, 0.4) !important;
+}
+
+/*以上调侧边栏 */
+
+body {
+    font-family: "JetBrains Mono", Menlo, Consolas !important;
+    color: #333333;
+    line-height: 1.6rem;
+}
+
+.markdown-section h1,
+.markdown-section h2,
+.markdown-section h3,
+.markdown-section h4 {
+    position: relative;
+    margin-top: 1.2rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    line-height: 1.4;
+    cursor: text;
+    color: #273849;
+}
+
+.markdown-section h1 {
+    padding-bottom: .4rem;
+    font-size: 2.2rem;
+    text-align: center;
+    margin-top: 0;
+    line-height: 1.3;
+}
+
+.markdown-section h2 {
+    font-size: 1.75rem;
+    line-height: 1.225;
+    margin: 35px 0 15px;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #eaecef;
+}
+
+.markdown-section h3 {
+    font-size: 1.4rem;
+    line-height: 1.43;
+    margin: 20px 0 7px;
+}
+
+.markdown-section h4 {
+    font-size: 1.2rem;
+}
+
+.markdown-section h5 {
+    font-size: 1rem;
+}
+
+.markdown-section h6 {
+    font-size: 0.9em;
+    color: #ffffff;
+    display: inline-block;
+    font-weight: normal;
+    padding: 3px 10px 1px;
+    background-color: #909090;
+    border-radius: 3em;
+    line-height: 1.5;
+}
+
+
+/*滚动条样式 start*/
+/* 滚动条宽度 */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* 滚动条颜色 */
+::-webkit-scrollbar-thumb {
+    background: #009fff;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, rgb(0, 159, 255), rgb(236, 47, 75));
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, rgb(0, 159, 255), rgb(236, 47, 75));
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    border-radius: 2em;
+}
+
+
+/* 导航栏 */
+.app-nav {
+    position: fixed;
+    margin: 0;
+    padding: 10px 3rem 10px 0;
+    width: calc(100% - 19rem);
+    background-color: #fff;
+    height: 3rem;
+    box-sizing: border-box;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 6%);
+}
+
+.app-nav.no-badge {
+    margin-right: 0;
+}
+
+/* 首页背景 */
+section.cover.has-mask .mask {
+    background-color: #f9f7f7;
+    opacity: 0.3;
+}
+
+ol,
+ul,
+li {
+    line-height: 27px !important;
+    font-size: 16px !important;
+}
+
+/* 引用 */
+.markdown-section p.tip {
+    background-color: #f8f8f8;
+    border-bottom-right-radius: 2px;
+    border-left: 4px solid #f66;
+    border-top-right-radius: 2px;
+    margin: 2em 0;
+    padding: 12px 24px 12px 30px;
+    position: relative;
+}
+
+.markdown-section p.tip,
+.markdown-section tr:nth-child(1n) {
+    font-size: 16px !important;
+}
+
+.markdown-section a:not(:hover) {
+    text-decoration: none;
+}
+
+.markdown-section a {
+    color: var(--theme-color, #42b983);
+    font-weight: 600;
+}
+
+/* 代码块  */
+.markdown-section pre>code {
+    font-family: Inconsolata,
+        Consolas,
+        Menlo,
+        Monaco,
+        "Andale Mono WT",
+        "Andale Mono",
+        "Lucida Console",
+        "DejaVu Sans Mono",
+        "Bitstream Vera Sans Mono",
+        "Courier New",
+        Courier,
+        monospace;
+    white-space: pre-wrap;
+    color: #ffffff;
+    background: #282c34 !important;
+    font-weight: normal;
+    letter-spacing: normal;
+    line-height: 1.7;
+    tab-size: 4;
+    text-align: left;
+    word-spacing: normal;
+    word-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+    font-size: .9rem !important;
+}
+
+.markdown-section pre {
+    padding: 0;
+    margin: 1em 0;
+    background-color: #282c34 !important;
+    color: #ffffff !important;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.markdown-section pre[data-lang] code {
+    display: block;
+    overflow: auto;
+    padding: 1.75em 1.5em 1.5em 1.5em;
+}
+
+.markdown-section code {
+    background-color: #eaeaea !important;
+}
+
+.markdown-section pre:after {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0.65em;
+    right: 0.65em;
+    opacity: 0.6;
+    color: #ffffff;
+    font-size: 0.1rem;
+    line-height: 1;
+}
+
+/* 代码复制按钮 */
+.docsify-copy-code-button {
+    right: 3em !important;
+    top: 0.4em !important;
+    padding: 0 !important;
+    background-color: transparent !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+}
+
+/* 引用块 */
+.markdown-section blockquote {
+    border-left: 4px solid #42b983;
+}
+
+.docsify-copy-code-button .success {
+    color: #ffffff;
+}
+
+/* 代码样式 */
+.token.punctuation {
+    color: #999999 !important;
+}

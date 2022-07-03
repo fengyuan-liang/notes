@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'Monaco';
+    src: url('Monaco.woff2') format('woff2'),
+        url('Monaco.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+

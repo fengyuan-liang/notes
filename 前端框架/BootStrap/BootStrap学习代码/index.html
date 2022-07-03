@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bootStrap页面模板</title>
+    <!--引入bootStrap的css-->
+    <link rel="stylesheet" href="bootStrap/css/bootstrap.min.css">
+</head>
+<body>
+    <!--布局容器-->
+    <div class="container">
+        <!--行元素-->
+        <div class="row">
+            <!--行中有列元素-->
+            <!--
+                col-xs-数值:超小屏(自动)
+                col-sm-数值:小屏(750px)
+                col-md-数值:中屏(970px)  ->最常用!
+                col-lg-数值:大屏(1170px)
+            -->
+            <div class="col-md-4" style="background-color: pink">占四个网格</div>
+            <div class="col-md-8" style="background-color:darkorange">占八个网格</div>
+        </div>
+        <div class="row">
+            <!--列偏移-->
+            <div class="col-md-2" style="background-color:darksalmon">占一个网格</div>
+            <div class="col-md-2 col-md-offset-2" style="background-color: pink">列偏移两格</div>
+            <div class="col-md-2" style="background-color:darkorange">占一个网格</div>
+            <div class="col-md-2" style="background-color:azure">占一个网格</div>
+            <div class="col-md-2" style="background-color:cornsilk">占一个网格</div>
+        </div>
+        <div class="row">
+            <!--列嵌套-->
+            <div class="col-md-8" style="background-color:darksalmon">
+                <div class="row">
+                    <div class="col-md-3" style="background-color:wheat">1</div>
+                    <div class="col-md-3" style="background-color:darkgoldenrod">1</div>
+                    <div class="col-md-3" style="background-color:goldenrod">1</div>
+                    <div class="col-md-3" style="background-color:goldenrod">1</div>
+                </div>
+            </div>
+            <div class="col-md-4" style="background-color:saddlebrown">也嵌套</div>
+        </div>
+        <hr>
+        <!--自适应列嵌套 屏幕大时，显示两列，屏幕小时显示四列-->
+        <div class="row">
+            <div class="col-md-3 col-sm-6" style="background-color:wheat">1</div>
+            <div class="col-md-3 col-sm-6" style="background-color:darkgoldenrod">1</div>
+            <div class="col-md-3 col-sm-6" style="background-color:goldenrod">1</div>
+            <div class="col-md-3 col-sm-6" style="background-color:goldenrod">1</div>
+        </div>
+        <hr>
+        <h1>标题一<small>副标题</small></h1>
+        <h2>标题二<span class="small">副标题2</span></h2>
+        <h3>标题三</h3>
+        <div class="h1">你好</div>
+        <hr>
+        <div class="text-muted" style="width: 300px;height: 10px"> - text-secondary 副标题</div>
+        <div>
+            <p class="text-left text-warning" style="background-color: #dca7a7">居左</p>
+            <p class="text-right text-warning" style="background-color: #dca7a7">居左</p>
+        </div>
+        <code >单行代码&lt;div&gt;&lt;/div&gt;</code>
+        <pre>
+            这是多行代码
+            /**
+             * @author: 梁峰源
+             * @date: 2021/11/9 19:18
+             * Description:
+             */
+            @Import(DBHelper.class)
+            @SpringBootApplication
+            public class StarterApplication {
+                public static void main(String[] args) {
+                    SpringApplication.run(StarterApplication.class,args);
+                    System.out.println(DBHelper.class.getName());
+                }
+            }
+        </pre>按快捷键：
+        <kbd>ctrl</kbd>+
+        <kbd>s</kbd>
+        <ul class="list-inline">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+        </ul>
+        <dl class="dl-horizontal">
+            <dt>这里是dt</dt>
+            <dd>这里是dd</dd>
+            <dt>这里是dt2</dt>
+            <dd>这里是dd2</dd>
+        </dl>
+        <table class="table table-bordered table-striped table-hover">
+            <thead>这是一个表格</thead>
+            <tr class="active">
+                <th>1——1</th>
+                <th>1——2</th>
+                <th>1——3</th>
+            </tr>
+            <tr class="success">
+                <td>2——1</td>
+                <td>2——2</td>
+                <td>2——3</td>
+            </tr>
+            <tr class="info">
+                <td>2——1</td>
+                <td>2——2</td>
+                <td>2——3</td>
+            </tr>
+            <tr class="danger">
+                <td>2——1</td>
+                <td>2——2</td>
+                <td>2——3</td>
+            </tr>
+        </table>
+        <hr>
+        <h1 class="h1">这是bootStrop表单</h1>
+
+        <div class="col-md-3">
+            <!--文本框-->
+            <input type="text" class="form-control">
+            <input type="text" class="form-control input-lg">
+            <input type="text" class="form-control input-sm">
+        </div>
+        <div class="col-md-3">
+            <select class="form-control">
+                <option value="">北京</option>
+                <option value="">上海</option>
+                <option value="">深圳</option>
+                <option value="">广州</option>
+            </select>
+        </div>
+        <textarea class="form-control" placeholder="请输入文字"></textarea><br>
+        <hr>
+        <div>复选框 checkbox</div>
+        <!--垂直显示-->
+        <div>
+            <div class="checkbox">
+                <label><input type="checkbox">游戏</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox">学习</label>
+            </div>
+        </div>
+        <!--水平显示-->
+        <div>
+            <label class="checkbox-inline">
+                <input type="checkbox">游戏
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox">学习
+            </label>
+        </div>
+        <div>单选框 checkbox</div>
+        <!--垂直显示-->
+        <div>
+            <div class="radio">
+                <label><input type="radio" name="sex" value="男生">男</label>
+                <label><input type="radio" name="sex" value="女生">女</label>
+            </div>
+        </div>
+        <!--水平显示-->
+        <!-- 单选框 -->
+        <div class="radio">性别:
+            <label><input type="radio" name="sex" value="男生">男生</label>
+            <label><input type="radio" name="sex" value="女生">女生</label>
+        </div>
+        <!-- 复选框 -->
+        <div>
+            爱好：
+            <label><input type="checkbox" name="like" value="0">音乐</label>
+            <label><input type="checkbox" name="like" value="1">旅游</label>
+        </div>
+        <!--按钮-->
+        <button class="btn">按钮</button>
+        <button class="btn btn-danger">按钮</button>
+        <button class="btn btn-success">按钮</button>
+        <button class="btn btn-warning">按钮</button>
+        <button class="btn btn-primary">按钮</button>
+        <button class="btn btn-info">按钮</button>
+        <button class="btn btn-default">按钮</button>
+        <button class="btn btn-link">按钮</button>
+        <a href="javascript:void(0);" class="btn btn-success">a标签按钮</a>
+        <span class="btn btn-danger">span标签</span>
+        <div class="btn btn-info">div按钮</div>
+        <br>
+        <div>11</div>
+    </div>
+</body>
+    <!--bootStrap必须依赖jQuery-->
+    <script src="js/jquery-3.1.0.min.js"></script>
+    <script src="bootStrap/js/bootstrap.min.js"></script>
+</html>
