@@ -105,11 +105,15 @@ ab -c 100 -n 2000 -k
   ```css
    redis-server /etc/redis.conf
   ```
+  
+- 后台启动redis
 
-```java
-docker run --name nginx -p 80:80 -v D:\dockercontainers\nginx\nginx.conf:/etc/nginx/nginx.conf   -v D:\dockercontainers\nginx\html:/usr/share/nginx/html -d nginx
+  ```java
+  ```
 
-```
+  
+
+
 
 
 

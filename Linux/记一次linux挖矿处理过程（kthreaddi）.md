@@ -104,6 +104,58 @@
 
 
 
+其他木马查鲨办法：
+
+2、确定进程路径
+
+Linux在启动一个进程时，系统会在/proc下创建一个以PID命名的文件夹，在该文件夹下会有我们的进程的信息，其中包括一个名为exe的文件即记录了绝对路径，通过ll或ls –l命令即可查看。
+
+ls -lha /proc/PID
+
+cwd符号链接的是进程运行目录;
+
+exe符号连接就是执行程序的绝对路径;
+
+cmdline就是程序运行时输入的命令行命令;
+
+environ记录了进程运行时的环境变量;
+
+fd目录下是进程打开或使用的文件的符号连接。
+
+(1)获取进程的pid，然后使用命令ls -l /proc/${pid}，这个命令可以列出该进程的启动位置。
+
+(2)/usr/sbin/lsof | grep ${进程名称} 这个命令也能列出进程的启动位置。
+
+3、杀死进程
+
+kill -9 PID
+
+这个版本是我自己的一些思考，不全后续会不断补充。
+
+1、cat /etc/passwd 未发现陌生用户和可疑root权限用户。
+
+2、netstat -anp 查看所有进程及pid号，未发现异常连接。
+
+3、last 查看最近登录用户，未发现异常
+
+4、cat /etc/profile 查看系统环境变量，未发现异常
+
+5、ls -al /etc/rc.d/rc3.d ，查看当前级别下开机启动程序，未见异常(有一些脸生，只好利用搜索引擎了)
+
+6、crontab -l 检查计划任务，root用户和web运行用户各检查一遍，未见任何异常
+
+7、cat /root/.bashrc 和 cat /home/用户/.bashrc 查看各用户变量，未发现异常
+
+8、查看系统日志。主要是/var/log/messages(进程日志)、/var/log/wtmp(系统登录成功日志 who /var/log/wtmp)、/var/log//bmtp(系统登录失败日志)、/var/log/pureftpd.log(pureftpd的连接日志)，未发现异常(考虑到了可能的日志擦除，重点看了日志的连续性，未发现明显的空白时间段)
+
+9、history 查看命令历史。cat /home/用户/.bash_history 查看各用户命令记录，未发现异常
+
+10、系统的查完了，就开始查web的。初步查看各站点修改时间，继而查看各站点的access.log和error.log(具体路径不发了 )，未发现报告时间前后有异常访问。虽有大量攻击尝试，未发现成功。
+
+11、日志分析完毕，查找可能存在的webshell。方法有两个，其一在服务器上手动查找；其二，将web程序下载到本地使用webshellscanner或者web杀毒等软件进行查杀。考虑到站点较多，数据量大，按第一种方法来。 在linux上查找webshell基本两个思路：修改时间和特征码查找。 特征码例子：find 目录 -name ".php"(asp、aspx或jsp) |xargs grep "POST[(特征码部分自己添加)" |more 修改时间：查看最新3天内修改的文件，find 目录 -mtime 0 -o -mtime 1 -o -mtime 2 当然也可以将两者结合在一起，find 目录 -mtime 0 -o -mtime 1 -o -mtime 2 -name ".php" 的确查找到了一些停用的站点下有webshell
+
+转载的：http://www.cnblogs.com/ericyuan/p/4211352.html
+
 
 
 
