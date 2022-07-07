@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Sunspot's Wiki</title>
+    <title>Eureka's blog</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="description" content="Description" />
     <meta
@@ -36,15 +36,14 @@
     <div id="app"></div>
     <script>
       window.$docsify = {
-        name: "<h3>Sunspot</h3>",
+        name: "<h3>Eureka</h3>",
         nameLink: "/",
         formatUpdated: "{YYYY}/{MM}/{DD} {HH}:{mm}",
         plugins: [
           function (hook, vm) {
             hook.beforeEach(function (html) {
               var url =
-                "https://github.com/xuliyaheizi/myWiki/blob/master/" +
-                vm.route.file;
+                "https://github.com/fengyuan-liang/notes/" + vm.route.file;
               var editHtml = "[📝 EDIT DOCUMENT](" + url + ")\n";
               var editHtml_end = "[🖊 Edit Document](" + url + ")\n";
               return (
@@ -60,7 +59,7 @@
             var footer = [
               "<hr/>",
               "<footer>",
-              '<span><a href="https://github.com/xuliyaheizi">Eureka</a> &copy;2022.</span>',
+              '<span><a href="https://github.com/fengyuan-liang">Eureka</a> &copy;2022.</span>',
               "<span>每天都要加油鸭😜</span>",
               "</footer>",
             ].join("");
