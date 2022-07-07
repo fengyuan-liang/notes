@@ -5,17 +5,38 @@
 将表导入指定文件夹下（将导入文件保存到hdfs://lfy/input/project）
 
 ```java
-sqoop import --connect jdbc:mysql://localhost:3306/mysql?serverTimezone=UTC \
+sqoop import --connect jdbc:mysql://localhost:3306/sqoop?serverTimezone=UTC \
 --username lijie \
---table general_log \
---target-dir /logs/mysql-log/general_log
+--table user_logs \
+--num-mappers 1 \
+--target-dir /logs/user_logs/user_log2 \
+--delete-target-dir 
+```
+
+```java
+sqoop import --connect jdbc:mysql://localhost:3306/sqoop?serverTimezone=UTC \
+--username lijie \
+--table cloud_disk_log \
+--num-mappers 1 \
+--target-dir /logs/user_logs/cloud_disk_log \
+--delete-target-dir 
 ```
 
 ```java
 --target-dir /lfy/input/project
 ```
 
-
+```java
+sqoop import \
+--connect jdbc:mysql://single:3306/sqoop_test \
+--username root \
+--password kb10 \
+--table student \
+--target-dir /sqooptest/table_all \
+--delete-target-dir \
+--num-mappers 1 \
+--fields-terminated-by ','
+```
 
 >-query，
 
@@ -23,17 +44,22 @@ sqoop import --connect jdbc:mysql://localhost:3306/mysql?serverTimezone=UTC \
 
 ```java
 sqoop import --connect jdbc:mysql://localhost:3306/sqoop?serverTimezone=UTC \
---username root \
---password 123456 \
+--username lijie \
 --table project \
 --target-dir /lfy/input/project
 ```
 
+>执行sql语句导入（mysql到hdfs）
 
-
-
-
-
+```java
+sqoop import \
+--connect jdbc:mysql://localhost:3306/sqoop \
+--username lijie \
+--target-dir  /logs/user_logs/user_log \
+--delete-target-dir \
+--num-mappers 1 \
+--query 'SELECT * FROM user_logs LIMIT 1000 where $CONDITIONS'
+```
 
 
 
@@ -101,9 +127,69 @@ sqoop import   --connect jdbc:mysql://node3:3306/testsqoop?serverTimezone=UTC --
 
 ```
 
+## 3. jar包命令
+
+mapreduce命令
+
+```java
+hadoop jar sqoopTest.jar com.fx.service.App /logs/user_logs/user_log /logs/user_logs/out 
+```
+
+## 4. Azkaban Job编写
+
+先写数据源
+
+在写MapReduce
+
+start：
+
+```java
+#执行脚本
+# start.job
+type=command
+command=sqoop import --connect jdbc:mysql://localhost:3306/sqoop?serverTimezone=UTC --username lijie --table user_logs --num-mappers 3 --target-dir /logs/user_logs/user_log2 --delete-target-dir 
+```
+
+mapreduce：
+
+```java
+#执行脚本
+# mapreduce.job
+type=command
+dependencies=start
+command=hadoop jar sqoopTest.jar com.fx.service.App /logs/user_logs/user_log /logs/user_logs/user_log_out 
+```
+
+sqoop：
+
+```java
+#执行脚本
+# mapreduce.job
+type=command
+dependencies=mapreduce
+command=sqoop export --connect jdbc:mysql://hadoop3:3306/sqoop --username lijie -export-dir /logs/user_logs/user_log_out/part-r-00000 --table user_logs_analyse --input-fields-terminated-by '\t' --columns="user_name,user_operate,num"
+```
+
+## 5. 启动所有服务的脚本
+
+需要将启动命令发送给其他的主机，要用到``
+
+```java
+#!/bin/bash
+if $(zkServer.sh);then $(hadoop fs -touchz /root/data/input2/test.txt);
+else $(hadoop fs -mkdir -p /root/data/input2 && hadoop fs -touchz /root/data/input2/test.txt);
+fi
+```
 
 
 
+## 一、Sqoop基本原理
+
+原文链接：https://blog.csdn.net/weixin_48482704/article/details/109821541
+
+### 1.1、何为Sqoop？
+
+Sqoop(SQL-to-Hadoop)是一款开源的工具，主要用于在Hadoop(Hive)与传统的数据库(mysql、postgresql…)间进行数据的传递，可以将一个关系型数据库（例如 ： MySQL ,Oracle ,Postgres等）中的数据导入到Hadoop的HDFS中，也可以将HDFS的数据导出到关系型数据库中。
 
 
 

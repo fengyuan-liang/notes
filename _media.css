@@ -53,7 +53,7 @@ body {
 .markdown-section h2,
 .markdown-section h3,
 .markdown-section h4 {
-    position: relative;
+    /*position: relative;*/
     margin-top: 1.2rem;
     margin-bottom: 1rem;
     font-weight: bold;

@@ -766,7 +766,6 @@ https://blog.csdn.net/qq_17623363/article/details/106418353?ops_request_misc=%25
 
 ```css
 docker run -p 6500:6379 --name redis -v /root/docker/redis/conf/redis.conf:/etc/redis/redis.conf  -v /root/docker/redis/data:/data -d redis redis-server /etc/redis/redis.conf --appendonly yes
-
 ```
 
 参数解释：
@@ -807,8 +806,6 @@ docker run -td --rm -p 10180:8080 -p 10124:8024 -p 10150-10179:10150-10179 --nam
 ```java
 docker run  -p 3308:3306 --name mysql -e MYSQL_ROOT_PASSWORD=$A200516123a$ -d  mysql:8 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 ```
-
-
 
 ## 1.6 mysql数据库操作
 

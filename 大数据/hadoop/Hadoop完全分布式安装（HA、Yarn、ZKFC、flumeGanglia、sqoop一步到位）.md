@@ -1,5 +1,9 @@
 # Hadoop完全分布式安装（HA、Yarn、ZKFC、flume/Ganglia、sqoop一步到位）
 
+完整拓扑图：
+
+
+
 首先你需要有四台虚拟机，也可以是四台云服务器（笔者的是四台云服务器），这里是完全分布式，不是HA集群，后面会修改拓扑
 
 | 主机名  | IP             | NameNode | SecondNameNode | DataNode |
@@ -38,7 +42,7 @@
 yum install ntp -y
 ```
 
-同步时间$A200516123a$
+同步时间
 
 ```shell
 ntpdate -u ntp1.aliyun.com 
@@ -159,8 +163,6 @@ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys //添加自己的，试下自己
 
 ## 2. hadoop完全分布式安装
 
-
-
 我们将hadoop上传到服务器（四台）的`/usr/local`目录下（笔者上传的是2.10.1的，读者可以上传3版本的）
 
 或者在Linux机器中用wget，下载源是清华大学镜像源
@@ -211,8 +213,6 @@ export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk/
 
 - core-site.xml
 - hdfs-site.xml
-
-- 
 
 设置core-site.xml，这里设置了hadoop1主机为master结点，9000端口标识的是函数编程接口，并将自己的`/opt/hadoopdata`设置为文件存储的地址
 
@@ -575,8 +575,6 @@ java.net.SocketException: Call From lfy to null:0 failed on socket exception: ja
 	at org.apache.hadoop.hdfs.server.namenode.NameNode.createNameNode(NameNode.java:1714)
 ```
 
-
-
 在一台namenode( namenode1或namenode2)中执行格式化命令，然后启动
 
 ```css
@@ -592,7 +590,7 @@ hadoop-daemon.sh start namenode
 在没有格式化的nn上执行  （只有一台哦，别全部执行了）
 
 ```css
-hdfs namenode -b	ootstrapStandby
+hdfs namenode -bootstrapStandby
 ```
 
 格式化 zk，在一台NN上执行
@@ -632,7 +630,7 @@ http://hadoop2:50070
 
 ## 4.配置YARN(单节的resousemanager)
 
-以下只需要在hadoop1上配置即可. 
+**以下只需要在hadoop1上配置即可**
 
 修改  etc/hadoop/mapred-site.xml
 
@@ -661,7 +659,7 @@ vim  mapred-site.xml
 </configuration>
 ```
 
-至此,yarn就配好了，下面我们可以启动yarn集群，并查看nodemanager
+至此，yarn就配好了，下面我们可以启动yarn集群，并查看nodemanager
 
 1. 启动
    	start-yarn.sh
@@ -671,7 +669,7 @@ vim  mapred-site.xml
 	stop-yarn.sh
 
 3. web UI
-	http://node1:8088/
+	http://hadoop1:8088/
 
 以上配置完成后，可以看到只有一个 ResourceManager，会有单点故障的问题. 所以接下来完成HA配置. 	
 
@@ -708,51 +706,811 @@ vim  mapred-site.xml
 
 ### 4.3 启动集群
 
-确保zk先启动
+确保zk先启动（node1和node2结点），如果没有启动先启动
 
 ```css
 zkServer.sh start
 ```
 
-在node1上start-all.sh，或者
+在node1上启动所有结点：`start-all.sh`
 
-```java
-或是  start-dfs.sh    start-yarn.sh
+## 5. flume安装
+
+>注意：这里建议下载1.9版本，不然会出现后面Ganglia监控不到的情况
+
+```shell
+#下载地址
+http://archive.apache.org/dist/flume/
+#下载文件解压，上传至服务器目录 /usr/local/ 下
+$ wget http://archive.apache.org/dist/flume/
+#将flume/conf下的flume-env.sh.template文件修改为flume-env.sh，并配置flume-env.sh文件
+$ mv flume-env.sh.template flume-env.sh
+$ vim flume-env.sh
+    export JAVA_HOME=/usr/java/jdk8
+    
+#Flume要想将数据输出到HDFS，必须持有Hadoop相关jar包
+    commons-configuration-1.6.jar、
+    hadoop-auth-2.7.2.jar、
+    hadoop-common-2.7.2.jar、
+    hadoop-hdfs-2.7.2.jar、
+    commons-io-2.4.jar、
+    htrace-core-3.1.0-incubating.jar
+    #拷贝到/flume190/lib文件夹下。
 ```
 
+## 6. httpd /Ganglia安装（编译安装）
 
+**系统环境：** centos7
 
-```java
-flume-ng agent --conf conf/ --name a1 --conf-file /usr/local/flume190/jobs/t2/flume-file-hdfs.conf
+**Ganglia版本：** ganglia-3.7.2
+
+Ganglia要有三个组件才能启动，分别是gmetad、gmond和httpd，其中gmond是用来采集系统数据的、gmetad是服务端，负责收集各个结点的数据，httpd 是一个web工具，用来想用户展示工具
+
+根据我们的拓扑图我们应该在node3上面装`gmetad和httpd`，在其他结点（node1、2、4）上面装`gmond`即可
+
+### 服务端监控（安装gmetad和httpd）
+
+**安装gemtad**
+
+这个就按照下述步骤一步一步来就好了，重点是，看提示，一定要看每一步都执行成功没有，看有没有error ：
+
+```shell
+[root@localhost ~]# yum -y install apr-devel apr-util check-devel cairo-devel pango-devel libxml2-devel rpm-build glib2-devel dbus-devel freetype-devel fontconfig-devel gcc gcc-c++ expat-devel python-devel libXrender-devel
+
+[root@localhost ~]# yum install -y libart_lgpl-devel pcre-devel libtool
+
+[root@localhost ~]# yum install  -y rrdtool rrdtool-devel
+#创建文件夹
+    [root@localhost ~]# mkdir /tools
+#单纯为了看看创建成功没有
+[root@localhost ~]# cd  /tools/
+
+[root@localhost ~]# wget http://www.mirrorservice.org/sites/download.savannah.gnu.org/releases/confuse/confuse-2.7.tar.gz 
+
+[root@localhost ~]# tar zxvf confuse-2.7.tar.gz
+
+[root@localhost ~]# cd confuse-2.7
+
+[root@localhost ~]# ./configure  --prefix=/usr/local/ganglia-tools/confuse CFLAGS=-fPIC --disable-nls --libdir=/usr/local/ganglia-tools/confuse/lib64
+
+[root@localhost ~]# make && make install
+
+[root@localhost ~]# cd /tools/
+
+[root@localhost ~]# wget https://sourceforge.net/projects/ganglia/files/ganglia%20monitoring%20core/3.7.2/ganglia-3.7.2.tar.gz  --no-check-certificate
+
+[root@localhost ~]# tar zxf ganglia-3.7.2.tar.gz
+
+[root@localhost ~]# cd ganglia-3.7.2
+#编译     enable-gexec是gmond节点
+[root@localhost ~]# ./configure --prefix=/usr/local/ganglia --enable-gexec --enable-status --with-gmetad --with-libconfuse=/usr/local/ganglia-tools/confuse  
+
+[root@localhost ~]# make && make install
+
+[root@localhost ~]# cp gmetad/gmetad.init /etc/init.d/gmetad
+
+[root@localhost ~]# ln -s /usr/local/ganglia/sbin/gmetad /usr/sbin/gmetad
 ```
 
-​	
+`遇到问题：` 当我们下载一个资源时下载不成功，会被当成爬虫拦截掉，下面截图只是一个代表，遇到类似的都可以通过下述方式解决
 
-## 附录：踩坑日记
+![image-20220626095251653](https://my-typroa-photos.oss-cn-guangzhou.aliyuncs.com/images/image-20220626095251653.png)
 
-要记得开50010端口，不然文件上传会失败！！
+**解决方法：**  在自己的命令后面 拼接上 `--no-check-certificate`     意思是不要网站检查，举个例子：
 
-nginx路径带 / 和不带   带/ 不会有代理地址   不带 会有代理地址 ！！！
+```shell
+wget https://sourceforge.net/projects/ganglia/files/ganglia-web/3.7.2/ganglia-web-3.7.2.tar.gz   --no-check-certificate
+```
 
-![image-20220702182402191](https://cdn.fengxianhub.top/resources-master/202207021824532.png)
+**安装gweb**
+
+还是一样，照着做，就行，注意一下上面提到的问题，如果被拦截，就加--no-check-certificate  
+
+```shell
+[root@localhost x86_64]# yum install httpd httpd-devel php -y
+[root@localhost x86_64]# yum -y install rsync
+[root@localhost x86_64]# cd /tools/
+[root@localhost tools]# wget https://sourceforge.net/projects/ganglia/files/ganglia-web/3.7.2/ganglia-web-3.7.2.tar.gz --no-check-certificate
+[root@localhost tools]# tar zxvf /tools/ganglia-web-3.7.2.tar.gz -C /var/www/html/
+#这个目录很重要，记下来，等会儿要用
+[root@localhost tools]# cd /var/www/html/
+#重命名
+[root@localhost html]# mv ganglia-web-3.7.2 ganglia
+[root@localhost html]# cd /var/www/html/ganglia/
+#创建了一个用户
+[root@localhost ganglia]# useradd -M -s /sbin/nologin www-data
+#执行这步，会创建相关的目录
+[root@localhost ganglia]# make install  
+#修改权限
+[root@localhost ganglia]# chown apache:apache -R /var/lib/ganglia-web/
+```
+
+**修改启动脚本**
+
+就是修改一个文件，ganglia默认的位置不是下述的样子，因为我们是编译安装，位置是自己定的
+
+```shell
+[root@localhost ganglia]# vi /etc/init.d/gmetad
+GMETAD=/usr/sbin/gmetad  #这句话可以自行更改gmetad的命令，当然也能向我们前面做了软连接
+start() {
+    [ -f /usr/local/ganglia/etc/gmetad.conf  ] || exit 6  #这里将配置文件改成现在的位置，不然启动没反应
+```
+
+![image-20220626100800222](https://my-typroa-photos.oss-cn-guangzhou.aliyuncs.com/images/image-20220626100800222.png)
+
+**修改gmetad配置文件**
+
+因为我们这里就先让它当一个单纯的gweb节点和gmetad节点，不给其启动gmond服务，假设它没有再哪个多播集群里
+
+```shell
+[root@localhost ganglia]# vi /usr/local/ganglia/etc/gmetad.conf
+#这个是文件里面的东西，IP是自己的，得换，因为我要装在两个节点上，所以我的写两个，根据自己的情况来，没法统一  #这也是我们以后经常修改的地方，""里面是组名称  后面是去哪个IP的那个端口去采集gmond数据，我这里做了hosts映射，可以用主机名代替ip地址
+data_source "my cluster" hadoop3:8649
+
+#修改web界面时间
+$ cd /var/www/html/ganglia
+$ vim header.php
+    <?php
+    session_start();
+    ini_set('date.timezone','PRC');  #加入这条
+```
+
+![image-20220626101405564](https://my-typroa-photos.oss-cn-guangzhou.aliyuncs.com/images/image-20220626101405564.png)
+
+**修改配置文件/etc/httpd/conf.d/ganglia.conf**
+
+这里就需要步骤5中记住的那个东西了--/var/www/html/
+
+```shell
+cd  /etc/httpd/conf.d/
+# 看看有没有ganglia.conf，如果没装错，就应该有
+ll  
+#没有vim 的就用vi
+vim /etc/httpd/conf.d/ganglia.conf
+```
+
+添加如下配置：
+
+```shell
+# Ganglia monitoring system php web frontend
+Alias /ganglia /var/www/html/ganglia
+<Location /ganglia>
+  Order deny,allow
+  Deny from all
+  Allow from all
+  # Allow from 127.0.0.1
+  # Allow from ::1
+  # Allow from .example.com
+</Location>
+```
+
+![image-20220626102123055](https://my-typroa-photos.oss-cn-guangzhou.aliyuncs.com/images/image-20220626102123055.png)
+
+### 客户端安装（gmond）
+
+客户端只需要安装gmond即可
+
+```shell
+$ yum -y install apr-devel apr-util check-devel cairo-devel pango-devel libxml2-devel rpm-build glib2-devel dbus-devel freetype-devel fontconfig-devel gcc gcc-c++ expat-devel python-devel libXrender-devel
+
+$ yum install -y libart_lgpl-devel pcre-devel libtool
+$ mkdir /usr/local/tools
+$ cd /usr/local/tools
+$ wget http://www.mirrorservice.org/sites/download.savannah.gnu.org/releases/confuse/confuse-2.7.tar.gz
+$ tar zxvf confuse-2.7.tar.gz
+$ cd confuse-2.7
+$ ./configure  --prefix=/usr/local/ganglia-tools/confuse CFLAGS=-fPIC --disable-nls --libdir=/usr/local/ganglia-tools/confuse/lib64
+$ make && make install
+$ cd /usr/local/tools
+$ wget https://sourceforge.net/projects/ganglia/files/ganglia%20monitoring%20core/3.7.2/ganglia-3.7.2.tar.gz
+$ tar zxvf ganglia-3.7.2.tar.gz
+$ cd ganglia-3.7.2
+$ ./configure --prefix=/usr/local/ganglia --enable-gexec --enable-status  --with-libconfuse=/usr/local/ganglia-tools/confuse
+$ make && make install
+$ /usr/local/ganglia/sbin/gmond -t >/usr/local/ganglia/etc/gmond.conf
+$ cp /tools/ganglia-3.7.2/gmond/gmond.init /etc/init.d/gmond
+$ mkdir -p /usr/local/ganglia/var/run
+$ /etc/init.d/gmond restart
+```
+
+**启动**
+
+```shell
+#服务端启动
+$ systemctl restart httpd
+$ systemctl start gmetad 
+$ systemctl start gmond
+
+#客户端启动
+$ systemctl start gmond
+```
+
+**flume运行命令**
+
+需要指定flume要监听的日志
+
+```shell
+$ nohup flume-ng agent --conf conf/ --conf-file /usr/local/flume/jobs/cloudDiskLog/cloudDiskLogs-hdfs.conf --name d2 -Dflume.monitoring.type=ganglia -Dflume.monitoring.hosts=172.168.0.10:8649 &
+```
+
+## 7. azkaban安装
+
+将Azkaban Web服务器、Azkaban执行服务器、Azkaban的sql执行脚本及MySQL安装包拷贝到`master`虚拟机/user/local/azkaban目录下
+
+**安装**
+
+```shell
+#解压路径下的安装包
+$ tar -xvf azkaban-executor-server-2.5.0.tar.gz
+$ tar -xvf azkaban-sql-script-2.5.0.tar.gz
+$ tar -xvf azkaban-web-server-2.5.0.tar.gz
+
+#对解压后的文件改名
+$ mv azkaban-web-2.5.0/ web
+$ mv azkaban-executor-2.5.0/ executor
+
+#azkaban脚本导入 进入mysql，创建azkaban数据库，并将解压的脚本导入到azkaban数据库
+$ mysql -uroot -p
+$ mysql> create database azkaban;
+$ mysql> use azkaban;
+$ mysql> source /usr/local/azkaban/azkaban-2.5.0/create-all-sql-2.5.0.sql
+
+```
+
+**生成密钥库**
+
+- Keytool是java数据证书的管理工具，使用户能够管理自己的公/私钥对及相关证书。
+- -keystore 指定密钥库的名称及位置(产生的各类信息将不在.keystore文件中)
+- -genkey 在用户主目录中创建一个默认文件".keystore"
+- -alias 对我们生成的.keystore 进行指认别名；如果没有默认是mykey
+- -keyalg 指定密钥的算法 RSA/DSA 默认是DSA
+
+```shell
+#生成 keystore的密码及相应信息的密钥库
+$ keytool -keystore keystore -alias jetty -genkey -keyalg RSA
+What is your first and last name?
+  [Unknown]:  zhulin
+What is the name of your organizational unit?
+  [Unknown]:  hnit
+What is the name of your organization?
+  [Unknown]:  hnit
+What is the name of your City or Locality?
+  [Unknown]:  hy
+What is the name of your State or Province?
+  [Unknown]:  ch
+What is the two-letter country code for this unit?
+  [Unknown]:  ch
+Is CN=zhulin, OU=hnit, O=hnit, L=hy, ST=ch, C=ch correct?
+  [no]:  y
+Enter key password for <jetty>
+    (RETURN if same as keystore password):  
+Re-enter new password:
+#注意：
+#密钥库的密码至少必须6个字符，可以是纯数字或者字母或者数字和字母的组合等等
+#密钥库的密码最好和<jetty> 的密钥相同，方便记忆
+
+#将keystore 拷贝到 azkaban web服务器根目录中
+$ mv keystore web/
+```
+
+**时间同步配置**
+
+```shell
+#先配置好服务器节点上的时区
+#如果在/usr/share/zoneinfo/这个目录下不存在时区配置文件Asia/Shanghai，就要用 tzselect 生成。
+$ tzselect
+Please identify a location so that time zone rules can be set correctly.
+Please select a continent or ocean.
+ 1) Africa
+ 2) Americas
+ 3) Antarctica
+ 4) Arctic Ocean
+ 5) Asia
+ 6) Atlantic Ocean
+ 7) Australia
+ 8) Europe
+ 9) Indian Ocean
+10) Pacific Ocean
+11) none - I want to specify the time zone using the Posix TZ format.
+#? 5
+Please select a country.
+ 1) Afghanistan          18) Israel            35) Palestine
+ 2) Armenia          19) Japan            36) Philippines
+ 3) Azerbaijan          20) Jordan            37) Qatar
+ 4) Bahrain          21) Kazakhstan        38) Russia
+ 5) Bangladesh          22) Korea (North)        39) Saudi Arabia
+ 6) Bhutan          23) Korea (South)        40) Singapore
+ 7) Brunei          24) Kuwait            41) Sri Lanka
+ 8) Cambodia          25) Kyrgyzstan        42) Syria
+ 9) China          26) Laos            43) Taiwan
+10) Cyprus          27) Lebanon            44) Tajikistan
+11) East Timor          28) Macau            45) Thailand
+12) Georgia          29) Malaysia            46) Turkmenistan
+13) Hong Kong          30) Mongolia            47) United Arab Emirates
+14) India          31) Myanmar (Burma)        48) Uzbekistan
+15) Indonesia          32) Nepal            49) Vietnam
+16) Iran          33) Oman            50) Yemen
+17) Iraq          34) Pakistan
+#? 9
+Please select one of the following time zone regions.
+1) Beijing Time
+2) Xinjiang Time
+#? 1
+
+The following information has been given:
+
+    China
+    Beijing Time
+
+Therefore TZ='Asia/Shanghai' will be used.
+Local time is now:    Thu Jun 30 09:27:16 CST 2022.
+Universal Time is now:    Thu Jun 30 01:27:16 UTC 2022.
+Is the above information OK?
+1) Yes
+2) No
+#? 1
+
+You can make this change permanent for yourself by appending the line
+    TZ='Asia/Shanghai'; export TZ
+to the file '.profile' in your home directory; then log out and log in again.
+
+Here is that TZ value again, this time on standard output so that you
+can use the /usr/bin/tzselect command in shell scripts:
+Asia/Shanghai
+
+#拷贝该时区文件，覆盖系统本地时区配置
+$ cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+#集群时间同步（同时发给三个窗口）
+$ sudo date -s '2018-10-18 16:39:30'
+
+```
+
+**配置文件**
+
+**Web服务器配置**
+
+```shell
+#进入azkaban web服务器安装目录 conf目录，打开azkaban.properties文件
+$ cd /usr/local/azbakan/web/conf/
+$ vim azkaban.properties
+
+#按照如下配置修改azkaban.properties文件。
+    ##Azkaban Personalization Settings
+    ##服务器UI名称,用于服务器上方显示的名字
+    azkaban.name=Test
+    ##描述
+    azkaban.label=My Local Azkaban
+    ##UI颜色
+    azkaban.color=#FF3601
+    azkaban.default.servlet.path=/index
+    ##默认web server存放web文件的目录
+    web.resource.dir=/usr/local/azkaban/web/web/
+    ##默认时区,已改为亚洲/上海 默认为美国
+    default.timezone.id=Asia/Shanghai
+
+    ##Azkaban UserManager class
+    user.manager.class=azkaban.user.XmlUserManager
+    ##用户权限管理默认类（绝对路径）
+    user.manager.xml.file=/usr/local/azkaban/web/conf/azkaban-users.xml
+
+    ##Loader for projects
+    ##global配置文件所在位置（绝对路径）
+    executor.global.properties=/usr/local/azkaban/executor/conf/global.properties
+    azkaban.project.dir=projects
+
+    ##数据库类型
+    database.type=mysql
+    ##端口号
+    mysql.port=3306
+    ##数据库连接IP
+    mysql.host=node1
+    ##数据库实例名
+    mysql.database=azkaban?useSSL=false&serverTimezone=UTC&characterEncoding=utf-8
+    ##数据库用户名
+    mysql.user=root
+    ##数据库密码
+    mysql.password=aaaa
+    ##最大连接数
+    mysql.numconnections=100
+
+    ## Velocity dev mode
+    velocity.dev.mode=false
+
+    # Azkaban Jetty server properties.
+    # Jetty服务器属性.
+    #最大线程数
+    jetty.maxThreads=25
+    #Jetty SSL端口
+    jetty.ssl.port=8443
+    #Jetty端口
+    jetty.port=8081
+    #SSL文件名（绝对路径）
+    jetty.keystore=/usr/local/azkaban/web/keystore
+    #SSL文件密码
+    jetty.password=aaaaaa
+    #Jetty主密码与keystore文件相同
+    jetty.keypassword=aaaaaa
+    #SSL文件名（绝对路径）
+    jetty.truststore=/usr/local/azkaban/web/keystore
+    #SSL文件密码
+    jetty.trustpassword=aaaaaa
+
+    # Azkaban Executor settings
+    executor.port=12321
+
+    # mail settings
+    mail.sender=
+    mail.host=
+    job.failure.email=
+    job.success.email=
+
+    lockdown.create.projects=false
+
+    cache.directory=cache
+    
+#在azkaban web服务器安装目录 conf目录，按照如下配置修改azkaban-users.xml 文件，增加管理员用户,配置两种角色 admin, metrics。 
+$  vim azkaban-users.xml
+<azkaban-users>
+    <user username="azkaban" password="azkaban" roles="admin" groups="azkaban" />
+    <user username="metrics" password="metrics" roles="metrics"/>
+    <user username="admin" password="admin" roles="admin,metrics" />
+    <role name="admin" permissions="ADMIN" />
+    <role name="metrics" permissions="METRICS"/>
+</azkaban-users>
+
+```
+
+**执行服务器executor配置**
+
+```shell
+#进入执行服务器executor安装目录conf，打开azkaban.properties
+$ cd /usr/local/azkaban/executor/conf
+$ vim azkaban.properties
+
+#按照如下配置修改azkaban.properties文件。
+    #Azkaban
+    #时区
+    default.timezone.id=Asia/Shanghai
+
+    # Azkaban JobTypes Plugins
+    #jobtype 插件所在位置
+    azkaban.jobtype.plugin.dir=plugins/jobtypes
+
+    #Loader for projects
+    executor.global.properties=/usr/local/azkaban/executor/conf/global.properties
+    azkaban.project.dir=projects
+
+    database.type=mysql
+    mysql.port=3306
+    mysql.host=node1
+    mysql.database=azkaban?useSSL=false&serverTimezone=UTC&characterEncoding=utf-8
+    mysql.user=root
+    mysql.password=aa
+    mysql.numconnections=100
+
+    # Azkaban Executor settings
+    #最大线程数
+    executor.maxThreads=50
+    #端口号(如修改,请与web服务中一致)
+    executor.port=12321
+    #线程数
+    executor.flow.threads=30
+```
+
+**启动executor服务器**
+
+```shell
+#在executor服务器目录下执行启动命令
+$ cd /usr/local/azkaban/executor/bin
+$ azkaban-executor-start.sh
+#配置环境变量
+$ vim /etc/profile
+    #Azkaban
+    export AZKABAN_EXECUTRO_HOME=/usr/local/azkaban/executor
+    export PATH=$PATH:$AZKABAN_EXECUTRO_HOME/bin
+
+#启动/关闭命令
+$ azkaban-executor-start.sh
+$ azkaban-executor-shutdown.sh
+```
+
+**启动web服务器**
+
+```shell
+#在azkaban web服务器目录下执行启动命令
+$ azkaban-web-start.sh 
+$ cd /usr/local/azkaban/web/bin
+$ azkaban-web-start.sh
+#配置环境变量
+$ vim /etc/profile
+    #Azkaban
+    export AZKABAN_WEB_HOME=/usr/local/azkaban/web
+    export PATH=$PATH:$AZKABAN_WEB_HOME/bin
+```
+
+## 8. 其他组件安装
+
+这里是笔者做的一个Hadoop云盘的项目，设计到其他一些组件（mysql、nginx、redis）的安装，先贴一张拓扑图
+
+![image-20220707171129116](https://cdn.fengxianhub.top/resources-master/202207071711541.png)
+
+### 8.1 Mysql安装
+
+**编译安装：**
+
+```shell
+#下载安装包，将压缩包上传至 /opt/mysql，并解压
+$ https://dev.mysql.com/downloads/file/?id=511379
+$ tar -xf mysql-8.0.29-1.el7.x86_64.rpm-bundle.tar
+
+#添加用户组
+$ groupadd mysql
+#添加用户
+$ useradd -g mysql mysql
+#查看用户信息。
+$ id mysql
+
+#卸载MariaDB
+$ rpm -qa | grep mariadb #查询是否有该软件
+#如果有，就卸载：rpm -e mariadb-libs-这里是你的版本，如果不能卸载（或报错）则采用强制卸载：rpm -e --nodeps mariadb-libs-这里是你的版本
+
+#安装Mysql
+$ rpm -ivh *.rpm
+#安装过程要按照如下顺序（必须）进行：
+    mysql-community-common-8.0.29-1.el7.x86_64.rpm
+    mysql-community-client-plugins-8.0.29-1.el7.x86_64.rpm
+    mysql-community-libs-8.0.29-1.el7.x86_64.rpm             --（依赖于common）
+    mysql-community-client-8.0.29-1.el7.x86_64.rpm          --（依赖于libs）
+    mysql-community-icu-data-files-8.0.29-1.el7.x86_64.rpm
+    mysql-community-server-8.0.29-1.el7.x86_64.rpm         --（依赖于client、common）
+    按照以上顺序进行一个个的安装，脚本如下：
+    rpm -ivh mysql-community-server-5.7.16-1.el7.x86_64.rpm 
+#期间缺少啥组件，安装啥
+#libaio.so.1()(64bit) is needed by mysql-community-embedded-compat-8.0.29-1.el7.x86_64
+$ yum -y install libaio
+#libnuma.so.1()(64bit) is needed by mysql-community-embedded-compat-8.0.29-1.el7.x86_64
+$ yum -y install numactl
+
+#mysql安装软件在/usr/share/mysql目录下
+#Mysql数据库创建在/var/lib/mysql目录下
+
+#进入到mysql这个目录中，更改一下权限
+$ cd /usr/share/mysql/
+$ chown -R mysql:mysql .
+
+#启动mysql
+$ service mysqld restart
+#登录
+    -mysql
+    -报错：ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)  需添加权限
+    -在/ect/my.cnf 的最后面加上一行：skip-grant-tables
+$ service mysqld restart
+
+#初始化数据库
+$ sudo mysqld --initialize --user=mysql
+#查看临时生成的root用户密码
+$ sudo cat /var/log/mysqld.log
+#修改密码
+$ mysql> ALTER USER USER() IDENTIFIED BY 'Admin2022!';
+#查看当前密码规则
+$ mysql> SHOW VARIABLES LIKE 'validate_password%';
+#调整密码规则
+$ mysql> set global validate_password.policy=0;
+$ mysql>  set global validate_password.length=1;
+#修改简单密码
+$ mysql> ALTER USER USER() IDENTIFIED BY 'aaaa';
+#登录
+$ mysql> mysql -uroot -p
+
+#修改配置，进行远程连接
+#登录
+$ mysql> mysql -uroot -p
+#进入MySQL库
+$ mysql> use mysql;
+#查询user表
+$ mysql> select user, host from user;
+#修改user表，把Host表内容修改为%
+$ mysql> update user set host="%" where user="root";
+```
+
+**docker安装**
+
+```shell
+docker run  -p 3308:3306 --name mysql -e MYSQL_ROOT_PASSWORD=你的密码 -d  mysql:8 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+```
+
+### 8.2 nginx安装
+
+```shell
+#安装相关依赖包
+$ sudo yum -y install openssl openssl-devel pcre pcre-devel zlib zlib-devel gcc gcc-c++
+
+#将nginx文件上传到 /tmp/nginx
+Ngnix下载地址：http://nginx.org/en/download.html
+
+#进入nginx目录下，执行以下命令
+$ ./configure   --prefix=/usr/local/nginx
+$ make && make install
+
+#启动nginx
+#在/usr/local/nginx/sbin目录下执行  
+$ ./nginx
+#查看启动情况
+$ ps -ef |grep nginx
+```
+
+这里贴一个我的nginx配置（nginx.conf），解决了跨域问题
+
+```shell
+
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
 
 
+events {
+    worker_connections  1024;
+}
 
-![image-20220702182449705](https://cdn.fengxianhub.top/resources-master/202207021824838.png)
+ 
 
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+	client_max_body_size 100m;
+	proxy_hide_header X-Frame-Options;
+    add_header X-Frame-Options ALLOWALL;
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
 
+    #access_log  logs/access.log  main;
 
-- 
-- 
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+	 upstream nodeserver{
+		  server hadoop1001:8080 weight=8;
+		  server hadoop1002:8080 weight=8;
+		  server hadoop1003:8080 weight=8;
+		  server hadoop1004:8080 weight=8;
+		}
+		
+	
+
+    server {
+        listen       80;
+        client_max_body_size 100M;
+		server_name localhost; #证书绑定的域名。
+		#允许跨域请求的域，* 代表所有
+		#add_header 'Access-Control-Allow-Origin' *;
+		#允许带上cookie请求
+		add_header 'Access-Control-Allow-Credentials' 'true';
+		#允许请求的方法，比如 GET/POST/PUT/DELETE
+		add_header 'Access-Control-Allow-Methods' *;
+		#允许请求的header
+		add_header 'Access-Control-Allow-Headers' *;
+        #charset koi8-r;
+		autoindex on; #Nginx默认是不允许列出整个目录       
+		charset utf-8; #设置字符集
+
+        #access_log  logs/host.access.log  main;
+
+        location /api/{
+			#add_header access-control-allow-origin *;
+			#proxy_set_header X-Forwarded-Host $host:$server_port;
+			#proxy_set_header  X-Real-IP  $remote_addr;
+			#proxy_set_header    Origin        $host:$server_port;
+			#proxy_set_header    Referer       $host:$server_port;
+			#rewrite ^/api/(.*)$ /$1 break;
+			
+			proxy_pass http://nodeserver;
+        }
+		
+		
+		
+		
+		   location ~ .*\.(htm|html|gif|jpg|jpeg|png|bmp|swf|ioc|rar|zip|txt)|(js|css)$
+	    {
+		    root html;  		    
+			expires 1h;  # h 、d    #用户缓存设置，用户在1小时内下次请求都只会访问到浏览中的缓存
+	    }
+		location /nmNode{
+                add_header Content-Security-Policy "default-src 'self' http://hadoop1 'unsafe-inline' 'unsafe-eval' blob: data: ;";
+                add_header X-Xss-Protection "1;mode=block";
+                add_header X-Content-Type-Options nosniff;
+                proxy_pass http://hadoop1:50070/dfshealth.html#tab-overview;
+        }
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+	# https放在另一个文件里面了
+    include conf.d/*.conf;
+}
+```
+
+`ssl.conf`配置https，需要下载域名的证书
+
+```shell
+
+#以下属性中，以ssl开头的属性表示与证书配置有关。
+server {
+    listen 443;
+	client_max_body_size 100M;
+    ssl on;
+    #配置HTTPS的默认访问端口为443。
+    #如果未在此处配置HTTPS的默认访问端口，可能会造成Nginx无法启动。
+    #如果您使用Nginx 1.15.0及以上版本，请使用listen 443 ssl代替listen 443和ssl on。
+    server_name hadoop.fengxianhub.top; #证书绑定的域名。
+    charset utf-8;
+    ssl_certificate cert/8047301_hadoop.fengxianhub.top.pem; #需要添加（这里是你的.pem文件地址）
+    ssl_certificate_key cert/8047301_hadoop.fengxianhub.top.key; #需要添加（这里是你的.key文件地址）
+    ssl_session_timeout 5m;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+    #表示使用的加密套件的类型。
+    ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3; #表示使用的TLS协议的类型。
+    ssl_prefer_server_ciphers on;
+
+	
+    
+    # 请求API
+    		location /api/{
+			#add_header access-control-allow-origin *;
+			#proxy_set_header X-Forwarded-Host $host:$server_port;
+			#proxy_set_header  X-Real-IP  $remote_addr;
+			#proxy_set_header    Origin        $host:$server_port;
+			#proxy_set_header    Referer       $host:$server_port;
+			#rewrite ^/api/(.*)$ /$1 break;
+			
+			proxy_pass http://nodeserver;
+        	}
+		
+		   location ~ .*\.(htm|html|gif|jpg|jpeg|png|bmp|swf|ioc|rar|zip|txt)|(js|css)$
+	    	{
+		    root html;  		    
+			expires 1h;  # h 、d    #用户缓存设置，用户在1小时内下次请求都只会访问到浏览中的缓存
+	    	}
+    		error_page 404 /404.html;
+    		error_page 500 502 503 504 /50x.html;
+}
+```
+
+### 8.3 redis安装
+
+ 其实上面的都是通过编译安装，为了熟悉linux的环境，如果用docker会很方便
+
+```shell
+docker run -p 6500:6379 --name redis -v /root/docker/redis/conf/redis.conf:/etc/redis/redis.conf  -v /root/docker/redis/data:/data -d redis redis-server /etc/redis/redis.conf --appendonly yes
+```
+
+参数解释：
 
 ```java
-auto ens33
-iface ens33 inet static
-address 192.168.2.150   # IP地址， 要根据自己网段下IP的使用设置，不能和别的IP相冲突
-netmask 255.255.255.0
-gateway 192.168.2.1   #网关，我的ip地址是15.150，所以这里的网关设置为15.1
-iface ens33  inet6 auto   #IPV6 这个可要可不要
+-p 6500:6379:把容器内的6500端口映射到宿主机6379端口
+-v /data/redis/redis.conf:/etc/redis/redis.conf：把宿主机配置好的redis.conf放到容器内的这个位置中
+-v /data/redis/data:/data：把redis持久化的数据在宿主机内显示，做数据备份
+redis-server /etc/redis/redis.conf：这个是关键配置，让redis不是无配置启动，而是按照这个redis.conf的配置启动
+–appendonly yes：redis启动后数据持久化
 ```
+
+## 9. 集群脚本
+
+TODO
 
 
 
