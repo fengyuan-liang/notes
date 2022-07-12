@@ -2,7 +2,10 @@
 
 完整拓扑图：
 
+![image-20220707171129116](https://cdn.fengxianhub.top/resources-master/202207071711541.png)
 
+【金山文档】 Hadoop云盘拓扑图（服务器已经退了，不用再访问了）
+https://kdocs.cn/l/cod7zXmDPz98
 
 首先你需要有四台虚拟机，也可以是四台云服务器（笔者的是四台云服务器），这里是完全分布式，不是HA集群，后面会修改拓扑
 

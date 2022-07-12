@@ -2,6 +2,10 @@
 
 ## 0. 项目介绍
 
+**介绍视频：**
+
+<iframe src="//player.bilibili.com/player.html?aid=343174582&bvid=BV1s94y1X7sN&cid=766646536&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="height:500px">
+
 **技术栈：**HDFS、Sqoop、Flume、Ganglia、Azkaban、Zookeeper、Redis、Nginx、Docker、Vue-Cli
 
 **实现功能：**使用 Hadoop 搭建 HA 集群实现网盘系统，前端采用 vue-cli，后端采用 SpringBoot。实现的功能有：用户上 传下载文件；通过 MapReduce 清洗、挖掘、分析用户数据并生成报表；通过 Ganglia 监控集群状态；使用 Azkaban 进行定时调度；使用 Java ForkJoin 框架搭建 RSS 高性能爬虫，通过布隆过滤器过滤重复信息
@@ -12,7 +16,13 @@
 2. 用户上传相同文件时会出现重复上传现象。通过布隆过滤器过滤相同文件，通过构建用户文档树映射用户路径 和真实路径，将相同文件移至共享文件区，用户上传和删除行为仅做逻辑实现，不做业务实现 
 3. 集群中数据清洗、挖掘、分析的 MR 任务过多，难以控制。通过引入 Azkaban 统一管理集群中的 Flume、Sqoop 和 MR 任务，并进行定时调度
 
+**贴一张集群拓扑图：**
 
+![image-20220707171129116](https://cdn.fengxianhub.top/resources-master/202207071711541.png)
+
+在线地址（租用的四台云服务器，已经退了，不用访问了）：
+
+ https://kdocs.cn/l/cod7zXmDPz98
 
 ## 1. 循环引用导致无意识的递归(java.lang.StackOverflowError)问题
 
