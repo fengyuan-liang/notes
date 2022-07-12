@@ -182,9 +182,11 @@ protected Class<?> loadClass(String name, boolean resolve)
 
 
 
->**类加载器是如何确定一个类在jvm中的唯一性的? 两个类来源于同一个Class文件，被同一个虚拟机加载,这两个类一定相等吗?**
+>**类加载器是如何确定一个类在jvm中的唯一性的? 两个类来源于同一个Class文件，被同一个虚拟机加载，这两个类一定相等吗?**
 
 通过魔术字来确定是不是class文件。被同一个JVM加载两个类不一定相等，在JVM规范中是这样定义的，两个类及其类加载器相同才能说这两个类相同
+
+**沙箱隔离，隔离多个用户的类文件，防止产生干扰**
 
 ```java
 ClassFile { // u4表示字节数
@@ -213,7 +215,7 @@ ClassFile { // u4表示字节数
 
 >**Tomcat的类加载器有哪些?**
 
-Tomcat的[类加载](https://so.csdn.net/so/search?q=类加载&spm=1001.2101.3001.7020)器在Java的类加载器上 新增了5个类加载器，3个基础类，每个web应用类加载器+jsp加载器
+Tomcat的[类加载](https://so.csdn.net/so/search?q=类加载&spm=1001.2101.3001.7020)器在Java的类加载器上 新增了5个类加载器，3个基础类，一个web应用类加载器 + 一个jsp加载器
 
 - commonClassLoader    
 - CatalinaClassLoader   

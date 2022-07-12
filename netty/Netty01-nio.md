@@ -98,12 +98,6 @@ end
 
 调用 selector 的 select() 会阻塞直到 channel 发生了读写就绪事件，这些事件发生，select 方法就会返回这些事件交给 thread 来处理
 
-
-
-
-
-
-
 ## 2. ByteBuffer
 
 有一普通文本文件 data.txt，内容为
