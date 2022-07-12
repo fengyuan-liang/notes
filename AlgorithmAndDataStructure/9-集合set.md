@@ -475,6 +475,37 @@ public class TreeSet<E> implements Set<E> {
 
 ```
 
+红黑树的代码就不贴出来了，上一篇博客里面有
+
+测试：
+
+```java
+public class TestTreeSet {
+    public static void main(String[] args) {
+        Set<Integer> treeSet = new TreeSet<>();
+        treeSet.add(10);
+        treeSet.add(12);
+        treeSet.add(10);
+        treeSet.add(13);
+        treeSet.add(13);
+        treeSet.traversal(new Set.Visitor<Integer>() {
+            @Override
+            public boolean visit(Integer element) {
+                System.out.println(element);
+                return false;
+            }
+        });
+    }
+}
+
+```
+
+```java
+10
+12
+13
+```
+
 
 
 
