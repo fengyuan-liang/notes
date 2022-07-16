@@ -148,3 +148,64 @@ public class MPAutoGenerator {
         </dependency>
 ```
 
+## 2. 最新版本(3.5.2)代码生成器
+
+```xml
+<!-- mybatis-plus -->
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus-boot-starter</artifactId>
+    <version>3.5.2</version>
+</dependency>
+
+<!-- 代码自动生成器依赖-->
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus-generator</artifactId>
+    <version>3.5.2</version>
+</dependency>
+<dependency>
+    <groupId>org.freemarker</groupId>
+    <artifactId>freemarker</artifactId>
+    <version>2.3.31</version>
+</dependency>
+
+```
+
+```java
+package com.hh.demo;
+
+import com.baomidou.mybatisplus.generator.FastAutoGenerator;
+import com.baomidou.mybatisplus.generator.config.OutputFile;
+import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+
+import java.util.Collections;
+//代码自动生成器
+public class CodeGenerator {
+    public static void main(String[] args) {
+        FastAutoGenerator.create("jdbc:mysql://localhost:3306/library?&characterEncoding=utf-8&userSSL=false", "root", "123456")
+                         .globalConfig(builder -> {//全局配置
+                            builder.author("吉吉国王") // 设置作者
+                            //.enableSwagger() // 开启 swagger 模式
+                                    .fileOverride() // 覆盖已生成文件
+                                    .outputDir("D://demo-library"); // 指定输出目录
+                        })
+                        .packageConfig(builder -> {//包配置
+                            builder.parent("com.hh") // 设置父包名
+                                    .moduleName("demo") // 设置父包模块名
+                                    .pathInfo(Collections.singletonMap(OutputFile.xml, "D://demo-library"));// 设置mapperXml生成路径
+
+                        })
+                        .strategyConfig(builder -> {//策略配置
+                            builder.addInclude("iot1002_book","iot1002_bookinfo","iot1002_exceptionmessage","iot1002_smokesensor","iot1002_user") // 设置需要生成的表名
+                                    .addTablePrefix("iot1002_"); // 设置过滤表前缀
+                        })
+                        .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker 引擎模板，默认的是Velocity引擎模板
+                        .execute();
+
+    }
+}
+
+
+```
+

@@ -109,20 +109,14 @@ ab -c 100 -n 2000 -k
 - 后台启动redis
 
   ```java
+   redis-server /etc/redis.conf &
   ```
-
   
-
-
-
-
 
 关闭 ***redis***
 
 - ***kill*** 进程
 - 命令 ***shutdown***
-
-
 
 ## 3. Redis value的五大基本数据类型
 
@@ -392,6 +386,33 @@ Java 中 HashSet 的内部实现使用的是 `HashMap`，只不过所有的 valu
 - ***hash***，***hash*** 的作用就是关联元素 ***value*** 和权重 ***score***，保障元素 ***value*** 的唯一性，可以通过元素 ***value*** 找到相应的 ***score*** 值
 - 跳跃表，跳跃表的目的在于给元素 ***value*** 排序，根据 ***score*** 的范围获取元素列表
 
+**跳跃表**
+
+简介
+
+有序集合在生活中比较常见，例如根据成绩对学生排名，根据得分对玩家排名等。对于有序集合的底层实现，可以用数组、平衡树、链表等。数组不便元素的插入、删除；平衡树或红黑树虽然效率高但结构复杂；链表查询需要遍历所有效率低。Redis 采用的是跳跃表，跳跃表效率堪比红黑树，实现远比红黑树简单。
+
+实例
+
+对比有序链表和跳跃表，从链表中查询出 51：
+
+>有序链表
+
+![image-20220716085414884](https://cdn.fengxianhub.top/resources-master/202207160855961.png)
+
+要查找值为 51 的元素，需要从第一个元素开始依次查找、比较才能找到。共需要 6 次比较。
+
+>跳跃表
+
+![image-20220716085414884](https://cdn.fengxianhub.top/resources-master/202207160854432.png)
+
+- 从第 2 层开始，1 节点比 51 节点小，向后比较
+- 21 节点比 51 节点小，继续向后比较，后面就是 NULL 了，所以从 21 节点向下到第 1 层
+- 在第 1 层，41 节点比 51 节点小，继续向后，61 节点比 51 节点大，所以从 41 向下
+- 在第 0 层，51 节点为要查找的节点，节点被找到，共查找 4 次
+
+**从此可以看出跳跃表比有序链表效率要高**
+
 <hr>
 
 ## 4.Redis6新数据类型
@@ -408,7 +429,7 @@ Redis 提供了 Bitmaps 这个“数据类型”可以实现对位的操作：
 
 （1） Bitmaps 本身不是一种数据类型， 实际上它就是字符串（key-value） ， 但是它可以对字符串的位进行操作。 
 
-（2） Bitmaps 单独提供了一套命令， 所以在 Redis 中使用Bitmaps 和使用字 符串的方法不太相同。 可以把 Bitmaps 想象成一个以位为单位的数组， 数组的每个单元只能存储 0 和 1， 数组的下标在 Bitmaps 中叫做偏移量
+（2） Bitmaps 单独提供了一套命令， 所以在 Redis 中使用Bitmaps 和使用字符串的方法不太相同。 可以把 Bitmaps 想象成一个以位为单位的数组， 数组的每个单元只能存储 0 和 1， 数组的下标在 Bitmaps 中叫做偏移量
 
 ![image-20220208124729044](https://cdn.fengxianhub.top/resources-master/202202081247112.png)
 
@@ -419,23 +440,69 @@ Redis 提供了 Bitmaps 这个“数据类型”可以实现对位的操作：
 - `bitcount[start end]` 统计字符串从 start 字节到 end 字节比特值为 1 的数量
 - `bitop and(or/not/xor)  [key…]`，bitop 是一个复合操作， 它可以做多个 Bitmaps 的 and（交集） 、 or（并集） 、 not （非） 、 xor（异或） 操作并将结果保存在 destkey
 
+>Bitmaps 与 set 对比
+
+假设网站有 1 亿用户， 每天独立访问的用户有 5 千万， 如果每天用集合类型和 Bitmaps 分别存储活跃用户可以得到表：
+
+```java
+# set 和 Bitmaps 存储一天活跃用户对比
+数据类型	每个用户 id 占用空间	需要存储的用户量	全部内存量
+集合	      64 位	              50000000	        64 位 * 50000000 = 400MB
+Bitmaps	   1 位	               100000000	     1 位 * 100000000 = 12.5MB
+```
+
+很明显， 这种情况下使用 Bitmaps 能节省很多的内存空间， 尤其是随着时间推移节省的内存还是非常可观的。
+
+```java
+# set 和 Bitmaps 存储独立用户空间对比
+数据类型	一天	    一个月	    一年
+集合	     400MB	   12GB	    144GB
+Bitmaps	  12.5MB	375MB	  4.5GB
+```
+
+但 Bitmaps 并不是万金油， 假如该网站每天的独立访问用户很少， 例如只有 10 万（大量的僵尸用户） ， 那么两者的对比如下表所示， 很显然， 这时候使用 Bitmaps 就不太合适了， 因为基本上大部分位都是 0
+
+```java
+# set 和 Bitmaps 存储一天活跃用户对比（用户比较少）
+数据类型	每个 userid 占用空间	     需要存储的用户量	    全部内存量
+集合	     64 位	                  100000	          64 位 * 100000 = 800KB
+Bitmaps	  1 位	                   100000000	       1 位 * 100000000 = 12.5MBa
+```
+
+
+
 ### 4.2 HyperLogLog
 
-Redis HyperLogLog 是用来做基数统计的算法，HyperLogLog 的优点是，在输 入元素的数量或者体积非常非常大时，计算基数所需的空间总是固定的、并且是很小 的。
+Redis HyperLogLog 是用来做基数统计的算法，HyperLogLog 的优点是，在输入元素的数量或者体积非常非常大时，计算基数所需的空间总是固定的、并且是很小的。
+
+在工作当中，我们经常会遇到与统计相关的功能需求，比如**统计网站 PV**（PageView 页面访问量），可以使用 Redis 的 `incr、incrby` 轻松实现。但像 UV（UniqueVisitor 独立访客）、独立 IP 数、搜索记录数等需要去重和计数的问题如何解决？这种求集合中不重复元素个数的问题称为基数问题。
+
+解决基数问题有很多种方案：
+
+- 数据存储在 MySQL 表中，使用 distinct count 计算不重复个数。
+- 使用 Redis 提供的 hash、set、bitmaps 等数据结构来处理。
+
+以上的方案结果精确，但随着数据不断增加，导致占用空间越来越大，对于非常大的数据集是不切实际的。能否能够降低一定的精度来平衡存储空间？Redis 推出了 HyperLogLog。
+
+- Redis HyperLogLog 是用来做基数统计的算法，HyperLogLog 的优点是：**在输入元素的数量或者体积非常非常大时，计算基数所需的空间总是固定的、并且是很小的。**
+- 在 Redis 里面，每个 HyperLogLog 键只需要花费 12 KB 内存，就可以计算接近 2^64 个不同元素的基数。这和计算基数时，元素越多耗费内存就越多的集合形成鲜明对比。
+- 但是，因为 HyperLogLog 只会根据输入元素来计算基数，而不会储存输入元素本身，所以 HyperLogLog 不能像集合那样，返回输入的各个元素。
+
+>什么是基数？
+
+比如数据集 {1, 3, 5, 7, 5, 7, 8}，那么这个数据集的基数集为 {1, 3, 5 ,7, 8}，基数个数 (不重复元素) 为 5。 基数估计就是在误差可接受的范围内，快速计算基数。
 
 ### 4.3 Geospatial
 
-Redis 3.2 中增加了对 GEO 类型的支持。GEO，Geographic，地理信息的缩写。 该类型，就是元素的 2 维坐标，在地图上就是经纬度。redis 基于该类型，提供了经纬 度设置，查询，范围查询，距离查询，经纬度 Hash 等常见操作
+Redis 3.2 中增加了对 GEO 类型的支持。GEO，Geographic，地理信息的缩写。 该类型，就是元素的 2 维坐标，在地图上就是经纬度。redis 基于该类型，提供了经纬度设置，查询，范围查询，距离查询，经纬度 Hash 等常见操作
+
+
 
 ## 5. Redis的发布与订阅
-
-
 
 ***Redis*** 发布订阅（ ***pub/sub*** ）是一种消息通信模式：发送者（ ***pub*** ）发送消息，订阅者（ ***sub*** ）接收消息。
 
 ***Redis*** 客户端可以订阅任意数量的频道。
-
-
 
 1. ​	客户端可以订阅频道
 
@@ -445,7 +512,7 @@ Redis 3.2 中增加了对 GEO 类型的支持。GEO，Geographic，地理信息�
 
 2. 当给这个频道发布消息后，消息就会发送给订阅的客户端
 
-<img src="https://gitee.com/tsuiraku/typora/raw/master/img/截屏2021-10-22 14.21.40.png" style="zoom:50%;" />
+![image-20220716090939025](https://cdn.fengxianhub.top/resources-master/202207160909123.png)
 
 ```css
 subscribe channel # 订阅频道
@@ -497,7 +564,199 @@ spring:
         min-idle: 0
 ```
 
-### 6.3 添加配置文件
+
+
+## 7. Redis 事务、锁机制秒杀
+
+### 7.1 Redis 事务定义
+
+Redis 事务是一个单独的隔离操作：事务中的所有命令都会序列化、按顺序地执行。事务在执行的过程中，不会被其他客户端发送来的命令请求所打断。
+
+Redis 事务的主要作用就是**串联多个命令**防止别的命令插队。
+
+### 7.2 Multi、Exec、discard
+
+Redis 事务中有 Multi、Exec 和 discard 三个指令，在 Redis 中，**从输入 Multi 命令开始，输入的命令都会依次进入命令队列中，但不会执行，直到输入 Exec 后，Redis 会将之前的命令队列中的命令依次执行**。而组队的过程中可以通过 discard 来放弃组队
+
+
+![image-20220716091014569](https://cdn.fengxianhub.top/resources-master/202207160910704.png)
+
+>案例说明
+
+**组队成功，提交成功**
+
+<img src="https://cdn.fengxianhub.top/resources-master/202207160959447.png" alt="image-20220716095904330" style="zoom: 50%;" />
+
+**组队阶段报错，提交失败**
+
+<img src="https://cdn.fengxianhub.top/resources-master/202207161000980.png" alt="img" style="zoom:50%;" />
+
+**组队成功，提交有成功有失败情况**
+
+<img src="https://cdn.fengxianhub.top/resources-master/202207161006707.png" alt="image-20220716100608556" style="zoom: 33%;" />
+
+### 7.3 事务的错误处理
+
+组队中某个命令出现了报告错误，执行时整个的所有队列都会被取消
+
+![img](https://cdn.fengxianhub.top/resources-master/202207161007387.png)
+
+如果执行阶段某个命令报出了错误，则只有报错的命令不会被执行，而其他的命令都会执行，不会回滚
+
+![img](https://cdn.fengxianhub.top/resources-master/202207161010635.png)
+
+### 7.4 事务冲突解决措施
+
+栗子：
+
+- 一个请求想给金额减 8000
+
+- 一个请求想给金额减 5000
+
+- 一个请求想给金额减 1000
+
+最终我们可以发现，总共金额是 10000，如果请求全部执行，那最后的金额变为 - 4000，很明显不合理。
+
+![img](https://cdn.fengxianhub.top/resources-master/202207161016037.png)
+
+>悲观锁解决
+>
+>悲观锁 (Pessimistic Lock)，顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会 block 直到它拿到锁。传统的关系型数据库里边就用到了很多这种锁机制，比如行锁，表锁等，读锁，写锁等，都是在做操作之前先上锁
+>
+
+![img](https://cdn.fengxianhub.top/resources-master/202207161016162.png)
+
+>乐观锁
+>
+>乐观锁 (Optimistic Lock)，顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号等机制。乐观锁适用于多读的应用类型，这样可以提高吞吐量。Redis 就是利用这种 check-and-set 机制实现事务的
+>
+
+![image-20220716102528834](https://cdn.fengxianhub.top/resources-master/202207161025988.png)
+
+
+
+>WATCH / unwatch
+>
+>在执行 multi 之前，先执行 watch key1 [key2]，可以监视一个 (或多个) key ，如果在事务执行之前这个 (或这些) key 被其他命令所改动，那么事务将被打断
+>
+>unwatch，取消 WATCH 命令对所有 key 的监视。如果在执行 WATCH 命令之后，EXEC 命令或 DISCARD 命令先被执行了的话，那么就不需要再执行 UNWATCH 了
+>
+
+<img src="https://cdn.fengxianhub.top/resources-master/202207161024126.png" alt="image-20220716102457923" style="zoom: 33%;" />
+
+### 7.5 Redis 事务三特性
+
+- 单独的隔离操作 ：事务中的所有命令都会序列化、按顺序地执行。事务在执行的过程中，不会被其他客户端发送来的命令请求所打断。
+
+- 没有隔离级别的概念 ：队列中的命令没有提交之前都不会实际被执行，因为事务提交前任何指令都不会被实际执行。
+
+- 不保证原子性 ：事务中如果有一条命令执行失败，其后的命令仍然会被执行，没有回滚 
+
+### 7.6 Redis秒杀代码
+
+```java
+public class SecKill_redis {
+
+	public static void main(String[] args) {
+		Jedis jedis =new Jedis("192.168.44.168",6379);
+		System.out.println(jedis.ping());
+		jedis.close();
+	}
+
+	//秒杀过程
+	public static boolean doSecKill(String uid,String prodid) throws IOException {
+		//1 uid和prodid非空判断
+		if(uid == null || prodid == null) {
+			return false;
+		}
+
+		//2 连接redis
+		//Jedis jedis = new Jedis("192.168.44.168",6379);
+		//通过连接池得到jedis对象
+		JedisPool jedisPoolInstance = JedisPoolUtil.getJedisPoolInstance();
+		Jedis jedis = jedisPoolInstance.getResource();
+
+		//3 拼接key
+		// 3.1 库存key
+		String kcKey = "sk:"+prodid+":qt";
+		// 3.2 秒杀成功用户key
+		String userKey = "sk:"+prodid+":user";
+
+		//监视库存
+		jedis.watch(kcKey);
+
+		//4 获取库存，如果库存null，秒杀还没有开始
+		String kc = jedis.get(kcKey);
+		if(kc == null) {
+			System.out.println("秒杀还没有开始，请等待");
+			jedis.close();
+			return false;
+		}
+
+		// 5 判断用户是否重复秒杀操作
+		if(jedis.sismember(userKey, uid)) {
+			System.out.println("已经秒杀成功了，不能重复秒杀");
+			jedis.close();
+			return false;
+		}
+
+		//6 判断如果商品数量，库存数量小于1，秒杀结束
+		if(Integer.parseInt(kc)<=0) {
+			System.out.println("秒杀已经结束了");
+			jedis.close();
+			return false;
+		}
+
+		//7 秒杀过程
+		//使用事务
+		Transaction multi = jedis.multi();
+
+		//组队操作
+		multi.decr(kcKey);
+		multi.sadd(userKey,uid);
+
+		//执行
+		List<Object> results = multi.exec();
+
+		if(results == null || results.size()==0) {
+			System.out.println("秒杀失败了....");
+			jedis.close();
+			return false;
+		}
+
+		//7.1 库存-1
+		//jedis.decr(kcKey);
+		//7.2 把秒杀成功用户添加清单里面
+		//jedis.sadd(userKey,uid);
+
+		System.out.println("秒杀成功了..");
+		jedis.close();
+		return true;
+	}
+}
+
+```
+
+## 8. Redis持久化与高可用
+
+请看笔者的另一篇文章：
+
+Redis有两种持久化方案：
+
+- RDB持久化
+- AOF持久化
+
+## 9. Redis源码分析
+
+你可能想redis不是c语言写的吗？怎么源码分析，难道c语言就不能分析了吗😏
+
+请看笔者的另一篇文章
+
+
+
+
+
+
 
 
 
