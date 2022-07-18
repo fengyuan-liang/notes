@@ -1114,7 +1114,7 @@ Redis支持8种不同策略来选择要删除的key：
 
 Redis的数据都会被封装为RedisObject结构：
 
-![1653984029506](.\原理篇.assets\1653984029506.png)
+![1653984029506](https://cdn.fengxianhub.top/resources-master/202207170849927.png)
 
 LFU的访问次数之所以叫做逻辑访问次数，是因为并不是每次key被访问都计数，而是通过运算：
 
