@@ -123,7 +123,38 @@ public void test01() {
 
 ## 2. 删除逻辑
 
-添加做完了，接下来我们来看删除的逻辑
+添加做完了，接下来我们来看删除的逻辑，这里的删除逻辑会复杂一些，因为在删除的时候我们不仅要处理红黑树的逻辑，还要处理链表的逻辑，我们可以根据之前的代码然后添加删除链表的逻辑
+
+```java
+/**
+ * 这里并不是删除结点后修复红黑树性质的代码，而是修复链表和红黑树结点指向关系的代码
+ */
+@Override
+protected void afterRemove(Node<K, V> removedNode) {
+    if (removedNode == null) return;
+    LinkedNode<K, V> linkedNode = (LinkedNode<K, V>) removedNode;
+    LinkedNode<K, V> prev = linkedNode.prev;
+    LinkedNode<K, V> next = linkedNode.next;
+    if (prev == null) {
+        // 是头结点，那么下一个结点成为头结点
+        first = next;
+    } else {
+        prev.next = next;
+    }
+    if (next == null) {
+        // 删除的是尾结点
+        last = prev;
+    } else {
+        next.prev = prev;
+    }
+}
+```
+
+
+
+
+
+
 
 
 
