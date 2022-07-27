@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ThemeTexts Version="6.1">
+    <ThemeText ID="1" Name="Arial">
+        <FontSchemeLst>
+            <FontScheme FontSize="19" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="15" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="15" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="2" Name="Arial (Big)">
+        <FontSchemeLst>
+            <FontScheme FontSize="21" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="17" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="17" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Arial"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="3" Name="Arial Black">
+        <FontSchemeLst>
+            <FontScheme FontSize="19" Flag="1" FontName="Arial"/>
+            <FontScheme FontSize="15" Flag="1" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="15" Flag="1" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="4" Name="Comic Sans MS">
+        <FontSchemeLst>
+            <FontScheme FontSize="19" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="15" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="15" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Comic Sans MS"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="5" Name="Comic Sans MS (Big)">
+        <FontSchemeLst>
+            <FontScheme FontSize="21" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="17" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="17" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Comic Sans MS"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Comic Sans MS"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="6" Name="Tahoma">
+        <FontSchemeLst>
+            <FontScheme FontSize="19" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="15" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="15" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="7" Name="Tahoma (Big)">
+        <FontSchemeLst>
+            <FontScheme FontSize="21" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="17" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="17" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Tahoma"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="8" Name="Times New Roman">
+        <FontSchemeLst>
+            <FontScheme FontSize="19" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="15" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="15" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Times New Roman"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="12" Name="Times New Roman (Big)">
+        <FontSchemeLst>
+            <FontScheme FontSize="21" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="17" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="17" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Times New Roman"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Times New Roman"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="13" Name="Verdana">
+        <FontSchemeLst>
+            <FontScheme FontSize="19" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="15" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="15" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Verdana"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="15" Name="Verdana (Big)">
+        <FontSchemeLst>
+            <FontScheme FontSize="21" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="17" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="17" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Verdana"/>
+        </FontSchemeLst>
+    </ThemeText>
+</ThemeTexts>

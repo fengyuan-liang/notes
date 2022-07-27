@@ -1,0 +1,1008 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Themes Version="8.0">
+    <mmTheme ID="1">
+        <mmFormatSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="5" V="#ff3498db"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="5" V="#ff3498db"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="4" V="#ff1bbc9d"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="4" V="#ff1bbc9d"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color V="#ffffffff"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="5" Shade="25" V="#ff2d85c1" Ref="#3598db"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmFormatSchemeLst>
+        <mmFontSchemeLst>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial">
+                <Color V="#ffffffff"/>
+            </FontScheme>
+            <FontScheme FontSize="10" Flag="0" FontName="Arial">
+                <Color V="#ffffffff"/>
+            </FontScheme>
+            <FontScheme FontSize="9" Flag="0" FontName="Arial">
+                <Color ThemeColor="5" Shade="25" V="#ff2d85c1" Ref="#3598db"/>
+            </FontScheme>
+        </mmFontSchemeLst>
+        <mmLineSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="3"/>
+                    <EndArrow ID="0" Size="3"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="5" Shade="25" V="#ff2d85c1" Ref="#3598db"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmLineSchemeLst>
+        <mmLayoutSchemeLst>
+            <LayoutScheme CnntStyle="1"/>
+            <LayoutScheme CnntStyle="7"/>
+        </mmLayoutSchemeLst>
+        <Display ShapeStyle="1">
+            <BackgndColor V="#ffffffff"/>
+        </Display>
+    </mmTheme>
+    <mmTheme ID="2">
+        <mmFormatSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Gradient" Direction="90" GradientType="Linear">
+                    <Stop Offset="0">
+                        <Color ThemeColor="5" V="#fffbfbfb" Ref="#939393" Tint="95"/>
+                    </Stop>
+                    <Stop Offset="100">
+                        <Color ThemeColor="5" V="#ffefefef" Ref="#989898" Tint="80"/>
+                    </Stop>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="5" Shade="25" V="#ff838383" Ref="#959595"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="0" OffsetX="1.5" Mode="1" Angle="0" OffsetY="1.5">
+                        <Color V="#14000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Gradient" Direction="90" GradientType="Linear">
+                    <Stop Offset="0">
+                        <Color ThemeColor="5" V="#fffbfbfb" Ref="#939393" Tint="95"/>
+                    </Stop>
+                    <Stop Offset="100">
+                        <Color ThemeColor="5" V="#ffefefef" Ref="#989898" Tint="80"/>
+                    </Stop>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="5" Shade="25" V="#ff838383" Ref="#959595"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="0" OffsetX="1.5" Mode="1" Angle="0" OffsetY="1.5">
+                        <Color V="#14000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Gradient" Direction="90" GradientType="Linear">
+                    <Stop Offset="0">
+                        <Color ThemeColor="5" V="#fffbfbfb" Ref="#939393" Tint="95"/>
+                    </Stop>
+                    <Stop Offset="100">
+                        <Color ThemeColor="5" V="#ffefefef" Ref="#989898" Tint="80"/>
+                    </Stop>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="5" Shade="25" V="#ff838383" Ref="#959595"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmFormatSchemeLst>
+        <mmFontSchemeLst>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial">
+                <Color V="#ff303030"/>
+            </FontScheme>
+            <FontScheme FontSize="10" Flag="0" FontName="Arial">
+                <Color V="#ff303030"/>
+            </FontScheme>
+            <FontScheme FontSize="9" Flag="0" FontName="Arial">
+                <Color V="#ff303030"/>
+            </FontScheme>
+        </mmFontSchemeLst>
+        <mmLineSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="3"/>
+                    <EndArrow ID="0" Size="3"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="5" Shade="50" V="#ff6d6d6d" Ref="#969696"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmLineSchemeLst>
+        <mmLayoutSchemeLst>
+            <LayoutScheme CnntStyle="1"/>
+            <LayoutScheme CnntStyle="7"/>
+        </mmLayoutSchemeLst>
+        <Display ShapeStyle="1">
+            <BackgndColor V="#ffffffff"/>
+        </Display>
+    </mmTheme>
+    <mmTheme ID="3">
+        <mmFormatSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="1" V="#ffffffff"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="3"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="7" V="#ffeb641b"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="1" V="#ffffffff"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="1" V="#ffffffff"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="4" Shade="25" V="#ff16a58a" Ref="#1bbc9d"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmFormatSchemeLst>
+        <mmFontSchemeLst>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial">
+                <Color ThemeColor="5" Shade="50" V="#ff236ea1" Ref="#3398dc"/>
+            </FontScheme>
+            <FontScheme FontSize="10" Flag="0" FontName="Arial">
+                <Color ThemeColor="5" Shade="50" V="#ff236ea1" Ref="#3398dc"/>
+            </FontScheme>
+            <FontScheme FontSize="9" Flag="0" FontName="Arial">
+                <Color ThemeColor="7" Shade="50" V="#ffad4711" Ref="#ec631b"/>
+            </FontScheme>
+        </mmFontSchemeLst>
+        <mmLineSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="3"/>
+                    <EndArrow ID="0" Size="3"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="4" Shade="25" V="#ff16a58a" Ref="#1bbc9d"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmLineSchemeLst>
+        <mmLayoutSchemeLst>
+            <LayoutScheme CnntStyle="3"/>
+            <LayoutScheme CnntStyle="3"/>
+        </mmLayoutSchemeLst>
+        <Display ShapeStyle="1">
+            <BackgndColor V="#ffffffff"/>
+        </Display>
+    </mmTheme>
+    <mmTheme ID="4">
+        <mmFormatSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="1" V="#ffffffff"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="1" V="#ffffffff"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="1" V="#ffffffff"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="1" V="#ffffffff"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="7" Shade="50" V="#ff8c3836" Ref="#c04f4d"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmFormatSchemeLst>
+        <mmFontSchemeLst>
+            <FontScheme FontSize="14" Flag="1" FontName="Courier New">
+                <Color ThemeColor="7" Shade="25" V="#ffa94543" Ref="#c0504d"/>
+            </FontScheme>
+            <FontScheme FontSize="11" Flag="0" FontName="Courier New">
+                <Color ThemeColor="6" Shade="25" V="#ff4471a6" Ref="#4e81bd"/>
+            </FontScheme>
+            <FontScheme FontSize="9" Flag="0" FontName="Courier New">
+                <Color ThemeColor="7" Shade="50" V="#ff8c3836" Ref="#c04f4d"/>
+            </FontScheme>
+        </mmFontSchemeLst>
+        <mmLineSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="3"/>
+                    <EndArrow ID="0" Size="3"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="7" Shade="50" V="#ff8c3836" Ref="#c04f4d"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmLineSchemeLst>
+        <mmLayoutSchemeLst>
+            <LayoutScheme CnntStyle="1"/>
+            <LayoutScheme CnntStyle="1"/>
+        </mmLayoutSchemeLst>
+        <Display ShapeStyle="1">
+            <BackgndColor V="#ffffffff"/>
+        </Display>
+    </mmTheme>
+    <mmTheme ID="5">
+        <mmFormatSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="7" V="#ff8cadae"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="3"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="7" Shade="40" V="#ff6e898a" Ref="#8badae"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="8" V="#ff8c7b70"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="3"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="8" V="#ffc5bfbb" Ref="#8c7c70" Tint="40"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="8" Shade="25" V="#ff7b6c62" Ref="#8c7c70"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmFormatSchemeLst>
+        <mmFontSchemeLst>
+            <FontScheme FontSize="12" Flag="0" FontName="Comic Sans MS">
+                <Color V="#ffffffff"/>
+            </FontScheme>
+            <FontScheme FontSize="10" Flag="0" FontName="Comic Sans MS">
+                <Color V="#ffffffff"/>
+            </FontScheme>
+            <FontScheme FontSize="9" Flag="0" FontName="Comic Sans MS">
+                <Color ThemeColor="8" Shade="25" V="#ff7b6c62" Ref="#8c7c70"/>
+            </FontScheme>
+        </mmFontSchemeLst>
+        <mmLineSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="3"/>
+                    <EndArrow ID="0" Size="3"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="8" Shade="25" V="#ff7b6c62" Ref="#8c7c70"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmLineSchemeLst>
+        <mmLayoutSchemeLst>
+            <LayoutScheme CnntStyle="2"/>
+            <LayoutScheme CnntStyle="7"/>
+        </mmLayoutSchemeLst>
+        <Display ShapeStyle="1">
+            <BackgndColor V="#ffffffff"/>
+        </Display>
+    </mmTheme>
+    <mmTheme ID="6">
+        <mmFormatSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="1" V="#ffffffff"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="3"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="6" Shade="25" V="#ffc2703d" Ref="#dc8047"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="1" V="#ffffffff"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="3"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="5" Shade="25" V="#ff82a0b9" Ref="#94b6d2"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="1" V="#ffffffff"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="8" Shade="25" V="#ffbe9c50" Ref="#d8b25c"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmFormatSchemeLst>
+        <mmFontSchemeLst>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma">
+                <Color ThemeColor="6" Shade="60" V="#ff92532c" Ref="#dc8047"/>
+            </FontScheme>
+            <FontScheme FontSize="10" Flag="0" FontName="Tahoma">
+                <Color ThemeColor="5" Shade="60" V="#ff61788b" Ref="#95b6d2"/>
+            </FontScheme>
+            <FontScheme FontSize="9" Flag="0" FontName="Tahoma">
+                <Color ThemeColor="8" Shade="60" V="#ff8f753a" Ref="#d8b25b"/>
+            </FontScheme>
+        </mmFontSchemeLst>
+        <mmLineSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="3"/>
+                    <EndArrow ID="0" Size="3"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="8" Shade="50" V="#ff9e8241" Ref="#d8b25b"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmLineSchemeLst>
+        <mmLayoutSchemeLst>
+            <LayoutScheme CnntStyle="1"/>
+            <LayoutScheme CnntStyle="1"/>
+        </mmLayoutSchemeLst>
+        <Display ShapeStyle="1">
+            <BackgndColor V="#ffffffff"/>
+        </Display>
+    </mmTheme>
+    <mmTheme ID="7">
+        <mmFormatSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Hatch" Style="12">
+                    <ForeColor ThemeColor="7" V="#ffcfb8b3" Ref="#b58b80" Tint="30"/>
+                    <BackColor ThemeColor="7" V="#ffe5dad8" Ref="#b48a80" Tint="60"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="7" V="#ffb58b80"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Hatch" Style="13">
+                    <ForeColor ThemeColor="8" V="#ffe9ddd4" Ref="#c2976b" Tint="60"/>
+                    <BackColor ThemeColor="8" V="#fff5efeb" Ref="#c6986d" Tint="80"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="8" V="#ffc3986d"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color V="#ffffffff"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="8" Shade="25" V="#ffab855f" Ref="#c3986d"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="3" OffsetX="0" Mode="-13" Angle="0" OffsetY="0">
+                        <Color V="#21000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmFormatSchemeLst>
+        <mmFontSchemeLst>
+            <FontScheme FontSize="12" Flag="0" FontName="Comic Sans MS">
+                <Color ThemeColor="7" Shade="50" V="#ff84655c" Ref="#b58c80"/>
+            </FontScheme>
+            <FontScheme FontSize="10" Flag="0" FontName="Comic Sans MS">
+                <Color ThemeColor="8" Shade="50" V="#ff8f6e4e" Ref="#c4986d"/>
+            </FontScheme>
+            <FontScheme FontSize="9" Flag="0" FontName="Comic Sans MS">
+                <Color ThemeColor="8" Shade="50" V="#ff8f6e4e" Ref="#c4986d"/>
+            </FontScheme>
+        </mmFontSchemeLst>
+        <mmLineSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="8" Shade="25" V="#ffab855f" Ref="#c3986d"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmLineSchemeLst>
+        <mmLayoutSchemeLst>
+            <LayoutScheme CnntStyle="3"/>
+            <LayoutScheme CnntStyle="3"/>
+        </mmLayoutSchemeLst>
+        <Display ShapeStyle="1">
+            <BackgndColor V="#ffffffff"/>
+        </Display>
+    </mmTheme>
+    <mmTheme ID="8">
+        <mmFormatSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="9" Shade="25" V="#ff4a5465" Ref="#556074"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="9" Shade="25" V="#ff4a5465" Ref="#556074"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="6" V="#ff5b8fc9"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="6" V="#ff5b8fc9"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="5" V="#ff6aa4ab"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="5" V="#ff6aa4ab"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmFormatSchemeLst>
+        <mmFontSchemeLst>
+            <FontScheme FontSize="12" Flag="0" FontName="Calibri">
+                <Color V="#ffffffff"/>
+            </FontScheme>
+            <FontScheme FontSize="10" Flag="0" FontName="Calibri">
+                <Color V="#ffffffff"/>
+            </FontScheme>
+            <FontScheme FontSize="9" Flag="0" FontName="Calibri">
+                <Color V="#ffffffff"/>
+            </FontScheme>
+        </mmFontSchemeLst>
+        <mmLineSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="3"/>
+                    <EndArrow ID="0" Size="3"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="5" Shade="50" V="#ff4c777d" Ref="#6aa4ac"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmLineSchemeLst>
+        <mmLayoutSchemeLst>
+            <LayoutScheme CnntStyle="2"/>
+            <LayoutScheme CnntStyle="7"/>
+        </mmLayoutSchemeLst>
+        <Display ShapeStyle="3">
+            <BackgndColor V="#ffffffff"/>
+        </Display>
+    </mmTheme>
+    <mmTheme ID="9">
+        <mmFormatSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="9" V="#ffdd7195"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="9" V="#ffdd7195"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="0" OffsetX="1.5" Mode="1" Angle="0" OffsetY="1.5">
+                        <Color V="#33000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="6" V="#ff2da2bf"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="6" V="#ff2da2bf"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="0" OffsetX="1.5" Mode="1" Angle="0" OffsetY="1.5">
+                        <Color V="#33000000"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="4" V="#ff7eccb6" Ref="#1bbc9c" Tint="20"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="4" V="#ff7eccb6" Ref="#1bbc9c" Tint="20"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Scale="100" Blur="0" OffsetX="1.5" Mode="1" Angle="0" OffsetY="1.5">
+                        <Color V="#33808080"/>
+                    </Shadow>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmFormatSchemeLst>
+        <mmFontSchemeLst>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial">
+                <Color V="#ffffffff"/>
+            </FontScheme>
+            <FontScheme FontSize="10" Flag="0" FontName="Arial">
+                <Color V="#ffffffff"/>
+            </FontScheme>
+            <FontScheme FontSize="9" Flag="0" FontName="Arial">
+                <Color V="#ff454545"/>
+            </FontScheme>
+        </mmFontSchemeLst>
+        <mmLineSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="3"/>
+                    <EndArrow ID="0" Size="3"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="6" Shade="50" V="#ff1e768c" Ref="#2da2c0"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmLineSchemeLst>
+        <mmLayoutSchemeLst>
+            <LayoutScheme CnntStyle="1"/>
+            <LayoutScheme CnntStyle="4"/>
+        </mmLayoutSchemeLst>
+        <Display ShapeStyle="2">
+            <BackgndColor V="#ffffffff"/>
+        </Display>
+    </mmTheme>
+    <mmTheme ID="10">
+        <mmFormatSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color ThemeColor="1" V="#ffffffff"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="1" V="#ffffffff"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill/>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat Type="Solid">
+                    <Color V="#ffffffff"/>
+                </FillFormat>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="4"/>
+                    <EndArrow ID="0" Size="4"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="10" V="#fffdc022"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmFormatSchemeLst>
+        <mmFontSchemeLst>
+            <FontScheme FontSize="12" Flag="0" FontName="Comic Sans MS">
+                <Color ThemeColor="6" Shade="50" V="#ff556486" Ref="#768ab8"/>
+            </FontScheme>
+            <FontScheme FontSize="11" Flag="0" FontName="Comic Sans MS">
+                <Color ThemeColor="10" V="#fffdc022"/>
+            </FontScheme>
+            <FontScheme FontSize="9" Flag="0" FontName="Comic Sans MS">
+                <Color V="#ffffffff"/>
+            </FontScheme>
+        </mmFontSchemeLst>
+        <mmLineSchemeLst>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="3"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="3"/>
+                    <EndArrow ID="0" Size="3"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="6" V="#ffbdc4d8" Ref="#768ab8" Tint="40"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+            <ShapeFormat QuickMask="-1">
+                <FillFormat/>
+                <LineFormat>
+                    <LineWeight V="1"/>
+                    <LineCap V="0"/>
+                    <LinePattern ID="0"/>
+                    <BeginArrow ID="0" Size="3"/>
+                    <EndArrow ID="0" Size="3"/>
+                    <LineFill Type="Solid">
+                        <Color ThemeColor="10" V="#fffdc022"/>
+                    </LineFill>
+                </LineFormat>
+                <EffectFormat>
+                    <Shadow Mode="0"/>
+                </EffectFormat>
+            </ShapeFormat>
+        </mmLineSchemeLst>
+        <mmLayoutSchemeLst>
+            <LayoutScheme CnntStyle="3"/>
+            <LayoutScheme CnntStyle="3"/>
+        </mmLayoutSchemeLst>
+        <Display ShapeStyle="1">
+            <BackgndColor V="#ff4a7b9e"/>
+        </Display>
+    </mmTheme>
+</Themes>

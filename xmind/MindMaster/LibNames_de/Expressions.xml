@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Lib NameU="Expressions">
+    <Elem Name="laugh" Prompt="laugh" NameU="laugh" PromptU="laugh"/>
+    <Elem Name="happy" Prompt="happy" NameU="happy" PromptU="happy"/>
+    <Elem Name="surprised" Prompt="surprised" NameU="surprised" PromptU="surprised"/>
+    <Elem Name="Blink of an eye" Prompt="Blink of an eye" NameU="Blink of an eye" PromptU="Blink of an eye"/>
+    <Elem Name="delightfulness" Prompt="delightfulness" NameU="delightfulness" PromptU="delightfulness"/>
+    <Elem Name="indifference" Prompt="indifference" NameU="indifference" PromptU="indifference"/>
+    <Elem Name="disdain" Prompt="disdain" NameU="disdain" PromptU="disdain"/>
+    <Elem Name="angry" Prompt="angry" NameU="angry" PromptU="angry"/>
+    <Elem Name="discontent" Prompt="discontent" NameU="discontent" PromptU="discontent"/>
+    <Elem Name="sorry" Prompt="sorry" NameU="sorry" PromptU="sorry"/>
+    <Elem Name="embarrassed" Prompt="embarrassed" NameU="embarrassed" PromptU="embarrassed"/>
+    <Elem Name="lovely" Prompt="lovely" NameU="lovely" PromptU="lovely"/>
+    <Elem Name="greed" Prompt="greed" NameU="greed" PromptU="greed"/>
+    <Elem Name="hate" Prompt="hate" NameU="hate" PromptU="hate"/>
+    <Elem Name="afraid" Prompt="afraid" NameU="afraid" PromptU="afraid"/>
+    <Elem Name="angry1" Prompt="angry1" NameU="angry1" PromptU="angry1"/>
+    <Elem Name="nervous" Prompt="nervous" NameU="nervous" PromptU="nervous"/>
+    <Elem Name="disappointed" Prompt="disappointed" NameU="disappointed" PromptU="disappointed"/>
+</Lib>

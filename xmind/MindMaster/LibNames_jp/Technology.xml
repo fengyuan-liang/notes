@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Lib NameU="Technology">
+    <Elem Name="Aliens" Prompt="Aliens" NameU="Aliens" PromptU="Aliens"/>
+    <Elem Name="Launch tower" Prompt="Launch tower" NameU="Launch tower" PromptU="Launch tower"/>
+    <Elem Name="Robot" Prompt="Robot" NameU="Robot" PromptU="Robot"/>
+    <Elem Name="Planet" Prompt="Planet" NameU="Planet" PromptU="Planet"/>
+    <Elem Name="Rockets" Prompt="Rockets" NameU="Rockets" PromptU="Rockets"/>
+    <Elem Name="Satellite" Prompt="Satellite" NameU="Satellite" PromptU="Satellite"/>
+    <Elem Name="Light" Prompt="Light" NameU="Light" PromptU="Light"/>
+    <Elem Name="Computer" Prompt="Computer" NameU="Computer" PromptU="Computer"/>
+    <Elem Name="Molecular structure" Prompt="Molecular structure" NameU="Molecular structure" PromptU="Molecular structure"/>
+    <Elem Name="Microscope" Prompt="Microscope" NameU="Microscope" PromptU="Microscope"/>
+    <Elem Name="Camera" Prompt="Camera" NameU="Camera" PromptU="Camera"/>
+    <Elem Name="Data connector" Prompt="Data connector" NameU="Data connector" PromptU="Data connector"/>
+    <Elem Name="IPod" Prompt="IPod" NameU="IPod" PromptU="IPod"/>
+    <Elem Name="Mouse" Prompt="Mouse" NameU="Mouse" PromptU="Mouse"/>
+    <Elem Name="Flask" Prompt="Flask" NameU="Flask" PromptU="Flask"/>
+    <Elem Name="Satellite" Prompt="Satellite" NameU="Satellite" PromptU="Satellite"/>
+    <Elem Name="Satellite" Prompt="Satellite" NameU="Satellite" PromptU="Satellite"/>
+    <Elem Name="Headset" Prompt="Headset" NameU="Headset" PromptU="Headset"/>
+    <Elem Name="Router" Prompt="Router" NameU="Router" PromptU="Router"/>
+    <Elem Name="Camera" Prompt="Camera" NameU="Camera" PromptU="Camera"/>
+    <Elem Name="Microphone" Prompt="Microphone" NameU="Microphone" PromptU="Microphone"/>
+    <Elem Name="Signal tower" Prompt="Signal tower" NameU="Signal tower" PromptU="Signal tower"/>
+    <Elem Name="Volume" Prompt="Volume" NameU="Volume" PromptU="Volume"/>
+    <Elem Name="Astronomical telescope" Prompt="Astronomical telescope" NameU="Astronomical telescope" PromptU="Astronomical telescope"/>
+</Lib>

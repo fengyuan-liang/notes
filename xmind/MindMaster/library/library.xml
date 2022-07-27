@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Library version = "1.1" >
+	<Templates Name = "General" version = "1.0" >	
+		<Template Path = "./Symbols/Expressions.mdt" Name = "Expressions"></Template>
+	</Templates>
+	
+	<Templates Name = "Animal" version = "1.0" >
+		<Template Path = "./Symbols/Animal.mdt" Name = "Animal"></Template>
+		<Template Path = "./Symbols/SeaLife.mdt" Name = "Sea Life"></Template>
+		<Template Path = "./Symbols/Insect.mdt" Name = "Insect"></Template>
+	</Templates>
+
+	<Templates Name = "Business" version = "1.0" >	
+		<Template Path = "./Symbols/Office.mdt" Name = "Office"></Template>	
+	</Templates>
+
+	<Templates Name = "Education" version = "1.0" >	
+		<Template Path = "./Symbols/Education.mdt" Name = "Education"></Template>
+	</Templates>
+
+	<!-- <Templates Name = "Fashion" version = "1.0" >	 -->
+		<!-- <Template Path = "./Symbols/Fashion Models.mdt" Name = "Fashion Models"></Template>	 -->
+		<!-- <Template Path = "./Symbols/Fashion Items.mdt" Name = "Fashion Items"></Template> -->
+	<!-- </Templates> -->
+
+	<Templates Name = "Festival" version = "1.0" >	
+		<Template Path = "./Symbols/Holiday.mdt" Name = "Holiday"></Template>
+	</Templates>
+
+	<Templates Name = "Food" version = "1.0" >	
+		<Template Path = "./Symbols/Food.mdt" Name = "Food"></Template>
+	</Templates>
+
+	<Templates Name = "Nature" version = "1.0" >	
+		<Template Path = "./Symbols/Plant.mdt" Name = "Plant"></Template>
+		<Template Path = "./Symbols/Weather.mdt" Name = "Weather"></Template>
+	</Templates>
+
+	<Templates Name = "People" version = "1.0" >		
+		<Template Path = "./Symbols/Professions.mdt" Name = "Professions"></Template>
+	</Templates>
+
+	<Templates Name = "Social Life" version = "1.0" >		
+		<Template Path = "./Symbols/EnvironmentalProtection.mdt" Name = "Environmental Protection"></Template>
+		<Template Path = "./Symbols/Tourism.mdt" Name = "Tourism"></Template>
+	</Templates>
+
+	<Templates Name = "Sports" version = "1.0" >	
+		<Template Path = "./Symbols/Sport.mdt" Name = "Sport"></Template>
+	</Templates>
+
+	<Templates Name = "Technology" version = "1.0" >	
+		<Template Path = "./Symbols/Technology.mdt" Name = "Technology"></Template>
+		<Template Path = "./Symbols/Medical.mdt" Name = "Medical"></Template>
+		<Template Path = "./Symbols/ElectronicDevices.mdt" Name = "Electronic Devices"></Template>
+	</Templates>
+
+	<Templates Name = "Transportation" version = "1.0" >	
+		<Template Path = "./Symbols/Transportation.mdt" Name = "Transportation"></Template>
+		<Template Path = "./Symbols/RoadSign.mdt" Name = "RoadSign"></Template>	
+	</Templates>
+</Library>

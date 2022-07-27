@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Lib NameU="Weather">
+    <Elem Name="Cloud" Prompt="Cloud" NameU="Cloud" PromptU="Cloud"/>
+    <Elem Name="Sunny day" Prompt="Sunny day" NameU="Sunny day" PromptU="Sunny day"/>
+    <Elem Name="Cloudy" Prompt="Cloudy" NameU="Cloudy" PromptU="Cloudy"/>
+    <Elem Name="Overcast sky" Prompt="Overcast sky" NameU="Overcast sky" PromptU="Overcast sky"/>
+    <Elem Name="Shower" Prompt="Shower" NameU="Shower" PromptU="Shower"/>
+    <Elem Name="Heavy rain" Prompt="Heavy rain" NameU="Heavy rain" PromptU="Heavy rain"/>
+    <Elem Name="Light rain" Prompt="Light rain" NameU="Light rain" PromptU="Light rain"/>
+    <Elem Name="Light snow" Prompt="Light snow" NameU="Light snow" PromptU="Light snow"/>
+    <Elem Name="Heavy snow" Prompt="Heavy snow" NameU="Heavy snow" PromptU="Heavy snow"/>
+    <Elem Name="Sleet" Prompt="Sleet" NameU="Sleet" PromptU="Sleet"/>
+    <Elem Name="Tornado" Prompt="Tornado" NameU="Tornado" PromptU="Tornado"/>
+    <Elem Name="Night" Prompt="Night" NameU="Night" PromptU="Night"/>
+    <Elem Name="Starry sky" Prompt="Starry sky" NameU="Starry sky" PromptU="Starry sky"/>
+    <Elem Name="Rainstorm" Prompt="Rainstorm" NameU="Rainstorm" PromptU="Rainstorm"/>
+    <Elem Name="Ray" Prompt="Ray" NameU="Ray" PromptU="Ray"/>
+    <Elem Name="The weather is foggy" Prompt="The weather is foggy" NameU="The weather is foggy" PromptU="The weather is foggy"/>
+    <Elem Name="Foggy" Prompt="Foggy" NameU="Foggy" PromptU="Foggy"/>
+    <Elem Name="Ice storm and the rain" Prompt="Ice storm and the rain" NameU="Ice storm and the rain" PromptU="Ice storm and the rain"/>
+    <Elem Name="Fly ash" Prompt="Fly ash" NameU="Fly ash" PromptU="Fly ash"/>
+    <Elem Name="Windstorm" Prompt="Windstorm" NameU="Windstorm" PromptU="Windstorm"/>
+    <Elem Name="Wind indicator" Prompt="Wind indicator" NameU="Wind indicator" PromptU="Wind indicator"/>
+    <Elem Name="Snowy night" Prompt="Snowy night" NameU="Snowy night" PromptU="Snowy night"/>
+    <Elem Name="Cloudy night" Prompt="Cloudy night" NameU="Cloudy night" PromptU="Cloudy night"/>
+    <Elem Name="Tornado night" Prompt="Tornado night" NameU="Tornado night" PromptU="Tornado night"/>
+    <Elem Name="Rainy night" Prompt="Rainy night" NameU="Rainy night" PromptU="Rainy night"/>
+    <Elem Name="Foggy night" Prompt="Foggy night" NameU="Foggy night" PromptU="Foggy night"/>
+    <Elem Name="Rainbow" Prompt="Rainbow" NameU="Rainbow" PromptU="Rainbow"/>
+    <Elem Name="Dust tester" Prompt="Dust tester" NameU="Dust tester" PromptU="Dust tester"/>
+</Lib>

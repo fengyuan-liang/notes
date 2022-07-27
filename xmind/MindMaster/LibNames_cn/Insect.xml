@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Lib NameU="Insect">
+    <Elem Name="Lady beetle" Prompt="Lady beetle" NameU="Lady beetle" PromptU="Lady beetle"/>
+    <Elem Name="beetle" Prompt="beetle" NameU="beetle" PromptU="beetle"/>
+    <Elem Name="ants" Prompt="ants" NameU="ants" PromptU="ants"/>
+    <Elem Name="mantis" Prompt="mantis" NameU="mantis" PromptU="mantis"/>
+    <Elem Name="fly" Prompt="fly" NameU="fly" PromptU="fly"/>
+    <Elem Name="bees" Prompt="bees" NameU="bees" PromptU="bees"/>
+    <Elem Name="centipede" Prompt="centipede" NameU="centipede" PromptU="centipede"/>
+    <Elem Name="caterpillar" Prompt="caterpillar" NameU="caterpillar" PromptU="caterpillar"/>
+    <Elem Name="butterfly" Prompt="butterfly" NameU="butterfly" PromptU="butterfly"/>
+    <Elem Name="cockroach" Prompt="cockroach" NameU="cockroach" PromptU="cockroach"/>
+    <Elem Name="locusts" Prompt="locusts" NameU="locusts" PromptU="locusts"/>
+    <Elem Name="bug" Prompt="bug" NameU="bug" PromptU="bug"/>
+    <Elem Name="lice" Prompt="lice" NameU="lice" PromptU="lice"/>
+    <Elem Name="mosquitoes" Prompt="mosquitoes" NameU="mosquitoes" PromptU="mosquitoes"/>
+    <Elem Name="earthworm" Prompt="earthworm" NameU="earthworm" PromptU="earthworm"/>
+    <Elem Name="weevil" Prompt="weevil" NameU="weevil" PromptU="weevil"/>
+    <Elem Name="snail" Prompt="snail" NameU="snail" PromptU="snail"/>
+    <Elem Name="fireflies" Prompt="fireflies" NameU="fireflies" PromptU="fireflies"/>
+    <Elem Name="scorpion" Prompt="scorpion" NameU="scorpion" PromptU="scorpion"/>
+    <Elem Name="dragonfly" Prompt="dragonfly" NameU="dragonfly" PromptU="dragonfly"/>
+    <Elem Name="butterfly1" Prompt="butterfly1" NameU="butterfly1" PromptU="butterfly1"/>
+    <Elem Name="wrap" Prompt="wrap" NameU="wrap" PromptU="wrap"/>
+    <Elem Name="cricket" Prompt="cricket" NameU="cricket" PromptU="cricket"/>
+    <Elem Name="beetle1" Prompt="beetle1" NameU="beetle1" PromptU="beetle1"/>
+    <Elem Name="spider" Prompt="spider" NameU="spider" PromptU="spider"/>
+    <Elem Name="moths" Prompt="moths" NameU="moths" PromptU="moths"/>
+</Lib>

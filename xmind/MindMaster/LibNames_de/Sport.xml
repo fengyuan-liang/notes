@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Lib NameU="Sport">
+    <Elem Name="Basketball" Prompt="Basketball" NameU="Basketball" PromptU="Basketball"/>
+    <Elem Name="Volleyball" Prompt="Volleyball" NameU="Volleyball" PromptU="Volleyball"/>
+    <Elem Name="Football" Prompt="Football" NameU="Football" PromptU="Football"/>
+    <Elem Name="Baseball" Prompt="Baseball" NameU="Baseball" PromptU="Baseball"/>
+    <Elem Name="Yoga ball" Prompt="Yoga ball" NameU="Yoga ball" PromptU="Yoga ball"/>
+    <Elem Name="Squash" Prompt="Squash" NameU="Squash" PromptU="Squash"/>
+    <Elem Name="Billiards" Prompt="Billiards" NameU="Billiards" PromptU="Billiards"/>
+    <Elem Name="Tennis" Prompt="Tennis" NameU="Tennis" PromptU="Tennis"/>
+    <Elem Name="Sports wear" Prompt="Sports wear" NameU="Sports wear" PromptU="Sports wear"/>
+    <Elem Name="Cricket" Prompt="Cricket" NameU="Cricket" PromptU="Cricket"/>
+    <Elem Name="Rugby" Prompt="Rugby" NameU="Rugby" PromptU="Rugby"/>
+    <Elem Name="Badminton" Prompt="Badminton" NameU="Badminton" PromptU="Badminton"/>
+    <Elem Name="Skateboard" Prompt="Skateboard" NameU="Skateboard" PromptU="Skateboard"/>
+    <Elem Name="Table tennis racquet" Prompt="Table tennis racquet" NameU="Table tennis racquet" PromptU="Table tennis racquet"/>
+    <Elem Name="Baseball" Prompt="Baseball" NameU="Baseball" PromptU="Baseball"/>
+    <Elem Name="Skating shoes" Prompt="Skating shoes" NameU="Skating shoes" PromptU="Skating shoes"/>
+    <Elem Name="Swimming goggles" Prompt="Swimming goggles" NameU="Swimming goggles" PromptU="Swimming goggles"/>
+    <Elem Name="Roller skating" Prompt="Roller skating" NameU="Roller skating" PromptU="Roller skating"/>
+    <Elem Name="Dumbbell" Prompt="Dumbbell" NameU="Dumbbell" PromptU="Dumbbell"/>
+    <Elem Name="Boxing gloves" Prompt="Boxing gloves" NameU="Boxing gloves" PromptU="Boxing gloves"/>
+    <Elem Name="Bowling ball" Prompt="Bowling ball" NameU="Bowling ball" PromptU="Bowling ball"/>
+    <Elem Name="Hula hoop" Prompt="Hula hoop" NameU="Hula hoop" PromptU="Hula hoop"/>
+    <Elem Name="Podium" Prompt="Podium" NameU="Podium" PromptU="Podium"/>
+    <Elem Name="Life buoy" Prompt="Life buoy" NameU="Life buoy" PromptU="Life buoy"/>
+    <Elem Name="Flag" Prompt="Flag" NameU="Flag" PromptU="Flag"/>
+    <Elem Name="Helmet" Prompt="Helmet" NameU="Helmet" PromptU="Helmet"/>
+    <Elem Name="Gym bag" Prompt="Gym bag" NameU="Gym bag" PromptU="Gym bag"/>
+    <Elem Name="Barbell" Prompt="Barbell" NameU="Barbell" PromptU="Barbell"/>
+    <Elem Name="Whistle" Prompt="Whistle" NameU="Whistle" PromptU="Whistle"/>
+    <Elem Name="Rowing" Prompt="Rowing" NameU="Rowing" PromptU="Rowing"/>
+    <Elem Name="Playground" Prompt="Playground" NameU="Playground" PromptU="Playground"/>
+    <Elem Name="Medal" Prompt="Medal" NameU="Medal" PromptU="Medal"/>
+    <Elem Name="Submersible" Prompt="Submersible" NameU="Submersible" PromptU="Submersible"/>
+    <Elem Name="Rope skipping" Prompt="Rope skipping" NameU="Rope skipping" PromptU="Rope skipping"/>
+    <Elem Name="Fencing" Prompt="Fencing" NameU="Fencing" PromptU="Fencing"/>
+    <Elem Name="TKD Uniform" Prompt="TKD Uniform" NameU="TKD Uniform" PromptU="TKD Uniform"/>
+    <Elem Name="Golf" Prompt="Golf" NameU="Golf" PromptU="Golf"/>
+    <Elem Name="Pinch meter" Prompt="Pinch meter" NameU="Pinch meter" PromptU="Pinch meter"/>
+    <Elem Name="Yoga mat" Prompt="Yoga mat" NameU="Yoga mat" PromptU="Yoga mat"/>
+    <Elem Name="Trophy" Prompt="Trophy" NameU="Trophy" PromptU="Trophy"/>
+</Lib>

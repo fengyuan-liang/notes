@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MarkSheet Version="1.0">
+	<MarkGroup Name="priority" Display="優先順序" Mutex="1" Text="0" Predefine="1">
+		<Mark Name="priority1" Display="優先順序 1" Path="/marks/priority/1.png"/>
+		<Mark Name="priority2" Display="優先順序 2" Path="/marks/priority/2.png"/>
+		<Mark Name="priority3" Display="優先順序 3" Path="/marks/priority/3.png"/>
+		<Mark Name="priority4" Display="優先順序 4" Path="/marks/priority/4.png"/>
+		<Mark Name="priority5" Display="優先順序 5" Path="/marks/priority/5.png"/>
+		<Mark Name="priority6" Display="優先順序 6" Path="/marks/priority/6.png"/>
+		<Mark Name="priority7" Display="優先順序 7" Path="/marks/priority/7.png"/>
+		<Mark Name="priority8" Display="優先順序 8" Path="/marks/priority/8.png"/>		
+		<Mark Name="priority9" Display="優先順序 9" Path="/marks/priority/9.png"/>
+	</MarkGroup>
+	<MarkGroup Name="progress" Display="進度" Mutex="1" Text="0" Predefine="1">
+		<Mark Name="nostart" Display="0%" Path="/marks/progress/notstart.png"/>
+		<Mark Name="125" Display="12.5%" Path="/marks/progress/125.png"/>
+		<Mark Name="250" Display="25%" Path="/marks/progress/250.png"/>
+		<Mark Name="375" Display="37.5%" Path="/marks/progress/375.png"/>
+		<Mark Name="500" Display="50%" Path="/marks/progress/500.png"/>
+		<Mark Name="625" Display="62.5%" Path="/marks/progress/625.png"/>
+		<Mark Name="750" Display="75%" Path="/marks/progress/750.png"/>
+		<Mark Name="875" Display="87.5%" Path="/marks/progress/875.png"/>		
+		<Mark Name="finished" Display="完成" Path="/marks/progress/finished.png"/>
+	</MarkGroup>
+	<MarkGroup Name="face" Display="表情" Mutex="1" Text="0" Predefine="1">
+		<Mark Name="happy" Display="高興" Path="/marks/face/happy.png"/>
+		<Mark Name="smile" Display="笑臉" Path="/marks/face/smile.png"/>
+		<Mark Name="nofeel" Display="面無表情" Path="/marks/face/nofeel.png"/>
+		<Mark Name="sad" Display="難過" Path="/marks/face/sad.png"/>
+		<Mark Name="fury" Display="憤怒" Path="/marks/face/fury.png"/>
+		<Mark Name="tears" Display="流淚" Path="/marks/face/tears.png"/>
+		<Mark Name="horrible" Display="恐懼" Path="/marks/face/horrible.png"/>
+		<Mark Name="query" Display="疑問" Path="/marks/face/query.png"/>
+		<Mark Name="embarrassed" Display="尷尬" Path="/marks/face/embarrassed.png"/>
+		<Mark Name="exhaustion" Display="虛弱" Path="/marks/face/exhaustion.png"/>
+		<Mark Name="hush" Display="噓" Path="/marks/face/hush.png"/>
+		<Mark Name="funny" Display="滑稽" Path="/marks/face/funny.png"/>
+		<Mark Name="giddy" Display="暈眩" Path="/marks/face/giddy.png"/>							
+		<Mark Name="anthomaniac" Display="花癡" Path="/marks/face/anthomaniac.png"/>
+	</MarkGroup>
+	<MarkGroup Name="arrow" Display="箭頭" Mutex="1" Text="0" Predefine="1">
+		<Mark Name="arrow1" Display="上" Path="/marks/arrow/1.png"/>
+		<Mark Name="arrow2" Display="下" Path="/marks/arrow/2.png"/>
+		<Mark Name="arrow3" Display="左" Path="/marks/arrow/3.png"/>
+		<Mark Name="arrow4" Display="右" Path="/marks/arrow/4.png"/>
+		<Mark Name="arrow5" Display="左上" Path="/marks/arrow/5.png"/>
+		<Mark Name="arrow6" Display="右上" Path="/marks/arrow/6.png"/>
+		<Mark Name="arrow7" Display="左下" Path="/marks/arrow/7.png"/>
+		<Mark Name="arrow8" Display="右下" Path="/marks/arrow/8.png"/>		
+	</MarkGroup>
+	<MarkGroup Name="flag" Display="旗幟" Mutex="1" Text="0" Predefine="1">
+		<Mark Name="flag1" Display="旗幟 1" Path="/marks/flag/flag1.png"/>
+		<Mark Name="flag2" Display="旗幟 2" Path="/marks/flag/flag2.png"/>
+		<Mark Name="flag3" Display="旗幟 3" Path="/marks/flag/flag3.png"/>
+		<Mark Name="flag4" Display="旗幟 4" Path="/marks/flag/flag4.png"/>
+		<Mark Name="flag5" Display="旗幟 5" Path="/marks/flag/flag5.png"/>
+		<Mark Name="flag6" Display="旗幟 6" Path="/marks/flag/flag6.png"/>
+		<Mark Name="flag7" Display="旗幟 7" Path="/marks/flag/flag7.png"/>
+	</MarkGroup>
+	<MarkGroup Name="star" Display="星" Mutex="1" Text="0" Predefine="1">
+		<Mark Name="star1" Display="星 1" Path="/marks/star/star1.png"/>
+		<Mark Name="star2" Display="星 2" Path="/marks/star/star2.png"/>
+		<Mark Name="star3" Display="星 3" Path="/marks/star/star3.png"/>
+		<Mark Name="star4" Display="星 4" Path="/marks/star/star4.png"/>
+		<Mark Name="star5" Display="星 5" Path="/marks/star/star5.png"/>
+		<Mark Name="star6" Display="星 6" Path="/marks/star/star6.png"/>
+		<Mark Name="star7" Display="星 7" Path="/marks/star/star7.png"/>
+	</MarkGroup>
+	<MarkGroup Name="symbol" Display="符號" Mutex="0" Text="0" Predefine="1">
+		<Mark Name="Boy" Display="男士" Path="/marks/symbol/1boy.png"/>
+		<Mark Name="Girl" Display="女士" Path="/marks/symbol/2girl.png"/>
+		<Mark Name="People" Display="人" Path="/marks/symbol/3people.png"/>
+		<Mark Name="Peoples" Display="人群" Path="/marks/symbol/4peoples.png"/>
+		<Mark Name="Alarm" Display="鬧鈴" Path="/marks/symbol/5alarm.png"/>
+		<Mark Name="Bomb" Display="炸彈" Path="/marks/symbol/6bomb.png"/>
+		<Mark Name="Handshake" Display="握手" Path="/marks/symbol/9handshake.png"/>
+		<Mark Name="Approve" Display="贊同" Path="/marks/symbol/10approve.png"/>
+		<Mark Name="Disapprove" Display="不贊同" Path="/marks/symbol/11disapprove.png"/>
+		<Mark Name="Medal" Display="勳章" Path="/marks/symbol/12medal.png"/>
+		<Mark Name="Trophy" Display="獎盃" Path="/marks/symbol/13trophy.png"/>
+		<Mark Name="Balance" Display="平衡" Path="/marks/symbol/14balance.png"/>
+		<Mark Name="Judge" Display="裁判" Path="/marks/symbol/15judge.png"/>
+		<Mark Name="Goal" Display="目標" Path="/marks/symbol/16goal.png"/>
+		<Mark Name="Globe" Display="地球" Path="/marks/symbol/17globe.png"/>
+		<Mark Name="Shopping" Display="購物" Path="/marks/symbol/18shopping.png"/>
+		<Mark Name="Rocket" Display="火箭" Path="/marks/symbol/19rocket.png"/>
+		<Mark Name="Calendar" Display="日曆" Path="/marks/symbol/20calendar.png"/>
+		<Mark Name="Table" Display="表單" Path="/marks/symbol/21table.png"/>
+		<Mark Name="Bar" Display="圖表" Path="/marks/symbol/22bar.png"/>
+		<Mark Name="Pie" Display="圓形圖" Path="/marks/symbol/23pie.png"/>
+		<Mark Name="Line" Display="線圖" Path="/marks/symbol/24line.png"/>
+		<Mark Name="Area" Display="面積圖" Path="/marks/symbol/25area.png"/>
+		<Mark Name="Dollar" Display="美元" Path="/marks/symbol/26dollar.png"/>
+		<Mark Name="Euro" Display="歐元" Path="/marks/symbol/27euro.png"/>
+		<Mark Name="RMB" Display="人民幣" Path="/marks/symbol/28RMB.png"/>		
+		<Mark Name="Question" Display="問題" Path="/marks/symbol/30question.png"/>
+		<Mark Name="Attention" Display="感歎" Path="/marks/symbol/31attention.png"/>
+		<Mark Name="Correct" Display="正確" Path="/marks/symbol/32correct.png"/>
+		<Mark Name="Error" Display="錯誤" Path="/marks/symbol/33error.png"/>
+		<Mark Name="idea" Display="想法" Path="/marks/symbol/34idea.png"/>
+		<Mark Name="Data" Display="數據" Path="/marks/symbol/35data.png"/>
+		<Mark Name="File" Display="文件" Path="/marks/symbol/40file.png"/>
+		<Mark Name="Mail" Display="郵件" Path="/marks/symbol/41mail.png"/>
+		<Mark Name="Phone" Display="電話" Path="/marks/symbol/42phone.png"/>
+		<Mark Name="Note" Display="記事本" Path="/marks/symbol/43note.png"/>
+		<Mark Name="Pen" Display="鋼筆" Path="/marks/symbol/44pen.png"/>
+		<Mark Name="Lock" Display="鎖" Path="/marks/symbol/45lock.png"/>
+		<Mark Name="Unlock" Display="解鎖" Path="/marks/symbol/46unlock.png"/>
+		<Mark Name="Home" Display="主頁" Path="/marks/symbol/50house.png"/>
+		<Mark Name="Search" Display="搜索" Path="/marks/symbol/51search.png"/>
+		<Mark Name="Internet" Display="互聯網" Path="/marks/symbol/52internet.png"/>
+		<Mark Name="Link" Display="連結" Path="/marks/symbol/53link.png"/>
+		<Mark Name="Plus" Display="加" Path="/marks/symbol/54plus.png"/>
+		<Mark Name="Minus" Display="減" Path="/marks/symbol/55minus.png"/>
+		<Mark Name="Start" Display="開始" Path="/marks/symbol/56start.png"/>
+		<Mark Name="Pause" Display="暫停" Path="/marks/symbol/57pause.png"/>
+		<Mark Name="Stop" Display="停止" Path="/marks/symbol/58stop.png"/>
+		<Mark Name="Airplane" Display="飛機場" Path="/marks/symbol/70airplane.png"/>
+		<Mark Name="Coffee" Display="咖啡" Path="/marks/symbol/71coffee.png"/>
+		<Mark Name="Battery" Display="電池" Path="/marks/symbol/72battery.png"/>
+		<Mark Name="Gift" Display="禮物" Path="/marks/symbol/73gift.png"/>
+		<Mark Name="Lightning" Display="閃電" Path="/marks/symbol/74lightning.png"/>
+		<Mark Name="Drizzle" Display="下雨" Path="/marks/symbol/75drizzle.png"/>
+		<Mark Name="Sunny" Display="晴天" Path="/marks/symbol/76sunny.png"/>
+		<Mark Name="Thunder" Display="雷雨" Path="/marks/symbol/77thunder.png"/>
+		<Mark Name="Tornado" Display="龍捲風" Path="/marks/symbol/78tornado.png"/>
+		<Mark Name="Love" Display="愛心" Path="/marks/symbol/80love.png"/>
+		<Mark Name="Music" Display="音樂" Path="/marks/symbol/81music.png"/>
+		<Mark Name="Gear" Display="齒輪" Path="/marks/symbol/82gear.png"/>
+	</MarkGroup>
+	<MarkGroup Name="resource" Display="資源" Mutex="0" Text="1" Predefine="1" Resource="1">
+    </MarkGroup>
+</MarkSheet>

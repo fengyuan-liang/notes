@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Names>
+    <LibNames Version="7.0">
+        <Library NameU="Animal" Name="Tier"/>
+        <Library NameU="Education" Name="Bildung"/>
+        <Library NameU="Electronic Devices" Name="Elektronische Geräte"/>
+        <Library NameU="Environmental Protection" Name="Umweltschutz"/>
+        <Library NameU="Expressions" Name="Ausdruck"/>
+        <Library NameU="Food" Name="Essen"/>
+        <Library NameU="Holiday" Name="Festtag"/>
+        <Library NameU="Insect" Name="Insekt"/>
+        <Library NameU="Medical" Name="Medizinisch"/>
+        <Library NameU="Office" Name="Büro"/>
+        <Library NameU="Plant" Name="Pflanze"/>
+        <Library NameU="Professions" Name="Berufe"/>
+        <Library NameU="RoadSign" Name="Straßenverkehrszeichen
+"/>
+        <Library NameU="Sea Life" Name="Leben im Meer"/>
+        <Library NameU="Sport" Name="Sport"/>
+        <Library NameU="Technology" Name="Technologie"/>
+        <Library NameU="Tourism" Name="Tourismus"/>
+        <Library NameU="Transportation" Name="Transport"/>
+        <Library NameU="Weather" Name="Wetter"/>
+    </LibNames>
+    <Gallaries>
+        <Gallary NameU="Animal" Name="Tier"/>
+        <Gallary NameU="Business" Name="Geschäft"/>
+        <Gallary NameU="Education" Name="Bildung"/>
+        <Gallary NameU="Festival" Name="Fest"/>
+        <Gallary NameU="Food" Name="Essen"/>
+        <Gallary NameU="General" Name="Allgemein"/>
+        <Gallary NameU="Nature" Name="Natur"/>
+        <Gallary NameU="People" Name="Menschen"/>
+        <Gallary NameU="Social Life" Name="Soziales Leben"/>
+        <Gallary NameU="Sports" Name="Sport"/>
+        <Gallary NameU="Technology" Name="Technologie"/>
+        <Gallary NameU="Transportation" Name="Transport"/>
+    </Gallaries>
+</Names>

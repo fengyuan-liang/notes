@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DataFormats>
+	<DefaultLang>en</DefaultLang>	
+	<LanguageIndex>
+		<Lang>en</Lang>
+		<Lang>ch</Lang>
+		<Lang>de</Lang>
+		<Lang>fr</Lang>
+		<Lang>es</Lang>
+		<Lang>jp</Lang>		
+	</LanguageIndex>
+</DataFormats>

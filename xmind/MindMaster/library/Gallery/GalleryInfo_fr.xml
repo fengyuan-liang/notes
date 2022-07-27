@@ -1,0 +1,44 @@
+﻿<Gallery NameU= "Mind Map" Name= "Carte mentale" Version= "1.0" Description= "Créer des cartes mentales (représentations graphiques des processus de pensée) pour le brainstorming, la résolution de problèmes, l'analyse rationnelle et le marquage des décisions. ">
+    <Template NameU= "Radial Map" Name= "Carte mentale" Layout= "8" Theme= "31" DarkTheme= "9" Icon= "./radial_map.png" Description= "Créer des cartes mentales pour représenter des idées et des concepts. ">
+    </Template>
+
+    <Template NameU= "Right Map" Name= "Carte à sens unique" Layout= "6" Theme= "31" DarkTheme= "9" Icon= "./right_map.png" Description= "Créez des cartes mentales avec une mise en page hiérarchique correcte. ">
+    </Template>
+
+    <Template NameU= "Tree Map" Name= "Carte mentale en arbre" Layout= "3" Theme= "31" DarkTheme= "9" Icon= "./tree_map.png" Description= "La carte mentale en arbre est idéale pour afficher de grandes quantités d'informations hiérarchiquement structurées. ">
+    </Template>
+
+    <Template NameU= "Org-Chart Map" Name= "Carte mentale en organigramme" Layout= "2" Theme= "32" DarkTheme= "3" Icon= "./org_map.png" Description= "La carte mentale en organigramme illustre la structure d'une organisation et les relations et les rangs relatifs de ses parties et positions. ">
+    </Template>
+
+    <Template NameU= "Fish Bone Right" Name= "Fishbone Droite" Layout= "24" Theme= "31" DarkTheme= "3" Icon= "./right_fishbone.png" Description= "Créez un diagramme en arête de poisson avec une disposition correcte.">
+    </Template>
+
+    <Template NameU= "Fish Bone Left" Name= "Fishbone La gauche" Layout= "23" Theme= "31" DarkTheme= "3" Icon= "./left_fishbone.png" Description= "Créez un diagramme en arête de poisson avec une disposition correcte.">
+    </Template>
+
+    <Template NameU= "Horizontal Timeline" Name= "Chronologie horizontale" Layout= "17" Theme= "31" DarkTheme= "9" Icon= "./line_horizontal.png" Description= " Créez une chronologie horizontale.">
+    </Template>
+
+    <Template NameU= "Winding Timeline" Name= "SChronologie sinueuse" Layout= "18" Theme= "31" DarkTheme= "9" Icon= "./line_turn.png" Description= "Créez un scénario de type S.">
+    </Template>
+
+    <Template NameU= "Vertical Timeline" Name= "Chronologie verticale" Layout= "19" Theme= "31" DarkTheme= "9" Icon= "./line_vertical.png" Description= "Créer une chronologie verticale.">
+    </Template>
+	
+	<Template NameU= "Circle Map" Name= "Carte du cercle" Layout= "32" Theme= "31" DarkTheme= "3" Icon= "./circle.png" Description= 
+	"Circle Map Créer.">
+    </Template>
+	
+	<Template NameU= "Bubble Map" Name= "Carte à bulles" Layout= "31" Theme= "31" DarkTheme= "3" Icon= "./bubble.png" Description= 
+	"Carte à bulles Créer.">
+    </Template>
+	
+	<Template NameU= "Sector Map" Name= "Carte du secteur" Layout= "30" Theme= "31" DarkTheme= "3" Icon= "./sector.png" Description= 
+	"Carte du secteur Créer.">
+    </Template>
+	
+	<!-- <Template NameU= "Markdown" Name= "Markdown" Layout= "31" Theme= "16" DarkTheme= "15" Icon= "./sector.png" Description=  -->
+	<!-- "摆脱排版的困扰，专注于写作"> -->
+    <!-- </Template> -->
+</Gallery>

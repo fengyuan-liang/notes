@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Lib NameU="Office">
+    <Elem Name="Employee's card" Prompt="Employee's card" NameU="Employee's card" PromptU="Employee's card"/>
+    <Elem Name="Resume" Prompt="Resume" NameU="Resume" PromptU="Resume"/>
+    <Elem Name="Postmark" Prompt="Postmark" NameU="Postmark" PromptU="Postmark"/>
+    <Elem Name="Printer" Prompt="Printer" NameU="Printer" PromptU="Printer"/>
+    <Elem Name="Euro" Prompt="Euro" NameU="Euro" PromptU="Euro"/>
+    <Elem Name="Ren Min Bi" Prompt="Ren Min Bi" NameU="Ren Min Bi" PromptU="Ren Min Bi"/>
+    <Elem Name="Pound" Prompt="Pound" NameU="Pound" PromptU="Pound"/>
+    <Elem Name="Dollar" Prompt="Dollar" NameU="Dollar" PromptU="Dollar"/>
+    <Elem Name="A dollar purse" Prompt="A dollar purse" NameU="A dollar purse" PromptU="A dollar purse"/>
+    <Elem Name="A bag of RMB" Prompt="A bag of RMB" NameU="A bag of RMB" PromptU="A bag of RMB"/>
+    <Elem Name="A purse of euros" Prompt="A purse of euros" NameU="A purse of euros" PromptU="A purse of euros"/>
+    <Elem Name="A purse with pounds in it" Prompt="A purse with pounds in it" NameU="A purse with pounds in it" PromptU="A purse with pounds in it"/>
+    <Elem Name="Disappointing" Prompt="Disappointing" NameU="Disappointing" PromptU="Disappointing"/>
+    <Elem Name="Awesome" Prompt="Awesome" NameU="Awesome" PromptU="Awesome"/>
+    <Elem Name="Mouse" Prompt="Mouse" NameU="Mouse" PromptU="Mouse"/>
+    <Elem Name="The earth" Prompt="The earth" NameU="The earth" PromptU="The earth"/>
+    <Elem Name="Diamond" Prompt="Diamond" NameU="Diamond" PromptU="Diamond"/>
+    <Elem Name="Article" Prompt="Article" NameU="Article" PromptU="Article"/>
+    <Elem Name="Calendar" Prompt="Calendar" NameU="Calendar" PromptU="Calendar"/>
+    <Elem Name="letter" Prompt="letter" NameU="letter" PromptU="letter"/>
+    <Elem Name="Envelope" Prompt="Envelope" NameU="Envelope" PromptU="Envelope"/>
+    <Elem Name="Clock" Prompt="Clock" NameU="Clock" PromptU="Clock"/>
+    <Elem Name="Pen" Prompt="Pen" NameU="Pen" PromptU="Pen"/>
+    <Elem Name="Briefcase" Prompt="Briefcase" NameU="Briefcase" PromptU="Briefcase"/>
+    <Elem Name="Play mobile phone" Prompt="Play mobile phone" NameU="Play mobile phone" PromptU="Play mobile phone"/>
+    <Elem Name="File" Prompt="File" NameU="File" PromptU="File"/>
+    <Elem Name="SMS" Prompt="SMS" NameU="SMS" PromptU="SMS"/>
+    <Elem Name="Mobile phone" Prompt="Mobile phone" NameU="Mobile phone" PromptU="Mobile phone"/>
+    <Elem Name="Alarm clock" Prompt="Alarm clock" NameU="Alarm clock" PromptU="Alarm clock"/>
+    <Elem Name="Scissor" Prompt="Scissor" NameU="Scissor" PromptU="Scissor"/>
+    <Elem Name="Train of thought" Prompt="Train of thought" NameU="Train of thought" PromptU="Train of thought"/>
+    <Elem Name="Shirt" Prompt="Shirt" NameU="Shirt" PromptU="Shirt"/>
+    <Elem Name="Computer" Prompt="Computer" NameU="Computer" PromptU="Computer"/>
+    <Elem Name="laptop" Prompt="laptop" NameU="laptop" PromptU="laptop"/>
+    <Elem Name="Cart" Prompt="Cart" NameU="Cart" PromptU="Cart"/>
+    <Elem Name="Online shopping" Prompt="Online shopping" NameU="Online shopping" PromptU="Online shopping"/>
+    <Elem Name="Warehouse" Prompt="Warehouse" NameU="Warehouse" PromptU="Warehouse"/>
+    <Elem Name="Bank" Prompt="Bank" NameU="Bank" PromptU="Bank"/>
+    <Elem Name="Bank" Prompt="Bank" NameU="Bank" PromptU="Bank"/>
+    <Elem Name="Currency conversion" Prompt="Currency conversion" NameU="Currency conversion" PromptU="Currency conversion"/>
+    <Elem Name="Bulb" Prompt="Bulb" NameU="Bulb" PromptU="Bulb"/>
+    <Elem Name="Video playback" Prompt="Video playback" NameU="Video playback" PromptU="Video playback"/>
+    <Elem Name="Map" Prompt="Map" NameU="Map" PromptU="Map"/>
+    <Elem Name="location" Prompt="location" NameU="location" PromptU="location"/>
+    <Elem Name="label" Prompt="label" NameU="label" PromptU="label"/>
+    <Elem Name="Reticule" Prompt="Reticule" NameU="Reticule" PromptU="Reticule"/>
+    <Elem Name="Cooperation" Prompt="Cooperation" NameU="Cooperation" PromptU="Cooperation"/>
+    <Elem Name="Target" Prompt="Target" NameU="Target" PromptU="Target"/>
+    <Elem Name="Sand clock" Prompt="Sand clock" NameU="Sand clock" PromptU="Sand clock"/>
+    <Elem Name="Depreciate" Prompt="Depreciate" NameU="Depreciate" PromptU="Depreciate"/>
+    <Elem Name="Rise" Prompt="Rise" NameU="Rise" PromptU="Rise"/>
+    <Elem Name="Team collaboration" Prompt="Team collaboration" NameU="Team collaboration" PromptU="Team collaboration"/>
+    <Elem Name="Fair" Prompt="Fair" NameU="Fair" PromptU="Fair"/>
+    <Elem Name="Ranking" Prompt="Ranking" NameU="Ranking" PromptU="Ranking"/>
+    <Elem Name="Make a phone call" Prompt="Make a phone call" NameU="Make a phone call" PromptU="Make a phone call"/>
+    <Elem Name="Paper clip" Prompt="Paper clip" NameU="Paper clip" PromptU="Paper clip"/>
+    <Elem Name="Phone" Prompt="Phone" NameU="Phone" PromptU="Phone"/>
+    <Elem Name="Cartogram" Prompt="Cartogram" NameU="Cartogram" PromptU="Cartogram"/>
+    <Elem Name="Cartogram" Prompt="Cartogram" NameU="Cartogram" PromptU="Cartogram"/>
+    <Elem Name="USB Flash Drive" Prompt="USB Flash Drive" NameU="USB Flash Drive" PromptU="USB Flash Drive"/>
+    <Elem Name="Drawing pin" Prompt="Drawing pin" NameU="Drawing pin" PromptU="Drawing pin"/>
+    <Elem Name="Network" Prompt="Network" NameU="Network" PromptU="Network"/>
+    <Elem Name="Calculator" Prompt="Calculator" NameU="Calculator" PromptU="Calculator"/>
+    <Elem Name="File" Prompt="File" NameU="File" PromptU="File"/>
+    <Elem Name="Shield" Prompt="Shield" NameU="Shield" PromptU="Shield"/>
+    <Elem Name="Treasure" Prompt="Treasure" NameU="Treasure" PromptU="Treasure"/>
+    <Elem Name="USD" Prompt="USD" NameU="USD" PromptU="USD"/>
+    <Elem Name="Cash register" Prompt="Cash register" NameU="Cash register" PromptU="Cash register"/>
+    <Elem Name="Work card" Prompt="Work card" NameU="Work card" PromptU="Work card"/>
+    <Elem Name="Office clerk" Prompt="Office clerk" NameU="Office clerk" PromptU="Office clerk"/>
+    <Elem Name="Team" Prompt="Team" NameU="Team" PromptU="Team"/>
+    <Elem Name="Notepad" Prompt="Notepad" NameU="Notepad" PromptU="Notepad"/>
+    <Elem Name="Analyze" Prompt="Analyze" NameU="Analyze" PromptU="Analyze"/>
+    <Elem Name="Folder" Prompt="Folder" NameU="Folder" PromptU="Folder"/>
+    <Elem Name="Invoice" Prompt="Invoice" NameU="Invoice" PromptU="Invoice"/>
+    <Elem Name="Piggy bank" Prompt="Piggy bank" NameU="Piggy bank" PromptU="Piggy bank"/>
+    <Elem Name="Voice" Prompt="Voice" NameU="Voice" PromptU="Voice"/>
+    <Elem Name="Competition" Prompt="Competition" NameU="Competition" PromptU="Competition"/>
+    <Elem Name="Competition" Prompt="Competition" NameU="Competition" PromptU="Competition"/>
+    <Elem Name="Trophy" Prompt="Trophy" NameU="Trophy" PromptU="Trophy"/>
+    <Elem Name="Medal" Prompt="Medal" NameU="Medal" PromptU="Medal"/>
+    <Elem Name="Prize" Prompt="Prize" NameU="Prize" PromptU="Prize"/>
+    <Elem Name="Slide" Prompt="Slide" NameU="Slide" PromptU="Slide"/>
+    <Elem Name="Slide" Prompt="Slide" NameU="Slide" PromptU="Slide"/>
+    <Elem Name="Slide" Prompt="Slide" NameU="Slide" PromptU="Slide"/>
+    <Elem Name="Umbrella" Prompt="Umbrella" NameU="Umbrella" PromptU="Umbrella"/>
+</Lib>

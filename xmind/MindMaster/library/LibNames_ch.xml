@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Names>
+    <LibNames Version="7.0">
+        <Library NameU="Animal" Name="動物"/>
+        <Library NameU="Education" Name="教育"/>
+        <Library NameU="Electronic Devices" Name="電子設備"/>
+        <Library NameU="Environmental Protection" Name="環境保護"/>
+        <Library NameU="Expressions" Name="表情"/>
+        <Library NameU="Food" Name="食品"/>
+        <Library NameU="Holiday" Name="節日"/>
+        <Library NameU="Insect" Name="昆蟲"/>
+        <Library NameU="Medical" Name="醫學"/>
+        <Library NameU="Office" Name="商務辦公"/>
+        <Library NameU="Plant" Name="植物"/>
+        <Library NameU="Professions" Name="職業"/>
+        <Library NameU="Road Sign" Name="路標"/>
+        <Library NameU="Sea Life" Name="海洋動物"/>
+        <Library NameU="Sport" Name="體育運動"/>
+        <Library NameU="Technology" Name="技術"/>
+        <Library NameU="Tourism" Name="旅遊"/>
+        <Library NameU="Transportation" Name="交通工具"/>
+        <Library NameU="Weather" Name="天氣"/>
+    </LibNames>
+    <Gallaries>
+        <Gallary NameU="Animal" Name="動物"/>
+        <Gallary NameU="Business" Name="商業"/>
+        <Gallary NameU="Education" Name="教育"/>
+        <Gallary NameU="Festival" Name="節日"/>
+        <Gallary NameU="Food" Name="食品"/>
+        <Gallary NameU="General" Name="常用"/>
+        <Gallary NameU="Nature" Name="自然"/>
+        <Gallary NameU="People" Name="人物"/>
+        <Gallary NameU="Social Life" Name="社會生活"/>
+        <Gallary NameU="Sports" Name="體育運動"/>
+        <Gallary NameU="Technology" Name="技術"/>
+        <Gallary NameU="Transportation" Name="交通"/>
+    </Gallaries>
+</LibNames>

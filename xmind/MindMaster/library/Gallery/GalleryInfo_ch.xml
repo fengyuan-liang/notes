@@ -1,0 +1,43 @@
+﻿<Gallery NameU= "Mind Map" Name= "思維導圖" Version= "1.0" Description= "創建思維導圖、樹狀圖、組織結構圖等。">
+    <Template NameU= "Radial Map" Name= "思維導圖" Layout= "8" Theme= "31" DarkTheme= "9" Icon= "./radial_map.png" Description= "採用圖文並茂的方式創建思維導圖，快速表達發散性思維。">
+    </Template>
+
+    <Template NameU= "Right Map" Name= "單嚮導圖" Layout= "6" Theme= "31" DarkTheme= "9" Icon= "./right_map.png" Description= "單嚮導圖偏向于描述資訊流，常用於分析問題，查找原因等。">
+    </Template>
+
+    <Template NameU= "Tree Map" Name= "樹狀圖" Layout= "3" Theme= "31" DarkTheme= "9" Icon= "./tree_map.png" Description= "樹狀圖以父子層次結構來組織物件。常用於歸納，枚舉，總結等。">
+    </Template>
+
+    <Template NameU= "Org-Chart Map" Name= "組織架構圖" Layout= "2" Theme= "32" DarkTheme= "3" Icon= "./org_map.png" Description= "組織架構圖是一種展示公司結構的圖表樣式，常用于展示人力資源管理、員工結構、辦公行政和管理結構等。">
+    </Template>
+
+    <Template NameU= "Fish Bone Right" Name= "魚骨圖（頭向左）" Layout= "24" Theme= "31" DarkTheme= "3" Icon= "./right_fishbone.png" Description= "魚骨圖是一種發現問題“根本原因”的方法，它也可以稱之為“因果圖”。">
+    </Template>
+
+    <Template NameU= "Fish Bone Left" Name= "魚骨圖（頭向右）" Layout= "23" Theme= "31" DarkTheme= "3" Icon= "./left_fishbone.png" Description= "魚骨圖是一種發現問題“根本原因”的方法，它也可以稱之為“因果圖”。">
+    </Template>
+
+    <Template NameU= "Horizontal Timeline" Name= "水平時間線" Layout= "17" Theme= "31" DarkTheme= "9" Icon= "./line_horizontal.png" Description= 
+	"創建水平時間軸。">
+    </Template>
+
+    <Template NameU= "Winding Timeline" Name= "S型時間線" Layout= "18" Theme= "31" DarkTheme= "9" Icon= "./line_turn.png" Description= 
+	"創建S-型時間軸。">
+    </Template>
+
+    <Template NameU= "Vertical Timeline" Name= "垂直時間線" Layout= "19" Theme= "31" DarkTheme= "9" Icon= "./line_vertical.png" Description= 
+	"創建垂直時間軸。">
+    </Template>
+	
+	<Template NameU= "Circle Map" Name= "圓圈圖" Layout= "32" Theme= "31" DarkTheme= "3" Icon= "./circle.png" Description= 
+	"創建圓圈圖。">
+    </Template>
+	
+	<Template NameU= "Bubble Map" Name= "氣泡圖" Layout= "31" Theme= "31" DarkTheme= "3" Icon= "./bubble.png" Description= 
+	"創建氣泡圖。">
+    </Template>
+	
+	<Template NameU= "Sector Map" Name= "扇形放射圖" Layout= "30" Theme= "31" DarkTheme= "3" Icon= "./sector.png" Description= 
+	"創建扇形放射圖。">
+    </Template>
+</Gallery>

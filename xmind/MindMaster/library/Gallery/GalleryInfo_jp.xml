@@ -1,0 +1,44 @@
+﻿<Gallery NameU= "Mind Map" Name= "マインドマップ" Version= "1.0" Help= "create-mind-map.php" Description= "ブレーンストーミング、問題解決、データ分析、および意思決定のためのマインドマップ（思考プロセスの図式表現）を作成します。">
+   <Template NameU= "Radial Map" Name= "放射状マップ" Layout= "8" Theme= "31" DarkTheme= "9" Icon= "./radial_map.png" Description= "サブトピックが中心トピックの両側に放射状でレイアウトする標準なマインドマップを作成します。">
+    </Template>
+
+    <Template NameU= "Right Map" Name= "右型マップ" Layout= "6" Theme= "31" DarkTheme= "9" Icon= "./right_map.png" Description= "サブトピックが中心トピックの右側にレイアウトするマインドマップを作成します。">
+	</Template>
+
+    <Template NameU= "Tree Map" Name= "ツリー型マップ" Layout= "3" Theme= "31" DarkTheme= "9" Icon= "./tree_map.png" Description= "サブトピックが中心トピックの下側にレイアウトするツリー構造のマインドマップを作成します。">
+    </Template>
+
+    <Template NameU= "Org-Chart Map" Name= "組織図マップ" Layout= "2" Theme= "32" DarkTheme= "3" Icon= "./org_map.png" Description= "サブトピックが中心トピックの下側にレイアウトする組織図構造のマインドマップを作成します。">
+    </Template>
+
+	<Template NameU= "Fish Bone Right" Name= "魚の骨図（右）" Layout= "24" Theme= "31" DarkTheme= "9" Icon= "./right_fishbone.png" Description= "魚の骨図は、問題を引き起こす「根本的な原因」を見つける方法であり、フィッシュボーンダイアグラム、特性要因図などの呼び方もあります。">
+	</Template>
+
+	<Template NameU= "Fish Bone Left" Name= "魚の骨図（左）" Layout= "23" Theme= "31" DarkTheme= "9" Icon= "./left_fishbone.png" Description= "魚の骨図は、問題を引き起こす「根本的な原因」を見つける方法であり、フィッシュボーンダイアグラム、特性要因図などの呼び方もあります。">
+	</Template>
+
+	<Template NameU= "Horizontal Timeline" Name= "タイムライン（横）" Layout= "17" Theme= "31" DarkTheme= "9" Icon= "./line_horizontal.png" Description= " タイムラインは、過去と将来のことを時間列に整理し、並べたものです。">
+	</Template>
+
+	<Template NameU= "Winding Timeline" Name= "S型タイムライン" Layout= "18" Theme= "31" DarkTheme= "9" Icon= "./line_turn.png" Description= " タイムラインは、過去と将来のことを時間列に整理し、並べたものです。">
+	</Template>
+
+	<Template NameU= "Vertical Timeline" Name= "タイムライン（縦）" Layout= "19" Theme= "31" DarkTheme= "9" Icon= "./line_vertical.png" Description= "タイムラインは、過去と将来のことを時間列に整理し、並べたものです。">
+	</Template>
+	
+	<Template NameU= "Circle Map" Name= "サークル図" Layout= "32" Theme= "31" DarkTheme= "3" Icon= "./circle.png" Description= 
+	"サークル図は物事の分類、集合関係を示したものです。">
+    </Template>
+	
+	<Template NameU= "Bubble Map" Name= "バブル図" Layout= "31" Theme= "31" DarkTheme= "3" Icon= "./bubble.png" Description= 
+	"バブル図は、物事概念、開発戦略などの情報を表示するために使用されます。">
+    </Template>
+	
+	<Template NameU= "Sector Map" Name= "セクター放射図" Layout= "30" Theme= "31" DarkTheme= "3" Icon= "./sector.png" Description= 
+	"セクター放射図はアイデアを明確に表示することができます。">
+    </Template>
+	
+	<!-- <Template NameU= "Markdown" Name= "Markdown" Layout= "31" Theme= "16" DarkTheme= "15" Icon= "./sector.png" Description=  -->
+	<!-- "摆脱排版的困扰，专注于写作"> -->
+    <!-- </Template> -->
+</Gallery>

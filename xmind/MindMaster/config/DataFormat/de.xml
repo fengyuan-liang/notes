@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataFormats>	
+	<DTUnits>
+		<Unit NameU="Year" Local="Jahr"></Unit>
+		<Unit NameU="Quarter" Local="Vierteljahr"></Unit>
+		<Unit NameU="Month" Local="Monat"></Unit>
+		<Unit NameU="Week" Local="Woche"></Unit>
+		<Unit NameU="Day" Local="Tag"></Unit>
+		<Unit NameU="Hour" Local="Stunde"></Unit>
+		<Unit NameU="Minute"	Local="Minute"></Unit>
+		<Unit NameU="Second"	Local="Sekunde"></Unit>			
+	</DTUnits>				
+	<Strings>
+		<String NameU="Normal"	Local="Normal"></String>
+		<String NameU="Uppercase"	Local="Großbuchstaben"></String>
+		<String NameU="Lowercase"	Local="Kleinbuchstaben"></String>
+	</Strings>
+	<Durations>
+		<Unit NameU="Week"	Local="W."></Unit>
+		<Unit NameU="Day"	Local="T."></Unit>		
+		<Unit NameU="Hour"	Local="st."></Unit>
+		<Unit NameU="Minute"	Local="min."></Unit>
+		<Unit NameU="Second"	Local="sek."></Unit>
+		<Unit NameU="Hour&amp;Minute"	Local="st:min"></Unit>
+		<Unit NameU="Minute&amp;Second"	Local="min:sek"></Unit>	
+	</Durations>
+	<Dates Default="0">
+		<Date Format="yyyy-MM-dd"></Date>
+		<Date Format="yyyy/M/d"></Date>
+		<Date Format="M/d/yyyy"></Date>
+		<Date Format="M/d/yy"></Date>
+		<Date Format="d/M/yyyy"></Date>
+		<Date Format="d/M/yy"></Date>
+		<Date Format="M.d.yyyy"></Date>
+		<Date Format="d.M.yyyy"></Date>
+		<Date Format="yy-M-d"></Date>	
+		<Date Format="MM-dd-yy"></Date>		
+		<Date Format="MMMM d,yyyy"></Date>
+		<Date Format="dddd,MMMM dd,yyyy"></Date>
+		<Date Format="d MMMM yyyy"></Date>	
+		<Date Format="d-MMM-yy"></Date>	
+		<Date Format="MMM.d,yy"></Date>
+		<Date Format="MMMM yy"></Date>
+		<Date Format="MMM-yy"></Date>
+		<Date Format="yyyy"></Date>		
+		<Date Format="MMM"></Date>
+	</Dates>
+	<Times Default="2">
+		<Time Format="h:mm ap"></Time>
+		<Time Format="h:mm:ss ap"></Time>
+		<Time Format="hh:mm"></Time>	
+		<Time Format="hh:mm:ss"></Time>
+		<Time Format="hh"></Time>
+		<Time Format="mm"></Time>
+		<Time Format="ss"></Time>
+	</Times>
+	<Units Default="0">	
+		<Unit Show="TRUE" NameU="None" Flag="None" Local="Nichts"></Unit>
+		<Unit Show="TRUE" NameU="kilometre" Flag="km" Local="Kilometer"></Unit>
+		<Unit Show="TRUE" NameU="hectometre" Flag="hm" Local="Hektometer"></Unit>
+		<Unit Show="TRUE" NameU="decametre" Flag="dam" Local="Dekameter"></Unit>
+		<Unit Show="TRUE" NameU="metre" Flag="m" Local="Meter"></Unit>		
+		<Unit Show="TRUE" NameU="decimetre" Flag="dm" Local="Dezimeter"></Unit>
+		<Unit Show="TRUE" NameU="centimetre" Flag="cm" Local="Zentimeter"></Unit>
+		<Unit Show="TRUE" NameU="millimetre" Flag="mm" Local="Millimeter"></Unit>
+		<Unit Show="TRUE" NameU="decimillimetre" Flag="dmm" Local="Hundertelmillimeter"></Unit>
+		<Unit Show="TRUE" NameU="centimillimetre" Flag="cmm" Local="Zehntelmillimeter"></Unit>
+		<Unit Show="TRUE" NameU="micrometre" Flag="μm" Local="Mikrometer"></Unit>
+		<Unit Show="TRUE" NameU="nautical mile" Flag="n.m" Local="Seemeile"></Unit>
+		<Unit Show="TRUE" NameU="mile" Flag="mi" Local="Meile"></Unit>
+		<Unit Show="TRUE" NameU="yard" Flag="yd" Local="Yard"></Unit>
+		<Unit Show="TRUE" NameU="foot" Flag="ft" Local="Fuß"></Unit>
+		<Unit Show="TRUE" NameU="inch" Flag="in" Local="Inch"></Unit>
+		<Unit Show="TRUE" NameU="square kilometre" Flag="q.km" Local="Quadratkilometer"></Unit>
+		<Unit Show="TRUE" NameU="hectare" Flag="ha" Local="Hektar"></Unit>
+		<Unit Show="TRUE" NameU="are" Flag="a" Local="Ar"></Unit>		
+		<Unit Show="TRUE" NameU="square metre" Flag="q.m" Local="Quadratmeter"></Unit>
+		<Unit Show="TRUE" NameU="square centimetre" Flag="q.cm" Local="Quadratcentimeter"></Unit>
+		<Unit Show="TRUE" NameU="square mile" Flag="q.mi" Local="Quadratmeile"></Unit>
+		<Unit Show="TRUE" NameU="acre" Flag="ac" Local="Acre"></Unit>
+		<Unit Show="TRUE" NameU="square yard" Flag="q.yd" Local="Quadratyard"></Unit>
+		<Unit Show="TRUE" NameU="square foot" Flag="q.ft" Local="Quadratfuß"></Unit>
+		<Unit Show="TRUE" NameU="square inch" Flag="q.in" Local="Quadratinch"></Unit>
+		<Unit Show="TRUE" NameU="tonne" Flag="t" Local="Tonne"></Unit>
+		<Unit Show="TRUE" NameU="quintal" Flag="q" Local="Zentner"></Unit>
+		<Unit Show="TRUE" NameU="kilogram" Flag="kg" Local="Kilogramm"></Unit>
+		<Unit Show="TRUE" NameU="hectogramme" Flag="hg" Local="Hektogramm"></Unit>
+		<Unit Show="TRUE" NameU="decagramme" Flag="dag" Local="Dekagramm"></Unit>
+		<Unit Show="TRUE" NameU="gramme" Flag="g" Local="Gramm"></Unit>
+		<Unit Show="TRUE" NameU="decigramme" Flag="dg" Local="Dekigramm"></Unit>
+		<Unit Show="TRUE" NameU="centigramme" Flag="cg" Local="Zentigramm"></Unit>
+		<Unit Show="TRUE" NameU="milligramme" Flag="mg" Local="Milligramm"></Unit>
+		<Unit Show="TRUE" NameU="microgramme" Flag="ug" Local="Mikrogramm"></Unit>
+		<Unit Show="TRUE" NameU="long ton" Flag="l.t" Local="Long Ton"></Unit>
+		<Unit Show="TRUE" NameU="short ton" Flag="s.t" Local="Short Ton"></Unit>
+		<Unit Show="TRUE" NameU="hundredweight" Flag="cwt" Local="Zentner"></Unit>
+		<Unit Show="TRUE" NameU="stone" Flag="stone" Local="Stein"></Unit>
+		<Unit Show="TRUE" NameU="pound" Flag="lb" Local="Pfund"></Unit>
+		<Unit Show="TRUE" NameU="ounce" Flag="oz" Local="Unze"></Unit>
+		<Unit Show="TRUE" NameU="dram" Flag="dr" Local="Drachme"></Unit>
+		<Unit Show="TRUE" NameU="grain" Flag="gr" Local="Grain"></Unit>	
+		<Unit Show="TRUE" NameU="kilolitre" Flag="kl" Local="Kiloliter"></Unit>
+		<Unit Show="TRUE" NameU="hectolitre" Flag="hl" Local="Hektoliter"></Unit>
+		<Unit Show="TRUE" NameU="decalitre" Flag="dal" Local="Dekaliter"></Unit>
+		<Unit Show="TRUE" NameU="litre" Flag="l" Local="liter"></Unit>
+		<Unit Show="TRUE" NameU="decilitre" Flag="dl" Local="Dekiliter"></Unit>
+		<Unit Show="TRUE" NameU="centilitre" Flag="cl" Local="Zentiliter"></Unit>
+		<Unit Show="TRUE" NameU="millilitre" Flag="ml" Local="Milliliter"></Unit>	
+		<Unit Show="TRUE" NameU="microlitre" Flag="ul" Local="Mikroliter"></Unit>
+		<Unit Show="TRUE" NameU="bushel" Flag="bsh" Local="Scheffel"></Unit>
+		<Unit Show="TRUE" NameU="peck" Flag="pk" Local="Viertelscheffel"></Unit>
+		<Unit Show="TRUE" NameU="gallon" Flag="gal" Local="Gallone"></Unit>
+		<Unit Show="TRUE" NameU="quart" Flag="qt" Local="Quart"></Unit>
+		<Unit Show="TRUE" NameU="pint" Flag="p" Local="Pinte"></Unit>
+		<Unit Show="TRUE" NameU="ampere" Flag="A" Local="Ampere"></Unit>
+		<Unit Show="TRUE" NameU="kelvin" Flag="K" Local="Kelvin"></Unit>
+		<Unit Show="TRUE" NameU="mole" Flag="mol" Local="Mol"></Unit>
+		<Unit Show="TRUE" NameU="candela" Flag="cd" Local="Candella"></Unit>
+		<Unit Show="TRUE" NameU="second" Flag="s" Local="Sekunde"></Unit>
+		<Unit Show="TRUE" NameU="hertz" Flag="Hz" Local="Hertz"></Unit>
+		<Unit Show="TRUE" NameU="pascal" Flag="Pa" Local="Pascal"></Unit>
+		<Unit Show="TRUE" NameU="newton" Flag="N" Local="Newton"></Unit>
+		<Unit Show="TRUE" NameU="joule" Flag="J" Local="Joule"></Unit>
+		<Unit Show="TRUE" NameU="watt" Flag="W" Local="Watt"></Unit>
+		<Unit Show="TRUE" NameU="coulomb" Flag="C" Local="Coulomb"></Unit>
+		<Unit Show="TRUE" NameU="volt" Flag="V" Local="Volt"></Unit>
+		<Unit Show="TRUE" NameU="ohm" Flag="Ω" Local="Ohm"></Unit>
+		<Unit Show="TRUE" NameU="farad" Flag="F" Local="Farad"></Unit>
+		<Unit Show="TRUE" NameU="henry" Flag="H" Local="Henry"></Unit>	
+		<Unit Show="TRUE" NameU="centigrade" Flag="°C" Local="Celsius"></Unit>
+		<Unit Show="TRUE" NameU="radian" Flag="rad" Local="Radiant"></Unit>
+		<Unit Show="TRUE" NameU="steradian" Flag="sr" Local="Steradiant"></Unit>
+		<Unit Show="TRUE" NameU="Custom" Flag="" Local="Benutzerdefiniert"></Unit>	
+	</Units>	
+	<Currency Default="9">	
+		<Cur Country="None" Flag="" NewFlag="" Local="Nichts"></Cur>
+		<Cur Country="Australien" Flag="$A." NewFlag="AUD" Local="Australischer Dollar"></Cur>
+		<Cur Country="Kanada" Flag="$" NewFlag="CAD" Local="Kanadischer Dollar"></Cur>
+		<Cur Country="Dänemark" Flag="D.Kr." NewFlag="DKK" Local="Dänenkrone"></Cur>		
+		<Cur Country="Europe" Flag="€" NewFlag="EUR" Local="Euro"></Cur>
+		<Cur Country="Hong Kong" Flag="HK$" NewFlag="HKD" Local="Hongkong-Dollar"></Cur>
+		<Cur Country="Japan" Flag="¥" NewFlag="JPY" Local="Yen"></Cur>
+		<Cur Country="Vereinigte Königreich " Flag="£" NewFlag="GBP" Local="Pfund Sterling"></Cur>		
+		<Cur Country="Schweden" Flag="S.Kr." NewFlag="SEK" Local="Schwedische Krone"></Cur>				
+		<Cur Country="Vereinigten Staaten von Amerika" Flag="$" NewFlag="USD" Local="US Dollar"></Cur>		
+		<Cur Country="China" Flag="￥" NewFlag="CNY" Local="Yuan Renminbi"></Cur>
+		<Cur Country="India" Flag="Re." NewFlag="INR" Local="Indischen Rupie "></Cur>
+		<Cur Country="Korea" Flag="KRW" NewFlag="KRW" Local="Südkoreanischer Won"></Cur>
+		<Cur Country="Malaysia" Flag="M.$" NewFlag="MYR" Local="Ringgit"></Cur>
+		<Cur Country="Mexiko" Flag="$" NewFlag="MXN" Local="Mexikanischer Peso"></Cur>
+		<Cur Country="Südafrika" Flag="R." NewFlag="ZAR" Local="Südafrikanischer Rand"></Cur>
+		<Cur Country="Benutzerdefiniert" Flag="" NewFlag="" Local="Benutzerdefiniert"></Cur>	
+	</Currency>
+</DataFormats>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ThemeTexts Version="6.1">
+<ThemeText ID="1" Name="MS Mincho">
+        <FontSchemeLst>
+            <FontScheme FontSize="19" Flag="0" FontName="MS Mincho"/>
+            <FontScheme FontSize="16" Flag="0" FontName="MS Mincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS Mincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS Mincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS Mincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS Mincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS Mincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS Mincho"/>
+        </FontSchemeLst>
+    </ThemeText>
+ <ThemeText ID="2" Name="MS PMincho">
+        <FontSchemeLst>
+            <FontScheme FontSize="19" Flag="0" FontName="MS PMincho"/>
+            <FontScheme FontSize="16" Flag="0" FontName="MS PMincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS PMincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS PMincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS PMincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS PMincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS PMincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS PMincho"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="3" Name="MS PGothic">
+        <FontSchemeLst>
+            <FontScheme FontSize="19" Flag="0" FontName="MS PGothic"/>
+            <FontScheme FontSize="16" Flag="0" FontName="MS PGothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS PGothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS PGothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS PGothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS PGothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS PGothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS PGothic"/>
+        </FontSchemeLst>
+    </ThemeText>
+	<ThemeText ID="4" Name="MS Gothic">
+        <FontSchemeLst>
+            <FontScheme FontSize="19" Flag="0" FontName="MS Gothic"/>
+            <FontScheme FontSize="16" Flag="0" FontName="MS Gothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS Gothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS Gothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS Gothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS Gothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS Gothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS Gothic"/>
+    </ThemeText>
+    <ThemeText ID="5" Name="MS UI Gothic">
+        <FontSchemeLst>
+            <FontScheme FontSize="19" Flag="0" FontName="MS UI Gothic"/>
+            <FontScheme FontSize="16" Flag="0" FontName="MS UI Gothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS UI Gothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS UI Gothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS UI Gothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS UI Gothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS UI Gothic"/>
+            <FontScheme FontSize="13" Flag="0" FontName="MS UI Gothic"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="6" Name="Mincho">
+        <FontSchemeLst>
+            <FontScheme FontSize="19" Flag="0" FontName="Mincho"/>
+            <FontScheme FontSize="16" Flag="0" FontName="Mincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Mincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Mincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Mincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Mincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Mincho"/>
+            <FontScheme FontSize="13" Flag="0" FontName="Mincho"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="8" Name="Tahoma">
+        <FontSchemeLst>
+            <FontScheme FontSize="14" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Tahoma"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="9" Name="Tahoma (Big)">
+        <FontSchemeLst>
+            <FontScheme FontSize="18" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="14" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="14" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Tahoma"/>
+        </FontSchemeLst>
+    </ThemeText>
+
+    <ThemeText ID="10" Name="Verdana">
+        <FontSchemeLst>
+            <FontScheme FontSize="14" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Verdana"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="11" Name="Verdana (Big)">
+        <FontSchemeLst>
+            <FontScheme FontSize="18" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="14" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="14" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Verdana"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Verdana"/>
+        </FontSchemeLst>
+    </ThemeText>
+</ThemeTexts>

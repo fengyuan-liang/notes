@@ -1,0 +1,784 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Libraries>
+    <Lib Path="./Symbols/Animal.mdt">
+        <Item Name="Hippopotamus" Prompt="Hippopotamus"/>
+        <Item Name="Bee" Prompt="Bee"/>
+        <Item Name="Cow" Prompt="Cow"/>
+        <Item Name="Rabbit" Prompt="Rabbit"/>
+        <Item Name="Tiger" Prompt="Tiger"/>
+        <Item Name="Mouse" Prompt="Mouse"/>
+        <Item Name="Horse" Prompt="Horse"/>
+        <Item Name="Deer" Prompt="Deer"/>
+        <Item Name="Lion" Prompt="Lion"/>
+        <Item Name="Elephant" Prompt="Elephant"/>
+        <Item Name="Panda" Prompt="Panda"/>
+        <Item Name="Brown bear" Prompt="Brown bear"/>
+        <Item Name="Dog" Prompt="Dog"/>
+        <Item Name="Sheep" Prompt="Sheep"/>
+        <Item Name="Pig" Prompt="Pig"/>
+        <Item Name="Giraffe" Prompt="Giraffe"/>
+        <Item Name="Koala" Prompt="Koala"/>
+        <Item Name="Cat" Prompt="Cat"/>
+        <Item Name="Monkey" Prompt="Monkey"/>
+        <Item Name="Fox" Prompt="Fox"/>
+    </Lib>
+	<Lib Path="./Symbols/Education.mdt">
+        <Item Name="letter" Prompt="letter"/>
+        <Item Name="Trophy" Prompt="Trophy"/>
+        <Item Name="Blackboard" Prompt="Blackboard"/>
+        <Item Name="Pencils and rulers" Prompt="Pencils and rulers"/>
+        <Item Name="Slide" Prompt="Slide"/>
+        <Item Name="School bag" Prompt="School bag"/>
+        <Item Name="Tellurion" Prompt="Tellurion"/>
+        <Item Name="Notepad" Prompt="Notepad"/>
+        <Item Name="Notebook" Prompt="Notebook"/>
+        <Item Name="Test tube" Prompt="Test tube"/>
+        <Item Name="Desk lamp" Prompt="Desk lamp"/>
+        <Item Name="Sandglass" Prompt="Sandglass"/>
+        <Item Name="Medal" Prompt="Medal"/>
+        <Item Name="Trencher cap" Prompt="Trencher cap"/>
+        <Item Name="Pen" Prompt="Pen"/>
+        <Item Name="Folder" Prompt="Folder"/>
+        <Item Name="Paper file" Prompt="Paper file"/>
+        <Item Name="School" Prompt="School"/>
+        <Item Name="Newspaper" Prompt="Newspaper"/>
+        <Item Name="Algorithm" Prompt="Algorithm"/>
+        <Item Name="English letters" Prompt="English letters"/>
+        <Item Name="Cell" Prompt="Cell"/>
+        <Item Name="Microscope" Prompt="Microscope"/>
+        <Item Name="bamboo slip" Prompt="bamboo slip"/>
+        <Item Name="Open book" Prompt="Open book"/>
+        <Item Name="Magnifying glass" Prompt="Magnifying glass"/>
+        <Item Name="Compass" Prompt="Compass"/>
+        <Item Name="Flask" Prompt="Flask"/>
+        <Item Name="Molecule" Prompt="Molecule"/>
+        <Item Name="School bus" Prompt="School bus"/>
+        <Item Name="Pen holder" Prompt="Pen holder"/>
+        <Item Name="Trencher cap" Prompt="Trencher cap"/>
+        <Item Name="Book" Prompt="Book"/>
+        <Item Name="Testimonials" Prompt="Testimonials"/>
+        <Item Name="Glasses" Prompt="Glasses"/>
+        <Item Name="Computer desk" Prompt="Computer desk"/>
+        <Item Name="bulb" Prompt="bulb"/>
+        <Item Name="Watch" Prompt="Watch"/>
+        <Item Name="Penknife" Prompt="Penknife"/>
+        <Item Name="Mechanical pencil" Prompt="Mechanical pencil"/>
+        <Item Name="Pencil" Prompt="Pencil"/>
+        <Item Name="Chinese brush" Prompt="Chinese brush"/>
+        <Item Name="Mark pen" Prompt="Mark pen"/>
+        <Item Name="Dance" Prompt="Dance"/>
+        <Item Name="Discussion" Prompt="Discussion"/>
+        <Item Name="Heart" Prompt="Heart"/>
+        <Item Name="Eraser" Prompt="Eraser"/>
+        <Item Name="Paint box" Prompt="Paint box"/>
+        <Item Name="Palette" Prompt="Palette"/>
+        <Item Name="Compasses" Prompt="Compasses"/>
+        <Item Name="Brush" Prompt="Brush"/>
+    </Lib>
+	<Lib Path="./Symbols/ElectronicDevices.mdt">
+        <Item Name="Television" Prompt="Television"/>
+        <Item Name="Liquid crystal TV" Prompt="Liquid crystal TV"/>
+        <Item Name="Tablet PC" Prompt="Tablet PC"/>
+        <Item Name="Desktop computer" Prompt="Desktop computer"/>
+        <Item Name="Notebook computer" Prompt="Notebook computer"/>
+        <Item Name="Mouse" Prompt="Mouse"/>
+        <Item Name="Printer" Prompt="Printer"/>
+        <Item Name="Mobile phone" Prompt="Mobile phone"/>
+        <Item Name="Mobile phone" Prompt="Mobile phone"/>
+        <Item Name="Clock" Prompt="Clock"/>
+        <Item Name="Phone" Prompt="Phone"/>
+        <Item Name="USB flash drive" Prompt="USB flash drive"/>
+        <Item Name="Calculator" Prompt="Calculator"/>
+        <Item Name="Watch" Prompt="Watch"/>
+        <Item Name="Apple Watch" Prompt="Apple Watch"/>
+        <Item Name="Microsoft Band" Prompt="Microsoft Band"/>
+        <Item Name="VR glasses" Prompt="VR glasses"/>
+        <Item Name="Server" Prompt="Server"/>
+        <Item Name="Main engine" Prompt="Main engine"/>
+        <Item Name="Converter" Prompt="Converter"/>
+        <Item Name="Radio" Prompt="Radio"/>
+        <Item Name="Fax" Prompt="Fax"/>
+        <Item Name="Unmanned aerial vehicle (uav)" Prompt="Unmanned aerial vehicle (uav)"/>
+        <Item Name="Unmanned aerial vehicle (uav)" Prompt="Unmanned aerial vehicle (uav)"/>
+        <Item Name="Camera" Prompt="Camera"/>
+        <Item Name="Camera" Prompt="Camera"/>
+        <Item Name="Microphone" Prompt="Microphone"/>
+		<Item Name="Camera" Prompt="Camera"/>
+        <Item Name="Floppy disk" Prompt="Floppy disk"/>
+        <Item Name="Loudspeaker box" Prompt="Loudspeaker box"/>
+        <Item Name="MP3" Prompt="MP3"/>
+        <Item Name="Digital board" Prompt="Digital board"/>
+        <Item Name="Projector" Prompt="Projector"/>
+		<Item Name="Router" Prompt="Router"/>
+        <Item Name="Camera" Prompt="Camera"/>
+        <Item Name="Intercom" Prompt="Intercom"/>
+        <Item Name="Headset" Prompt="Headset"/>
+        <Item Name="Game Boy" Prompt="Game Boy"/>
+    </Lib>
+	<Lib Path="./Symbols/EnvironmentalProtection.mdt">
+        <Item Name="To save water" Prompt="To save water"/>
+        <Item Name="earth" Prompt="earth"/>
+        <Item Name="Energy-saving lamp" Prompt="Energy-saving lamp"/>
+        <Item Name="Energy-saving lamp" Prompt="Energy-saving lamp"/>
+        <Item Name="electric car" Prompt="electric car"/>
+        <Item Name="sun" Prompt="sun"/>
+        <Item Name="trash" Prompt="trash"/>
+        <Item Name="trash" Prompt="trash"/>
+        <Item Name="bicycle" Prompt="bicycle"/>
+        <Item Name="Environmentally friendly housing" Prompt="Environmentally friendly housing"/>
+        <Item Name="solar energy" Prompt="solar energy"/>
+        <Item Name="wind power" Prompt="wind power"/>
+        <Item Name="wind power" Prompt="wind power"/>
+        <Item Name="Environmental protection bags" Prompt="Environmental protection bags"/>
+        <Item Name="water cycle" Prompt="water cycle"/>
+        <Item Name="Environmental label" Prompt="Environmental label"/>
+        <Item Name="Environmental label" Prompt="Environmental label"/>
+        <Item Name="medal" Prompt="medal"/>
+        <Item Name="Environmental protection logo" Prompt="Environmental protection logo"/>
+        <Item Name="Environmental protection logo" Prompt="Environmental protection logo"/>
+        <Item Name="smoke" Prompt="smoke"/>
+        <Item Name="light smoke" Prompt="light smoke"/>
+        <Item Name="ladder" Prompt="ladder"/>
+        <Item Name="sink" Prompt="sink"/>
+        <Item Name="sink" Prompt="sink"/>
+        <Item Name="factory" Prompt="factory"/>
+        <Item Name="Recycling label" Prompt="Recycling label"/>
+        <Item Name="cloud" Prompt="cloud"/>
+        <Item Name="trees" Prompt="trees"/>
+        <Item Name="cactus" Prompt="cactus"/>
+        <Item Name="Environmental protection box" Prompt="Environmental protection box"/>
+        <Item Name="road sign" Prompt="road sign"/>
+        <Item Name="Hot air balloon" Prompt="Hot air balloon"/>
+        <Item Name="Recycled paper" Prompt="Recycled paper"/>
+        <Item Name="battery" Prompt="battery"/>
+        <Item Name="chimney" Prompt="chimney"/>
+        <Item Name="Office building" Prompt="Office building"/>
+        <Item Name="school" Prompt="school"/>
+        <Item Name="crane" Prompt="crane"/>
+        <Item Name="environmental protection" Prompt="environmental protection"/>
+        <Item Name="faucet" Prompt="faucet"/>
+		<Item Name="Recycling bottle" Prompt="Recycling bottle"/>
+    </Lib>
+	<Lib Path="./Symbols/Expressions.mdt">
+        <Item Name="laugh" Prompt="laugh"/>
+        <Item Name="happy" Prompt="happy"/>
+        <Item Name="surprised" Prompt="surprised"/>
+        <Item Name="Blink" Prompt="Blink"/>
+        <Item Name="delightfulness" Prompt="delightfulness"/>
+        <Item Name="indifference" Prompt="indifference"/>
+        <Item Name="disdain" Prompt="disdain"/>
+        <Item Name="angry" Prompt="angry"/>
+        <Item Name="discontent" Prompt="discontent"/>
+        <Item Name="sorry" Prompt="sorry"/>
+        <Item Name="embarrassed" Prompt="embarrassed"/>
+        <Item Name="lovely" Prompt="lovely"/>
+        <Item Name="greed" Prompt="greed"/>
+        <Item Name="hate" Prompt="hate"/>
+        <Item Name="afraid" Prompt="afraid"/>
+        <Item Name="angry" Prompt="angry"/>
+        <Item Name="nervous" Prompt="nervous"/>
+        <Item Name="disappointed" Prompt="disappointed"/>
+    </Lib>
+	<Lib Path="./Symbols/Food.mdt">
+        <Item Name="Tableware" Prompt="Tableware"/>
+        <Item Name="Pineapple" Prompt="Pineapple"/>
+        <Item Name="Birthday Cake" Prompt="Birthday Cake"/>
+        <Item Name="Cupcake" Prompt="Cupcake"/>
+        <Item Name="Drinks" Prompt="Drinks"/>
+        <Item Name="Hamburger" Prompt="Hamburger"/>
+        <Item Name="Red wine" Prompt="Red wine"/>
+        <Item Name="Teakettle" Prompt="Teakettle"/>
+        <Item Name="Orange" Prompt="Orange"/>
+        <Item Name="Roast Chicken" Prompt="Roast Chicken"/>
+        <Item Name="Green peppers" Prompt="Green peppers"/>
+        <Item Name="Pear" Prompt="Pear"/>
+        <Item Name="Carrot" Prompt="Carrot"/>
+        <Item Name="Kiwi fruit" Prompt="Kiwi fruit"/>
+        <Item Name="Rice" Prompt="Rice"/>
+        <Item Name="Apple" Prompt="Apple"/>
+        <Item Name="Snow peas" Prompt="Snow peas"/>
+        <Item Name="Bacon" Prompt="Bacon"/>
+        <Item Name="Avocado" Prompt="Avocado"/>
+        <Item Name="Banana" Prompt="Banana"/>
+        <Item Name="Eggplant" Prompt="Eggplant"/>
+        <Item Name="lemon" Prompt="lemon"/>
+        <Item Name="Biscuits" Prompt="Biscuits"/>
+        <Item Name="Broccoli" Prompt="Broccoli"/>
+        <Item Name="Croissant" Prompt="Croissant"/>
+        <Item Name="Candy Cane" Prompt="Candy Cane"/>
+        <Item Name="Ham sausage" Prompt="Ham sausage"/>
+        <Item Name="Cherry" Prompt="Cherry"/>
+        <Item Name="Pineapple bread" Prompt="Pineapple bread"/>
+        <Item Name="Egg" Prompt="Egg"/>
+        <Item Name="Fish" Prompt="Fish"/>
+        <Item Name="Tea" Prompt="Tea"/>
+        <Item Name="Beer" Prompt="Beer"/>
+        <Item Name="Candy" Prompt="Candy"/>
+        <Item Name="Drumstick" Prompt="Drumstick"/>
+        <Item Name="Chili" Prompt="Chili"/>
+        <Item Name="Mango" Prompt="Mango"/>
+        <Item Name="Yogurt" Prompt="Yogurt"/>
+        <Item Name="Watermelon" Prompt="Watermelon"/>
+        <Item Name="Cold Drinks" Prompt="Cold Drinks"/>
+        <Item Name="Coffee" Prompt="Coffee"/>
+        <Item Name="Mushroom" Prompt="Mushroom"/>
+        <Item Name="Coca Cola" Prompt="Coca Cola"/>
+        <Item Name="Noodles" Prompt="Noodles"/>
+        <Item Name="French fries" Prompt="French fries"/>
+        <Item Name="Pizza" Prompt="Pizza"/>
+        <Item Name="Meat" Prompt="Meat"/>
+        <Item Name="Ice cream" Prompt="Ice cream"/>
+        <Item Name="Doughnut" Prompt="Doughnut"/>
+        <Item Name="Grape" Prompt="Grape"/>
+        <Item Name="Fried eggs" Prompt="Fried eggs"/>
+    </Lib>
+	<Lib Path="./Symbols/Holiday.mdt">
+        <Item Name="Holly" Prompt="Holly"/>
+        <Item Name="Sleigh car" Prompt="Sleigh car"/>
+        <Item Name="Gift Bag" Prompt="Gift Bag"/>
+        <Item Name="Gift" Prompt="Gift"/>
+        <Item Name="Christmas tree" Prompt="Christmas tree"/>
+        <Item Name="Glove" Prompt="Glove"/>
+        <Item Name="Christmas stocking" Prompt="Christmas stocking"/>
+        <Item Name="Santa Claus" Prompt="Santa Claus"/>
+        <Item Name="Christmas hat" Prompt="Christmas hat"/>
+        <Item Name="Christmas bell" Prompt="Christmas bell"/>
+        <Item Name="Baubles" Prompt="Baubles"/>
+        <Item Name="Lebkuchen" Prompt="Lebkuchen"/>
+        <Item Name="Snowman" Prompt="Snowman"/>
+        <Item Name="Reindeer" Prompt="Reindeer"/>
+        <Item Name="Snowflake" Prompt="Snowflake"/>
+        <Item Name="Cake" Prompt="Cake"/>
+        <Item Name="Balloon" Prompt="Balloon"/>
+        <Item Name="Candle" Prompt="Candle"/>
+        <Item Name="christmas antlers" Prompt="christmas antlers"/>
+        <Item Name="Firecracker" Prompt="Firecracker"/>
+        <Item Name="Pendant" Prompt="Pendant"/>
+        <Item Name="Fireworks" Prompt="Fireworks"/>
+        <Item Name="lantern" Prompt="lantern"/>
+        <Item Name="lantern" Prompt="lantern"/>
+        <Item Name="Cap" Prompt="Cap"/>
+        <Item Name="Fu character" Prompt="Fu character"/>
+        <Item Name="Red Envelope" Prompt="Red Envelope"/>
+        <Item Name="Heart Lock" Prompt="Heart Lock"/>
+        <Item Name="Chocolate" Prompt="Chocolate"/>
+        <Item Name="A pair of lovebirds" Prompt="A pair of lovebirds"/>
+        <Item Name="Dialog box" Prompt="Dialog box"/>
+        <Item Name="Wedding dress" Prompt="Wedding dress"/>
+        <Item Name="Suit" Prompt="Suit"/>
+        <Item Name="Rose" Prompt="Rose"/>
+        <Item Name="Ring" Prompt="Ring"/>
+        <Item Name="Necklace" Prompt="Necklace"/>
+        <Item Name="love letter" Prompt="love letter"/>
+        <Item Name="Photograph" Prompt="Photograph"/>
+        <Item Name="Crown" Prompt="Crown"/>
+        <Item Name="Pumpkin" Prompt="Pumpkin"/>
+        <Item Name="Ghost" Prompt="Ghost"/>
+        <Item Name="Bat" Prompt="Bat"/>
+        <Item Name="Ghost" Prompt="Ghost"/>
+        <Item Name="Cap" Prompt="Cap"/>
+        <Item Name="Witch hat" Prompt="Witch hat"/>
+        <Item Name="Maple leaf" Prompt="Maple leaf"/>
+        <Item Name="Easter egg" Prompt="Easter egg"/>
+        <Item Name="Mask" Prompt="Mask"/>
+        <Item Name="Birthday Card" Prompt="Birthday Card"/>
+        <Item Name="Candle" Prompt="Candle"/>
+        <Item Name="Candle" Prompt="Candle"/>
+		<Item Name="Candle" Prompt="Candle"/>
+		<Item Name="Candle" Prompt="Candle"/>
+		<Item Name="Candle" Prompt="Candle"/>
+		<Item Name="Candle" Prompt="Candle"/>
+		<Item Name="Candle" Prompt="Candle"/>
+		<Item Name="Candle" Prompt="Candle"/>
+		<Item Name="Candle" Prompt="Candle"/>
+		<Item Name="Candle" Prompt="Candle"/>
+    </Lib>
+    <Lib Path="./Symbols/Insect.mdt">
+        <Item Name="Lady beetle" Prompt="Lady beetle"/>
+        <Item Name="beetle" Prompt="beetle"/>
+        <Item Name="ants" Prompt="ants"/>
+        <Item Name="mantis" Prompt="mantis"/>
+        <Item Name="fly" Prompt="fly"/>
+        <Item Name="bees" Prompt="bees"/>
+        <Item Name="centipede" Prompt="centipede"/>
+        <Item Name="caterpillar" Prompt="caterpillar"/>
+        <Item Name="butterfly" Prompt="butterfly"/>
+        <Item Name="cockroach" Prompt="cockroach"/>
+        <Item Name="locusts" Prompt="locusts"/>
+        <Item Name="bug" Prompt="bug"/>
+        <Item Name="lice" Prompt="lice"/>
+        <Item Name="mosquitoes" Prompt="mosquitoes"/>
+        <Item Name="earthworm" Prompt="earthworm"/>
+        <Item Name="weevil" Prompt="weevil"/>
+        <Item Name="snail" Prompt="snail"/>
+        <Item Name="fireflies" Prompt="fireflies"/>
+        <Item Name="scorpion" Prompt="scorpion"/>
+        <Item Name="dragonfly" Prompt="dragonfly"/>
+        <Item Name="butterfly" Prompt="butterfly"/>
+        <Item Name="Cicada" Prompt="Cicada"/>
+        <Item Name="cricket" Prompt="cricket"/>
+        <Item Name="beetle" Prompt="beetle"/>
+        <Item Name="spider" Prompt="spider"/>
+        <Item Name="moths" Prompt="moths"/>
+    </Lib>
+	<Lib Path="./Symbols/Medical.mdt">
+        <Item Name="Brain" Prompt="Brain"/>
+        <Item Name="DNA" Prompt="DNA"/>
+        <Item Name="Electrocardiogram" Prompt="Electrocardiogram"/>
+        <Item Name="molecular structure" Prompt="molecular structure"/>
+        <Item Name="fetus" Prompt="fetus"/>
+        <Item Name="family" Prompt="family"/>
+        <Item Name="microscope" Prompt="microscope"/>
+        <Item Name="Medical records" Prompt="Medical records"/>
+        <Item Name="ambulance" Prompt="ambulance"/>
+        <Item Name="sickbed" Prompt="sickbed"/>
+        <Item Name="weight scale" Prompt="weight scale"/>
+        <Item Name="Rehabilitation equipment1" Prompt="Rehabilitation equipment1"/>
+        <Item Name="drip feed" Prompt="drip feed"/>
+        <Item Name="Rehabilitation equipment" Prompt="Rehabilitation equipment"/>
+        <Item Name="wheelchair" Prompt="wheelchair"/>
+        <Item Name="Walking stick" Prompt="Walking stick"/>
+        <Item Name="Walking stick" Prompt="Walking stick"/>
+        <Item Name="test tube" Prompt="test tube"/>
+        <Item Name="test tube" Prompt="test tube"/>
+        <Item Name="thermometer" Prompt="thermometer"/>
+        <Item Name="hospital" Prompt="hospital"/>
+        <Item Name="capsule" Prompt="capsule"/>
+        <Item Name="pills" Prompt="pills"/>
+        <Item Name="respirator" Prompt="respirator"/>
+        <Item Name="First aid kit" Prompt="First aid kit"/>
+        <Item Name="needle" Prompt="needle"/>
+        <Item Name="Intestine" Prompt="Intestine"/>
+        <Item Name="ear" Prompt="ear"/>
+        <Item Name="spleen" Prompt="spleen"/>
+        <Item Name="stomach" Prompt="stomach"/>
+        <Item Name="lung" Prompt="lung"/>
+        <Item Name="liver" Prompt="liver"/>
+        <Item Name="heart" Prompt="heart"/>
+        <Item Name="nurse cap" Prompt="nurse cap"/>
+        <Item Name="stethoscope" Prompt="stethoscope"/>
+        <Item Name="teeth" Prompt="teeth"/>
+        <Item Name="Wheelchair access" Prompt="Wheelchair access"/>
+        <Item Name="hazard" Prompt="hazard"/>
+        <Item Name="sickbed" Prompt="sickbed"/>
+        <Item Name="virus" Prompt="virus"/>
+        <Item Name="bottle" Prompt="bottle"/>
+        <Item Name="Electrocardiogram" Prompt="Electrocardiogram"/>
+        <Item Name="doctor" Prompt="doctor"/>
+        <Item Name="virus" Prompt="virus"/>
+        <Item Name="X-ray" Prompt="X-ray"/>
+        <Item Name="nurse" Prompt="nurse"/>
+    </Lib>
+    <Lib Path="./Symbols/Office.mdt">
+        <Item Name="Employee's card" Prompt="Employee's card"/>
+        <Item Name="Resume" Prompt="Resume"/>
+        <Item Name="Postmark" Prompt="Postmark"/>
+        <Item Name="Printer" Prompt="Printer"/>
+        <Item Name="Euro" Prompt="Euro"/>
+        <Item Name="Ren Min Bi" Prompt="Ren Min Bi"/>
+        <Item Name="Pound" Prompt="Pound"/>
+        <Item Name="Dollar" Prompt="Dollar"/>
+        <Item Name="A dollar purse" Prompt="A dollar purse"/>
+        <Item Name="A bag of RMB" Prompt="A bag of RMB"/>
+        <Item Name="A purse of euros" Prompt="A purse of euros"/>
+        <Item Name="A purse with pounds in it" Prompt="A purse with pounds in it"/>
+        <Item Name="Disappointing" Prompt="Disappointing"/>
+        <Item Name="Awesome" Prompt="Awesome"/>
+        <Item Name="Mouse" Prompt="Mouse"/>
+        <Item Name="The earth" Prompt="The earth"/>
+        <Item Name="Diamond" Prompt="Diamond"/>
+        <Item Name="Article" Prompt="Article"/>
+        <Item Name="Calendar" Prompt="Calendar"/>
+        <Item Name="letter" Prompt="letter"/>
+        <Item Name="Envelope" Prompt="Envelope"/>
+        <Item Name="Clock" Prompt="Clock"/>
+        <Item Name="Pen" Prompt="Pen"/>
+        <Item Name="Briefcase" Prompt="Briefcase"/>
+        <Item Name="Play mobile phone" Prompt="Play mobile phone"/>
+        <Item Name="File" Prompt="File"/>
+        <Item Name="SMS" Prompt="SMS"/>
+        <Item Name="Mobile phone" Prompt="Mobile phone"/>
+        <Item Name="Alarm clock" Prompt="Alarm clock"/>
+        <Item Name="Scissor" Prompt="Scissor"/>
+        <Item Name="Brainstorm" Prompt="Brainstorm"/>
+        <Item Name="Suit" Prompt="Suit"/>
+        <Item Name="Computer" Prompt="Computer"/>
+        <Item Name="laptop" Prompt="laptop"/>
+        <Item Name="Cart" Prompt="Cart"/>
+        <Item Name="Online shopping" Prompt="Online shopping"/>
+        <Item Name="Warehouse" Prompt="Warehouse"/>
+        <Item Name="Bank" Prompt="Bank"/>
+        <Item Name="Bank" Prompt="Bank"/>
+        <Item Name="Currency conversion" Prompt="Currency conversion"/>
+        <Item Name="Bulb" Prompt="Bulb"/>
+        <Item Name="Video playback" Prompt="Video playback"/>
+        <Item Name="Map" Prompt="Map"/>
+        <Item Name="location" Prompt="location"/>
+        <Item Name="label" Prompt="label"/>
+        <Item Name="Reticule" Prompt="Reticule"/>
+        <Item Name="Cooperation" Prompt="Cooperation"/>
+        <Item Name="Target" Prompt="Target"/>
+        <Item Name="Sand clock" Prompt="Sand clock"/>
+        <Item Name="Depreciate" Prompt="Depreciate"/>
+        <Item Name="Rise" Prompt="Rise"/>
+        <Item Name="Team collaboration" Prompt="Team collaboration"/>
+        <Item Name="Fair" Prompt="Fair"/>
+        <Item Name="Ranking" Prompt="Ranking"/>
+        <Item Name="Make a phone call" Prompt="Make a phone call"/>
+        <Item Name="Paper clip" Prompt="Paper clip"/>
+        <Item Name="Phone" Prompt="Phone"/>
+        <Item Name="Cartogram" Prompt="Cartogram"/>
+        <Item Name="Cartogram" Prompt="Cartogram"/>
+        <Item Name="USB Flash Drive" Prompt="USB Flash Drive"/>
+        <Item Name="Drawing pin" Prompt="Drawing pin"/>
+        <Item Name="Network" Prompt="Network"/>
+        <Item Name="Calculator" Prompt="Calculator"/>
+        <Item Name="File" Prompt="File"/>
+        <Item Name="Shield" Prompt="Shield"/>
+        <Item Name="Treasure" Prompt="Treasure"/>
+        <Item Name="USD" Prompt="USD"/>
+        <Item Name="Cash register" Prompt="Cash register"/>
+        <Item Name="business card" Prompt="business card"/>
+        <Item Name="Office clerk" Prompt="Office clerk"/>
+        <Item Name="Team" Prompt="Team"/>
+        <Item Name="Notepad" Prompt="Notepad"/>
+        <Item Name="Analyze" Prompt="Analyze"/>
+        <Item Name="Folder" Prompt="Folder"/>
+        <Item Name="Invoice" Prompt="Invoice"/>
+        <Item Name="Piggy bank" Prompt="Piggy bank"/>
+        <Item Name="Loudspeaker" Prompt="Loudspeaker"/>
+        <Item Name="Competition" Prompt="Competition"/>
+        <Item Name="Competition" Prompt="Competition"/>
+        <Item Name="Trophy" Prompt="Trophy"/>
+        <Item Name="Medal" Prompt="Medal"/>
+        <Item Name="Prize" Prompt="Prize"/>
+        <Item Name="Slide" Prompt="Slide"/>
+        <Item Name="Slide" Prompt="Slide"/>
+        <Item Name="Slide" Prompt="Slide"/>
+        <Item Name="Umbrella" Prompt="Umbrella"/>
+    </Lib>
+	<Lib Path="./Symbols/Plant.mdt">
+    <Item Name="Tree" Prompt="Tree"/>
+    <Item Name="Flower" Prompt="Flower"/>
+    <Item Name="Flower" Prompt="Flower"/>
+    <Item Name="Grass" Prompt="Grass"/>
+    <Item Name="Tree" Prompt="Tree"/>
+    <Item Name="Four-Leaf Clover" Prompt="Four-Leaf Clover"/>
+    <Item Name="Tree" Prompt="Tree"/>
+    <Item Name="Banyan tree" Prompt="Banyan tree"/>
+    <Item Name="Cedar" Prompt="Cedar"/>
+    <Item Name="Leaves" Prompt="Leaves"/>
+    <Item Name="Leaves" Prompt="Leaves"/>
+    <Item Name="Leaves" Prompt="Leaves"/>
+    <Item Name="Cactus" Prompt="Cactus"/>
+    <Item Name="Mushroom" Prompt="Mushroom"/>
+    <Item Name="Potted" Prompt="Potted"/>
+    <Item Name="Potted" Prompt="Potted"/>
+    <Item Name="Potted" Prompt="Potted"/>
+    <Item Name="Potted" Prompt="Potted"/>
+    <Item Name="Cactus" Prompt="Cactus"/>
+    <Item Name="Cactus" Prompt="Cactus"/>
+    <Item Name="Leaf" Prompt="Leaf"/>
+    <Item Name="Leaf" Prompt="Leaf"/>
+    <Item Name="Leaves" Prompt="Leaves"/>
+    <Item Name="Leaf" Prompt="Leaf"/>
+    <Item Name="Leaf" Prompt="Leaf"/>
+    <Item Name="Leaf" Prompt="Leaf"/>
+</Lib>
+<Lib Path="./Symbols/Professions.mdt">
+    <Item Name="Female employee" Prompt="Female employee"/>
+    <Item Name="Woman teacher" Prompt="Woman teacher"/>
+    <Item Name="Basketball player" Prompt="Basketball player"/>
+    <Item Name="Female graduates" Prompt="Female graduates"/>
+    <Item Name="Female doctors" Prompt="Female doctors"/>
+    <Item Name="Male doctor" Prompt="Male doctor"/>
+    <Item Name="Dentist" Prompt="Dentist"/>
+    <Item Name="Chef" Prompt="Chef"/>
+    <Item Name="President" Prompt="President"/>
+    <Item Name="Programmer" Prompt="Programmer"/>
+    <Item Name="Student" Prompt="Student"/>
+    <Item Name="Customer service" Prompt="Customer service"/>
+    <Item Name="Male clerk" Prompt="Male clerk"/>
+    <Item Name="Hairstylist" Prompt="Hairstylist"/>
+    <Item Name="Santa Claus" Prompt="Santa Claus"/>
+    <Item Name="Priest" Prompt="Priest"/>
+    <Item Name="Judge" Prompt="Judge"/>
+    <Item Name="Worker" Prompt="Worker"/>
+    <Item Name="Police" Prompt="Police"/>
+    <Item Name="Mother" Prompt="Mother"/>
+    <Item Name="Rapper" Prompt="Rapper"/>
+    <Item Name="Girl student" Prompt="Girl student"/>
+</Lib>
+<Lib Path="./Symbols/RoadSign.mdt">
+    <Item Name="No straight and right turns" Prompt="No straight and right turns"/>
+    <Item Name="No straight and left turns" Prompt="No straight and left turns"/>
+    <Item Name="No U-Turn" Prompt="No U-Turn"/>
+    <Item Name="No turning to the left" Prompt="No turning to the left"/>
+    <Item Name="No turning to the right" Prompt="No turning to the right"/>
+    <Item Name="No pedestrians allowed" Prompt="No pedestrians allowed"/>
+    <Item Name="No Overtaking" Prompt="No Overtaking"/>
+    <Item Name="Do Not Enter" Prompt="Do Not Enter"/>
+    <Item Name="No turning left or right" Prompt="No turning left or right"/>
+    <Item Name="No Bicycling" Prompt="No Bicycling"/>
+    <Item Name="No Motor Vehicles" Prompt="No Motor Vehicles"/>
+    <Item Name="No truck allowed" Prompt="No truck allowed"/>
+    <Item Name="Two-way traffic" Prompt="Two-way traffic"/>
+    <Item Name="Crossroads ahead" Prompt="Crossroads ahead"/>
+    <Item Name="Right side auxiliary" Prompt="Right side auxiliary"/>
+    <Item Name="Left side auxiliary" Prompt="Left side auxiliary"/>
+    <Item Name="Traffic lights" Prompt="Traffic lights"/>
+    <Item Name="There are wires overhead" Prompt="There are wires overhead"/>
+    <Item Name="T intersection" Prompt="T intersection"/>
+    <Item Name="Y-intersection" Prompt="Y-intersection"/>
+    <Item Name="Hump bridge ahead" Prompt="Hump bridge ahead"/>
+    <Item Name="Dangerous" Prompt="Dangerous"/>
+    <Item Name="Beware of falling" Prompt="Beware of falling"/>
+    <Item Name="Attention non-motor vehicle" Prompt="Attention non-motor vehicle"/>
+    <Item Name="Roundabout" Prompt="Roundabout"/>
+    <Item Name="On both sides of the narrow" Prompt="On both sides of the narrow"/>
+    <Item Name="Hump bridge" Prompt="Hump bridge"/>
+    <Item Name="Watch the horseman" Prompt="Watch the horseman"/>
+    <Item Name="Height limit warning" Prompt="Height limit warning"/>
+    <Item Name="DANGER! Falling Rocks" Prompt="DANGER! Falling Rocks"/>
+    <Item Name="CAUTION! Slippery Surface" Prompt="CAUTION! Slippery Surface"/>
+    <Item Name="Watch for Children" Prompt="Watch for Children"/>
+    <Item Name="Watch livestock - sheep" Prompt="Watch livestock - sheep"/>
+    <Item Name="Watch livestock - cattle" Prompt="Watch livestock - cattle"/>
+    <Item Name="The steep slope" Prompt="The steep slope"/>
+    <Item Name="On a steep slope" Prompt="On a steep slope"/>
+    <Item Name="Pay attention to the danger" Prompt="Pay attention to the danger"/>
+    <Item Name="Cross the road" Prompt="Cross the road"/>
+    <Item Name="Yield to main road traffic" Prompt="Yield to main road traffic"/>
+    <Item Name="Detour" Prompt="Detour"/>
+    <Item Name="Winding road" Prompt="Winding road"/>
+    <Item Name="Two-way mark" Prompt="Two-way mark"/>
+    <Item Name="Ferry" Prompt="Ferry"/>
+    <Item Name="Attention lamp" Prompt="Attention lamp"/>
+    <Item Name="Pay attention to the pedestrian" Prompt="Pay attention to the pedestrian"/>
+    <Item Name="Road construction" Prompt="Road construction"/>
+    <Item Name="No Entry" Prompt="No Entry"/>
+    <Item Name="Slow down to give way" Prompt="Slow down to give way"/>
+    <Item Name="Fork symbols" Prompt="Fork symbols"/>
+    <Item Name="Stop to give way" Prompt="Stop to give way"/>
+    <Item Name="Do not enter" Prompt="Do not enter"/>
+    <Item Name="No thoroughfare" Prompt="No thoroughfare"/>
+    <Item Name="Pedestrian Prohibited" Prompt="Pedestrian Prohibited"/>
+    <Item Name="No vehicles carrying more than 8 passengers (including drivers)" Prompt="No vehicles carrying more than 8 passengers (including drivers)"/>
+    <Item Name="No towing/trailers allowed" Prompt="No towing/trailers allowed"/>
+    <Item Name="No truck carrying more than the weight shown on the drawing (metric ton)" Prompt="No truck carrying more than the weight shown on the drawing (metric ton)"/>
+    <Item Name="Restricted length (feet)" Prompt="Restricted length (feet)"/>
+    <Item Name="No non-motor vehicles allowed" Prompt="No non-motor vehicles allowed"/>
+    <Item Name="No motorcycles allowed" Prompt="No motorcycles allowed"/>
+    <Item Name="No rickshaws allowed" Prompt="No rickshaws allowed"/>
+    <Item Name="No motor vehicles allowed - except motorcycles" Prompt="No motor vehicles allowed - except motorcycles"/>
+    <Item Name="No motor vehicles allowed" Prompt="No motor vehicles allowed"/>
+    <Item Name="Do not pass" Prompt="Do not pass"/>
+    <Item Name="Transport of dangerous goods is prohibited" Prompt="Transport of dangerous goods is prohibited"/>
+    <Item Name="No U-Turn" Prompt="No U-Turn"/>
+    <Item Name="No parking" Prompt="No parking"/>
+    <Item Name="No turning to the left" Prompt="No turning to the left"/>
+    <Item Name="No turning to the right" Prompt="No turning to the right"/>
+    <Item Name="Speed limits" Prompt="Speed limits"/>
+    <Item Name="Limit height" Prompt="Limit height"/>
+    <Item Name="Limit the width" Prompt="Limit the width"/>
+    <Item Name="Prolonged parking is prohibited" Prompt="Prolonged parking is prohibited"/>
+    <Item Name="Weight limit" Prompt="Weight limit"/>
+    <Item Name="Driving around the island" Prompt="Driving around the island"/>
+    <Item Name="Non-motorized driving" Prompt="Non-motorized driving"/>
+    <Item Name="On the right road" Prompt="On the right road"/>
+    <Item Name="Turning to the right" Prompt="Turning to the right"/>
+    <Item Name="Pedestrians share lanes with non-motor vehicles" Prompt="Pedestrians share lanes with non-motor vehicles"/>
+    <Item Name="Separation of pedestrian and non-motor vehicle lane" Prompt="Separation of pedestrian and non-motor vehicle lane"/>
+    <Item Name="Minimum speed" Prompt="Minimum speed"/>
+    <Item Name="Gas station" Prompt="Gas station"/>
+    <Item Name="Hotel" Prompt="Hotel"/>
+    <Item Name="Pavement" Prompt="Pavement"/>
+    <Item Name="WC" Prompt="WC"/>
+    <Item Name="Catering" Prompt="Catering"/>
+    <Item Name="Parking" Prompt="Parking"/>
+    <Item Name="Emergency call" Prompt="Emergency call"/>
+</Lib>
+<Lib Path="./Symbols/SeaLife.mdt">
+    <Item Name="Crab" Prompt="Crab"/>
+    <Item Name="Lobster" Prompt="Lobster"/>
+    <Item Name="Squid" Prompt="Squid"/>
+    <Item Name="Seaweed" Prompt="Seaweed"/>
+    <Item Name="Hippocampus" Prompt="Hippocampus"/>
+    <Item Name="Conch" Prompt="Conch"/>
+    <Item Name="Sea cucumber" Prompt="Sea cucumber"/>
+    <Item Name="Kelp" Prompt="Kelp"/>
+    <Item Name="Lobster" Prompt="Lobster"/>
+    <Item Name="Conch" Prompt="Conch"/>
+    <Item Name="Shell" Prompt="Shell"/>
+    <Item Name="Shell" Prompt="Shell"/>
+    <Item Name="Jellyfish" Prompt="Jellyfish"/>
+    <Item Name="Starfish" Prompt="Starfish"/>
+    <Item Name="Goldfish" Prompt="Goldfish"/>
+    <Item Name="Fish" Prompt="Fish"/>
+    <Item Name="Fish" Prompt="Fish"/>
+    <Item Name="Walrus" Prompt="Walrus"/>
+    <Item Name="Shark" Prompt="Shark"/>
+    <Item Name="Seal" Prompt="Seal"/>
+    <Item Name="Dolphins" Prompt="Dolphins"/>
+    <Item Name="Batfish" Prompt="Batfish"/>
+    <Item Name="Octopus" Prompt="Octopus"/>
+    <Item Name="Sea turtles" Prompt="Sea turtles"/>
+    <Item Name="Penguin" Prompt="Penguin"/>
+</Lib>
+<Lib Path="./Symbols/Sport.mdt">
+    <Item Name="Basketball" Prompt="Basketball"/>
+    <Item Name="Volleyball" Prompt="Volleyball"/>
+    <Item Name="Football" Prompt="Football"/>
+    <Item Name="Baseball" Prompt="Baseball"/>
+    <Item Name="Yoga ball" Prompt="Yoga ball"/>
+    <Item Name="Squash" Prompt="Squash"/>
+    <Item Name="Billiards" Prompt="Billiards"/>
+    <Item Name="Tennis" Prompt="Tennis"/>
+    <Item Name="Sports wear" Prompt="Sports wear"/>
+    <Item Name="Cricket" Prompt="Cricket"/>
+    <Item Name="Rugby" Prompt="Rugby"/>
+    <Item Name="Badminton" Prompt="Badminton"/>
+    <Item Name="Skateboard" Prompt="Skateboard"/>
+    <Item Name="Table tennis racquet" Prompt="Table tennis racquet"/>
+    <Item Name="Baseball" Prompt="Baseball"/>
+    <Item Name="Skating shoes" Prompt="Skating shoes"/>
+    <Item Name="Swimming goggles" Prompt="Swimming goggles"/>
+    <Item Name="Roller skating" Prompt="Roller skating"/>
+    <Item Name="Dumbbell" Prompt="Dumbbell"/>
+    <Item Name="Boxing gloves" Prompt="Boxing gloves"/>
+    <Item Name="Bowling ball" Prompt="Bowling ball"/>
+    <Item Name="Hula hoop" Prompt="Hula hoop"/>
+    <Item Name="Podium" Prompt="Podium"/>
+    <Item Name="Life buoy" Prompt="Life buoy"/>
+    <Item Name="Flag" Prompt="Flag"/>
+    <Item Name="Helmet" Prompt="Helmet"/>
+    <Item Name="Gym bag" Prompt="Gym bag"/>
+    <Item Name="Barbell" Prompt="Barbell"/>
+    <Item Name="Whistle" Prompt="Whistle"/>
+    <Item Name="Rowing" Prompt="Rowing"/>
+    <Item Name="Playground" Prompt="Playground"/>
+    <Item Name="Medal" Prompt="Medal"/>
+    <Item Name="Submersible" Prompt="Submersible"/>
+    <Item Name="Rope skipping" Prompt="Rope skipping"/>
+    <Item Name="Fencing" Prompt="Fencing"/>
+    <Item Name="TKD Uniform" Prompt="TKD Uniform"/>
+    <Item Name="Golf" Prompt="Golf"/>
+    <Item Name="Pinch meter" Prompt="Pinch meter"/>
+    <Item Name="Yoga mat" Prompt="Yoga mat"/>
+    <Item Name="Trophy" Prompt="Trophy"/>
+</Lib>
+ <Lib Path="./Symbols/Technology.mdt">
+    <Item Name="Aliens" Prompt="Aliens"/>
+    <Item Name="Launch tower" Prompt="Launch tower"/>
+    <Item Name="Robot" Prompt="Robot"/>
+    <Item Name="Planet" Prompt="Planet"/>
+    <Item Name="Rockets" Prompt="Rockets"/>
+    <Item Name="Satellite" Prompt="Satellite"/>
+    <Item Name="Light" Prompt="Light"/>
+    <Item Name="Computer" Prompt="Computer"/>
+    <Item Name="Molecular structure" Prompt="Molecular structure"/>
+    <Item Name="Microscope" Prompt="Microscope"/>
+    <Item Name="Camera" Prompt="Camera"/>
+    <Item Name="Data connector" Prompt="Data connector"/>
+    <Item Name="IPod" Prompt="IPod"/>
+    <Item Name="Mouse" Prompt="Mouse"/>
+    <Item Name="Flask" Prompt="Flask"/>
+    <Item Name="Satellite" Prompt="Satellite"/>
+    <Item Name="Satellite" Prompt="Satellite"/>
+    <Item Name="Headset" Prompt="Headset"/>
+    <Item Name="Router" Prompt="Router"/>
+    <Item Name="Camera" Prompt="Camera"/>
+    <Item Name="Microphone" Prompt="Microphone"/>
+    <Item Name="Signal tower" Prompt="Signal tower"/>
+    <Item Name="Loudspeaker" Prompt="Loudspeaker"/>
+    <Item Name="Astronomical telescope" Prompt="Astronomical telescope"/>
+</Lib>
+ <Lib Path="./Symbols/Tourism.mdt">
+    <Item Name="Bank card" Prompt="Bank card"/>
+    <Item Name="Wallet" Prompt="Wallet"/>
+    <Item Name="Memo" Prompt="Memo"/>
+    <Item Name="Clock" Prompt="Clock"/>
+    <Item Name="Tickets" Prompt="Tickets"/>
+    <Item Name="Snow mountain" Prompt="Snow mountain"/>
+    <Item Name="Compass" Prompt="Compass"/>
+    <Item Name="Shopping bags" Prompt="Shopping bags"/>
+    <Item Name="Air ticket" Prompt="Air ticket"/>
+    <Item Name="Visa" Prompt="Visa"/>
+    <Item Name="Taxi" Prompt="Taxi"/>
+    <Item Name="Camera" Prompt="Camera"/>
+    <Item Name="Luggage" Prompt="Luggage"/>
+    <Item Name="Hotel" Prompt="Hotel"/>
+    <Item Name="Fruit juice" Prompt="Fruit juice"/>
+    <Item Name="Coconut tree" Prompt="Coconut tree"/>
+    <Item Name="Ice cream" Prompt="Ice cream"/>
+    <Item Name="Currency conversion" Prompt="Currency conversion"/>
+    <Item Name="Ice cream" Prompt="Ice cream"/>
+    <Item Name="Map" Prompt="Map"/>
+    <Item Name="Fine food" Prompt="Fine food"/>
+    <Item Name="Flip-flops" Prompt="Flip-flops"/>
+    <Item Name="Hot air balloon" Prompt="Hot air balloon"/>
+    <Item Name="Road sign" Prompt="Road sign"/>
+    <Item Name="Umbrella" Prompt="Umbrella"/>
+    <Item Name="Train" Prompt="Train"/>
+    <Item Name="Double-decker bus" Prompt="Double-decker bus"/>
+    <Item Name="Sun hat" Prompt="Sun hat"/>
+    <Item Name="Backpack" Prompt="Backpack"/>
+    <Item Name="Address" Prompt="Address"/>
+    <Item Name="Luggage cart" Prompt="Luggage cart"/>
+</Lib>
+<Lib Path="./Symbols/Transportation.mdt">
+    <Item Name="Aircraft" Prompt="Aircraft"/>
+    <Item Name="Electrocar" Prompt="Electrocar"/>
+    <Item Name="Sedan" Prompt="Sedan"/>
+    <Item Name="Subway" Prompt="Subway"/>
+    <Item Name="Traffic light" Prompt="Traffic light"/>
+    <Item Name="Bus" Prompt="Bus"/>
+    <Item Name="Electrocar" Prompt="Electrocar"/>
+    <Item Name="Steamship" Prompt="Steamship"/>
+    <Item Name="Yacht" Prompt="Yacht"/>
+    <Item Name="Truck" Prompt="Truck"/>
+    <Item Name="Tractors" Prompt="Tractors"/>
+    <Item Name="Bicycle" Prompt="Bicycle"/>
+    <Item Name="Sailboat" Prompt="Sailboat"/>
+    <Item Name="Logging-wheel" Prompt="Logging-wheel"/>
+    <Item Name="Submarine" Prompt="Submarine"/>
+    <Item Name="Motorcycle" Prompt="Motorcycle"/>
+    <Item Name="Car" Prompt="Car"/>
+    <Item Name="Battery car" Prompt="Battery car"/>
+    <Item Name="Bus" Prompt="Bus"/>
+    <Item Name="Rocket" Prompt="Rocket"/>
+    <Item Name="Ambulance" Prompt="Ambulance"/>
+    <Item Name="Automobile" Prompt="Automobile"/>
+    <Item Name="Helicopter" Prompt="Helicopter"/>
+</Lib>
+    <Lib Path="./Symbols/Weather.mdt">
+        <Item Name="Cloud" Prompt="Cloud"/>
+    <Item Name="Sunny day" Prompt="Sunny day"/>
+    <Item Name="Cloudy" Prompt="Cloudy"/>
+    <Item Name="Overcast sky" Prompt="Overcast sky"/>
+    <Item Name="Shower" Prompt="Shower"/>
+    <Item Name="Heavy rain" Prompt="Heavy rain"/>
+    <Item Name="Light rain" Prompt="Light rain"/>
+    <Item Name="Light snow" Prompt="Light snow"/>
+    <Item Name="Heavy snow" Prompt="Heavy snow"/>
+    <Item Name="Sleet" Prompt="Sleet"/>
+    <Item Name="Tornado" Prompt="Tornado"/>
+    <Item Name="Night" Prompt="Night"/>
+    <Item Name="Starry sky" Prompt="Starry sky"/>
+    <Item Name="Thunderstorm" Prompt="Thunderstorm"/>
+    <Item Name="Lightning" Prompt="Lightning"/>
+    <Item Name="The weather is foggy" Prompt="The weather is foggy"/>
+    <Item Name="Foggy" Prompt="Foggy"/>
+    <Item Name="Hail" Prompt="Hail"/>
+    <Item Name="Fly ash" Prompt="Fly ash"/>
+    <Item Name="Windstorm" Prompt="Windstorm"/>
+    <Item Name="Wind indicator" Prompt="Wind indicator"/>
+    <Item Name="Snowy night" Prompt="Snowy night"/>
+    <Item Name="Cloudy night" Prompt="Cloudy night"/>
+    <Item Name="Tornado night" Prompt="Tornado night"/>
+    <Item Name="Rainy night" Prompt="Rainy night"/>
+    <Item Name="Foggy night" Prompt="Foggy night"/>
+    <Item Name="Rainbow" Prompt="Rainbow"/>
+    <Item Name="Dust tester" Prompt="Dust tester"/>
+    </Lib>
+</Libraries>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ThemeTexts Version="6.1">
+    <ThemeText ID="1" Name="宋体">
+        <FontSchemeLst>
+            <FontScheme FontSize="14" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="宋体"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="2" Name="宋体 (大)">
+        <FontSchemeLst>
+            <FontScheme FontSize="18" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="14" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="14" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="宋体"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="3" Name="黑体">
+        <FontSchemeLst>
+            <FontScheme FontSize="14" Flag="0" FontName="黑体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="黑体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="黑体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="宋体"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="4" Name="仿宋">
+        <FontSchemeLst>
+            <FontScheme FontSize="14" Flag="0" FontName="仿宋"/>
+            <FontScheme FontSize="12" Flag="0" FontName="仿宋"/>
+            <FontScheme FontSize="10" Flag="0" FontName="仿宋"/>
+            <FontScheme FontSize="10" Flag="0" FontName="仿宋"/>
+            <FontScheme FontSize="12" Flag="0" FontName="仿宋"/>
+            <FontScheme FontSize="10" Flag="0" FontName="仿宋"/>
+            <FontScheme FontSize="10" Flag="0" FontName="仿宋"/>
+            <FontScheme FontSize="10" Flag="0" FontName="仿宋"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="5" Name="新宋体">
+        <FontSchemeLst>
+            <FontScheme FontSize="14" Flag="0" FontName="新宋体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="新宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="新宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="新宋体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="新宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="新宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="新宋体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="新宋体"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="6" Name="楷体">
+        <FontSchemeLst>
+            <FontScheme FontSize="14" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="10" Flag="0" FontName="楷体"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="7" Name="楷体 (大)">
+        <FontSchemeLst>
+            <FontScheme FontSize="18" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="14" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="14" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="楷体"/>
+            <FontScheme FontSize="12" Flag="0" FontName="楷体"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="8" Name="微软雅黑">
+        <FontSchemeLst>
+            <FontScheme FontSize="14" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="11" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="9" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="9" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="11" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="9" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="9" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="9" Flag="0" FontName="微软雅黑"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="9" Name="微软雅黑 (大)">
+        <FontSchemeLst>
+            <FontScheme FontSize="18" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="14" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="10" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="10" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="14" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="10" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="10" Flag="0" FontName="微软雅黑"/>
+            <FontScheme FontSize="10" Flag="0" FontName="微软雅黑"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="10" Name="Arial">
+        <FontSchemeLst>
+            <FontScheme FontSize="14" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="10" Flag="0" FontName="Arial"/>
+        </FontSchemeLst>
+    </ThemeText>
+    <ThemeText ID="11" Name="Arial (大)">
+        <FontSchemeLst>
+            <FontScheme FontSize="18" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="14" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="14" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+            <FontScheme FontSize="12" Flag="0" FontName="Arial"/>
+        </FontSchemeLst>
+    </ThemeText>
+</ThemeTexts>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Lib NameU="Animal">
+    <Elem Name="Hippopotamus" Prompt="Hippopotamus" NameU="Hippopotamus" PromptU="Hippopotamus"/>
+    <Elem Name="Bee" Prompt="Bee" NameU="Bee" PromptU="Bee"/>
+    <Elem Name="Cow" Prompt="Cow" NameU="Cow" PromptU="Cow"/>
+    <Elem Name="Rabbit" Prompt="Rabbit" NameU="Rabbit" PromptU="Rabbit"/>
+    <Elem Name="Tiger" Prompt="Tiger" NameU="Tiger" PromptU="Tiger"/>
+    <Elem Name="Mouse" Prompt="Mouse" NameU="Mouse" PromptU="Mouse"/>
+    <Elem Name="Horse" Prompt="Horse" NameU="Horse" PromptU="Horse"/>
+    <Elem Name="Deer" Prompt="Deer" NameU="Deer" PromptU="Deer"/>
+    <Elem Name="Lion" Prompt="Lion" NameU="Lion" PromptU="Lion"/>
+    <Elem Name="Elephant" Prompt="Elephant" NameU="Elephant" PromptU="Elephant"/>
+    <Elem Name="Panda" Prompt="Panda" NameU="Panda" PromptU="Panda"/>
+    <Elem Name="Brown bear" Prompt="Brown bear" NameU="Brown bear" PromptU="Brown bear"/>
+    <Elem Name="Dog" Prompt="Dog" NameU="Dog" PromptU="Dog"/>
+    <Elem Name="Sheep" Prompt="Sheep" NameU="Sheep" PromptU="Sheep"/>
+    <Elem Name="Pig" Prompt="Pig" NameU="Pig" PromptU="Pig"/>
+    <Elem Name="Giraffe" Prompt="Giraffe" NameU="Giraffe" PromptU="Giraffe"/>
+    <Elem Name="Koala" Prompt="Koala" NameU="Koala" PromptU="Koala"/>
+    <Elem Name="Cat" Prompt="Cat" NameU="Cat" PromptU="Cat"/>
+    <Elem Name="Monkey" Prompt="Monkey" NameU="Monkey" PromptU="Monkey"/>
+    <Elem Name="Fox" Prompt="Fox" NameU="Fox" PromptU="Fox"/>
+</Lib>

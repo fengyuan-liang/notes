@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Lib NameU="Electronic Devices">
+    <Elem Name="Television" Prompt="Television" NameU="Television" PromptU="Television"/>
+    <Elem Name="Liquid crystal TV" Prompt="Liquid crystal TV" NameU="Liquid crystal TV" PromptU="Liquid crystal TV"/>
+    <Elem Name="Tablet PC" Prompt="Tablet PC" NameU="Tablet PC" PromptU="Tablet PC"/>
+    <Elem Name="Desktop computer" Prompt="Desktop computer" NameU="Desktop computer" PromptU="Desktop computer"/>
+    <Elem Name="Notebook computer" Prompt="Notebook computer" NameU="Notebook computer" PromptU="Notebook computer"/>
+    <Elem Name="Mouse" Prompt="Mouse" NameU="Mouse" PromptU="Mouse"/>
+    <Elem Name="Printer" Prompt="Printer" NameU="Printer" PromptU="Printer"/>
+    <Elem Name="Mobile phone" Prompt="Mobile phone" NameU="Mobile phone" PromptU="Mobile phone"/>
+    <Elem Name="Mobile phone" Prompt="Mobile phone" NameU="Mobile phone" PromptU="Mobile phone"/>
+    <Elem Name="Clock" Prompt="Clock" NameU="Clock" PromptU="Clock"/>
+    <Elem Name="Phone" Prompt="Phone" NameU="Phone" PromptU="Phone"/>
+    <Elem Name="USB flash drive" Prompt="USB flash drive" NameU="USB flash drive" PromptU="USB flash drive"/>
+    <Elem Name="Calculator" Prompt="Calculator" NameU="Calculator" PromptU="Calculator"/>
+    <Elem Name="Watch" Prompt="Watch" NameU="Watch" PromptU="Watch"/>
+    <Elem Name="Apple watches" Prompt="Apple watches" NameU="Apple watches" PromptU="Apple watches"/>
+    <Elem Name="Microsoft Band" Prompt="Microsoft Band" NameU="Microsoft Band" PromptU="Microsoft Band"/>
+    <Elem Name="VR glasses" Prompt="VR glasses" NameU="VR glasses" PromptU="VR glasses"/>
+    <Elem Name="Server" Prompt="Server" NameU="Server" PromptU="Server"/>
+    <Elem Name="Main engine" Prompt="Main engine" NameU="Main engine" PromptU="Main engine"/>
+    <Elem Name="Converter" Prompt="Converter" NameU="Converter" PromptU="Converter"/>
+    <Elem Name="Radio" Prompt="Radio" NameU="Radio" PromptU="Radio"/>
+    <Elem Name="Fax" Prompt="Fax" NameU="Fax" PromptU="Fax"/>
+    <Elem Name="Unmanned aerial vehicle (uav)" Prompt="Unmanned aerial vehicle (uav)" NameU="Unmanned aerial vehicle (uav)" PromptU="Unmanned aerial vehicle (uav)"/>
+    <Elem Name="Unmanned aerial vehicle (uav)" Prompt="Unmanned aerial vehicle (uav)" NameU="Unmanned aerial vehicle (uav)" PromptU="Unmanned aerial vehicle (uav)"/>
+    <Elem Name="Camera" Prompt="Camera" NameU="Camera" PromptU="Camera"/>
+    <Elem Name="Camera" Prompt="Camera" NameU="Camera" PromptU="Camera"/>
+    <Elem Name="Microphone" Prompt="Microphone" NameU="Microphone" PromptU="Microphone"/>
+    <Elem Name="Camera" Prompt="Camera" NameU="Camera" PromptU="Camera"/>
+    <Elem Name="Floppy disk" Prompt="Floppy disk" NameU="Floppy disk" PromptU="Floppy disk"/>
+    <Elem Name="Loudspeaker box" Prompt="Loudspeaker box" NameU="Loudspeaker box" PromptU="Loudspeaker box"/>
+    <Elem Name="MP3" Prompt="MP3" NameU="MP3" PromptU="MP3"/>
+    <Elem Name="Digital board" Prompt="Digital board" NameU="Digital board" PromptU="Digital board"/>
+    <Elem Name="Projector" Prompt="Projector" NameU="Projector" PromptU="Projector"/>
+    <Elem Name="Router" Prompt="Router" NameU="Router" PromptU="Router"/>
+    <Elem Name="Camera" Prompt="Camera" NameU="Camera" PromptU="Camera"/>
+    <Elem Name="Intercom" Prompt="Intercom" NameU="Intercom" PromptU="Intercom"/>
+    <Elem Name="Headset" Prompt="Headset" NameU="Headset" PromptU="Headset"/>
+    <Elem Name="Game machine" Prompt="Game machine" NameU="Game machine" PromptU="Game machine"/>
+</Lib>
