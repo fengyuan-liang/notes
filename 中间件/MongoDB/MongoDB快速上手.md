@@ -738,8 +738,8 @@ $ db.collection.find({字段:/正则表达式/})
 
 `<`, `<=`, `>`, `>=` 这些操作符也是很常用的, 格式如下:
 
-其实这些字符就是对应JS里面的
-
+其实这些字符就是对应JS里面的：gt（great than）、lt（less than）、gte（great than equal ）、lte（less than equal ）、ne（not equal）
+	
 ```
 db.collection.find({ "field" : { $gt: value }}) // 大于: field > value
 db.collection.find({ "field" : { $lt: value }}) // 小于: field < value
@@ -750,6 +750,7 @@ db.collection.find({ "field" : { $ne: value }}) // 不等于: field != value
 
 示例：查询评论点赞数量大于700的记录
 
+![](https://cdn.fengxianhub.top/resources-master/20220728110833.png)
 
 
 
@@ -761,21 +762,71 @@ db.collection.find({ "field" : { $ne: value }}) // 不等于: field != value
 db.comment.find({userid:{$in:["1003","1004"]}})
 ```
 
+![](https://cdn.fengxianhub.top/resources-master/20220728112350.png)
+
+
 不包含使用 `$nin` 操作符. 示例：查询评论集合中 `userid` 字段不包含 `1003` 和 `1004` 的文档
 
 ```
 db.comment.find({userid:{$nin:["1003","1004"]}})
 ```
 
-#### 2.5.3 foreach查询
+![查询评论集合中 `userid` 字段不包含 `1003` 和 `1004` 的文档](https://cdn.fengxianhub.top/resources-master/20220728112453.png)
+
+
+#### 2.5.4 条件连接查询
+
+我们如果需要查询同时满足两个以上条件，需要使用$and操作符将条件进行关联。（相当于SQL的and） 格式为：
+
+```javascript
+$and:[ { },{ },{ } ]
+```
+
+示例：查询评论集合中likenum大于等于700 并且小于2000的文档：
 
 ```java
-db.posts.find().forEach(fucntion(doc) { print('Blog Post: ' + doc.title) })
+db.comment.find({$and:[{likenum:{$gte:NumberInt(700)}},{likenum:{$lt:NumberInt(2000)}}]})
 ```
+
+![](https://cdn.fengxianhub.top/resources-master/20220728113021.png)
+
+
+如果两个以上条件之间是或者的关系，我们使用 操作符进行关联，与前面 and的使用方式相同 格式为：
+
+```java
+$or:[ { },{ },{ } ]
+```
+
+示例：查询评论集合中userid为1003，或者点赞数小于1000的文档记录
+
+```java
+db.comment.find({$or:[ {userid:"1003"} ,{likenum:{$lt:1000} }]})
+```
+
+![](https://cdn.fengxianhub.top/resources-master/20220728113102.png)
+
+
+#### 2.5.5 foreach查询
+
+我们知道这些查询语句其实就是`js`的语法格式，所有在查询得到结果后我们也可以通过`forEach`函数对结果进行遍历
+
+```java
+db.posts.find().forEach(
+	fucntion(doc) { 
+		print('Blog Post: ' + doc.title) 
+	})
+// 也可以通过箭头函数简化一下
+db.comment.find().forEach((it)=> { 
+      print(it._id)
+});
+```
+
+![](https://cdn.fengxianhub.top/resources-master/20220728114314.png)
+
 
 ## 2.6 常用命令小结
 
-```
+```javascript
 选择切换数据库：use articledb
 插入数据：db.comment.insert({bson数据})
 查询所有数据：db.comment.find();
@@ -806,15 +857,126 @@ db.posts.find().forEach(fucntion(doc) { print('Blog Post: ' + doc.title) })
 ## 3. 文档间的对应关系
 
 - 一对一 (One To One)
-- 一对多 (One To Many)
+- 一对多/多对一(one to many / many to one)
 - 多对多 (Many To Many)
 
-举个例子, 比如“用户-订单”这个一对多的关系中, 我们想查询某一个用户的所有或者某个订单, 我们可以
+### 3.1 一对一 
+
+在MongoDB中可以通过内嵌文档的形式体现出一对一的关系，比如夫妻：
+
+```javascript
+{
+	name:'黄蓉',
+	husband:{
+		name:'郭靖'
+	}
+}
 
 ```
-var user_id = db.users.findOne( {username: "username_here"} )._id
-db.orders.find( {user_id: user_id} )
+
+>一个文档对象一旦被嵌入到另一个文档对象中就绝不可能再被嵌入到其他文档对象中，因此可以体现出一对一的关系
+
+### 3.2 一对多/多对一
+
+一对多的关系在实际开发中是非常常用的，也是现实世界中出现频率比较高的关系
+
+有两种方式可以体现一对多(或多对一)的关系，以客户和订单为例：  
+
+一：关系在一的一方维护，直接通过内嵌数组，在数组中存放整个对象的方式：这种方式不好，因为如果对应的对象比较多的话，文档就会看起来很复杂，不易查询
+
+```javascript
+{
+	cust_id:ObjectId("5d272c817f2dc9e6986d82fb"),
+	cust_name:"黑宋江",
+	orders:[
+		{
+			_id: ObjectId("5d2614c42b1a4fdfd82bfda3"),
+			type:"牛肉",
+			count:2
+		},
+		{
+			_id:ObjectId("5d272c817f2dc9e6986d82fa"),
+			type:"酒",
+			count:6
+		}
+	]
+}
+
+
 ```
+
+二：一对多，用户：constom/订单orders
+
+举个例子, 比如“用户-订单”这个一对多的关系中, 我们想查询某一个用户的所有或者某个订单, 我们可以在用户中添加订单的主键
+
+**先创建用户集合**
+
+```javascript
+db.constom.insert([
+	{username:'孙悟空'},
+	{username:'猪八戒'}
+])
+```
+
+**再创建订单集合(添加一个userid属性，该订单是谁的就给userid属性添加谁的_id)**
+
+```javascript
+db.orders.insert({
+    list:["辣椒","花椒","油"],
+    userid:ObjectId("5ebcfe39bc5756d0fed31ff3")//这个是孙悟空的_id代表该订单就是孙悟空的。
+})
+```
+
+**通过userid再去查找每个人对应的订单**
+
+```javascript
+var userid = db.constom.findOne({username:'孙悟空'})._id;
+db.orders.find({userid:userid})
+```
+
+![](https://cdn.fengxianhub.top/resources-master/20220728141516.png)
+
+
+
+### 3.3 多对多
+
+在关系型数据库中我们处理多对多关系的时候采用的方法一般是将两张表的主键抽取出来，放到一张单独的关系表中，将两张表的主键作为这张关系表的外键，每次做关联查询的时候都要先到这张关系表中找出对应表的主键
+
+在MongoDB中多对多采用的其实是类似与`一对多`的情况，也是通过`增加一些冗余的字段`来记录关系
+
+举个例子，我们在关系型数据库中一般会以学生和老师作为例子，这里同样我们也举这个：
+
+```javascript
+//多对多
+// 先插入一些老师的信息
+db.teachers.insertMany([
+    {name:"洪七公"},
+    {name:"黄药师"},
+    {name:"龟仙人"}
+]);
+db.teachers.find();
+// 插入一些学生的信息，并且将老师的id进行记录
+db.students.insertMany([
+    {
+        name:"郭靖",
+        teachers_ids:[
+        ObjectId("5d7f018b162f56aeed8aedda"),
+        ObjectId("5d7f018b162f56aeed8aeddb"),
+        ObjectId("5d7f018b162f56aeed8aeddc")
+        ]
+    },{
+        name:"黄蓉",
+        teachers_ids:[
+        ObjectId("5d7f018b162f56aeed8aedda"),
+        ObjectId("5d7f018b162f56aeed8aeddb"),
+        ObjectId("5d7f018b162f56aeed8aeddc")
+        ]
+        
+    }
+]);
+db.students.find();
+```
+
 
 ## 4. MongoDB 的索引
 
@@ -826,7 +988,7 @@ db.orders.find( {user_id: user_id} )
 
 索引是特殊的数据结构, 它以易于遍历的形式存储集合数据集的一小部分.索引存储特定字段或一组字段的值, 按字段值排序.索引项的排 序支持有效的相等匹配和基于范围的查询操作.此外, MongoDB 还可以使用索引中的排序返回排序结果.
 
-MongoDB 使用的是 B Tree, MySQL 使用的是 B+ Tree
+**MongoDB 使用的是 B Tree, MySQL 使用的是 B+ Tree**
 
 ```java
 // create index

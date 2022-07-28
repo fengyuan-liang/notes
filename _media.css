@@ -221,7 +221,11 @@ li {
 }
 
 .markdown-section code {
-    background-color: #eaeaea !important;
+   background-color: #f9f2f4 !important;
+    color: #c7254e;
+    font-size: 0.9rem !important;
+    padding: 2px 4px;
+    font-family: "JetBrains Mono";
 }
 
 .markdown-section pre:after {
