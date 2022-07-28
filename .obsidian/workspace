@@ -1,0 +1,144 @@
+{
+  "main": {
+    "id": "a9c1178b93b43f4b",
+    "type": "split",
+    "children": [
+      {
+        "id": "8f4112296b480386",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "中间件/MongoDB/MongoDB快速上手.md",
+            "mode": "source",
+            "source": false
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "5531822358dfd02d",
+    "type": "split",
+    "children": [
+      {
+        "id": "c47740aa04c7a4c0",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b39362a340ba6946",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "018a6e4a4111a9c3",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "ea8f6bb56e5451b8",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "845af5f8815d263c",
+    "type": "split",
+    "children": [
+      {
+        "id": "44b9b152323732c0",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "820f130a3ae61444",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "中间件/MongoDB/MongoDB快速上手.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "f55401be867ef75b",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "中间件/MongoDB/MongoDB快速上手.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "adacacdaf4aed52f",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "ba8cc9c615952be9",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "中间件/MongoDB/MongoDB快速上手.md"
+              }
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 381.5
+  },
+  "active": "8f4112296b480386",
+  "lastOpenFiles": [
+    "中间件/MongoDB/MongoDB高级特性.md",
+    "中间件/MongoDB/MongoDB快速上手.md",
+    "AlgorithmAndDataStructure/11-Hash表.md",
+    "中间件/MyBatisPlus.pdf",
+    "SpringCloud/黑马SpringCloud-阿里巴巴/Centos7安装Docker.md",
+    "中间件/ElasticSearch/ElasticSearch.md",
+    "软件工程/软件开发模式之敏捷开发模型.md",
+    "2022-07-27.md",
+    "软件工程/软件开发之进度管理.md",
+    "网络协议学习/锐捷交换机重置密码.md"
+  ]
+}

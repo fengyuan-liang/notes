@@ -27,7 +27,7 @@ MongoDB的副本集: 操作, 主要概念, 故障转移, 选举规则 MongoDB的
 
 具体的应用场景:
 
-- 社交场景, 使用 MongoDB 存储存储用户信息, 以及用户发表的朋友圈信息, 通过地理位置索引实现附近的人, 地点等功能.
+- 社交场景, 使用 MongoDB 存储用户信息, 以及用户发表的朋友圈信息, 通过地理位置索引实现附近的人, 地点等功能.
 - 游戏场景, 使用 MongoDB 存储游戏用户信息, 用户的装备, 积分等直接以内嵌文档的形式存储, 方便查询, 高效率存储和访问.
 - 物流场景, 使用 MongoDB 存储订单信息, 订单状态在运送过程中会不断更新, 以 MongoDB 内嵌数组的形式来存储, 一次查询就能将订单所有的变更读取出来.
 - 物联网场景, 使用 MongoDB 存储所有接入的智能设备信息, 以及设备汇报的日志信息, 并对这些信息进行多维度的分析.
@@ -56,9 +56,9 @@ MongoDB的副本集: 操作, 主要概念, 故障转移, 选举规则 MongoDB的
 
 如果上述有1个符合, 可以考虑 MongoDB, 2个及以上的符合, 选择 MongoDB 绝不会后悔.
 
-> 如果用MySQL呢?
+> 如果上述业务场景使用用MySQL呢?
 >
-> 相对MySQL, 可以以更低的成本解决问题（包括学习, 开发, 运维等成本）
+> 显然相对于MySQL, MongoDB可以以更低的成本解决问题（包括学习, 开发, 运维等成本）
 
 ### 1.2 MongoDB 简介
 
@@ -70,7 +70,8 @@ MongoDB的副本集: 操作, 主要概念, 故障转移, 选举规则 MongoDB的
 
 ![image-20220726231623672](https://cdn.fengxianhub.top/resources-master/202207271003671.png)
 
-![image-20220726232342156](https://cdn.fengxianhub.top/resources-master/202207271003616.png)
+![](https://cdn.fengxianhub.top/resources-master/20220727145225.png)
+
 
 MongoDB 数据模型是面向文档的, 所谓文档就是一种类似于 JSON 的结构, 简单理解 MongoDB 这个数据库中存在的是各种各样的 JSON（BSON）
 
@@ -101,15 +102,22 @@ MongoDB 数据模型是面向文档的, 所谓文档就是一种类似于 JSON �
 | 删除集合     | `db.<collection_name>.drop()`               |
 
 ### 1.3. 数据类型
+MongoDB的最小存储单位就是文档(document)对象。文档(document)对象对应于关系型数据库的行。数据在MongoDB中以 BSON（Binary-JSON）文档的格式存储在磁盘上。 
 
-![img](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/image-20200505220650827.png)
+BSON（Binary Serialized Document Format）是一种类json的一种二进制形式的存储格式，简称Binary JSON。BSON和JSON一样，支持 内嵌的文档对象和数组对象，但是BSON有JSON没有的一些数据类型，如`Date`和`BinData`类型。 
+
+BSON采用了类似于 C 语言结构体的名称、对表示方法，支持内嵌的文档对象和数组对象，具有轻量性、可遍历性、高效性的三个特点，可以有效描述非结构化数据和结构化数据。这种格式的优点是灵活性高，但它的缺点是空间利用率不是很理想。
+
+Bson中，除了基本的JSON类型：string,integer,boolean,double,null,array和object，mongo还使用了特殊的数据类型。这些类型包括 date,object id,binary data,regular expression 和code。每一个驱动都以特定语言的方式实现了这些类型，查看你的驱动的文档来获取详细信息。
+
+![MongoDB数据类型](https://cdn.fengxianhub.top/resources-master/20220727142908.png)
+
+>提示： shell默认使用64位浮点型数值。{“x”：3.14}或{“x”：3}。对于整型值，可以使用NumberInt（4字节符号整数）或NumberLong（8字节符 号整数），{“x”:NumberInt(“3”)}{“x”:NumberLong(“3”)}
 
 ### 1.4 MongoDB 的特点
-
 #### 1.4.1 高性能
 
 MongoDB 提供高性能的数据持久化
-
 - 嵌入式数据模型的支持减少了数据库系统上的 I/O 活动
 - 索引支持更快的查询, 并且可以包含来自嵌入式文档和数组的键 (文本索引解决搜索的需求, TTL 索引解决历史数据自动过期的需求, 地理位置索引可以用于构件各种 O2O 应用)
 - mmapv1, wiredtiger, mongorocks (rocksdb) in-memory 等多引擎支持满足各种场景需求
@@ -125,64 +133,171 @@ MongoDB 的复制工具称作**副本集** (replica set) 可以提供自动故�
 
 分片将数据分布在一组集群的机器上 (海量数据存储, 服务能力水平扩展)
 
-MongoDB 支持基于**片键**创建数据区域, 在一个平衡的集群当中, MongoDB 将一个区域所覆盖的读写**只定向**到该区域的那些片
+MongoDB 支持基于**片键**创建数据区域, 在一个平衡的集群当中, MongoDB 将一个区域所覆盖的读写**只定向**到该区域的那些片    
 
-#### 1.4.4 其他
+#### 1.4.4 丰富的查询支持
 
-MongoDB支持丰富的查询语言, 支持读和写操作(CRUD), 比如数据聚合, 文本搜索和地理空间查询等. 无模式（动态模式）, 灵活的文档模型
+MongoDB支持丰富的查询语言, 支持读和写操作(CRUD), 比如数据聚合, 文本搜索和地理空间查询等.
+
+#### 1.4.5 其他
+
+无模式（动态模式）, 灵活的文档模型
+
 
 ## 2. 基本常用命令
 
+MongoDB安装请看本文的第八点
+
 ### 2.1 数据库操作
+
+
+| 操作                                            | 语法                             |
+| ----------------------------------------------- | -------------------------------- |
+| 查看所有数据库                                  | `show dbs;` 或 `show databases;` |
+| 查看当前数据库                                  | `db;`                            |
+| 切换到某数据库 (**若数据库不存在则创建数据库**) | `use <db_name>;`                 |
+| 删除当前数据库                                  | `db.dropDatabase();`             |
 
 默认保留的数据库
 
 - **admin**: 从权限角度考虑, 这是 `root` 数据库, 如果将一个用户添加到这个数据库, 这个用户自动继承所有数据库的权限, 一些特定的服务器端命令也只能从这个数据库运行, 比如列出所有的数据库或者关闭服务器
 - **local**: 数据永远不会被复制, 可以用来存储限于本地的单台服务器的集合 (部署集群, 分片等)
 - **config**: Mongo 用于分片设置时, `config` 数据库在内部使用, 用来保存分片的相关信息
+```shell
+> show dbs
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+> use articledb
+switched to db articledb
+> show dbs
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+```
 
-> ```
-> $ show dbs
-> 
-> 
-> $ use articledb
-> 
-> $ show dbs
-> ```
->
+当我们创建了一个数据库后再进行查看会发现，我们创建的数据库并没有显示出来，这是由于`MongoDD的存储机制决定的`
+
 > 当使用 `use articledb` 的时候. `articledb` 其实存放在内存之中, 当 `articledb` 中存在一个 collection 之后, mongo 才会将这个数据库持久化到硬盘之中.
 
-### 2.2 文档基本 CRUD
 
+![](https://cdn.fengxianhub.top/resources-master/20220727195810.png)
+
+```javascript
+> show dbs
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+> use articledb
+switched to db articledb
+> show dbs
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+> db.articledb.insertOne({"a": 3})
+{
+        "acknowledged" : true,
+        "insertedId" : ObjectId("62e128b6a70e7344a5139207")
+}
+> show dbs
+admin      0.000GB
+articledb  0.000GB
+config     0.000GB
+local      0.000GB
+```
+
+
+另外： 数据库名可以是满足以下条件的任意UTF-8字符串。 
+- 不能是空字符串（"")。 
+- 不得含有`' '`空格)、`.`、`$`、`/`、`\` 和 `\0` (空字符)。 
+- 应全部小写。 
+- 最多64字节。
+
+>集合操作与数据库操作类似，这里不再单独演示
+
+![](https://cdn.fengxianhub.top/resources-master/20220727201035.png)
+
+### 2.2 文档基本 CRUD
 > 官方文档: https://docs.mongodb.com/manual/crud/
 
 #### 2.2.1 创建 Create
 
-> Create or insert operations add new [documents](https://docs.mongodb.com/manual/core/document/#bson-document-format) to a [collection](https://docs.mongodb.com/manual/core/databases-and-collections/#collections). If the collection does **not** currently exist, insert operations will create the collection automatically.
+>Create or insert operations add new [documents](https://docs.mongodb.com/manual/core/document/#bson-document-format) to a [collection](https://docs.mongodb.com/manual/core/databases-and-collections/#collections). If the collection does **not** currently exist, insert operations will create the collection automatically.
+
+文档的数据结构和 JSON 基本一样。
+
+所有存储在集合中的数据都是 BSON 格式。
+
+BSON 是一种类似 JSON 的二进制形式的存储格式，是 Binary JSON 的简称
 
 - 使用 `db.<collection_name>.insertOne()` 向集合中添加*一个文档*, 参数一个 json 格式的文档
-- 使用 `db.<collection_name>.insertMany()` 向集合中添加*多个文档*, 参数为 json 文档数组
-
-![img](https://docs.mongodb.com/manual/_images/crud-annotated-mongodb-insertOne.bakedsvg.svg)
-
-```
-db.collection.insert({
-  <document or array of documents>,
-  writeConcern: <document>,
-  ordered: <boolean>
-})
-
-
-// 向集合中添加一个文档
+-db.collection.insertOne() 用于向集合插入一个新文档，语法格式如下：
+```java
 db.collection.insertOne(
-   { item: "canvas", qty: 100, tags: ["cotton"], size: { h: 28, w: 35.5, uom: "cm" } }
+   <document>,
+   {
+      writeConcern: <document>
+   }
 )
-// 向集合中添加多个文档
-db.collection.insertMany([
-   { item: "journal", qty: 25, tags: ["blank", "red"], size: { h: 14, w: 21, uom: "cm" } },
-   { item: "mat", qty: 85, tags: ["gray"], size: { h: 27.9, w: 35.5, uom: "cm" } },
-   { item: "mousepad", qty: 25, tags: ["gel", "blue"], size: { h: 19, w: 22.85, uom: "cm" } }
-])
+```
+- 使用 `db.<collection_name>.insertMany()` 向集合中添加*多个文档*, 参数为 json 文档数组
+db.collection.insertMany() 用于向集合插入一个多个文档，语法格式如下：
+
+```java
+db.collection.insertMany(
+   [ <document 1> , <document 2>, ... ],
+   {
+      writeConcern: <document>,
+      ordered: <boolean>
+   }
+)
+```
+
+参数说明：
+-   document：要写入的文档。
+-   writeConcern：写入策略，默认为 1，即要求确认写操作，0 是不要求。
+-   ordered：指定是否按顺序写入，默认 true，按顺序写入
+
+>我们平时使用最多的只有`document`这一个字段
+
+![](https://cdn.fengxianhub.top/resources-master/20220727153030.png)
+
+```javascript
+#  插入单条数据
+
+> var document = db.collection.insertOne({"a": 3})
+> document
+{
+        "acknowledged" : true,
+        "insertedId" : ObjectId("571a218011a82a1d94c02333")
+}
+
+#  插入多条数据
+> var res = db.collection.insertMany([{"b": 3}, {'c': 4}])
+> res
+{
+        "acknowledged" : true,
+        "insertedIds" : [
+                ObjectId("571a22a911a82a1d94c02337"),
+                ObjectId("571a22a911a82a1d94c02338")
+        ]
+}
+```
+
+还可以通过js函数方式批量插入文档：
+
+1、先创建数组
+2、将数据放在数组中
+3、一次 insert 到集合中
+
+```javascript
+var arr = [];
+
+for(var i=1 ; i<=20000 ; i++){
+    arr.push({num:i});
+}
+
+db.numbers.insert(arr);
 ```
 
 注：当我们向 `collection` 中插入 `document` 文档时, 如果没有给文档指定 `_id` 属性, 那么数据库会为文档自动添加 `_id` field, 并且值类型是 `ObjectId(blablabla)`, 就是文档的唯一标识, 类似于 relational database 里的 `primary key`
@@ -192,15 +307,15 @@ db.collection.insertMany([
 
 如果某条数据插入失败, 将会终止插入, 但已经插入成功的数据**不会回滚掉**. 因为批量插入由于数据较多容易出现失败, 因此, 可以使用 `try catch` 进行异常捕捉处理, 测试的时候可以不处理.如：
 
-```
+```java
 try {
-  db.comment.insertMany([
-    {"_id":"1","articleid":"100001","content":"我们不应该把清晨浪费在手机上, 健康很重要, 一杯温水幸福你我 他.","userid":"1002","nickname":"相忘于江湖","createdatetime":new Date("2019-0805T22:08:15.522Z"),"likenum":NumberInt(1000),"state":"1"},
-    {"_id":"2","articleid":"100001","content":"我夏天空腹喝凉开水, 冬天喝温开水","userid":"1005","nickname":"伊人憔 悴","createdatetime":new Date("2019-08-05T23:58:51.485Z"),"likenum":NumberInt(888),"state":"1"},
-    {"_id":"3","articleid":"100001","content":"我一直喝凉开水, 冬天夏天都喝.","userid":"1004","nickname":"杰克船 长","createdatetime":new Date("2019-08-06T01:05:06.321Z"),"likenum":NumberInt(666),"state":"1"},
-    {"_id":"4","articleid":"100001","content":"专家说不能空腹吃饭, 影响健康.","userid":"1003","nickname":"凯 撒","createdatetime":new Date("2019-08-06T08:18:35.288Z"),"likenum":NumberInt(2000),"state":"1"},
-    {"_id":"5","articleid":"100001","content":"研究表明, 刚烧开的水千万不能喝, 因为烫 嘴.","userid":"1003","nickname":"凯撒","createdatetime":new Date("2019-0806T11:01:02.521Z"),"likenum":NumberInt(3000),"state":"1"}
-
+// 插入多条记录
+db.comment.insertMany([
+{"_id":"1","articleid":"100001","content":"我们不应该把清晨浪费在手机上，健康很重要，一杯温水幸福你我他。","userid":"1002","nickname":"相忘于江湖","createdatetime":new Date("2019-08-05T22:08:15.522Z"),"likenum":NumberInt(1000),"state":"1"},
+{"_id":"2","articleid":"100001","content":"我夏天空腹喝凉开水，冬天喝温开水","userid":"1005","nickname":"伊人憔悴","createdatetime":new Date("2019-08-05T23:58:51.485Z"),"likenum":NumberInt(888),"state":"1"},
+{"_id":"3","articleid":"100001","content":"我一直喝凉开水，冬天夏天都喝。","userid":"1004","nickname":"杰克船长","createdatetime":new Date("2019-08-06T01:05:06.321Z"),"likenum":NumberInt(666),"state":"1"},
+{"_id":"4","articleid":"100001","content":"专家说不能空腹吃饭，影响健康。","userid":"1003","nickname":"凯撒","createdatetime":new Date("2019-08-06T08:18:35.288Z"),"likenum":NumberInt(2000),"state":"1"},
+{"_id":"5","articleid":"100001","content":"研究表明，刚烧开的水千万不能喝，因为烫嘴。","userid":"1003","nickname":"凯撒","createdatetime":new Date("2019-08-06T11:01:02.521Z"),"likenum":NumberInt(3000),"state":"1"}
 ]);
 
 } catch (e) {
@@ -210,20 +325,69 @@ try {
 
 #### 2.2.2 查询 Read
 
+更多查询可以看2.4节和2.5节
+
 - 使用 `db.<collection_name>.find()` 方法对集合进行查询, 接受一个 json 格式的查询条件. 返回的是一个**数组**
 - `db.<collection_name>.findOne()` 查询集合中符合条件的第一个文档, 返回的是一个**对象**
 
-![img](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/crud-annotated-mongodb-find.bakedsvg.png)
+![](https://cdn.fengxianhub.top/resources-master/20220727153747.png)
+
+```java
+// 插入多条记录
+> db.comment.insertMany([
+{"_id":"1","articleid":"100001","content":"我们不应该把清晨浪费在手机上，健康很重要，一杯温水幸福你我他。","userid":"1002","nickname":"相忘于江湖","createdatetime":new Date("2019-08-05T22:08:15.522Z"),"likenum":NumberInt(1000),"state":"1"},
+{"_id":"2","articleid":"100001","content":"我夏天空腹喝凉开水，冬天喝温开水","userid":"1005","nickname":"伊人憔悴","createdatetime":new Date("2019-08-05T23:58:51.485Z"),"likenum":NumberInt(888),"state":"1"},
+{"_id":"3","articleid":"100001","content":"我一直喝凉开水，冬天夏天都喝。","userid":"1004","nickname":"杰克船长","createdatetime":new Date("2019-08-06T01:05:06.321Z"),"likenum":NumberInt(666),"state":"1"},
+{"_id":"4","articleid":"100001","content":"专家说不能空腹吃饭，影响健康。","userid":"1003","nickname":"凯撒","createdatetime":new Date("2019-08-06T08:18:35.288Z"),"likenum":NumberInt(2000),"state":"1"},
+{"_id":"5","articleid":"100001","content":"研究表明，刚烧开的水千万不能喝，因为烫嘴。","userid":"1003","nickname":"凯撒","createdatetime":new Date("2019-08-06T11:01:02.521Z"),"likenum":NumberInt(3000),"state":"1"}
+]);
+{
+        "acknowledged" : true,
+        "insertedIds" : [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+        ]
+}
+
+// 只返回查询到的第一条数据
+> db.comment.findOne({"articleid":"100001"})
+{
+        "_id" : "1",
+        "articleid" : "100001",
+        "content" : "我们不应该把清晨浪费在手机上，健康很重要，一杯温水幸福你我他。",
+        "userid" : "1002",
+        "nickname" : "相忘于江湖",
+        "createdatetime" : ISODate("2019-08-05T22:08:15.522Z"),
+        "likenum" : 1000,
+        "state" : "1"
+}
+// 等价于
+db.comment.find({"articleid":"100001"}).limit(1)
+```
+
+如果我们不需要那么多的字段，我们可以在查询条件后面再跟上需要查询的字段，`1`表示显示指定的字段，其中`_id`是默认显示的，我们指定`0`表示强制不显示
+
+```javascript
+// 只显示articleid字段
+> db.comment.find({"articleid":"100001"},{"articleid":1}).limit(1)
+{ "_id" : "1", "articleid" : "100001" }
+// 强制_id不显示
+> db.comment.find({"articleid":"100001"},{"articleid":1,"_id":0}).limit(1)
+{ "articleid" : "100001" }
+```
 
 可以使用 `$in` 操作符表示*范围查询*
 
-```
+```java
 db.inventory.find( { status: { $in: [ "A", "D" ] } } )
 ```
 
 多个查询条件用逗号分隔, 表示 `AND` 的关系
 
-```
+```java
 db.inventory.find( { status: "A", qty: { $lt: 30 } } )
 ```
 
@@ -235,7 +399,7 @@ SELECT * FROM inventory WHERE status = "A" AND qty < 30
 
 使用 `$or` 操作符表示后边数组中的条件是OR的关系
 
-```
+```java
 db.inventory.find( { $or: [ { status: "A" }, { qty: { $lt: 30 } } ] } )
 ```
 
@@ -247,7 +411,7 @@ SELECT * FROM inventory WHERE status = "A" OR qty < 30
 
 联合使用 `AND` 和 `OR` 的查询语句
 
-```
+```java
 db.inventory.find( {
      status: "A",
      $or: [ { qty: { $lt: 30 } }, { item: /^p/ } ]
@@ -262,7 +426,7 @@ db.inventory.find().pretty()
 
 匹配内容
 
-```
+```java
 db.posts.find({
   comments: {
     $elemMatch: {
@@ -277,7 +441,7 @@ db.<collection_name>.find({ content : /once/ })
 
 创建索引
 
-```
+```javascript
 db.posts.createIndex({
   { title : 'text' }
 })
@@ -299,15 +463,44 @@ db.posts.find({
 - 使用 `db.<collection_name>.replaceOne(<filter>, <update>, <options>)` 方法**替换**一个匹配 `<filter>` 条件的文档
 - `db.<collection_name>.update(查询对象, 新对象)` 默认情况下会使用新对象替换旧对象
 
-其中 `<filter>` 参数与查询方法中的条件参数用法一致.
+其中 `<filter>` 参数与查询方法中的条件参数用法一致
+
+>覆盖修改，会将其他的值清除
+
+```javascript
+// nModified1表示有一条记录被修改
+> db.comment.update({"_id":"1"}, {"likenum":NumberInt(1001)})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+// 可以看到其他字段的值不见了
+> db.comment.find()
+{ "_id" : "1", "likenum" : 1001 }
+{ "_id" : "2", "articleid" : "100001", "content" : "我夏天空腹喝凉开水，冬天喝温开水", "userid" : "1005", "nickname" : "伊人憔悴", "createdatetime" : ISODate("2019-08-05T23:58:51.485Z"), "likenum" : 888, "state" : "1" }
+{ "_id" : "3", "articleid" : "100001", "content" : "我一直喝凉开水，冬天夏天都喝。", "userid" : "1004", "nickname" : "杰克船长", "createdatetime" : ISODate("2019-08-06T01:05:06.321Z"), "likenum" : 666, "state" : "1" }
+{ "_id" : "4", "articleid" : "100001", "content" : "专家说不能空腹吃饭，影响健康。", "userid" : "1003", "nickname" : "凯撒", "createdatetime" : ISODate("2019-08-06T08:18:35.288Z"), "likenum" : 2000, "state" : "1" }
+{ "_id" : "5", "articleid" : "100001", "content" : "研究表明，刚烧开的水千万不能喝，因为烫嘴。", "userid" : "1003", "nickname" : "凯撒", "createdatetime" : ISODate("2019-08-06T11:01:02.521Z"), "likenum" : 3000, "state" : "1" }
+```
+
+>局部修改，只修改我们修改的部分，其他字段不受影响
 
 如果需要修改指定的属性, 而不是替换需要用“修改操作符”来进行修改
 
 - `$set` 修改文档中的制定属性
 
-其中最常用的修改操作符即为`$set`和`$unset`,分别表示**赋值**和**取消赋值**.
-
+```java
+// 发现局部修改后其他字段并不受影响
+> db.comment.update({ "_id": "2" }, {$set:{ "likenum": NumberInt(1001) }})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 0 })
+> db.comment.find()
+{ "_id" : "1", "likenum" : 1001 }
+{ "_id" : "2", "articleid" : "100001", "content" : "我夏天空腹喝凉开水，冬天喝温开水", "userid" : "1005", "nickname" : "伊人憔悴", "createdatetime" : ISODate("2019-08-05T23:58:51.485Z"), "likenum" : 1001, "state" : "1" }
+{ "_id" : "3", "articleid" : "100001", "content" : "我一直喝凉开水，冬天夏天都喝。", "userid" : "1004", "nickname" : "杰克船长", "createdatetime" : ISODate("2019-08-06T01:05:06.321Z"), "likenum" : 666, "state" : "1" }
+{ "_id" : "4", "articleid" : "100001", "content" : "专家说不能空腹吃饭，影响健康。", "userid" : "1003", "nickname" : "凯撒", "createdatetime" : ISODate("2019-08-06T08:18:35.288Z"), "likenum" : 2000, "state" : "1" }
+{ "_id" : "5", "articleid" : "100001", "content" : "研究表明，刚烧开的水千万不能喝，因为烫嘴。", "userid" : "1003", "nickname" : "凯撒", "createdatetime" : ISODate("2019-08-06T11:01:02.521Z"), "likenum" : 3000, "state" : "1" }
 ```
+
+其中最常用的修改操作符即为`$set`和`$unset`，分别表示**赋值**和**取消赋值**.
+
+```java
 db.inventory.updateOne(
     { item: "paper" },
     {
@@ -339,23 +532,33 @@ db.inventory.replaceOne(
 
 **批量修改**
 
+在后面添加`{multi: true}`即可
+
 ```
 // 默认会修改第一条
-db.document.update({ userid: "30", { $set {username: "guest"} } })
+db.commnet.update({ userid: "30", { $set {username: "guest"} } })
 
 // 修改所有符合条件的数据
-db.document.update( { userid: "30", { $set {username: "guest"} } }, {multi: true} )
+db.commnet.update( { userid: "30", { $set {username: "guest"} } }, {multi: true} )
 ```
+
+![](https://cdn.fengxianhub.top/resources-master/20220727212238.png)
+
+![](https://cdn.fengxianhub.top/resources-master/20220727212446.png)
+
 
 **列值增长的修改**
 
 如果我们想实现对某列值在原有值的基础上进行增加或减少, 可以使用 `$inc` 运算符来实现
 
 ```
-db.document.update({ _id: "3", {$inc: {likeNum: NumberInt(1)}} })
+db.commnet.update({ _id: "3", {$inc: {likeNum: NumberInt(1)}} })
 ```
 
-##### 修改操作符
+![](https://cdn.fengxianhub.top/resources-master/20220727212929.png)
+
+
+>修改操作符
 
 | Name                                                         | Description                                                  |
 | :----------------------------------------------------------- | :----------------------------------------------------------- |
@@ -370,15 +573,24 @@ db.document.update({ _id: "3", {$inc: {likeNum: NumberInt(1)}} })
 | [`$unset`](https://docs.mongodb.com/manual/reference/operator/update/unset/#up._S_unset) | Removes the specified field from a document.                 |
 
 #### 2.2.4 删除 Delete
-
+-  `db.collection.remove()`通过添加删除规则进行删除 
 - 使用 `db.collection.deleteMany()` 方法删除所有匹配的文档.
 - 使用 `db.collection.deleteOne()` 方法删除单个匹配的文档.
 - `db.collection.drop()`
 - `db.dropDatabase()`
 
+>只删除一条记录
+
+![](https://cdn.fengxianhub.top/resources-master/20220727214323.png)
+
+如果不加后面的限制会删除所有匹配的记录
+
+以下语句可以将数据全部删除，请慎用
+
+```javascript
+db.comment.remove({})
 ```
-db.inventory.deleteMany( { qty : { $lt : 50 } } )
-```
+
 
 > Delete operations **do not drop indexes**, even if deleting all documents from a collection.
 >
@@ -436,15 +648,69 @@ db.posts.find().sort({ title : -1 }).limit(2).pretty()
 > db.users.find( {}, {age: 1, _id: 0} )
 ```
 
-### 2.4 forEach()
+### 2.4 分页查询
+#### 2.4.1 统计查询
 
+统计查询使用count()方法，语法如下：
+
+```javascript
+db.collection.count(query, options)
 ```
-> db.posts.find().forEach(fucntion(doc) { print('Blog Post: ' + doc.title) })
+
+参数：
+
+![](https://cdn.fengxianhub.top/resources-master/20220727215535.png)
+
+提示： 可选项暂时不使用。
+
+【示例】 
+
+（1）统计所有记录数： 统计comment集合的所有的记录数：
+
+![](https://cdn.fengxianhub.top/resources-master/20220727215729.png)
+
+（2）按条件统计记录数：例如：统计userid为1003的记录条数
+
+![](https://cdn.fengxianhub.top/resources-master/20220727215831.png)
+
+提示： 默认情况下 count() 方法返回符合条件的全部记录条数。
+
+#### 2.4.2 分页列表查询
+
+可以使用limit()方法来读取指定数量的数据，使用skip()方法来跳过指定数量的数据
+
+基本语法如下所示：
+
+```java
+db.COLLECTION_NAME.find().limit(NUMBER).skip(NUMBER)
 ```
+
+![](https://cdn.fengxianhub.top/resources-master/20220728100755.png)
+
+#### 2.4.3 排序查询
+
+sort() 方法对数据进行排序，sort() 方法可以通过参数指定排序的字段，并使用 1 和 -1 来指定排序的方式，其中 1 为升序排列，而 -1 是用 于降序排列。
+
+语法如下所示：
+
+```java
+db.COLLECTION_NAME.find().sort({KEY:1}) 
+或 
+db.集合名称.find().sort(排序方式)
+```
+
+
+例如： 对userid降序排列，并对访问量进行升序排列
+
+![](https://cdn.fengxianhub.top/resources-master/20220728101408.png)
+
+提示： skip(), limilt(), sort()三个放在一起执行的时候，执行的顺序是先 sort(), 然后是 skip()，最后是显示的 limit()，和命令编写顺序无关。
 
 ### 2.5 其他查询方式
 
-#### 2.5.1 正则表达式
+#### 2.5.1 正则表达式（模糊查询）
+
+MongoDB的模糊查询是通过正则表达式的方式实现的。格式为
 
 ```
 $ db.collection.find({field:/正则表达式/})
@@ -452,9 +718,27 @@ $ db.collection.find({field:/正则表达式/})
 $ db.collection.find({字段:/正则表达式/})
 ```
 
+提示：正则表达式是js的语法，直接量的写法。 例如，我要查询评论内容包含“开水”的所有文档，代码如下：
+
+![](https://cdn.fengxianhub.top/resources-master/20220728103158.png)
+
+如果要查询评论的内容中以“专家”开头的，代码如下：
+
+![](https://cdn.fengxianhub.top/resources-master/20220728103546.png)
+
+附录：常用的正则表达式
+
+![](https://cdn.fengxianhub.top/resources-master/20220728103817.png)
+
+![](https://cdn.fengxianhub.top/resources-master/20220728103823.png)
+
+![](https://cdn.fengxianhub.top/resources-master/20220728103828.png)
+
 #### 2.5.2 比较查询
 
 `<`, `<=`, `>`, `>=` 这些操作符也是很常用的, 格式如下:
+
+其实这些字符就是对应JS里面的
 
 ```
 db.collection.find({ "field" : { $gt: value }}) // 大于: field > value
@@ -463,6 +747,11 @@ db.collection.find({ "field" : { $gte: value }}) // 大于等于: field >= value
 db.collection.find({ "field" : { $lte: value }}) // 小于等于: field <= value
 db.collection.find({ "field" : { $ne: value }}) // 不等于: field != value
 ```
+
+示例：查询评论点赞数量大于700的记录
+
+
+
 
 #### 2.5.3 包含查询
 
@@ -476,6 +765,12 @@ db.comment.find({userid:{$in:["1003","1004"]}})
 
 ```
 db.comment.find({userid:{$nin:["1003","1004"]}})
+```
+
+#### 2.5.3 foreach查询
+
+```java
+db.posts.find().forEach(fucntion(doc) { print('Blog Post: ' + doc.title) })
 ```
 
 ## 2.6 常用命令小结
@@ -533,7 +828,7 @@ db.orders.find( {user_id: user_id} )
 
 MongoDB 使用的是 B Tree, MySQL 使用的是 B+ Tree
 
-```
+```java
 // create index
 db.<collection_name>.createIndex({ userid : 1, username : -1 })
 
@@ -840,7 +1135,7 @@ Mocha 是一个 js 测试的包, 编写测试有两个关键字 `describe` 和 `
 - `describe` 是一个”统领块”, 所有的 test functions 都会在它”名下”
 - `it` 表示每一个 test function
 
-```
+```java
 create_test.js
 const assert = require('assert')
 // assume we have a User model defined in src/user.js
@@ -874,6 +1169,156 @@ describe('Creating records', () => {
 - Relations are not implicit
 - JOINS are hard to accomplish, all manually
 
+## 8. MongoDB单机部署(win + docker)
+### 8.1 Windows系统中的安装启动
+第一步：下载安装包
+
+MongoDB 提供了可用于 32 位和 64 位系统的预编译二进制包，你可以从MongoDB官网下载安装，MongoDB 预编译二进制包下载地址：[Install MongoDB — MongoDB Manual](https://www.mongodb.com/try/download/community)
+
+这里建议下载`4.0.12`版本的，高版本的有些命令用不了
+
+![](https://cdn.fengxianhub.top/resources-master/20220727154742.png)
+
+根据上图所示下载 zip 包。 
+
+提示：版本的选择： MongoDB的版本命名规范如：x.y.z； 
+
+y为奇数时表示当前版本为开发版，如：1.5.2、4.1.13； 
+
+y为偶数时表示当前版本为稳定版，如：1.6.3、4.0.10； z是修正版本号，数字越大越好。
+
+详情：http://docs.mongodb.org/manual/release-notes/#release-version-numbers
+
+第二步：解压安装启动 
+
+将压缩包解压到一个目录中。 进入bin目录，使用`mongod -version`查看版本
+
+![](https://cdn.fengxianhub.top/resources-master/20220727161207.png)
+
+
+在解压目录中，手动建立一个目录用于存放数据文件，如 data/db
+
+方式1：命令行参数方式启动服务 
+
+在 bin 目录中打开命令行提示符，输入如下命令：
+```java
+mongod --dbpath=..\data\db
+```
+
+![](https://cdn.fengxianhub.top/resources-master/20220727161631.png)
+
+
+
+我们在启动信息中可以看到，mongoDB的默认端口是27017，如果我们想改变默认的启动端口，可以通过--port来指定端口。 
+
+为了方便我们每次启动，可以将安装目录的bin目录设置到环境变量的path中， bin 目录下是一些常用命令，比如 `mongod` 启动服务用的， `mongo` 客户端连接服务用的。
+
+![](https://cdn.fengxianhub.top/resources-master/20220727160240.png)
+
+方式2：配置文件方式启动服务 
+
+在解压目录中新建 config 文件夹，该文件夹中新建配置文件 mongod.conf ，内如参考如下：
+
+```java
+storage: 
+	#The directory where the mongod instance stores its data.Default Value is "\data\db" on Windows. 
+	dbPath: D:\Environment\MongoDB\mongodb-6.0.0\data
+```
+
+详细配置项内容可以参考官方文档:  https://docs.mongodb.com/manual/reference/configuration-options/
+
+【注意1】配置文件中如果使用双引号，比如路径地址，自动会将双引号的内容转义
+
+解决： a. 对 \ 换成 / 或 \\ b. 如果路径中没有空格，则无需加引号。 
+
+【注意2】配置文件中不能以Tab分割字段
+
+解决： 将其转换成空格。
+
+启动方式：
+
+```java
+mongod -f ../config/mongod.conf 或 mongod --config ../config/mongod.conf
+```
+
+更多参数配置：
+
+```java
+systemLog:  
+  destination: file  
+  #The path of the log file to which mongod or mongos should send all diagnostic logging information  
+  path: "D:/02_Server/DBServer/mongodb-win32-x86_64-2008plus-ssl-4.0.1/log/mongod.log"  
+  logAppend: true  
+storage:  
+  journal:  
+  enabled: true  
+  #The directory where the mongod instance stores its data.Default Value is "/data/db".  
+  dbPath: "D:/02_Server/DBServer/mongodb-win32-x86_64-2008plus-ssl-4.0.1/data"  
+  net:  
+  #bindIp: 127.0.0.1  
+  port: 27017  
+setParameter:  
+  enableLocalhostAuthBypass: false
+```
+
+### 8.2 Shell连接(mongo命令)
+
+如果你需要进入MongoDB后台管理，你需要先打开mongodb装目录的下的bin目录，然后执行mongo.exe文件，MongoDB Shell是MongoDB自带的交互式Javascript shell,用来对MongoDB进行操作和管理的交互式环境。
+
+```java
+./mongo 或 ./mongo --host=127.0.0.1 --port=27017
+```
+
+这里高版本的Mongo bin目录下没有mongo.exe文件，这里我换成4.0.12版本的了
+
+![](https://cdn.fengxianhub.top/resources-master/20220727164815.png)
+
+当你进入mongoDB后台后，它默认会链接到 test 文档（数据库）：
+
+可以测试一下常用的Mongo命令
+
+```javascript
+> show databases
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+```
+
+查看当前的数据库：
+
+```javascript
+> db
+test
+```
+
+
+由于它是一个JavaScript shell，您可以运行一些简单的算术运算:
+
+```javascript
+> 2 + 2
+4
+```
+
+### 8.3 docker安装启动
+
+<a href="https://blog.csdn.net/qq_51726114/article/details/123184602?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165891219116782388089283%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=165891219116782388089283&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~baidu_landing_v2~default-2-123184602-null-null.142^v35^experiment_2_v1,185^v2^tag_show&utm_term=docker%E5%AE%89%E8%A3%85mogodb&spm=1018.2226.3001.4187">参考安装地址</a>
+
+### 8.4 Compass-图形化界面客户端
+
+ 到MongoDB官网下载MongoDB Compass
+ 
+ 地址：https://www.mongodb.com/download-center/v2/compass?initial=true 
+ 
+ 如果是下载安装版，则按照步骤安装；如果是下载加压缩版，直接解压，执行里面的 `MongoDBCompassCommunity.exe` 文件即可。 
+ 
+ 在打开的界面中，输入主机地址、端口等相关信息，点击连接：
+
+![](https://cdn.fengxianhub.top/resources-master/20220727170059.png)
+
+
+我司使用的工具是`noSqlBooster`，感觉也挺好用的：https://www.nosqlbooster.com/
+
+
 ## References
 
 - https://mongoosejs.com/docs/guides.html
@@ -886,27 +1331,3 @@ describe('Creating records', () => {
 
 
 
-Last updated May 06, 2020
-
- [Subscribe](https://zhenye-na.github.io/blog/feed.xml)
-
-This work is licensed under a [Attribution-NonCommercial 4.0 International](https://creativecommons.org/licenses/by-nc/4.0/) license. [![Attribution-NonCommercial 4.0 International](https://i.creativecommons.org/l/by-nc/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc/4.0/)
-
-| Venmo                                                        | Paypal                                                       |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| ![Venmo](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/venmo.jpeg) | ![Paypal](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/paypal.jpg) |
-
-**PREVIOUS**[Docker 容器技术 (基础篇) | 学习笔记](https://zhenye-na.github.io/blog/2019/09/29/docker-practical-guide.html)
-
-**NEXT**[MongoDB 数据库高级进阶 - 集群和安全](https://zhenye-na.github.io/blog/2020/02/07/advanced-mongodb.html)
-
-- 
-- 
-- 
-- 
-
-© Zhenye's Blog 2019, Powered by [Jekyll](http://jekyllrb.com/) & [TeXt Theme](https://github.com/kitian616/jekyll-TeXt-theme).
-
-Search
-
-Cancel
