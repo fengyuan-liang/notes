@@ -1,5 +1,10 @@
 # MongoDB简单上手
 
+思维导图：
+
+![](https://cdn.fengxianhub.top/resources-master/20220729100641.png)
+
+
 **课程目标**
 
 MongoDB的副本集: 操作, 主要概念, 故障转移, 选举规则 MongoDB的分片集群：概念, 优点, 操作, 分片策略, 故障转移 MongoDB的安全认证
@@ -824,6 +829,10 @@ db.comment.find().forEach((it)=> {
 ![](https://cdn.fengxianhub.top/resources-master/20220728114314.png)
 
 
+#### 2.5.6 地理位置查询
+
+请查看MongoDB中文文档：[地理空间查询 - MongoDB-CN-Manual (mongoing.com)](https://docs.mongoing.com/mongodb-crud-operations/geospatial-queries)
+
 ## 2.6 常用命令小结
 
 ```javascript
@@ -988,7 +997,13 @@ db.students.find();
 
 索引是特殊的数据结构, 它以易于遍历的形式存储集合数据集的一小部分.索引存储特定字段或一组字段的值, 按字段值排序.索引项的排 序支持有效的相等匹配和基于范围的查询操作.此外, MongoDB 还可以使用索引中的排序返回排序结果.
 
-**MongoDB 使用的是 B Tree, MySQL 使用的是 B+ Tree**
+**MongoDB 和MySQL 一样使用的都是是 B+ Tree**
+
+在之前的版本中Mongo使用的是B树，但是现在都是使用B+树了
+- <a href="http://source.wiredtiger.com/3.2.1/tune_page_size_and_comp.html">Mongo官方文档</a>
+- <a href="https://blog.csdn.net/weixin_41987908/article/details/105255119?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165898988316782390577084%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=165898988316782390577084&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-2-105255119-null-null.142^v35^experiment_2_v1,185^v2^tag_show&utm_term=MongoDB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8B%E6%A0%91%E4%BD%9C%E4%B8%BA%E7%B4%A2%E5%BC%95&spm=1018.2226.3001.4187">为什么Mongo选择过B树？</a>
+
+索引常用命令：
 
 ```java
 // create index
@@ -1015,19 +1030,21 @@ db.<collection_name>.dropIndexes()
 
 #### 4.2.1 单字段索引
 
-MongoDB 支持在文档的单个字段上创建用户定义的**升序/降序索引**, 称为**单字段索引** Single Field Index
+MongoDB 支持在文档的单个字段上创建用户定义的**升序/降序索引**, 称为**单字段索引**（Single Field Index）
 
 对于单个字段索引和排序操作, 索引键的排序顺序（即升序或降序）并不重要, 因为 MongoDB 可以在任何方向上遍历索引.
 
-![img](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/image-20200505231043779.png)
+![](https://cdn.fengxianhub.top/resources-master/20220728152612.png)
+
 
 #### 4.2.2 复合索引
 
-MongoDB 还支持多个字段的用户定义索引, 即复合索引 Compound Index
+MongoDB 还支持多个字段的用户定义索引, 即复合索引 Compound Index，这个其实非常类似`MySQL`中的联合索引，因为底层都是B+树，所有联合索引可能也有`最左原则`这种东西
 
 复合索引中列出的字段顺序具有重要意义.例如, 如果复合索引由 `{ userid: 1, score: -1 }` 组成, 则索引首先按 `userid` 正序排序, 然后 在每个 `userid` 的值内, 再在按 `score` 倒序排序.
 
-![img](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/image-20200505231305941.png)
+![](https://cdn.fengxianhub.top/resources-master/20220728152633.png)
+
 
 #### 4.2.3 其他索引
 
@@ -1057,6 +1074,15 @@ MongoDB 提供了一种文本索引类型, 支持在集合中搜索字符串内�
 db.collection.getIndexes()
 ```
 
+提示：该语法命令运行要求是MongoDB 3.0+
+
+【示例】 查看comment集合中所有的索引情况
+
+![](https://cdn.fengxianhub.top/resources-master/20220728153750.png)
+
+
+结果中显示的是默认 _id 索引。
+
 默认 `_id` 索引： MongoDB 在创建集合的过程中, 在 `_id` 字段上创建一个唯一的索引, 默认名字为 `_id` , 该索引可防止客户端插入两个具有相同值的文 档, 不能在 `_id` 字段上删除此索引.
 
 注意：该索引是**唯一索引**, 因此值不能重复, 即 `_id` 值不能重复的.
@@ -1071,19 +1097,27 @@ db.collection.getIndexes()
 db.collection.createIndex(keys, options)
 ```
 
+
+
 参数
 
-![image-20200506203419523](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/image-20200506203419523.png)
+![](https://cdn.fengxianhub.top/resources-master/20220728154015.png)
+
+
 
 options（更多选项）列表
 
-![image-20200506203453430](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/image-20200506203453430.png)
+![](https://cdn.fengxianhub.top/resources-master/20220728154041.png)
+
 
 注意在 3.0.0 版本前创建索引方法为 `db.collection.ensureIndex()` , 之后的版本使用了 `db.collection.createIndex()` 方法, `ensureIndex()` 还能用, 但只是 `createIndex()` 的别名.
 
 举个🌰
 
-```
+`userid:1` 表示由`userid`按照升序创建索引，`userid:1,nickname:-1}`表示先按userid升序，如果userid相等再按照nickname降序创建索引，这里和MySQL一摸一样
+
+```java
+// 先由userid按照升序创建索引
 $  db.comment.createIndex({userid:1})
 {
   "createdCollectionAutomatically" : false,
@@ -1091,10 +1125,15 @@ $  db.comment.createIndex({userid:1})
   "numIndexesAfter" : 2,
   "ok" : 1
 }
-
+// 先按userid升序，如果userid相等再按照nickname降序创建索引
 $ db.comment.createIndex({userid:1,nickname:-1})
 ...
 ```
+
+![](https://cdn.fengxianhub.top/resources-master/20220728155655.png)
+
+![](https://cdn.fengxianhub.top/resources-master/20220728160447.png)
+
 
 #### 4.3.3 索引的删除
 
@@ -1108,6 +1147,8 @@ $ db.collection.dropIndex(index)
 $ db.collection.dropIndexes()
 ```
 
+其中`index`类型为：string or document，表示指定要删除的索引。可以通过索引名称或索引规范文档指定索引。若要删除文本索引，请指定索引名称。
+
 提示:
 
 `_id` 的字段的索引是无法删除的, 只能删除非 `_id` 字段的索引
@@ -1118,6 +1159,9 @@ $ db.collection.dropIndexes()
 # 删除 comment 集合中 userid 字段上的升序索引
 $ db.comment.dropIndex({userid:1})
 ```
+
+![](https://cdn.fengxianhub.top/resources-master/20220728161546.png)
+
 
 ### 4.4 索引使用
 
@@ -1135,19 +1179,555 @@ $ db.<collection_name>.find( query, options ).explain(options)
 
 `"stage" : "COLLSCAN"`, 表示全集合扫描
 
-![img](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/image-20200506205714154.png)
+![](https://cdn.fengxianhub.top/resources-master/20220728162349.png)
+
 
 **添加索引之后**
 
 `"stage" : "IXSCAN"`, 基于索引的扫描
 
-#### 4.4.2 涵盖的查询
+![](https://cdn.fengxianhub.top/resources-master/20220728162419.png)
 
-当查询条件和查询的投影仅包含索引字段是, MongoDB 直接从索引返回结果, 而不扫描任何文档或将文档带入内存, 这些覆盖的查询十分有效
+
+#### 4.4.2 覆盖索引查询（Covered Queries）
+
+这里如果直接看的话其实还是满难理解的，但是如果我们结合`MySQL`来看就会发现，这不就是MySQL里面的覆盖索引吗？覆盖索引不就是减少了回表操作吗？这样的话其实一下就能理解下面的介绍，看来知识都是相通的，还是应该多学底层，应用层的东西会变，但是底层的东西大部分都不会改变，你看`AVL`树、`红黑树`这些数据结构，都是上个世纪中期产生的，现在用的还是这一套
+
+当查询条件和查询的投影仅包含索引字段时， MongoDB 直接从索引返回结果, 而不扫描任何文档或将文档带入内存, 这些覆盖的查询十分有效
+
+![](https://cdn.fengxianhub.top/resources-master/20220728162801.png)
+
 
 > https://docs.mongodb.com/manual/core/query-optimization/#covered-query
 
-## 5. 在 Nodejs 中使用 MongoDB - mongoose
+例如我们查询下面的索引执行计划：
+
+![](https://cdn.fengxianhub.top/resources-master/20220728165358.png)
+
+## 5. SpringBoot整合MongoDB
+
+### 5.1 需求分析
+
+这里会结合一个具体的业务场景（小案例），对用户评论进行`CRUD`
+
+![](https://cdn.fengxianhub.top/resources-master/20220728185247.png)
+
+
+在这个案例中主要的需求是：
+
+-  基本增删改查API 
+-  根据文章id查询评论 
+-  评论点赞
+
+文章示例参考：早晨空腹喝水，是对还是错？https://www.toutiao.com/a6721476546088927748/
+
+### 5.2 表结构分析
+
+数据库：articledb，集合就用我们上面一直在使用的`comment`
+
+![](https://cdn.fengxianhub.top/resources-master/20220728194643.png)
+
+
+### 5.3 技术选型
+
+#### 5.3.1 mongodb-driver（了解）
+
+mongodb-driver是mongo官方推出的java连接mongoDB的驱动包，相当于JDBC驱动。我们通过一个入门的案例来了解mongodb-driver 的基本使用。
+
+- 官方驱动说明和下载：http://mongodb.github.io/mongo-java-driver/ 
+- 官方驱动示例文档：http://mongodb.github.io/mongo-java-driver/3.8/driver/getting-started/quick-start/
+
+#### 5.3.2 SpringDataMongoDB
+
+SpringData家族成员之一，用于操作MongoDB的持久层框架，封装了底层的mongodb-driver。
+
+官网主页： https://projects.spring.io/spring-data-mongodb/ 
+
+#### 5.4 文章微服务模块搭建
+
+（1）搭建项目工程article，pom.xml引入依赖：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">  
+    <modelVersion>4.0.0</modelVersion>  
+    <parent>  
+        <groupId>org.springframework.boot</groupId>  
+        <artifactId>spring-boot-starter-parent</artifactId>  
+        <version>2.7.2</version>  
+        <relativePath/> <!-- lookup parent from repository -->  
+    </parent>  
+    <groupId>com.fx</groupId>  
+    <artifactId>article</artifactId>  
+    <version>0.0.1-SNAPSHOT</version>  
+    <name>article</name>  
+    <description>Demo project for Spring Boot</description>  
+    <properties>  
+        <java.version>1.8</java.version>  
+    </properties>  
+    <dependencies>  
+        <dependency>  
+            <groupId>org.springframework.boot</groupId>  
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>  
+        </dependency>  
+        <dependency>  
+            <groupId>org.projectlombok</groupId>  
+            <artifactId>lombok</artifactId>  
+            <optional>true</optional>  
+        </dependency>  
+        <dependency>  
+            <groupId>org.springframework.boot</groupId>  
+            <artifactId>spring-boot-starter-test</artifactId>  
+            <scope>test</scope>  
+        </dependency>  
+    </dependencies>  
+  
+    <build>  
+        <plugins>  
+            <plugin>  
+                <groupId>org.springframework.boot</groupId>  
+                <artifactId>spring-boot-maven-plugin</artifactId>  
+                <configuration>  
+                    <excludes>  
+                        <exclude>  
+                            <groupId>org.projectlombok</groupId>  
+                            <artifactId>lombok</artifactId>  
+                        </exclude>  
+                    </excludes>  
+                </configuration>  
+            </plugin>  
+        </plugins>  
+    </build>  
+  
+</project>
+```
+
+（2）创建application.yml
+
+```yaml
+spring:  
+  #数据源配置  
+  data:  
+    mongodb:  
+      # 主机地址  
+      host: localhost  
+      # 数据库  
+      database: articledb  
+      # 默认端口是27017  
+      port: 27017  
+      # 也可以使用uri连接  
+      #uri: mongodb://192.168.40.134:27017/articledb
+```
+
+（3）创建启动类
+
+com.fx.article.ArticleApplication
+
+```java
+package com.fx.article;  
+  
+import org.springframework.boot.SpringApplication;  
+import org.springframework.boot.autoconfigure.SpringBootApplication;  
+  
+@SpringBootApplication  
+public class ArticleApplication {  
+  
+    public static void main(String[] args) {  
+        SpringApplication.run(ArticleApplication.class, args);  
+    }  
+  
+}
+```
+
+我们启动一下空项目，看`Mongo`连接是否正常，一般就可以正常连接了
+
+![](https://cdn.fengxianhub.top/resources-master/20220728195910.png)
+
+#### 5.5 文章评论实体类的编写
+
+创建实体类 创建包com.fx.article，包下建包po用于存放实体类，创建实体类
+
+这里有一点需要注意，因为`Mongo`是可以进行横向拓展的，所以可能会出现一个集合对应多个实体类的情况
+
+```java
+package com.fx.article.po;  
+  
+import lombok.Data;  
+import org.springframework.data.annotation.Id;  
+import org.springframework.data.mongodb.core.index.CompoundIndex;  
+import org.springframework.data.mongodb.core.index.Indexed;  
+import org.springframework.data.mongodb.core.mapping.Document;  
+  
+import java.io.Serializable;  
+import java.time.LocalDateTime;  
+import java.util.Date;  
+  
+/**  
+ * <p>  
+ * 文档评论实体类<br/>  
+ * 把一个Java类生命为mongodb的文档，可以通过collection参数指定这个类对应的文档  
+ * </p>  
+ *  
+ * @since 2022-07-28 20:19  
+ * @author 梁峰源  
+ **/  
+@Data  
+// 若未添加@Document注解，则该bean save到mongo的comment collection  
+@Document(collection = "comment")//指定对应的集合，如果省略则默认为类名小写进行集合映射  
+@CompoundIndex(def = "{'userid': 1, 'nickname' : -1}") // 添加复合索引，先按userid排，再按nickname降序排  
+public class Comment implements Serializable {  
+    private static final long serialVersionUID = 21218312631312334L;  
+    // 主键标识，该属性的值会自动对应mongodb的主键字段`_id`, 如果该属性名叫做 `id`, 则该注解可以省略，否者必须写  
+    @Id  
+    private String id;//主键  
+    private String content;//吐槽内容  
+    private Date publishtime;//发布日期  
+    // 添加了一个单子段的索引  
+    @Indexed  
+    private String userid;//发布人的ID  
+    private String nickname;//用户昵称  
+    private LocalDateTime createdatetime;//评论的日期时间  
+    private Integer likenum;//点赞数  
+    private Integer replaynum;//回复数  
+    private String state;//状态  
+    private String parentid;//上级ID  
+    private String articleid;//文章id  
+}
+```
+
+说明： 索引可以大大提升查询效率，一般在查询字段上添加索引，索引的添加可以通过Mongo的命令来添加，也可以在Java的实体类中通过注解添加。`一般我们为了项目的可拓展性，会在命令行进行添加`
+
+1）单字段索引注解@Indexed 
+
+org.springframework.data.mongodb.core.index.Indexed.class 
+
+声明该字段需要索引，建索引可以大大的提高查询效率。 
+
+Mongo命令参考：
+
+```javascript
+db.comment.createIndex({"userid":1})
+```
+
+2）复合索引注解@CompoundIndex
+
+org.springframework.data.mongodb.core.index.CompoundIndex.class
+
+复合索引的声明，建复合索引可以有效地提高多字段的查询效率。
+
+Mongo命令参考：
+
+```javascript
+db.comment.createIndex({"userid":1,"nickname":-1})
+```
+
+#### 5.6 文章评论的基本增删改查
+
+（1）创建数据访问接口 cn.itcast.article包下创建dao包，包下创建接口
+
+com.fx.article.dao.CommentRepository
+
+![](https://cdn.fengxianhub.top/resources-master/20220728203752.png)
+
+
+```java
+package com.fx.article.dao;  
+  
+import com.fx.article.po.Comment;  
+import org.springframework.data.mongodb.repository.MongoRepository;  
+  
+/**  
+ * <p>  
+ *  
+ * </p>  
+ *  
+ * @author 梁峰源  
+ * @since 2022-07-28 20:34  
+ **/public interface CommentRepository extends MongoRepository<Comment, String> {  
+}
+```
+
+（2）创建业务逻辑类 cn.itcast.article包下创建service包，包下创建类
+
+com.fx.article.service.CommentService
+
+```java
+package com.fx.article.service;  
+  
+import com.fx.article.dao.CommentRepository;  
+import com.fx.article.po.Comment;  
+import org.springframework.beans.factory.annotation.Autowired;  
+import org.springframework.stereotype.Service;  
+  
+import java.util.List;  
+  
+/**  
+ * <p>  
+ * 评论service方法  
+ * </p>  
+ *  
+ * @since 2022-07-28 20:36  
+ * @author 梁峰源  
+ **/  
+@Service  
+public class CommentService {  
+    //注入dao  
+    @Autowired  
+    private CommentRepository commentRepository;  
+  
+    /**  
+     * 保存一个评论  
+     */  
+    public void saveComment(Comment comment) {  
+        //如果需要自定义主键，可以在这里指定主键；如果不指定主键，MongoDB会自动生成主键  
+        //设置一些默认初始值。。。  
+        //调用dao  
+        commentRepository.save(comment);  
+    }  
+  
+    /**  
+     * 更新评论  
+     */  
+    public void updateComment(Comment comment) {  
+        //调用dao  
+        commentRepository.save(comment);  
+    }  
+  
+    /**  
+     * 根据id删除评论  
+     */  
+    public void deleteCommentById(String id) {  
+        //调用dao  
+        commentRepository.deleteById(id);  
+    }  
+  
+    /**  
+     * 查询所有评论  
+     */  
+    public List<Comment> findCommentList() {  
+        //调用dao  
+        return commentRepository.findAll();  
+    }  
+  
+    /**  
+     * 根据id查询评论  
+     */  
+    public Comment findCommentById(String id) {  
+        //调用dao  
+        return commentRepository.findById(id).get();  
+    }  
+  
+}
+```
+
+（3）新建Junit测试类，测试保存和查询所有：
+
+com.fx.itcast.article.service.CommentServiceTest
+
+```java
+package com.fx.article.service;  
+  
+  
+import com.fx.article.po.Comment;  
+import org.junit.jupiter.api.Test;  
+import org.springframework.beans.factory.annotation.Autowired;  
+import org.springframework.boot.test.context.SpringBootTest;  
+  
+import java.time.LocalDateTime;  
+import java.util.List;  
+  
+/**  
+ * @author Eureka  
+ * @version 1.0  
+ * @since 2022年7月28日20:56:33  
+ */@SpringBootTest  
+public class CommentServiceTest {  
+  
+    @Autowired  
+    private CommentService commentService;  
+  
+    /**  
+     * 保存一条记录  
+     */  
+    @Test  
+    public void testSaveComment() throws Exception {  
+        Comment comment = new Comment();  
+        comment.setArticleid("100000");  
+        comment.setContent("测试添加的数据");  
+        comment.setCreatedatetime(LocalDateTime.now());  
+        comment.setUserid("1003");  
+        comment.setNickname("凯撒大帝");  
+        comment.setState("1");  
+        comment.setLikenum(0);  
+        comment.setReplynum(0);  
+        commentService.saveComment(comment);  
+        // 在查询一下这条记录，这里获取id的方式和Mybatis Plus一样，直接从实体类中获取即可  
+        Comment commentById = commentService.findCommentById(comment.getId());  
+        System.out.println(commentById);  
+    }  
+  
+    /**  
+     * 更新一条记录  
+     */  
+    @Test  
+    public void testUpdateComment() throws Exception {  
+//        Comment comment = new Comment();  
+//        comment.setId("1");  
+//        comment.setNickname("张三");  
+        // 上面的方式会将其他字段变为空，所以可以先查询出来再更新对应字段  
+        Comment comment = commentService.findCommentById("1");  
+        comment.setNickname("张三");  
+        // 更新这条记录  
+        commentService.updateComment(comment);  
+        // 打印一下这条记录  
+        Comment commentById = commentService.findCommentById(comment.getId());  
+        System.out.println(commentById);  
+    }  
+  
+    /**  
+     * Method: deleteCommentById(String id)     */    @Test  
+    public void testDeleteCommentById() throws Exception {  
+        commentService.deleteCommentById("1");  
+    }  
+  
+    /**  
+     * Method: findCommentList()     */    @Test  
+    public void testFindCommentList() throws Exception {  
+        List<Comment> commentList = commentService.findCommentList();  
+        System.out.println(commentList);  
+    }  
+  
+    /**  
+     * 通过id查询一条记录  
+     */  
+    @Test  
+    public void testFindCommentById() throws Exception {  
+        Comment commentById = commentService.findCommentById("1");  
+        System.out.println(commentById);  
+    }  
+  
+  
+}
+```
+
+这里需要注意如果是`MongoDB 6`以上的版本可能打印不出来，这里可能有像MySQL中MVCC之类的同学，我换成4版本后就可以正常打印出来了
+
+![](https://cdn.fengxianhub.top/resources-master/20220728212121.png)
+
+
+#### 5.7 根据上级ID查询文章评论的分页列表
+
+（1）CommentRepository新增方法定义
+
+```java
+/**  
+ * 分页查询，这里的名字要根据提示来，不能写错不然会生成失败  
+ */  
+Page<Comment> findByUserid(String userid, Pageable pageable);
+```
+
+
+（2）CommentService新增方法
+
+```java
+/**  
+ * 根据父id查询分页列表  
+ * @param userid  
+ * @param page 页码  
+ * @param size 页数  
+ */  
+public Page<Comment> findCommentListPageByUserid(String userid,int page ,int size){  
+    return commentRepository.findByUserid(userid, PageRequest.of(page-1,size));  
+}
+```
+
+测试
+
+```java
+@Test  
+void testFindCommentListPageByParentid() {  
+    Page<Comment> pages = commentService.findCommentListPageByUserid("1003", 1, 3);  
+    // 打印有多少条记录  
+    System.out.println(pages.getTotalElements());  
+    List<Comment> contentList = pages.getContent();  
+    // 将所有的记录都打印出来  
+    contentList.forEach(System.out::println);  
+}
+```
+
+
+#### 5.8 MongoTemplate实现评论点赞
+
+我们看一下以下点赞的临时示例代码： CommentService 新增updateThumbup方法
+
+```java
+/**  
+ * 点赞-效率低  
+ * @param id  
+ */  
+public void updateCommentThumbupToIncrementingOld(String id){  
+    Comment comment = commentRepository.findById(id).get();  
+    comment.setLikenum(comment.getLikenum()+1);  
+    commentRepository.save(comment);  
+}
+```
+
+
+以上方法虽然实现起来比较简单，但是执行效率并不高，因为我只需要将点赞数加1就可以了，没必要查询出所有字段修改后再更新所有字 段。(蝴蝶效应)
+
+我们可以使用MongoTemplate类来实现对某列的操作。 
+
+（1）修改CommentService
+
+```java
+//注入MongoTemplate  
+@Autowired  
+private MongoTemplate mongoTemplate;
+
+/**  
+ * 点赞数+1  
+ * @param id  
+ */  
+public void updateCommentLikenum(String id) {  
+    //查询对象  
+    Query query = Query.query(Criteria.where("_id").is(id));  
+    //更新对象  
+    Update update = new Update();  
+    //局部更新，相当于$set  
+    // update.set(key,value)    //递增$inc  
+    // update.inc("likenum",1);    update.inc("likenum");  
+    //参数1：查询对象  
+    //参数2：更新对象  
+    //参数3：集合的名字或实体类的类型Comment.class  
+    mongoTemplate.updateFirst(query, update, "comment");  
+  
+	}
+```
+
+（2）测试用例：
+
+```java
+@Test  
+void testupdateCommentLikenum() {  
+    // 更新之前  
+    System.out.println(commentService.findCommentById("2"));  
+    commentService.updateCommentLikenum("2");  
+    // 更新之后  
+    System.out.println(commentService.findCommentById("2"));  
+}
+```
+
+测试结果，可以看到数据已经增长了
+
+![](https://cdn.fengxianhub.top/resources-master/20220729094629.png)
+
+更多的命令可以自行进行查看，这里贴一下API的地址：
+
+- <a href="https://www.runoob.com/mongodb/mongodb-java.html">菜鸟教程</a>
+- <a href="https://docs.spring.io/spring-data/mongodb/docs/2.1.5.RELEASE/api/">Spring-data MongoDB官方文档</a>
+
+## 6. 在 Nodejs 中使用 MongoDB - mongoose
 
 mongoose 是一个对象文档模型（ODM）库
 
@@ -1158,7 +1738,7 @@ mongoose 是一个对象文档模型（ODM）库
 - 数据可以通过类型转换转换为对象模型
 - 可以使用中间件应用业务逻辑
 
-### 5.1 mongoose 提供的新对象类型
+### 6.1 mongoose 提供的新对象类型
 
 - Schema
   - 定义约束了数据库中的文档结构
@@ -1168,7 +1748,7 @@ mongoose 是一个对象文档模型（ODM）库
 - Document
   - 表示集合中的具体文档, 相当于集合中的一个具体的文档
 
-### 5.2 简单使用 Mongoose
+### 6.2 简单使用 Mongoose
 
 > https://mongoosejs.com/docs/guide.html
 
@@ -1216,7 +1796,7 @@ mongoose.connection.once("close", function() {
 });
 ```
 
-### 5.3 Mongoose 的 CRUD
+### 6.3 Mongoose 的 CRUD
 
 首先定义一个 `Schema`
 
@@ -1290,7 +1870,7 @@ mongoose 支持的用法有:
 - [`Model.updateMany()`](https://mongoosejs.com/docs/api.html#model_Model.updateMany)
 - [`Model.updateOne()`](https://mongoosejs.com/docs/api.html#model_Model.updateOne)
 
-## 6. 使用 Mocha 编写测试 “Test Driven Development”
+## 7. 使用 Mocha 编写测试 “Test Driven Development”
 
 Mocha 是一个 js 测试的包, 编写测试有两个关键字 `describe` 和 `it`
 
@@ -1314,7 +1894,7 @@ describe('Creating records', () => {
 });
 ```
 
-## 7. NoSQL Databases
+>NoSQL Databases
 
 **Benefits of NoSQL**
 
