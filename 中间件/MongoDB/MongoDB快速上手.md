@@ -4,7 +4,6 @@
 
 ![](https://cdn.fengxianhub.top/resources-master/20220729100641.png)
 
-
 **课程目标**
 
 MongoDB的副本集: 操作, 主要概念, 故障转移, 选举规则 MongoDB的分片集群：概念, 优点, 操作, 分片策略, 故障转移 MongoDB的安全认证
@@ -62,7 +61,7 @@ MongoDB的副本集: 操作, 主要概念, 故障转移, 选举规则 MongoDB的
 如果上述有1个符合, 可以考虑 MongoDB, 2个及以上的符合, 选择 MongoDB 绝不会后悔.
 
 > 如果上述业务场景使用用MySQL呢?
->
+> 
 > 显然相对于MySQL, MongoDB可以以更低的成本解决问题（包括学习, 开发, 运维等成本）
 
 ### 1.2 MongoDB 简介
@@ -71,12 +70,11 @@ MongoDB的副本集: 操作, 主要概念, 故障转移, 选举规则 MongoDB的
 
 **“最像关系型数据库的 NoSQL 数据库”**. MongoDB 中的记录是一个文档, 是一个 key-value pair. 字段的数据类型是字符型, 值除了使用基本的一些类型以外, 还包括其它文档, 普通数组以及文档数组
 
->Mongo和Mysql对比
+> Mongo和Mysql对比
 
 ![image-20220726231623672](https://cdn.fengxianhub.top/resources-master/202207271003671.png)
 
 ![](https://cdn.fengxianhub.top/resources-master/20220727145225.png)
-
 
 MongoDB 数据模型是面向文档的, 所谓文档就是一种类似于 JSON 的结构, 简单理解 MongoDB 这个数据库中存在的是各种各样的 JSON（BSON）
 
@@ -91,22 +89,23 @@ MongoDB 数据模型是面向文档的, 所谓文档就是一种类似于 JSON �
 
 #### 1.2.1 数据库 (databases) 管理语法
 
-| 操作                                            | 语法                             |
-| ----------------------------------------------- | -------------------------------- |
-| 查看所有数据库                                  | `show dbs;` 或 `show databases;` |
-| 查看当前数据库                                  | `db;`                            |
-| 切换到某数据库 (**若数据库不存在则创建数据库**) | `use <db_name>;`                 |
-| 删除当前数据库                                  | `db.dropDatabase();`             |
+| 操作                          | 语法                              |
+| --------------------------- | ------------------------------- |
+| 查看所有数据库                     | `show dbs;` 或 `show databases;` |
+| 查看当前数据库                     | `db;`                           |
+| 切换到某数据库 (**若数据库不存在则创建数据库**) | `use <db_name>;`                |
+| 删除当前数据库                     | `db.dropDatabase();`            |
 
 #### 1.2.2 集合 (collection) 管理语法
 
-| 操作         | 语法                                        |
-| ------------ | ------------------------------------------- |
+| 操作     | 语法                                          |
+| ------ | ------------------------------------------- |
 | 查看所有集合 | `show collections;`                         |
-| 创建集合     | `db.createCollection("<collection_name>");` |
-| 删除集合     | `db.<collection_name>.drop()`               |
+| 创建集合   | `db.createCollection("<collection_name>");` |
+| 删除集合   | `db.<collection_name>.drop()`               |
 
 ### 1.3. 数据类型
+
 MongoDB的最小存储单位就是文档(document)对象。文档(document)对象对应于关系型数据库的行。数据在MongoDB中以 BSON（Binary-JSON）文档的格式存储在磁盘上。 
 
 BSON（Binary Serialized Document Format）是一种类json的一种二进制形式的存储格式，简称Binary JSON。BSON和JSON一样，支持 内嵌的文档对象和数组对象，但是BSON有JSON没有的一些数据类型，如`Date`和`BinData`类型。 
@@ -117,12 +116,14 @@ Bson中，除了基本的JSON类型：string,integer,boolean,double,null,array�
 
 ![MongoDB数据类型](https://cdn.fengxianhub.top/resources-master/20220727142908.png)
 
->提示： shell默认使用64位浮点型数值。{“x”：3.14}或{“x”：3}。对于整型值，可以使用NumberInt（4字节符号整数）或NumberLong（8字节符 号整数），{“x”:NumberInt(“3”)}{“x”:NumberLong(“3”)}
+> 提示： shell默认使用64位浮点型数值。{“x”：3.14}或{“x”：3}。对于整型值，可以使用NumberInt（4字节符号整数）或NumberLong（8字节符 号整数），{“x”:NumberInt(“3”)}{“x”:NumberLong(“3”)}
 
 ### 1.4 MongoDB 的特点
+
 #### 1.4.1 高性能
 
 MongoDB 提供高性能的数据持久化
+
 - 嵌入式数据模型的支持减少了数据库系统上的 I/O 活动
 - 索引支持更快的查询, 并且可以包含来自嵌入式文档和数组的键 (文本索引解决搜索的需求, TTL 索引解决历史数据自动过期的需求, 地理位置索引可以用于构件各种 O2O 应用)
 - mmapv1, wiredtiger, mongorocks (rocksdb) in-memory 等多引擎支持满足各种场景需求
@@ -148,43 +149,41 @@ MongoDB支持丰富的查询语言, 支持读和写操作(CRUD), 比如数据聚
 
 无模式（动态模式）, 灵活的文档模型
 
-
 ## 2. 基本常用命令
 
 MongoDB安装请看本文的第八点
 
 ### 2.1 数据库操作
 
-
-| 操作                                            | 语法                             |
-| ----------------------------------------------- | -------------------------------- |
-| 查看所有数据库                                  | `show dbs;` 或 `show databases;` |
-| 查看当前数据库                                  | `db;`                            |
-| 切换到某数据库 (**若数据库不存在则创建数据库**) | `use <db_name>;`                 |
-| 删除当前数据库                                  | `db.dropDatabase();`             |
+| 操作                          | 语法                              |
+| --------------------------- | ------------------------------- |
+| 查看所有数据库                     | `show dbs;` 或 `show databases;` |
+| 查看当前数据库                     | `db;`                           |
+| 切换到某数据库 (**若数据库不存在则创建数据库**) | `use <db_name>;`                |
+| 删除当前数据库                     | `db.dropDatabase();`            |
 
 默认保留的数据库
 
 - **admin**: 从权限角度考虑, 这是 `root` 数据库, 如果将一个用户添加到这个数据库, 这个用户自动继承所有数据库的权限, 一些特定的服务器端命令也只能从这个数据库运行, 比如列出所有的数据库或者关闭服务器
 - **local**: 数据永远不会被复制, 可以用来存储限于本地的单台服务器的集合 (部署集群, 分片等)
 - **config**: Mongo 用于分片设置时, `config` 数据库在内部使用, 用来保存分片的相关信息
-```shell
-> show dbs
-admin   0.000GB
-config  0.000GB
-local   0.000GB
-> use articledb
-switched to db articledb
-> show dbs
-admin   0.000GB
-config  0.000GB
-local   0.000GB
-```
+  
+  ```shell
+  > show dbs
+  admin   0.000GB
+  config  0.000GB
+  local   0.000GB
+  > use articledb
+  switched to db articledb
+  > show dbs
+  admin   0.000GB
+  config  0.000GB
+  local   0.000GB
+  ```
 
 当我们创建了一个数据库后再进行查看会发现，我们创建的数据库并没有显示出来，这是由于`MongoDD的存储机制决定的`
 
 > 当使用 `use articledb` 的时候. `articledb` 其实存放在内存之中, 当 `articledb` 中存在一个 collection 之后, mongo 才会将这个数据库持久化到硬盘之中.
-
 
 ![](https://cdn.fengxianhub.top/resources-master/20220727195810.png)
 
@@ -211,23 +210,24 @@ config     0.000GB
 local      0.000GB
 ```
 
-
 另外： 数据库名可以是满足以下条件的任意UTF-8字符串。 
+
 - 不能是空字符串（"")。 
 - 不得含有`' '`空格)、`.`、`$`、`/`、`\` 和 `\0` (空字符)。 
 - 应全部小写。 
 - 最多64字节。
 
->集合操作与数据库操作类似，这里不再单独演示
+> 集合操作与数据库操作类似，这里不再单独演示
 
 ![](https://cdn.fengxianhub.top/resources-master/20220727201035.png)
 
 ### 2.2 文档基本 CRUD
+
 > 官方文档: https://docs.mongodb.com/manual/crud/
 
 #### 2.2.1 创建 Create
 
->Create or insert operations add new [documents](https://docs.mongodb.com/manual/core/document/#bson-document-format) to a [collection](https://docs.mongodb.com/manual/core/databases-and-collections/#collections). If the collection does **not** currently exist, insert operations will create the collection automatically.
+> Create or insert operations add new [documents](https://docs.mongodb.com/manual/core/document/#bson-document-format) to a [collection](https://docs.mongodb.com/manual/core/databases-and-collections/#collections). If the collection does **not** currently exist, insert operations will create the collection automatically.
 
 文档的数据结构和 JSON 基本一样。
 
@@ -236,17 +236,18 @@ local      0.000GB
 BSON 是一种类似 JSON 的二进制形式的存储格式，是 Binary JSON 的简称
 
 - 使用 `db.<collection_name>.insertOne()` 向集合中添加*一个文档*, 参数一个 json 格式的文档
--db.collection.insertOne() 用于向集合插入一个新文档，语法格式如下：
-```java
-db.collection.insertOne(
+  -db.collection.insertOne() 用于向集合插入一个新文档，语法格式如下：
+  
+  ```java
+  db.collection.insertOne(
    <document>,
    {
       writeConcern: <document>
    }
-)
-```
+  )
+  ```
 - 使用 `db.<collection_name>.insertMany()` 向集合中添加*多个文档*, 参数为 json 文档数组
-db.collection.insertMany() 用于向集合插入一个多个文档，语法格式如下：
+  db.collection.insertMany() 用于向集合插入一个多个文档，语法格式如下：
 
 ```java
 db.collection.insertMany(
@@ -259,11 +260,12 @@ db.collection.insertMany(
 ```
 
 参数说明：
--   document：要写入的文档。
--   writeConcern：写入策略，默认为 1，即要求确认写操作，0 是不要求。
--   ordered：指定是否按顺序写入，默认 true，按顺序写入
 
->我们平时使用最多的只有`document`这一个字段
+- document：要写入的文档。
+- writeConcern：写入策略，默认为 1，即要求确认写操作，0 是不要求。
+- ordered：指定是否按顺序写入，默认 true，按顺序写入
+
+> 我们平时使用最多的只有`document`这一个字段
 
 ![](https://cdn.fengxianhub.top/resources-master/20220727153030.png)
 
@@ -470,7 +472,7 @@ db.posts.find({
 
 其中 `<filter>` 参数与查询方法中的条件参数用法一致
 
->覆盖修改，会将其他的值清除
+> 覆盖修改，会将其他的值清除
 
 ```javascript
 // nModified1表示有一条记录被修改
@@ -485,7 +487,7 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 { "_id" : "5", "articleid" : "100001", "content" : "研究表明，刚烧开的水千万不能喝，因为烫嘴。", "userid" : "1003", "nickname" : "凯撒", "createdatetime" : ISODate("2019-08-06T11:01:02.521Z"), "likenum" : 3000, "state" : "1" }
 ```
 
->局部修改，只修改我们修改的部分，其他字段不受影响
+> 局部修改，只修改我们修改的部分，其他字段不受影响
 
 如果需要修改指定的属性, 而不是替换需要用“修改操作符”来进行修改
 
@@ -551,7 +553,6 @@ db.commnet.update( { userid: "30", { $set {username: "guest"} } }, {multi: true}
 
 ![](https://cdn.fengxianhub.top/resources-master/20220727212446.png)
 
-
 **列值增长的修改**
 
 如果我们想实现对某列值在原有值的基础上进行增加或减少, 可以使用 `$inc` 运算符来实现
@@ -562,29 +563,29 @@ db.commnet.update({ _id: "3", {$inc: {likeNum: NumberInt(1)}} })
 
 ![](https://cdn.fengxianhub.top/resources-master/20220727212929.png)
 
+> 修改操作符
 
->修改操作符
-
-| Name                                                         | Description                                                  |
-| :----------------------------------------------------------- | :----------------------------------------------------------- |
-| [`$currentDate`](https://docs.mongodb.com/manual/reference/operator/update/currentDate/#up._S_currentDate) | Sets the value of a field to current date, either as a Date or a Timestamp. |
-| [`$inc`](https://docs.mongodb.com/manual/reference/operator/update/inc/#up._S_inc) | Increments the value of the field by the specified amount.   |
-| [`$min`](https://docs.mongodb.com/manual/reference/operator/update/min/#up._S_min) | Only updates the field if the specified value is less than the existing field value. |
-| [`$max`](https://docs.mongodb.com/manual/reference/operator/update/max/#up._S_max) | Only updates the field if the specified value is greater than the existing field value. |
-| [`$mul`](https://docs.mongodb.com/manual/reference/operator/update/mul/#up._S_mul) | Multiplies the value of the field by the specified amount.   |
-| [`$rename`](https://docs.mongodb.com/manual/reference/operator/update/rename/#up._S_rename) | Renames a field.                                             |
-| [`$set`](https://docs.mongodb.com/manual/reference/operator/update/set/#up._S_set) | Sets the value of a field in a document.                     |
+| Name                                                                                                       | Description                                                                                                                                   |
+|:---------------------------------------------------------------------------------------------------------- |:--------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`$currentDate`](https://docs.mongodb.com/manual/reference/operator/update/currentDate/#up._S_currentDate) | Sets the value of a field to current date, either as a Date or a Timestamp.                                                                   |
+| [`$inc`](https://docs.mongodb.com/manual/reference/operator/update/inc/#up._S_inc)                         | Increments the value of the field by the specified amount.                                                                                    |
+| [`$min`](https://docs.mongodb.com/manual/reference/operator/update/min/#up._S_min)                         | Only updates the field if the specified value is less than the existing field value.                                                          |
+| [`$max`](https://docs.mongodb.com/manual/reference/operator/update/max/#up._S_max)                         | Only updates the field if the specified value is greater than the existing field value.                                                       |
+| [`$mul`](https://docs.mongodb.com/manual/reference/operator/update/mul/#up._S_mul)                         | Multiplies the value of the field by the specified amount.                                                                                    |
+| [`$rename`](https://docs.mongodb.com/manual/reference/operator/update/rename/#up._S_rename)                | Renames a field.                                                                                                                              |
+| [`$set`](https://docs.mongodb.com/manual/reference/operator/update/set/#up._S_set)                         | Sets the value of a field in a document.                                                                                                      |
 | [`$setOnInsert`](https://docs.mongodb.com/manual/reference/operator/update/setOnInsert/#up._S_setOnInsert) | Sets the value of a field if an update results in an insert of a document. Has no effect on update operations that modify existing documents. |
-| [`$unset`](https://docs.mongodb.com/manual/reference/operator/update/unset/#up._S_unset) | Removes the specified field from a document.                 |
+| [`$unset`](https://docs.mongodb.com/manual/reference/operator/update/unset/#up._S_unset)                   | Removes the specified field from a document.                                                                                                  |
 
 #### 2.2.4 删除 Delete
--  `db.collection.remove()`通过添加删除规则进行删除 
+
+- `db.collection.remove()`通过添加删除规则进行删除 
 - 使用 `db.collection.deleteMany()` 方法删除所有匹配的文档.
 - 使用 `db.collection.deleteOne()` 方法删除单个匹配的文档.
 - `db.collection.drop()`
 - `db.dropDatabase()`
 
->只删除一条记录
+> 只删除一条记录
 
 ![](https://cdn.fengxianhub.top/resources-master/20220727214323.png)
 
@@ -596,9 +597,8 @@ db.commnet.update({ _id: "3", {$inc: {likeNum: NumberInt(1)}} })
 db.comment.remove({})
 ```
 
-
 > Delete operations **do not drop indexes**, even if deleting all documents from a collection.
->
+> 
 > 一般数据库中的数据都不会真正意义上的删除, 会添加一个字段, 用来表示这个数据是否被删除
 
 ### 2.3 文档排序和投影 (sort & projection)
@@ -654,6 +654,7 @@ db.posts.find().sort({ title : -1 }).limit(2).pretty()
 ```
 
 ### 2.4 分页查询
+
 #### 2.4.1 统计查询
 
 统计查询使用count()方法，语法如下：
@@ -704,7 +705,6 @@ db.COLLECTION_NAME.find().sort({KEY:1})
 db.集合名称.find().sort(排序方式)
 ```
 
-
 例如： 对userid降序排列，并对访问量进行升序排列
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728101408.png)
@@ -744,7 +744,7 @@ $ db.collection.find({字段:/正则表达式/})
 `<`, `<=`, `>`, `>=` 这些操作符也是很常用的, 格式如下:
 
 其实这些字符就是对应JS里面的：gt（great than）、lt（less than）、gte（great than equal ）、lte（less than equal ）、ne（not equal）
-	
+
 ```
 db.collection.find({ "field" : { $gt: value }}) // 大于: field > value
 db.collection.find({ "field" : { $lt: value }}) // 小于: field < value
@@ -757,8 +757,6 @@ db.collection.find({ "field" : { $ne: value }}) // 不等于: field != value
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728110833.png)
 
-
-
 #### 2.5.3 包含查询
 
 包含使用 `$in` 操作符. 示例：查询评论的集合中 `userid` 字段包含 `1003` 或 `1004`的文档
@@ -769,7 +767,6 @@ db.comment.find({userid:{$in:["1003","1004"]}})
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728112350.png)
 
-
 不包含使用 `$nin` 操作符. 示例：查询评论集合中 `userid` 字段不包含 `1003` 和 `1004` 的文档
 
 ```
@@ -777,7 +774,6 @@ db.comment.find({userid:{$nin:["1003","1004"]}})
 ```
 
 ![查询评论集合中 `userid` 字段不包含 `1003` 和 `1004` 的文档](https://cdn.fengxianhub.top/resources-master/20220728112453.png)
-
 
 #### 2.5.4 条件连接查询
 
@@ -795,7 +791,6 @@ db.comment.find({$and:[{likenum:{$gte:NumberInt(700)}},{likenum:{$lt:NumberInt(2
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728113021.png)
 
-
 如果两个以上条件之间是或者的关系，我们使用 操作符进行关联，与前面 and的使用方式相同 格式为：
 
 ```java
@@ -810,16 +805,15 @@ db.comment.find({$or:[ {userid:"1003"} ,{likenum:{$lt:1000} }]})
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728113102.png)
 
-
 #### 2.5.5 foreach查询
 
 我们知道这些查询语句其实就是`js`的语法格式，所有在查询得到结果后我们也可以通过`forEach`函数对结果进行遍历
 
 ```java
 db.posts.find().forEach(
-	fucntion(doc) { 
-		print('Blog Post: ' + doc.title) 
-	})
+    fucntion(doc) { 
+        print('Blog Post: ' + doc.title) 
+    })
 // 也可以通过箭头函数简化一下
 db.comment.find().forEach((it)=> { 
       print(it._id)
@@ -827,7 +821,6 @@ db.comment.find().forEach((it)=> {
 ```
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728114314.png)
-
 
 #### 2.5.6 地理位置查询
 
@@ -869,21 +862,20 @@ db.comment.find().forEach((it)=> {
 - 一对多/多对一(one to many / many to one)
 - 多对多 (Many To Many)
 
-### 3.1 一对一 
+### 3.1 一对一
 
 在MongoDB中可以通过内嵌文档的形式体现出一对一的关系，比如夫妻：
 
 ```javascript
 {
-	name:'黄蓉',
-	husband:{
-		name:'郭靖'
-	}
+    name:'黄蓉',
+    husband:{
+        name:'郭靖'
+    }
 }
-
 ```
 
->一个文档对象一旦被嵌入到另一个文档对象中就绝不可能再被嵌入到其他文档对象中，因此可以体现出一对一的关系
+> 一个文档对象一旦被嵌入到另一个文档对象中就绝不可能再被嵌入到其他文档对象中，因此可以体现出一对一的关系
 
 ### 3.2 一对多/多对一
 
@@ -895,23 +887,21 @@ db.comment.find().forEach((it)=> {
 
 ```javascript
 {
-	cust_id:ObjectId("5d272c817f2dc9e6986d82fb"),
-	cust_name:"黑宋江",
-	orders:[
-		{
-			_id: ObjectId("5d2614c42b1a4fdfd82bfda3"),
-			type:"牛肉",
-			count:2
-		},
-		{
-			_id:ObjectId("5d272c817f2dc9e6986d82fa"),
-			type:"酒",
-			count:6
-		}
-	]
+    cust_id:ObjectId("5d272c817f2dc9e6986d82fb"),
+    cust_name:"黑宋江",
+    orders:[
+        {
+            _id: ObjectId("5d2614c42b1a4fdfd82bfda3"),
+            type:"牛肉",
+            count:2
+        },
+        {
+            _id:ObjectId("5d272c817f2dc9e6986d82fa"),
+            type:"酒",
+            count:6
+        }
+    ]
 }
-
-
 ```
 
 二：一对多，用户：constom/订单orders
@@ -922,8 +912,8 @@ db.comment.find().forEach((it)=> {
 
 ```javascript
 db.constom.insert([
-	{username:'孙悟空'},
-	{username:'猪八戒'}
+    {username:'孙悟空'},
+    {username:'猪八戒'}
 ])
 ```
 
@@ -944,8 +934,6 @@ db.orders.find({userid:userid})
 ```
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728141516.png)
-
-
 
 ### 3.3 多对多
 
@@ -980,12 +968,11 @@ db.students.insertMany([
         ObjectId("5d7f018b162f56aeed8aeddb"),
         ObjectId("5d7f018b162f56aeed8aeddc")
         ]
-        
+
     }
 ]);
 db.students.find();
 ```
-
 
 ## 4. MongoDB 的索引
 
@@ -1000,6 +987,7 @@ db.students.find();
 **MongoDB 和MySQL 一样使用的都是是 B+ Tree**
 
 在之前的版本中Mongo使用的是B树，但是现在都是使用B+树了
+
 - <a href="http://source.wiredtiger.com/3.2.1/tune_page_size_and_comp.html">Mongo官方文档</a>
 - <a href="https://blog.csdn.net/weixin_41987908/article/details/105255119?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165898988316782390577084%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=165898988316782390577084&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-2-105255119-null-null.142^v35^experiment_2_v1,185^v2^tag_show&utm_term=MongoDB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8B%E6%A0%91%E4%BD%9C%E4%B8%BA%E7%B4%A2%E5%BC%95&spm=1018.2226.3001.4187">为什么Mongo选择过B树？</a>
 
@@ -1036,7 +1024,6 @@ MongoDB 支持在文档的单个字段上创建用户定义的**升序/降序索
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728152612.png)
 
-
 #### 4.2.2 复合索引
 
 MongoDB 还支持多个字段的用户定义索引, 即复合索引 Compound Index，这个其实非常类似`MySQL`中的联合索引，因为底层都是B+树，所有联合索引可能也有`最左原则`这种东西
@@ -1044,7 +1031,6 @@ MongoDB 还支持多个字段的用户定义索引, 即复合索引 Compound Ind
 复合索引中列出的字段顺序具有重要意义.例如, 如果复合索引由 `{ userid: 1, score: -1 }` 组成, 则索引首先按 `userid` 正序排序, 然后 在每个 `userid` 的值内, 再在按 `score` 倒序排序.
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728152633.png)
-
 
 #### 4.2.3 其他索引
 
@@ -1080,7 +1066,6 @@ db.collection.getIndexes()
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728153750.png)
 
-
 结果中显示的是默认 _id 索引。
 
 默认 `_id` 索引： MongoDB 在创建集合的过程中, 在 `_id` 字段上创建一个唯一的索引, 默认名字为 `_id` , 该索引可防止客户端插入两个具有相同值的文 档, 不能在 `_id` 字段上删除此索引.
@@ -1097,18 +1082,13 @@ db.collection.getIndexes()
 db.collection.createIndex(keys, options)
 ```
 
-
-
 参数
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728154015.png)
 
-
-
 options（更多选项）列表
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728154041.png)
-
 
 注意在 3.0.0 版本前创建索引方法为 `db.collection.ensureIndex()` , 之后的版本使用了 `db.collection.createIndex()` 方法, `ensureIndex()` 还能用, 但只是 `createIndex()` 的别名.
 
@@ -1133,7 +1113,6 @@ $ db.comment.createIndex({userid:1,nickname:-1})
 ![](https://cdn.fengxianhub.top/resources-master/20220728155655.png)
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728160447.png)
-
 
 #### 4.3.3 索引的删除
 
@@ -1162,7 +1141,6 @@ $ db.comment.dropIndex({userid:1})
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728161546.png)
 
-
 ### 4.4 索引使用
 
 #### 4.4.1 执行计划
@@ -1181,13 +1159,11 @@ $ db.<collection_name>.find( query, options ).explain(options)
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728162349.png)
 
-
 **添加索引之后**
 
 `"stage" : "IXSCAN"`, 基于索引的扫描
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728162419.png)
-
 
 #### 4.4.2 覆盖索引查询（Covered Queries）
 
@@ -1196,7 +1172,6 @@ $ db.<collection_name>.find( query, options ).explain(options)
 当查询条件和查询的投影仅包含索引字段时， MongoDB 直接从索引返回结果, 而不扫描任何文档或将文档带入内存, 这些覆盖的查询十分有效
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728162801.png)
-
 
 > https://docs.mongodb.com/manual/core/query-optimization/#covered-query
 
@@ -1212,12 +1187,11 @@ $ db.<collection_name>.find( query, options ).explain(options)
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728185247.png)
 
-
 在这个案例中主要的需求是：
 
--  基本增删改查API 
--  根据文章id查询评论 
--  评论点赞
+- 基本增删改查API 
+- 根据文章id查询评论 
+- 评论点赞
 
 文章示例参考：早晨空腹喝水，是对还是错？https://www.toutiao.com/a6721476546088927748/
 
@@ -1226,7 +1200,6 @@ $ db.<collection_name>.find( query, options ).explain(options)
 数据库：articledb，集合就用我们上面一直在使用的`comment`
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728194643.png)
-
 
 ### 5.3 技术选型
 
@@ -1282,7 +1255,7 @@ SpringData家族成员之一，用于操作MongoDB的持久层框架，封装了
             <scope>test</scope>  
         </dependency>  
     </dependencies>  
-  
+
     <build>  
         <plugins>  
             <plugin>  
@@ -1299,7 +1272,7 @@ SpringData家族成员之一，用于操作MongoDB的持久层框架，封装了
             </plugin>  
         </plugins>  
     </build>  
-  
+
 </project>
 ```
 
@@ -1326,17 +1299,17 @@ com.fx.article.ArticleApplication
 
 ```java
 package com.fx.article;  
-  
+
 import org.springframework.boot.SpringApplication;  
 import org.springframework.boot.autoconfigure.SpringBootApplication;  
-  
+
 @SpringBootApplication  
 public class ArticleApplication {  
-  
+
     public static void main(String[] args) {  
         SpringApplication.run(ArticleApplication.class, args);  
     }  
-  
+
 }
 ```
 
@@ -1352,17 +1325,17 @@ public class ArticleApplication {
 
 ```java
 package com.fx.article.po;  
-  
+
 import lombok.Data;  
 import org.springframework.data.annotation.Id;  
 import org.springframework.data.mongodb.core.index.CompoundIndex;  
 import org.springframework.data.mongodb.core.index.Indexed;  
 import org.springframework.data.mongodb.core.mapping.Document;  
-  
+
 import java.io.Serializable;  
 import java.time.LocalDateTime;  
 import java.util.Date;  
-  
+
 /**  
  * <p>  
  * 文档评论实体类<br/>  
@@ -1430,13 +1403,12 @@ com.fx.article.dao.CommentRepository
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728203752.png)
 
-
 ```java
 package com.fx.article.dao;  
-  
+
 import com.fx.article.po.Comment;  
 import org.springframework.data.mongodb.repository.MongoRepository;  
-  
+
 /**  
  * <p>  
  *  
@@ -1454,14 +1426,14 @@ com.fx.article.service.CommentService
 
 ```java
 package com.fx.article.service;  
-  
+
 import com.fx.article.dao.CommentRepository;  
 import com.fx.article.po.Comment;  
 import org.springframework.beans.factory.annotation.Autowired;  
 import org.springframework.stereotype.Service;  
-  
+
 import java.util.List;  
-  
+
 /**  
  * <p>  
  * 评论service方法  
@@ -1475,7 +1447,7 @@ public class CommentService {
     //注入dao  
     @Autowired  
     private CommentRepository commentRepository;  
-  
+
     /**  
      * 保存一个评论  
      */  
@@ -1485,7 +1457,7 @@ public class CommentService {
         //调用dao  
         commentRepository.save(comment);  
     }  
-  
+
     /**  
      * 更新评论  
      */  
@@ -1493,7 +1465,7 @@ public class CommentService {
         //调用dao  
         commentRepository.save(comment);  
     }  
-  
+
     /**  
      * 根据id删除评论  
      */  
@@ -1501,7 +1473,7 @@ public class CommentService {
         //调用dao  
         commentRepository.deleteById(id);  
     }  
-  
+
     /**  
      * 查询所有评论  
      */  
@@ -1509,7 +1481,7 @@ public class CommentService {
         //调用dao  
         return commentRepository.findAll();  
     }  
-  
+
     /**  
      * 根据id查询评论  
      */  
@@ -1517,7 +1489,7 @@ public class CommentService {
         //调用dao  
         return commentRepository.findById(id).get();  
     }  
-  
+
 }
 ```
 
@@ -1527,26 +1499,26 @@ com.fx.itcast.article.service.CommentServiceTest
 
 ```java
 package com.fx.article.service;  
-  
-  
+
+
 import com.fx.article.po.Comment;  
 import org.junit.jupiter.api.Test;  
 import org.springframework.beans.factory.annotation.Autowired;  
 import org.springframework.boot.test.context.SpringBootTest;  
-  
+
 import java.time.LocalDateTime;  
 import java.util.List;  
-  
+
 /**  
  * @author Eureka  
  * @version 1.0  
  * @since 2022年7月28日20:56:33  
  */@SpringBootTest  
 public class CommentServiceTest {  
-  
+
     @Autowired  
     private CommentService commentService;  
-  
+
     /**  
      * 保存一条记录  
      */  
@@ -1566,7 +1538,7 @@ public class CommentServiceTest {
         Comment commentById = commentService.findCommentById(comment.getId());  
         System.out.println(commentById);  
     }  
-  
+
     /**  
      * 更新一条记录  
      */  
@@ -1584,20 +1556,20 @@ public class CommentServiceTest {
         Comment commentById = commentService.findCommentById(comment.getId());  
         System.out.println(commentById);  
     }  
-  
+
     /**  
      * Method: deleteCommentById(String id)     */    @Test  
     public void testDeleteCommentById() throws Exception {  
         commentService.deleteCommentById("1");  
     }  
-  
+
     /**  
      * Method: findCommentList()     */    @Test  
     public void testFindCommentList() throws Exception {  
         List<Comment> commentList = commentService.findCommentList();  
         System.out.println(commentList);  
     }  
-  
+
     /**  
      * 通过id查询一条记录  
      */  
@@ -1606,15 +1578,14 @@ public class CommentServiceTest {
         Comment commentById = commentService.findCommentById("1");  
         System.out.println(commentById);  
     }  
-  
-  
+
+
 }
 ```
 
 这里需要注意如果是`MongoDB 6`以上的版本可能打印不出来，这里可能有像MySQL中MVCC之类的同学，我换成4版本后就可以正常打印出来了
 
 ![](https://cdn.fengxianhub.top/resources-master/20220728212121.png)
-
 
 #### 5.7 根据上级ID查询文章评论的分页列表
 
@@ -1626,7 +1597,6 @@ public class CommentServiceTest {
  */  
 Page<Comment> findByUserid(String userid, Pageable pageable);
 ```
-
 
 （2）CommentService新增方法
 
@@ -1656,7 +1626,6 @@ void testFindCommentListPageByParentid() {
 }
 ```
 
-
 #### 5.8 MongoTemplate实现评论点赞
 
 我们看一下以下点赞的临时示例代码： CommentService 新增updateThumbup方法
@@ -1672,7 +1641,6 @@ public void updateCommentThumbupToIncrementingOld(String id){
     commentRepository.save(comment);  
 }
 ```
-
 
 以上方法虽然实现起来比较简单，但是执行效率并不高，因为我只需要将点赞数加1就可以了，没必要查询出所有字段修改后再更新所有字 段。(蝴蝶效应)
 
@@ -1701,8 +1669,8 @@ public void updateCommentLikenum(String id) {
     //参数2：更新对象  
     //参数3：集合的名字或实体类的类型Comment.class  
     mongoTemplate.updateFirst(query, update, "comment");  
-  
-	}
+
+    }
 ```
 
 （2）测试用例：
@@ -1755,7 +1723,7 @@ mongoose 是一个对象文档模型（ODM）库
 使用 mongoose 返回的是一个 `mogoose Query object`, mongoose 执行 query 语句后的结果会被传进 callback 函数 `callback(error, result)`
 
 > A mongoose query can be executed in one of two ways. First, if you pass in a `callback` function, Mongoose will execute the query asynchronously and pass the results to the `callback`.
->
+> 
 > A query also has a `.then()` function, and thus can be used as a promise.
 
 ```
@@ -1894,7 +1862,7 @@ describe('Creating records', () => {
 });
 ```
 
->NoSQL Databases
+> NoSQL Databases
 
 **Benefits of NoSQL**
 
@@ -1912,7 +1880,9 @@ describe('Creating records', () => {
 - JOINS are hard to accomplish, all manually
 
 ## 8. MongoDB单机部署(win + docker)
+
 ### 8.1 Windows系统中的安装启动
+
 第一步：下载安装包
 
 MongoDB 提供了可用于 32 位和 64 位系统的预编译二进制包，你可以从MongoDB官网下载安装，MongoDB 预编译二进制包下载地址：[Install MongoDB — MongoDB Manual](https://www.mongodb.com/try/download/community)
@@ -1937,19 +1907,17 @@ y为偶数时表示当前版本为稳定版，如：1.6.3、4.0.10； z是修正
 
 ![](https://cdn.fengxianhub.top/resources-master/20220727161207.png)
 
-
 在解压目录中，手动建立一个目录用于存放数据文件，如 data/db
 
 方式1：命令行参数方式启动服务 
 
 在 bin 目录中打开命令行提示符，输入如下命令：
+
 ```java
 mongod --dbpath=..\data\db
 ```
 
 ![](https://cdn.fengxianhub.top/resources-master/20220727161631.png)
-
-
 
 我们在启动信息中可以看到，mongoDB的默认端口是27017，如果我们想改变默认的启动端口，可以通过--port来指定端口。 
 
@@ -1963,8 +1931,8 @@ mongod --dbpath=..\data\db
 
 ```java
 storage: 
-	#The directory where the mongod instance stores its data.Default Value is "\data\db" on Windows. 
-	dbPath: D:\Environment\MongoDB\mongodb-6.0.0\data
+    #The directory where the mongod instance stores its data.Default Value is "\data\db" on Windows. 
+    dbPath: D:\Environment\MongoDB\mongodb-6.0.0\data
 ```
 
 详细配置项内容可以参考官方文档:  https://docs.mongodb.com/manual/reference/configuration-options/
@@ -2033,7 +2001,6 @@ local   0.000GB
 test
 ```
 
-
 由于它是一个JavaScript shell，您可以运行一些简单的算术运算:
 
 ```javascript
@@ -2048,18 +2015,16 @@ test
 ### 8.4 Compass-图形化界面客户端
 
  到MongoDB官网下载MongoDB Compass
- 
+
  地址：https://www.mongodb.com/download-center/v2/compass?initial=true 
- 
+
  如果是下载安装版，则按照步骤安装；如果是下载加压缩版，直接解压，执行里面的 `MongoDBCompassCommunity.exe` 文件即可。 
- 
+
  在打开的界面中，输入主机地址、端口等相关信息，点击连接：
 
 ![](https://cdn.fengxianhub.top/resources-master/20220727170059.png)
 
-
 我司使用的工具是`noSqlBooster`，感觉也挺好用的：https://www.nosqlbooster.com/
-
 
 ## References
 
@@ -2068,8 +2033,3 @@ test
 - https://www.bilibili.com/video/av59604756
 - https://www.bilibili.com/video/BV1bJ411x7mq
 - https://www.youtube.com/watch?v=-56x56UppqQ
-
-
-
-
-
