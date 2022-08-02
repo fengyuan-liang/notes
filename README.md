@@ -41,9 +41,15 @@
 
 ## 🐱‍🏍数据库
 
-**Mysql**
+**MySQL**
 
 - [Mysql索引学习](/mysql进阶/Mysql学习一：索引.md)
+
+**MongoDB**
+
+- [MongoDB快速上手](/中间件/MongoDB/MongoDB快速上手.md)
+
+- [MongoDB高级特性](/中间件/MongoDB/MongoDB高级特性.md)
 
 ## 🥊 框架|中间件
 
@@ -84,11 +90,15 @@
 
 **基本数据结构**
 
-[动态数组](/AlgorithmAndDataStructure/1-动态数组.md)       [链表](/AlgorithmAndDataStructure/2-链表.md)      [队列](/AlgorithmAndDataStructure/3-队列.md)
+[动态数组](/AlgorithmAndDataStructure/1-动态数组.md)    |   [链表](/AlgorithmAndDataStructure/2-链表.md)   |   [队列](/AlgorithmAndDataStructure/3-队列.md)
 
 **树**
 
-[二叉树](/AlgorithmAndDataStructure/4-二叉树.md)        [二叉树搜索树](/AlgorithmAndDataStructure/5-二叉树搜索树.md)      [AVL树](/AlgorithmAndDataStructure/6-AVL树.md)      [B树](/AlgorithmAndDataStructure/7-B树.md)       [红黑树](/AlgorithmAndDataStructure/8-红黑树.md)           
+[二叉树](/AlgorithmAndDataStructure/4-二叉树.md)     |   [二叉树搜索树](/AlgorithmAndDataStructure/5-二叉树搜索树.md)    |  [AVL树](/AlgorithmAndDataStructure/6-AVL树.md)  |    [B树](/AlgorithmAndDataStructure/7-B树.md)   |    [红黑树](/AlgorithmAndDataStructure/8-红黑树.md)           
+
+**字典**
+
+[映射](/AlgorithmAndDataStructure/10-映射.md) | [HashMap](/AlgorithmAndDataStructure/11-Hash表.md) | [LinkedHashMap](/AlgorithmAndDataStructure/12-LinkedHashMap.md)
 
 **集合**
 
@@ -96,8 +106,8 @@
 
 ## 🎈 大数据
 
-[MapReduce基本使用](/大数据/hadoop/2-MapReduce/5-MapReduce学习.md)        [MapReduce原理剖析](/大数据/hadoop/2-MapReduce/6-MapReduce原理剖析.md)       [yarn学习](/大数据/hadoop/2-MapReduce/4-yarn学习.md)      
+[MapReduce基本使用](/大数据/hadoop/2-MapReduce/5-MapReduce学习.md)    |    [MapReduce原理剖析](/大数据/hadoop/2-MapReduce/6-MapReduce原理剖析.md)   |    [yarn学习](/大数据/hadoop/2-MapReduce/4-yarn学习.md)      
 
-[Hadoop HA集群搭建](/大数据/hadoop/Hadoop完全分布式安装（HA、Yarn、ZKFC、flumeGanglia、sqoop一步到位）.md)         [Hadoop CDH集群搭建](/大数据/hadoop/基于docker搭建Hadoop CDH高可用集群.md)      
+[Hadoop HA集群搭建](/大数据/hadoop/Hadoop完全分布式安装（HA、Yarn、ZKFC、flumeGanglia、sqoop一步到位）.md)     |    [Hadoop CDH集群搭建](/大数据/hadoop/基于docker搭建Hadoop CDH高可用集群.md)      
 
 ## 🔎项目笔记
