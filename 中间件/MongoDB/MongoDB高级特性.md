@@ -356,5 +356,11 @@ rs.secondaryOk()
 
 【示例】 在`SECONDARY`上设置作为奴隶节点权限，具备读权限：
 
-![](https://cdn.fengxianhub.top/resources-master/20220801210829.png)
+如果要取消作为奴隶结点
+
+```java
+rs.secondaryOk(false)
+```
+
+
 

@@ -2,7 +2,7 @@
 
 ## 📢 前言
 
-> **说明**：基于[docsify](https://docsify.js.org/#/zh-cn/?id=docsify)文档网站生成器记录所学知识，便于日后复习与总结。<br>仓库地址：[Wiki](https://github.com/xuliyaheizi/docsify_wiki)
+> **说明**：基于[docsify](https://docsify.js.org/#/zh-cn/?id=docsify)文档网站生成器记录所学知识，便于日后复习与总结。<br>仓库地址：[Wiki](https://github.com/fengyuan-liang/notes)
 
 ## 😏diy
 
@@ -108,6 +108,6 @@
 
 [MapReduce基本使用](/大数据/hadoop/2-MapReduce/5-MapReduce学习.md)    |    [MapReduce原理剖析](/大数据/hadoop/2-MapReduce/6-MapReduce原理剖析.md)   |    [yarn学习](/大数据/hadoop/2-MapReduce/4-yarn学习.md)      
 
-[Hadoop HA集群搭建](/大数据/hadoop/Hadoop完全分布式安装（HA、Yarn、ZKFC、flumeGanglia、sqoop一步到位）.md)     |    [Hadoop CDH集群搭建](/大数据/hadoop/基于docker搭建Hadoop CDH高可用集群.md)      
+ [Hadoop CDH集群搭建]()  |   [Hadoop HA集群搭建]() 
 
 ## 🔎项目笔记
