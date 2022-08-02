@@ -165,7 +165,9 @@ MongoDB安装请看本文的第八点
 默认保留的数据库
 
 - **admin**: 从权限角度考虑, 这是 `root` 数据库, 如果将一个用户添加到这个数据库, 这个用户自动继承所有数据库的权限, 一些特定的服务器端命令也只能从这个数据库运行, 比如列出所有的数据库或者关闭服务器
+
 - **local**: 数据永远不会被复制, 可以用来存储限于本地的单台服务器的集合 (部署集群, 分片等)
+
 - **config**: Mongo 用于分片设置时, `config` 数据库在内部使用, 用来保存分片的相关信息
   
   ```shell
@@ -246,6 +248,7 @@ BSON 是一种类似 JSON 的二进制形式的存储格式，是 Binary JSON �
    }
   )
   ```
+
 - 使用 `db.<collection_name>.insertMany()` 向集合中添加*多个文档*, 参数为 json 文档数组
   db.collection.insertMany() 用于向集合插入一个多个文档，语法格式如下：
 
@@ -826,7 +829,55 @@ db.comment.find().forEach((it)=> {
 
 请查看MongoDB中文文档：[地理空间查询 - MongoDB-CN-Manual (mongoing.com)](https://docs.mongoing.com/mongodb-crud-operations/geospatial-queries)
 
-## 2.6 常用命令小结
+## 2.6 聚合函数
+
+### 2.6.1 管道和步骤
+
+在`Mongo`中聚合运算中有两个重要的概率：`Pipeline`和`Stage`，我们看下面的图，最开始输入的数据我们称之为原始数据，通过许多的步骤`Stage`转换成一系列的中间结果，最后得出最终结果，整个过程我们称之为：`Pipeline`
+
+![](https://cdn.fengxianhub.top/resources-master/20220801210829.png)
+
+> 聚合运算的基本格式为
+
+![](https://cdn.fengxianhub.top/resources-master/20220801211334.png)
+>常见的步骤有
+
+
+![](https://cdn.fengxianhub.top/resources-master/20220801211538.png)
+
+>在每个步骤中又可以进行很多的运算
+
+![](https://cdn.fengxianhub.top/resources-master/20220801211659.png)
+
+### 2.6.2 聚合函数使用场景
+
+![](https://cdn.fengxianhub.top/resources-master/20220801211947.png)
+
+>这里举一个sql中非常常见的例子：查询表中所有的男性，跳过前100条取20条
+
+![](https://cdn.fengxianhub.top/resources-master/20220801212122.png)
+
+>第二个例子：查询每个部门女性员工的数量，并且只看小于10个人的部门
+
+在sql中我们需要先按照部门进行分组，再过滤，最后查询
+
+![](https://cdn.fengxianhub.top/resources-master/20220801212353.png)
+
+>再来看一些Mongo特有的聚合函数
+
+将子集合解构出来
+![](https://cdn.fengxianhub.top/resources-master/20220801212548.png)
+
+统计每个桶里面记录的条数
+![](https://cdn.fengxianhub.top/resources-master/20220801212734.png)
+
+
+分桶进行聚合
+
+![](https://cdn.fengxianhub.top/resources-master/20220801213030.png)
+
+
+## 2.7 常用命令小结
 
 ```javascript
 选择切换数据库：use articledb

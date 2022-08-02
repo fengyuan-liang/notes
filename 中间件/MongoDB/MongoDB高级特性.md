@@ -270,3 +270,92 @@ replication:
 #### 1.4.5 第四步：初始化配置副本集和主节点
 
 后面还有一些，请看黑马的笔记，这里还是推荐使用docker安装
+
+主要的命令有：
+
+
+在其中一个节点连接mongodb（docker 进入`mongo0`容器进行连接）：
+
+```java
+# 连接
+mongo
+
+# 认证，如果没有密码则不需要，成功返回1，失败返回0
+use admin
+db.auth('root', 'root')
+
+```
+
+初始化副本集（无参初始化后，当前节点默认是`PRIMARY`节点）：
+
+```java
+rs.initiate()
+```
+
+![](https://cdn.fengxianhub.top/resources-master/20220801202154.png)
+
+
+添加节点（下面的是docker的添加方式，分布式的用ip地址代替下面的主机名即可）：
+
+```java
+# 副节点
+rs.add('mongo1:27017')
+
+# 仲裁节点
+rs.add('mongo2:27017', true)
+
+```
+
+查看副本集配置信息：
+
+```java
+rs.conf()
+```
+
+
+
+查看副本集运行状态
+
+```java
+rs.status()
+```
+
+### 1.5 副本节点的读写操作
+
+登录主节点，写入和读取数据：
+
+```java
+replica-set:PRIMARY> use articledb
+switched to db articledb
+replica-set:PRIMARY> db
+articledb
+replica-set:PRIMARY> db.comment.insertOne({
+... "_id": "1", "articleid": "100001", "content": "我们不应该把清晨浪费在手机上，健康很重要，一杯温水幸福你我他。", "userid": "1002", "nickname": "相忘于江湖", "createdatetime": new Date("2019-08-05T22:08:15.522Z"), "likenum": NumberInt(1000), "state": "1"
+... })
+```
+
+
+
+登录从节点27018，这里需要注意：从节点默认是不能读取集合的数据。当前从节点只是一个备份，不是奴隶节点，无法读取数据，写当然更不行。 因为默认情况下，从节点是没有读写权限的，可以增加读的权限，但需要进行设置。
+
+设置读操作权限： 
+
+说明： 设置为奴隶节点，允许在从成员上运行读的操作 
+
+语法：
+
+```java
+rs.slaveOk() 
+#或 
+rs.slaveOk(true)
+# 最新版（6版本以上的）命令更改为
+rs.secondaryOk()
+```
+
+提示： 该命令是 db.getMongo().setSlaveOk() 的简化命令。
+
+【示例】 在`SECONDARY`上设置作为奴隶节点权限，具备读权限：
+
+![](https://cdn.fengxianhub.top/resources-master/20220801210829.png)
+
+
