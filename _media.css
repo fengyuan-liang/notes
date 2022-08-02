@@ -1,4 +1,4 @@
-/* 侧边栏*/
+	/* 侧边栏*/
 .sidebar {
     padding-top: 6px;
 }
@@ -241,17 +241,29 @@ li {
 
 /* 代码复制按钮 */
 .docsify-copy-code-button {
-    right: 3em !important;
-    top: 0.4em !important;
-    padding: 0 !important;
-    background-color: transparent !important;
-    border-radius: 4px !important;
-    cursor: pointer !important;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    overflow: visible;
+    padding: 0.65em 0.8em;
+    border: 0;
+    border-radius: 0;
+    outline: 0;
+    font-size: 1em;
+    background: grey;
+    background: var(--theme-color,grey);
+    color: #fff;
+    opacity: 0;
 }
 
 /* 引用块 */
 .markdown-section blockquote {
-    border-left: 4px solid #42b983;
+    border-left: 0.5rem solid #42b983;
+    background-color: #f3f5f7;
+    color: #2c3e50;
+    margin: 1rem 0;
+    padding: 0.2rem 0 0.2rem 20px;
 }
 
 .docsify-copy-code-button .success {
