@@ -95,11 +95,17 @@
           depth: 6,
           maxAge: 86400000, // 过期时间，单位毫秒，默认一天
         }, //添加搜索框
+		//代码复制提示
+		  copyCode: {
+			buttonText: '<i class="iconfont zhulin-fuzhi"></i>',
+			errorText: 'NO',
+			successText: 'OK'
+		  },
       };
     </script>
     <!-- Docsify v4 -->
-    <!-- <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify.js"></script> -->
-    <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify%404.js"></script>
+     <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify.js"></script>
+    <!-- <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify%404.js"></script>-->
     <!-- 字数统计 -->
     <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
     <!-- 图片缩放 -->
@@ -132,7 +138,7 @@
     <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify-sidebar-collapse.min.js"></script>
     <!-- vue.js -->
     <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/vue.min.js"></script>
-
+	<script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>
     <script type="text/javascript">
       $(document).ready(function () {
         $.goup({
@@ -144,16 +150,6 @@
         });
       });
 
-      window.addEventListener("load", function (event) {
-        var buttons = document.getElementsByClassName("label");
-        for (let i = 0; i < buttons.length; i++) {
-          buttons[i].innerHTML = '<i class="iconfont zhulin-fuzhi"></i>';
-        }
-        var bus = document.getElementsByClassName("success");
-        for (let i = 0; i < bus.length; i++) {
-          bus[i].innerHTML = "复制成功";
-        }
-      });
     </script>
   </body>
 </html>
