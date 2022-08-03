@@ -840,12 +840,12 @@ db.comment.find().forEach((it)=> {
 > 聚合运算的基本格式为
 
 ![](https://cdn.fengxianhub.top/resources-master/20220801211334.png)
->常见的步骤有
 
+> 常见的步骤有
 
 ![](https://cdn.fengxianhub.top/resources-master/20220801211538.png)
 
->在每个步骤中又可以进行很多的运算
+> 在每个步骤中又可以进行很多的运算
 
 ![](https://cdn.fengxianhub.top/resources-master/20220801211659.png)
 
@@ -853,17 +853,17 @@ db.comment.find().forEach((it)=> {
 
 ![](https://cdn.fengxianhub.top/resources-master/20220801211947.png)
 
->这里举一个sql中非常常见的例子：查询表中所有的男性，跳过前100条取20条
+> 这里举一个sql中非常常见的例子：查询表中所有的男性，跳过前100条取20条
 
 ![](https://cdn.fengxianhub.top/resources-master/20220801212122.png)
 
->第二个例子：查询每个部门女性员工的数量，并且只看小于10个人的部门
+> 第二个例子：查询每个部门女性员工的数量，并且只看小于10个人的部门
 
 在sql中我们需要先按照部门进行分组，再过滤，最后查询
 
 ![](https://cdn.fengxianhub.top/resources-master/20220801212353.png)
 
->再来看一些Mongo特有的聚合函数
+> 再来看一些Mongo特有的聚合函数
 
 将子集合解构出来
 ![](https://cdn.fengxianhub.top/resources-master/20220801212548.png)
@@ -871,11 +871,9 @@ db.comment.find().forEach((it)=> {
 统计每个桶里面记录的条数
 ![](https://cdn.fengxianhub.top/resources-master/20220801212734.png)
 
-
 分桶进行聚合
 
 ![](https://cdn.fengxianhub.top/resources-master/20220801213030.png)
-
 
 ## 2.7 常用命令小结
 

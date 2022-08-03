@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "中间件/MongoDB/MongoDB高级特性.md",
+            "file": "中间件/MongoDB/MongoDB快速上手.md",
             "mode": "source",
             "source": false
           }
@@ -77,7 +77,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "中间件/MongoDB/MongoDB高级特性.md",
+                "file": "中间件/MongoDB/MongoDB快速上手.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -94,7 +94,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "中间件/MongoDB/MongoDB高级特性.md",
+                "file": "中间件/MongoDB/MongoDB快速上手.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -117,7 +117,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "中间件/MongoDB/MongoDB高级特性.md"
+                "file": "中间件/MongoDB/MongoDB快速上手.md"
               }
             }
           }
@@ -130,8 +130,8 @@
   },
   "active": "8f4112296b480386",
   "lastOpenFiles": [
-    "中间件/MongoDB/MongoDB快速上手.md",
     "中间件/MongoDB/MongoDB高级特性.md",
+    "中间件/MongoDB/MongoDB快速上手.md",
     "java/Java8新特性.md",
     "AlgorithmAndDataStructure/11-Hash表.md",
     "中间件/MyBatisPlus.pdf",
