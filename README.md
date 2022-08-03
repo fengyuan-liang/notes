@@ -108,6 +108,6 @@
 
 [MapReduce基本使用](/大数据/hadoop/2-MapReduce/5-MapReduce学习.md)    |    [MapReduce原理剖析](/大数据/hadoop/2-MapReduce/6-MapReduce原理剖析.md)   |    [yarn学习](/大数据/hadoop/3-yarn/yarn学习.md)      
 
- [Hadoop CDH集群搭建](/大数据/hadoop/基于docker搭建Hadoop CDH高可用集群.md)  |   [Hadoop HA集群搭建](/大数据/hadoop/Hadoop完全分布式安装（HA、Yarn、ZKFC、flumeGanglia、sqoop一步到位）.md) 
+ [Hadoop CDH集群搭建](/大数据/hadoop/Hadoop_CDH高可用集群搭建.md)  |   [Hadoop HA集群搭建](/大数据/hadoop/Hadoop完全分布式安装（HA、Yarn、ZKFC、flumeGanglia、sqoop一步到位）.md) 
 
 ## 🔎项目笔记
