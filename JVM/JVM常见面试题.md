@@ -2,24 +2,24 @@
 
 ## 常见面试题一
 
->**jdk、jre、jvm的关系**
+> **jdk、jre、jvm的关系**
 
 jdk是java开发工具包，包括了jre和jvm；jre是java运行时环境，为java程序运行的最小单元；jvm是java字节码运行的环境
 
->**未来jdk发展的新技术有哪些**
+> **未来jdk发展的新技术有哪些**
 
 `Graal VM虚拟机`，号称`Run Programs Faster Anywhere`，是一款跨语言全栈虚拟机。如果有虚拟机能够取代`HotSpot`成为新的武林盟主，那么一定是`Graal VM`，并且虚拟机的切换对使用者是完全兼容的
 
 `Substrate VM`，Substrate VM的出现，算是满足了人们心中对Java提前编译的全部期待，运行在Substrate VM上的小规模应用， 其内存占用和启动时间与运行在HotSpot上相比有**5倍到50倍**的下降
 
->**jvm的种类，我们常用的是哪一种，特点为**
+> **jvm的种类，我们常用的是哪一种，特点为**
 
 不同的厂商，有不同的JVM的实现。我们采用的是`HotSpot`，名称中的HotSpot指的就是它的**热点代码探测技术**
 
 - 通过计数器找到最具编译价值代码，触发即时编译或栈上替换
 - 通过编译器与解释器协同工作，在最优化的程序响应时间与最佳执行性能中取得平衡
 
->**为什么叫java虚拟机，它和vmware的区别**
+> **为什么叫java虚拟机，它和vmware的区别**
 
 **虚拟机**
 
@@ -46,7 +46,7 @@ Java虚拟机就是二进制字节码的运行环境，负责装载字节码到�
 - 自动内存管理
 - 自动垃圾回收功能
 
->**java虚拟机的整体架构**
+> **java虚拟机的整体架构**
 
 主要包括三个部分：
 
@@ -56,13 +56,13 @@ Java虚拟机就是二进制字节码的运行环境，负责装载字节码到�
 
 ![image-20220531143854437](https://cdn.fengxianhub.top/resources-master/202205311438599.png)
 
->**字节码的加载流程**
+> **字节码的加载流程**
 
 加载、链接、初始化
 
 https://blog.fengxianhub.top/#/JVM/5-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B%E5%92%8C%E7%BC%96%E8%AF%91%E5%99%A8%E4%BC%98%E5%8C%96
 
->**java的编译器输入的指令流是一种基于栈的指令集架构，它有什么优点**
+> **java的编译器输入的指令流是一种基于栈的指令集架构，它有什么优点**
 
 Java编译器输入的指令流基本上是一种基于栈的指令集架构，另外一种指令集架构则是基于寄存器的指令集架构。具体来说：这两种架构之间的区别：
 
@@ -88,15 +88,15 @@ Java编译器输入的指令流基本上是一种基于栈的指令集架构，�
 - 指令多
 - 执行性能比寄存器差
 
->**jvm可以编译其他语言的字节码吗**
+> **jvm可以编译其他语言的字节码吗**
 
 可以，凡是能够编译成字节码文件的语言都可以使用JVM
 
->**java虚拟机规范有哪些？**
+> **java虚拟机规范有哪些？**
 
 试想？如果我们要自己开发一个JVM，要如何开发，我们应该要遵循JVM开发规范
 
->**jvm在什么情况下会加载一个类?**
+> **jvm在什么情况下会加载一个类?**
 
 在JVM中所有的类都是懒加载的，初试、链接、初始化，在类加载的最后一个阶段会执行`<cinit>()V 方法`
 
@@ -120,24 +120,24 @@ Java编译器输入的指令流基本上是一种基于栈的指令集架构，�
 - 类加载器的 loadClass 方法 
 - Class.forName 的参数 2 为 false 时
 
->**类加载到jvm中的过程 ? 每个阶段的工作 ?**
+> **类加载到jvm中的过程 ? 每个阶段的工作 ?**
 
 加载链接初始化
 
 https://blog.fengxianhub.top/#/JVM/5-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B%E5%92%8C%E7%BC%96%E8%AF%91%E5%99%A8%E4%BC%98%E5%8C%96
 
->**jvm中的类加载器的类型及它加载的目标路径?如何自定义一个类加载器加载一个指定目录下的class文件?**
+> **jvm中的类加载器的类型及它加载的目标路径?如何自定义一个类加载器加载一个指定目录下的class文件?**
 
 以 JDK 8 为例：
 
-| 名称                    | 加载哪的类            | 说明                          |
-| ----------------------- | --------------------- | ----------------------------- |
-| Bootstrap ClassLoader   | JAVA_HOME/jre/lib     | 无法直接访问                  |
+| 名称                      | 加载哪的类                 | 说明                     |
+| ----------------------- | --------------------- | ---------------------- |
+| Bootstrap ClassLoader   | JAVA_HOME/jre/lib     | 无法直接访问                 |
 | Extension ClassLoader   | JAVA_HOME/jre/lib/ext | 上级为 Bootstrap，显示为 null |
-| Application ClassLoader | classpath             | 上级为 Extension              |
-| 自定义类加载器          | 自定义                | 上级为 Application            |
+| Application ClassLoader | classpath             | 上级为 Extension          |
+| 自定义类加载器                 | 自定义                   | 上级为 Application        |
 
->**什么是双亲委派模型，有什么作用 ?**
+> **什么是双亲委派模型，有什么作用 ?**
 
 所谓的双亲委派，就是指调用类加载器的 loadClass 方法时，查找类的规则
 
@@ -180,9 +180,7 @@ protected Class<?> loadClass(String name, boolean resolve)
 }
 ```
 
-
-
->**类加载器是如何确定一个类在jvm中的唯一性的? 两个类来源于同一个Class文件，被同一个虚拟机加载，这两个类一定相等吗?**
+> **类加载器是如何确定一个类在jvm中的唯一性的? 两个类来源于同一个Class文件，被同一个虚拟机加载，这两个类一定相等吗?**
 
 通过魔术字来确定是不是class文件。被同一个JVM加载两个类不一定相等，在JVM规范中是这样定义的，两个类及其类加载器相同才能说这两个类相同
 
@@ -213,7 +211,7 @@ ClassFile { // u4表示字节数
 
 0000000 ***ca fe ba be*** 00 00 00 34 00 23 0a 00 06 00 15 09
 
->**Tomcat的类加载器有哪些?**
+> **Tomcat的类加载器有哪些?**
 
 Tomcat的[类加载](https://so.csdn.net/so/search?q=类加载&spm=1001.2101.3001.7020)器在Java的类加载器上 新增了5个类加载器，3个基础类，一个web应用类加载器 + 一个jsp加载器
 
@@ -223,7 +221,7 @@ Tomcat的[类加载](https://so.csdn.net/so/search?q=类加载&spm=1001.2101.300
 - webappClassLoader   
 - JspClassLoader
 
->**Tomcat为什么打破了双亲委派机制**
+> **Tomcat为什么打破了双亲委派机制**
 
 1. 部署在用一个Tomcat上的两个web应用所使用的类库要相互隔离
 
@@ -233,7 +231,7 @@ Tomcat的[类加载](https://so.csdn.net/so/search?q=类加载&spm=1001.2101.300
 
 4. 需要支持jsp页面的热部署和热加载
 
->**双亲委派模型最大问题是什么**
+> **双亲委派模型最大问题是什么**
 
 底层的类加载器无法加载底层的类, 比如如下情况:
 `javax.xml.parsers`包中定义了xml解析的类接口, Service Provider Interface SPI 位于rt.jar 
@@ -241,52 +239,46 @@ Tomcat的[类加载](https://so.csdn.net/so/search?q=类加载&spm=1001.2101.300
 
 以下是`javax.xmlparsers.FactoryFinder`中的解决代码:  
 
-   ```java
+```java
 static private Class getProviderClass(String className, ClassLoader cl,
-    boolean doFallback, boolean useBSClsLoader) throws ClassNotFoundException
+ boolean doFallback, boolean useBSClsLoader) throws ClassNotFoundException
 {
   try {
-    if (cl == null) {
-      if (useBSClsLoader) {
-        return Class.forName(className, true, FactoryFinder.class.getClassLoader());
-      } else {
-        cl = ss.getContextClassLoader();      //获取上下文加载器
-        if (cl == null) {
-          throw new ClassNotFoundException();
-        }
-        else {
-          return cl.loadClass(className);   //使用上下文ClassLoader
-        }
-      }
-    }
-    else {
-      return cl.loadClass(className);
-    }
+ if (cl == null) {
+   if (useBSClsLoader) {
+     return Class.forName(className, true, FactoryFinder.class.getClassLoader());
+   } else {
+     cl = ss.getContextClassLoader();      //获取上下文加载器
+     if (cl == null) {
+       throw new ClassNotFoundException();
+     }
+     else {
+       return cl.loadClass(className);   //使用上下文ClassLoader
+     }
+   }
+ }
+ else {
+   return cl.loadClass(className);
+ }
   }
   catch (ClassNotFoundException e1) {
-    if (doFallback) {
-      // Use current class loader - should always be bootstrap CL
-      return Class.forName(className, true, FactoryFinder.class.getClassLoader());
-    }
-      // https://blog.csdn.net/syh121/article/details/120274044
+ if (doFallback) {
+   // Use current class loader - should always be bootstrap CL
+   return Class.forName(className, true, FactoryFinder.class.getClassLoader());
+ }
+   // https://blog.csdn.net/syh121/article/details/120274044
   ClassLoader cl = Thread.currentThread().getContextClassLoader();
   return ServiceLoader.load(service, cl);
-   ```
+```
 
->双亲委派模式是默认的模式，但并非必须. 还有以下几个例 子，它实际上是破坏了双亲委派模式的. 
->
->a. Tomcat的WebappClassLoader 就会先加载自己的Class，找不到再委托parent
->b. OSGi的ClassLoader形成网状结构，根据需要自由加载Class
+> 双亲委派模式是默认的模式，但并非必须. 还有以下几个例 子，它实际上是破坏了双亲委派模式的. 
+> 
+> a. Tomcat的WebappClassLoader 就会先加载自己的Class，找不到再委托parent
+> b. OSGi的ClassLoader形成网状结构，根据需要自由加载Class
 
+> 请完成一个热替换的例子，并解释什么是热替换?
 
-
->请完成一个热替换的例子，并解释什么是热替换?
-
-
-
-
-
->`<clinit>()` 是类构造器方法,它与类的构造方法有什么区别?
+> `<clinit>()` 是类构造器方法,它与类的构造方法有什么区别?
 
 对于一个类，编译器会按从上至下的顺序，收集所有 static 静态代码块和静态成员赋值的代码，合并为一个特殊的方法`<cinit>()V`
 
@@ -316,37 +308,33 @@ public class Demo {
 
 ## 常见面试题二
 
->jvm运行时数据区的划分?
+> jvm运行时数据区的划分?
 
 ![image-20220531143854437](https://cdn.fengxianhub.top/resources-master/202205311438599.png)
 
->根据jvm规范，这些数据区中哪些会出现内存溢出异常，分别是什么场景下出现?
+> 根据jvm规范，这些数据区中哪些会出现内存溢出异常，分别是什么场景下出现?
 
 只是程序计数器是不会存在内存溢出（java中唯一不用考虑内存溢出的地方）
 
 - 栈空间：java.lang.StackOverflowError
-
+  
   以下情况可能会导致栈内存溢出：
-
+  
   - 栈帧过多导致栈内存溢出（例如不合理的递归调用）
   - 栈帧过大导致栈帧溢出
   - 类的循环引用导致内存溢出
 
 - 堆内存溢出：java.lang.OutOfMemoryError: Java heap space
-
+  
   堆空间申请过多
 
-
-
->这些数据区哪些是线程独有的，哪些是线程共享区?
+> 这些数据区哪些是线程独有的，哪些是线程共享区?
 
 ![image-20220531144228815](https://cdn.fengxianhub.top/resources-master/202205311442898.png)
 
->每个区存储的数据的特点?
+> 每个区存储的数据的特点?
 
-
-
->程序计数器是什么，它是线程独有的吗? 它是否有内存溢出问题.
+> 程序计数器是什么，它是线程独有的吗? 它是否有内存溢出问题.
 
 在java中使用CPU寄存器作为程序计数器
 
@@ -357,7 +345,7 @@ public class Demo {
 1. 是线程私有的，每个线程都有自己的程序计数器，用来记录程序运行到了那个位置
 2. 不会存在内存溢出（java中唯一不用考虑内存溢出的地方）
 
->虚拟机栈上保存哪些数据?怎么放?虚拟机栈是线程独有的吗，它是否有内存溢出问题?虚拟机栈的优点?
+> 虚拟机栈上保存哪些数据?怎么放?虚拟机栈是线程独有的吗，它是否有内存溢出问题?虚拟机栈的优点?
 
 Java Virtual Machine Stacks（Java虚拟机栈）
 
@@ -375,33 +363,23 @@ Java Virtual Machine Stacks（Java虚拟机栈）
 - 指令流中的指令大部分是零地址指令，其执行过程依赖于操作栈。指令集更小，编译器容易实现。
 - 不需要硬件支持，可移植性更好，更好实现跨平台
 
->虚拟机栈的大小是否可动?是否会有异常出现?
+> 虚拟机栈的大小是否可动?是否会有异常出现?
 
-
-
->如何设置虚拟机栈大小?
+> 如何设置虚拟机栈大小?
 
 我可以通过JVM指令来分配栈空间，如果不指定会默认分配。<a href="https://docs.oracle.com/en/java/javase/11/tools/java.html#GUID-3B1CE181-CD30-4178-9602-230B800D4FAE">Java官方文档</a>
 
 ![image-20220531151856031](https://cdn.fengxianhub.top/resources-master/202205311518196.png)
 
->什么叫本地方法? 是否可以写一个例子来实现本地方法，以输出一个hello world?
+> 什么叫本地方法? 是否可以写一个例子来实现本地方法，以输出一个hello world?
 
+> 什么叫本地方法栈?有什么作用?
 
+> jvm规范一定强制要求实现本地方法栈吗?
 
->什么叫本地方法栈?有什么作用?
+> jvm规范一定强制要求实现本地方法栈吗
 
-
-
->jvm规范一定强制要求实现本地方法栈吗?
-
-
-
->jvm规范一定强制要求实现本地方法栈吗
-
-
-
->方法区是线程独有的吗?它是否有异常?它的作用?
+> 方法区是线程独有的吗?它是否有异常?它的作用?
 
 不是，是线程共享的
 
@@ -419,12 +397,9 @@ Java Virtual Machine Stacks（Java虚拟机栈）
  -XX:MaxMetaspaceSize=8m
 ```
 
->方法区的演进, jdk7及以前，它叫什么? jdk8开始，这又叫什么
+> 方法区的演进, jdk7及以前，它叫什么? jdk8开始，这又叫什么
 
-
-
-
->方法区或永久代的大小如何设置?
+> 方法区或永久代的大小如何设置?
 
 1.8 以前会导致永久代（PermGen）内存溢出
 
@@ -441,8 +416,6 @@ Java Virtual Machine Stacks（Java虚拟机栈）
 ```
 
 ## 常见面试题三
-
-
 
 ## 大厂JVM一
 
@@ -490,37 +463,23 @@ Java的垃圾回收器都有哪些，说下g1的应用场景，平时你是如�
 - CMS和G1了解么，CMS解决什么问题，说一下回收的过程。
 - CMS回收停顿了几次，为什么要停顿两次?
 
-
-
 ## 大厂面试题二
 
->CMS和G1的异同
+> CMS和G1的异同
 
+> G1什么时候引发Full GC
 
+> 聊下垃圾回收算法，各有什么利弊
 
->G1什么时候引发Full GC
-
-
-
->聊下垃圾回收算法，各有什么利弊
-
-
-
->垃圾回收器背一下，特点和应用场景
+> 垃圾回收器背一下，特点和应用场景
 
 垃圾回收器主要分为三类
 
+> 怎么判断内存泄露
 
+> CMS垃圾回收的流程
 
->怎么判断内存泄露
-
-
-
->CMS垃圾回收的流程
-
-
-
->为什么要有压缩指针？超过多少会失效？为什么超过会失效？
+> 为什么要有压缩指针？超过多少会失效？为什么超过会失效？
 
 1. 在64位平台的HotSpot中使用32位指针，内存使用会多出1.5倍左右，使用较大指针在主内存和缓存之间移动数据，***占用较大带宽，同时GC也会承受较大的压力***
 2. 为了***减少64位*** 平台下***内存*** 的***消耗***，启用指针压缩功能
@@ -528,31 +487,16 @@ Java的垃圾回收器都有哪些，说下g1的应用场景，平时你是如�
 4. 堆空间小于4G时，不需要启用指针压缩，JVM会直接去除高32位地址，即使用低虚拟地址空间
 5. ***堆内存大于32G时，压缩指针会失效***，会强制使用64位（即8字节）来对Java对象寻址，这就会出现1中的问题，所以堆内存不要大于32G为好
 
->怎么解决线上OOM问题，你是如何进行GC调优的
+> 怎么解决线上OOM问题，你是如何进行GC调优的
 
+> ThreadLocal有没有内存泄露问题
 
+> G1两个Region不是连续的，而且之间没有可达的引用，我现在要回收一个，另一个要如何处理
 
->ThreadLocal有没有内存泄露问题
+> JVM堆内存管理（对象分配过程）
 
+> 讲一下CMS的并发预处理和并发可中断预处理
 
+> 多大的内存会直接晋升到老年代
 
->G1两个Region不是连续的，而且之间没有可达的引用，我现在要回收一个，另一个要如何处理
-
-
-
->JVM堆内存管理（对象分配过程）
-
-
-
->讲一下CMS的并发预处理和并发可中断预处理
-
-
-
->多大的内存会直接晋升到老年代
-
-
-
->ZGC的m0和m1模式分别是什么？
-
-
-
+> ZGC的m0和m1模式分别是什么？
