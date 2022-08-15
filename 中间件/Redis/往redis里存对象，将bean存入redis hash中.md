@@ -1,6 +1,6 @@
 # 往redis里存对象，将bean存入redis hash中
 
->由于redis中Hash数据类型的特点，`特别适合存储对象`，所以我们使用hash存储对象
+> 由于redis中Hash数据类型的特点，`特别适合存储对象`，所以我们使用hash存储对象
 
 **我们最后要完成的效果是这样的：**
 
@@ -69,7 +69,7 @@ private RedisTemplate<String,Object> redisTemplate;
 
 @Test
 public void TestRedis() throws InstantiationException, IllegalAccessException {
-	//拿到一个JavaBean
+    //拿到一个JavaBean
     UmbrellaBorrow umbrellaBorrow = umbrellaBorrowService.getById(1);
     //设置key
     String key="umbrella:"+"张三oR83j4kkq2CyvVmuxl6znKbrWi2A";
@@ -122,9 +122,7 @@ private List<Method> getAllGetMethod(Object bean) {
 }
 ```
 
-
-
->🚀也可以用`org.springframework.cglib.beans.BeanMap`转换，可以封装成一个工具类
+> 🚀也可以用`org.springframework.cglib.beans.BeanMap`转换，可以封装成一个工具类
 
 ```java
 /**
@@ -187,14 +185,7 @@ public class BeanMapUtil {
         return list;
     }
 }
-	
 ```
-
-
-
-
-
-
 
 ## 附录 ⭐哈希（hash）复习
 
@@ -206,27 +197,25 @@ public class BeanMapUtil {
 
 <h2>如何将对象存到Redis中呢？</h2>
 
->**第一种**：`将对象转换成一个JSON字符串`，例如上图所示：user={id=1,name="张三",age=20}
+> **第一种**：`将对象转换成一个JSON字符串`，例如上图所示：user={id=1,name="张三",age=20}
 
 **缺点**：无法直接操作这个对象，例如想将age加一，需要先反序列化 改好后再序列化回去。开销较大。太复杂，一般不用
 
->**第二种**：通过用户key：id+对象属性标签，value：属性的方式存储
->
->![image-20220208113436681](https://cdn.fengxianhub.top/resources-master/202202081134748.png)
+> **第二种**：通过用户key：id+对象属性标签，value：属性的方式存储
+> 
+> ![image-20220208113436681](https://cdn.fengxianhub.top/resources-master/202202081134748.png)
 
 **优点**：方便对对象中的属性进行操作
 
 **缺点**：数据太过分散，数据一多就显得十分混乱，一般我们也不用
 
->🚀**第三种**：通过hash映射存储，key：id，value：<field,value>的形式
->
->![image-20220208115418767](https://cdn.fengxianhub.top/resources-master/202202081836494.png)
+> 🚀**第三种**：通过hash映射存储，key：id，value：<field,value>的形式
+> 
+> ![image-20220208115418767](https://cdn.fengxianhub.top/resources-master/202202081836494.png)
 
 第三种方式是最适合存储对象的
 
 ![image-20220208121355632](https://cdn.fengxianhub.top/resources-master/202202081836532.png)
-
-
 
 **常用命令：**
 
@@ -246,4 +235,3 @@ public class BeanMapUtil {
 当 ***field-value*** 长度较短且个数较少时，使用 ***ziplist***，否则使用 ***hashtable***。
 
 <hr>
-
