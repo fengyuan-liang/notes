@@ -108,7 +108,8 @@ Dubbo主要从一下两个方面来加快远程调用的速度，这两个方面
 如果读者对Zookeeper的使用还比较陌生，可以看笔者的这篇文章：<a href="https://blog.csdn.net/fengxiandada/article/details/124697818?ops_request_misc=&request_id=&biz_id=102&utm_term=docker%E5%AE%89%E8%A3%85zookeeper&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-2-124697818.nonecase&spm=1018.2226.3001.4187">docker安装zookeeper&zookeeper基本使用（非常详细）</a>
 
 ```java
-docker run -d -e TZ="Asia/Shanghai" \
+docker run -d \
+-e TZ="Asia/Shanghai" \
 -p 2181:2181 \
 --name zookeeper \
 --restart always zookeeper
@@ -148,7 +149,8 @@ docker run -d -e TZ="Asia/Shanghai" \
     <properties>
         <java.version>1.8</java.version>
         <dubbo-boot.version>3.0.8</dubbo-boot.version>
-        <zkclient.version>5.2.1</zkclient.version>
+        <zkclient.version>5.1.0</zkclient.version>
+        <web.version>2.6.4</web.version>
     </properties>
 
     <dependencyManagement>
@@ -163,12 +165,12 @@ docker run -d -e TZ="Asia/Shanghai" \
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-x-discovery</artifactId>
-                <version>5.1.0</version>
+                <version>${zkclient.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
-                <version>2.6.4</version>
+                <version>${web.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -419,4 +421,61 @@ docker run -d \
 --restart=always \
 nacos/nacos-server:1.4.1        
 ```
+
+在浏览器中输入：http://你的ip地址:8848/nacos，即可访问（账号密码都是Nacos），如果是云服务器记得开安全组
+
+### 3.1 nacos 添加命名空间
+
+我们需要在Nacos上添加一个命名空间
+
+![image-20220808220510272](https://cdn.fengxianhub.top/resources-master/202208082205471.png)
+
+### 3.1 添加依赖
+
+首先我们需要改造一下之前的`pom`依赖，将`SpringCloud`和`Nacos`的依赖添加进去
+
+首先在父工程的pom文件中的`<dependencyManagement>`中引入`SpringCloudAlibaba`的依赖：
+
+```xml
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+    <version>2.2.6.RELEASE</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+```
+
+然后在`consumer`和`provider`的pom文件中引入nacos-discovery依赖：
+
+```xml
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+</dependency>
+```
+
+在`consumer`和`provider`的application.yml中添加nacos地址：
+
+```yaml
+# 这里的配置属性只是基础配置，如需更多功能配置，请自行扩展
+dubbo:
+  application:
+    name: dubbo-provider # 这里取名字的时候要区分开
+  registry:
+    address: nacos://volunteer.fengxianhub.top:20026
+  protocol:
+    name: dubbo
+    port: 20880
+```
+
+
+
+
+
+
+
+
+
+
 
