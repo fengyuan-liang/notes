@@ -765,7 +765,12 @@ https://blog.csdn.net/qq_17623363/article/details/106418353?ops_request_misc=%25
 启动镜像并挂载数据命令：
 
 ```css
-docker run -p 6500:6379 --name redis -v /root/docker/redis/conf/redis.conf:/etc/redis/redis.conf  -v /root/docker/redis/data:/data -d redis redis-server /etc/redis/redis.conf --appendonly yes
+docker run -p 6500:6379 \
+--name redis \
+-v /root/docker/redis/conf/redis.conf:/etc/redis/redis.conf  \
+-v /root/docker/redis/data:/data \
+-d redis redis-server /etc/redis/redis.conf \
+--appendonly yes
 ```
 
 参数解释：

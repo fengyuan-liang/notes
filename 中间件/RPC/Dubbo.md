@@ -112,6 +112,7 @@ docker run -d \
 -e TZ="Asia/Shanghai" \
 -p 2181:2181 \
 --name zookeeper \
+--log-opt max-size=500m \
 --restart always zookeeper
 ```
 
@@ -416,6 +417,7 @@ docker run -d \
 -e JVM_XMX=256m \
 -e MODE=standalone \
 -e PREFER_HOST_MODE=hostname \
+--log-opt max-size=500m \
 -p 8848:8848  \
 --name nacos \
 --restart=always \
@@ -426,32 +428,26 @@ nacos/nacos-server:1.4.1
 
 ### 3.1 nacos 添加命名空间
 
-我们需要在Nacos上添加一个命名空间
+我们需要在Nacos上添加一个命名空间，用来专门作为Dubbo的空间
 
 ![image-20220808220510272](https://cdn.fengxianhub.top/resources-master/202208082205471.png)
 
 ### 3.1 添加依赖
 
+>这里的方式是非`SpringCloud`的方式，后面再看`SpringCloud`的方式
+
 首先我们需要改造一下之前的`pom`依赖，将`SpringCloud`和`Nacos`的依赖添加进去
 
-首先在父工程的pom文件中的`<dependencyManagement>`中引入`SpringCloudAlibaba`的依赖：
+首先在父工程的pom文件中的`<dependencyManagement>`中引入`Dubbo Registry Nacos`的依赖：
+
+然后在对应的`consumer`和`provider`中也要引入这个依赖，版本和自己Nacos依赖一样即可
 
 ```xml
+<!-- Dubbo Registry Nacos -->
 <dependency>
-    <groupId>com.alibaba.cloud</groupId>
-    <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-    <version>2.2.6.RELEASE</version>
-    <type>pom</type>
-    <scope>import</scope>
-</dependency>
-```
-
-然后在`consumer`和`provider`的pom文件中引入nacos-discovery依赖：
-
-```xml
-<dependency>
-    <groupId>com.alibaba.cloud</groupId>
-    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+    <groupId>org.apache.dubbo</groupId>
+    <artifactId>dubbo-registry-nacos</artifactId>
+    <version>3.0.8</version>
 </dependency>
 ```
 

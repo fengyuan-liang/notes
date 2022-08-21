@@ -1,5 +1,9 @@
 # MongoDB高级特性
 
+思维导图：
+
+![MongoDB集群](https://cdn.fengxianhub.top/resources-master/202208210033463.png)
+
 这里我们主要学习以下特性：
 
 - MongoDB的副本集：操作、主要概念、故障转移、选举规则 
@@ -2579,7 +2583,7 @@ myshardrs02:PRIMARY> db.runCommand({ rolesInfo: 1, showBuiltinRoles: true })
 | restore              | 从备份文件中还原恢复MongoDB数据(除了system.profile集合)的权限 |
 | root                 | 超级账号，超级权限                                           |
 
-### 3.3 单实例环境
+### 3.3 副本集环境
 
 我们先关掉所有的MongoDB服务
 
@@ -2590,4 +2594,132 @@ ps -ef|grep mongo|grep -v grep|awk '{print$2}'|xargs kill -9
 ```
 
 我们这里是对单实例的MongoDB服务开启安全认证，这里的单实例指的是未开启副本集或分片的MongoDB实例
+
+#### 3.3.1 通过主节点添加一个管理员帐号
+
+通过主节点添加一个管理员帐号
+
+只需要在主节点上添加用户，副本集会自动同步
+
+开启认证之前，创建超管用户：myroot，密码：123456
+
+```java
+myrs:PRIMARY> use admin
+switched to db admin
+myrs:PRIMARY> db.createUser({user:"myroot",pwd:"123456",roles:["root"]})
+Successfully added user: { "user" : "myroot", "roles" : [ "root" ] }
+```
+
+#### 3.3.2 创建副本集认证的key文件
+
+>这里和Hadoop集群非常的像
+
+第一步：生成一个key文件到当前文件夹中。
+
+可以使用任何方法生成密钥文件。例如，以下操作使用openssl生成密码文件，然后使用chmod来更改 文件权限，仅为文件所有者提供读取权限
+
+```java
+[root@bobohost ~]# openssl rand -base64 90 -out ./mongo.keyfile
+[root@bobohost ~]# chmod 400 ./mongo.keyfile
+[root@bobohost ~]# ll mongo.keyfile
+-r--------. 1 root root 122 8月 14 14:23 mongo.keyfile
+```
+
+所有副本集节点都必须要用同一份keyfile，一般是在一台机器上生成，然后拷贝到其他机器上，且必须 有读的权限，否则将来会报错： permissions on /mongodb/replica_sets/myrs_27017/mongo.keyfile are too open
+
+一定要保证密钥文件一致，文件位置随便。但是为了方便查找，建议每台机器都放到一个固定的位置， 都放到和配置文件一起的目录中
+
+```java
+[root@bobohost ~]# cp mongo.keyfile /mongodb/replica_sets/myrs_27017
+[root@bobohost ~]# cp mongo.keyfile /mongodb/replica_sets/myrs_27018
+[root@bobohost ~]# cp mongo.keyfile /mongodb/replica_sets/myrs_27019
+```
+
+#### 3.3.3 修改配置文件指定keyfile 
+
+分别编辑几个服务的mongod.conf文件，添加相关内容：
+
+/mongodb/replica_sets/myrs_27017/mongod.conf
+
+```yaml
+security:
+  #KeyFile鉴权文件
+  keyFile: /mongodb/replica_sets/myrs_27017/mongo.keyfile
+  #开启认证方式运行
+  authorization: enabled
+```
+
+/mongodb/replica_sets/myrs_27018/mongod.conf
+
+```yaml
+security:
+  #KeyFile鉴权文件
+  keyFile: /mongodb/replica_sets/myrs_27018/mongo.keyfile
+  #开启认证方式运行
+  authorization: enabled
+```
+
+/mongodb/replica_sets/myrs_27019/mongod.conf
+
+```yaml
+security:
+  #KeyFile鉴权文件
+  keyFile: /mongodb/replica_sets/myrs_27019/mongo.keyfile
+  #开启认证方式运行
+  authorization: enabled
+```
+
+#### 3.3.4 重新启动副本集
+
+如果副本集是开启状态，则先分别关闭关闭复本集中的每个mongod，从次节点开始。直到副本集的所 有成员都离线，包括任何仲裁者。主节点必须是最后一个成员关闭以避免潜在的回滚
+
+```java
+#通过进程编号关闭三个节点
+kill -2 54410 54361 54257
+```
+
+分别启动副本集节点：
+
+```java
+mongod -f /mongodb/replica_sets/myrs_27017/mongod.conf \
+&& mongod -f /mongodb/replica_sets/myrs_27018/mongod.conf \
+&& mongod -f /mongodb/replica_sets/myrs_27019/mongod.conf
+```
+
+#### 3.3.5 在主节点上添加普通账号
+
+```javascript
+#先用管理员账号登录
+#切换到admin库
+use admin
+#管理员账号认证
+db.auth("myroot","123456")
+#切换到要认证的库
+use articledb
+#添加普通用户
+db.createUser({user: "bobo", pwd: "123456", roles: ["readWrite"]})
+```
+
+重新连接，使用普通用户bobo重新登录，查看数据
+
+>注意：也要使用rs.status()命令查看副本集是否健康
+
+3.3.6 SpringDataMongoDB连接副本集
+
+使用用户名和密码连接到 MongoDB 服务器，你必须使用 'username:password@hostname/dbname' 格式，'username'为用户名，'password' 为密码。 
+
+目标：使用用户bobo使用密码 123456 连接到MongoDB 服务上。
+
+application.yml：
+
+```yaml
+spring:
+  #数据源配置
+  data:
+    mongodb:
+    #副本集有认证的情况下，字符串连接
+    uri: mongodb://bobo:123456@180.76.159.126:27017,180.76.159.126:27018,180.76.159.126:2
+7019/articledb?connect=replicaSet&slaveOk=true&replicaSet=myrs
+
+```
 
