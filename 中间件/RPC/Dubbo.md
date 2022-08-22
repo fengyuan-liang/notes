@@ -406,7 +406,9 @@ Nacos的使用可以看笔者的另一篇文章：<a href="https://blog.csdn.net
 
 ![image-20220808003201046](https://s2.loli.net/2022/08/08/k6RweFtyT7E1x9B.png)
 
-这里我在docker上面安装一下：
+这里我在docker上面安装一下，这里需要注意的是`Nacos`进行RPC通信的端口是`9848`和`9849`，所以这两个端口也需要开放
+
+![image-20220821151534355](https://cdn.fengxianhub.top/resources-master/202208211515679.png)
 
 ```java
 docker run -d \
@@ -419,6 +421,8 @@ docker run -d \
 -e PREFER_HOST_MODE=hostname \
 --log-opt max-size=500m \
 -p 8848:8848  \
+-p 9848:9848  \
+-p 9849:9849  \
 --name nacos \
 --restart=always \
 nacos/nacos-server:1.4.1        
