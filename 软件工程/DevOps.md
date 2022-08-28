@@ -224,6 +224,45 @@ https://git-scm.com/（傻瓜式安装）
   | :----------------------------------------------------------: |
   | ![image-20211124200658107](https://cdn.fengxianhub.top/resources-master/202205091413335.png) |
 
+#### 4.3 JDK&Maven安装
+
+jdk安装
+
+```java
+yum insatll -y java \
+&& (
+cat <<EOF
+#set java environment
+JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk
+PATH=$PATH:$JAVA_HOME/bin
+CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export JAVA_HOME CLASSPATH PATH
+EOF
+) >> /etc/profile && source /etc/profile && java -version
+```
+
+maven 安装
+
+```java
+cd /usr/local \
+&& wget https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz \
+&& tar -zxf apache-maven-3.8.6-bin.tar.gz \
+&& rm -rf apache-maven-3.8.6-bin.tar.gz \
+&& (
+cat <<EOF
+#set Maven environment
+MAVEN_HOME=/usr/local/apache-maven-3.8.6
+export PATH=$MAVEN_HOME/bin:$PATH
+EOF
+) >> /etc/profile && source /etc/profile && mvn -v
+```
+
+修改setting文件
+
+```java
+
+```
+
 ### 五、Integrate工具
 
 持续集成、持续部署的工具很多，其中Jenkins是一个开源的持续集成平台。
@@ -741,6 +780,12 @@ Sonar Qube的使用方式很多，Maven可以整合，也可以采用sonar-scann
 
 - 解压并配置sonar服务端信息
 
+  - 地址
+
+    ```java
+    wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.0.2311-linux.zip
+    ```
+
   - 由于是zip压缩包，需要安装unzip解压插件
 
     ```sh
@@ -763,7 +808,7 @@ Sonar Qube的使用方式很多，Maven可以整合，也可以采用sonar-scann
 
   ```sh
   # 在项目所在目录执行以下命令
-  ~/sonar-scanner/bin/sonar-scanner -Dsonar.sources=./ -Dsonar.projectname=demo -Dsonar.projectKey=java -Dsonar.java.binaries=target/
+  ~/sonar-scanner/bin/sonar-scanner -Dsonar.sources=./ -Dsonar.projectname=demo -Dsonar.projectKey=java -Dsonar.java.binaries=target/ -Dsonar.login=8a275777fd4c7fcd4e4c65c89a27588c174cae64
   ```
 
   [Ps：主要查看我的sonar-scanner执行命令的位置]()

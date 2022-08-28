@@ -137,6 +137,12 @@ Linux下需要通过命令下载：
 curl -L https://github.com/docker/compose/releases/download/1.23.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 ```
 
+若是github访问太慢，可以用daocloud下载
+
+```java
+sudo curl -L https://get.daocloud.io/docker/compose/releases/download/1.25.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+```
+
 如果下载速度较慢，或者下载失败，可以使用课前资料提供的docker-compose文件：
 
 ![image-20210417133020614](https://cdn.fengxianhub.top/resources-master/202205151956215.png)
