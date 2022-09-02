@@ -608,6 +608,16 @@ jar包构建好之后，就可以根据情况发布到测试或生产环境，�
   | :----------------------------------------------------------: |
   | ![image-20211126174159487](https://cdn.fengxianhub.top/resources-master/202205091415877.png) |
 
+#### 6.3 构建好操作脚本
+
+```java
+cd /mnt/static-fengxian/jenkinsHub/docker
+mv ../target/*.jar ./
+docker-compose down
+docker-compose up -d --build
+docker image prune -f
+```
+
 
 
 
@@ -1054,9 +1064,25 @@ Harbor作为镜像仓库，主要的交互方式就是将镜像上传到Harbor�
 | :----------------------------------------------------------: |
 | ![image-20211229155834500](https://cdn.fengxianhub.top/resources-master/202205091416426.png) |
 
+```java
+mv target/*.jar docker/
+docker build -t jenkinsapp:$tag docker/
+docker login -u admin -p anMnKB2Jb0Ak51P30vfsAOP5chL7WBB7g7gerCBH1ni6wQUi9Tt 192.168.2.13:9052
+docker tag jenkinsapp:$tag 192.168.2.13:9052/repo/jenkinsapp:$tag
+docker push 192.168.2.13:9052/repo/jenkinsapp:$tag
+```
+
 
 
 ##### 8.3.6 编写部署脚本
+
+思路：
+
+1. 告知目标服务器拉取哪个镜像
+2. 判断当前服务器是否正在运行容器，是否需要删除
+3. 如果有当前镜像，需要删除
+4. 目标服务器拉取harbor上的镜像
+5. 将拉取下来的镜像运行成为容器
 
 部署项目需要通过Publish Over SSH插件，让目标服务器执行命令。为了方便一次性实现拉取镜像和启动的命令，推荐采用脚本文件的方式。
 
@@ -1069,7 +1095,9 @@ Harbor作为镜像仓库，主要的交互方式就是将镜像上传到Harbor�
   harbor_project_name=$2
   project_name=$3
   tag=$4
-  port=$5
+  container_port=$5
+  host_port=$6
+  
   
   imageName=$harbor_url/$harbor_project_name/$project_name:$tag
   
@@ -1087,22 +1115,22 @@ Harbor作为镜像仓库，主要的交互方式就是将镜像上传到Harbor�
       echo "Delete Image Success"
   fi
   
-  docker login -u DevOps -p P@ssw0rd $harbor_url
+  docker login -u admin -p anMnKB2Jb0Ak51P30vfsAOP5chL7WBB7g7gerCBH1ni6wQUi9Tt $harbor_url
   
   docker pull $imageName
   
-  docker run -d -p $port:$port --name $project_name $imageName
+  docker run -d -p $container_port:$host_port --name $project_name $imageName
   
   echo "Start Container Success"
   echo $project_name
   ```
 
   并设置权限为可执行
-
+  
   ```
   chmod a+x deploy.sh
   ```
-
+  
   |                             如图                             |
   | :----------------------------------------------------------: |
   | ![image-20211203192047357](https://cdn.fengxianhub.top/resources-master/202205091416515.png) |
