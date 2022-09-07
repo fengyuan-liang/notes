@@ -1446,10 +1446,10 @@ pipeline {
   pipeline {
       agent any
       environment{
-          harborHost = '192.168.11.11:80'
-          harborRepo = 'repository'
-          harborUser = 'DevOps'
-          harborPasswd = 'P@ssw0rd'
+          harborHost = '192.168.2.13:9052'
+          harborRepo = 'repo'
+          harborUser = 'admin'
+          harborPasswd = 'anMnKB2Jb0Ak51P30vfsAOP5chL7WBB7g7gerCBH1ni6wQUi9Tt'
       }
   
       // 存放所有任务的合集
@@ -1457,19 +1457,19 @@ pipeline {
   
           stage('拉取Git代码') {
               steps {
-                  checkout([$class: 'GitSCM', branches: [[name: '${tag}']], extensions: [], userRemoteConfigs: [[url: 'http://49.233.115.171:8929/root/test.git']]])
+                  checkout([$class: 'GitSCM', branches: [[name: '*${tag}']], extensions: [], userRemoteConfigs: [[credentialsId: '74871a2d-f4ab-4538-bec1-5e53d01bf012', url: 'http://192.168.2.23:8929/gitlab-instance-6c341d56/jenkinsDemo.git']]])
               }
           }
   
           stage('构建代码') {
               steps {
-                  sh '/var/jenkins_home/maven/bin/mvn clean package -DskipTests'
+                  sh 'sh /var/jenkins_home/apache-maven-3.8.6/bin/mvn clean package -DskipTests'
               }
           }docker
   
           stage('检测代码质量') {
               steps {
-                  sh '/var/jenkins_home/sonar-scanner/bin/sonar-scanner -Dsonar.sources=./ -Dsonar.projectname=${JOB_NAME} -Dsonar.projectKey=${JOB_NAME} -Dsonar.java.binaries=target/ -Dsonar.login=7d66af4b39cfe4f52ac0a915d4c9d5c513207098' 
+                  sh '/var/jenkins_home/sonar-scanner4.6.0/bin/sonar-scanner -Dsonar.sources=./ -Dsonar.projectname=${JOB_NAME} -Dsonar.projectKey=${JOB_NAME} -Dsonar.java.binaries=target/ -Dsonar.login=31803831a506e354fab51a7d95796ae49eea88af' 
               }
           }
   
@@ -1487,7 +1487,7 @@ pipeline {
           
           stage('目标服务器拉取镜像并运行') {
               steps {
-                  sshPublisher(publishers: [sshPublisherDesc(configName: 'testEnvironment', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "/usr/bin/deploy.sh $harborHost $harborRepo $JOB_NAME $tag $port ", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                  sshPublisher(publishers: [sshPublisherDesc(configName: 'jenkins-server-01', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "deploy.sh $harborHost $harborRepo $JOB_NAME $host_port $container_port", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
               }
           }
       }
