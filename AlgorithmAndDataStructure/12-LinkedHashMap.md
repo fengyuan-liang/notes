@@ -7,7 +7,7 @@
 
 如果我们想要按照添加元素的顺序遍历，显然HashMap是达不到我们的要求的，`TreeMap`可以满足我们的要求，但是效率没有HashMap高
 
-接下来介绍一种新的数据结构——LinkedHashMap
+接下来介绍一种新的数据结构——`LinkedHashMap`
 
 LinkedHashMap就是在HashMap的基础上维护元素的添加顺序，使得遍历的结果是遵从添加顺序的
 
@@ -156,15 +156,100 @@ protected void afterRemove(Node<K, V> removedNode) {
 
 我们会发现，站在红黑树的角度上来看，删除`83`结点其实是删除它的前驱或者后继结点，也就是删除结点`95`，但是站在链表的角度来看，删除结点`83`就是删除结点`83`
 
-**这里就产生了冲突，所以我们上面的链表结点删除代码中逻辑其实是有问题的**
+**在我们删除度为2的结点的时候就会产生冲突，所以我们上面的链表结点删除代码中逻辑其实是有问题的**
 
+>那么我们如果解决`红黑树`与`链表`之间的冲突的呢？
+>
+>其实做法也很简单，我们只需要将红黑树的后继结点与要删除的结点在`链表中的顺序交换`即可（改变的是指针的指向）
 
+我们来简单演示 一下这个过程，假设我现在要删除结点`31`
 
+![image-20220918194009929](https://cdn.fengxianhub.top/resources-master/202209181940217.png)
 
+- 从红黑树的角度，其实需要交换结点`31`和结点`37`的值，然后将结点`37`从内存中抹去
+- 在链表的角度，之前链表结构为：`52 -> 37 -> 21 -> 31 -> 41`，当我们交换两个结点在链表中的顺序后为：`52 -> 31 -> 21 -> 37 -> 41`，注意这里并没有交换结点的位置，只是交换了结点在链表中的指向，可以看到当我们的红黑树删除结点`31`的时候，链表的顺序并没有收到影响
 
+那么到底如何实现呢？我们可以改造一下之前在HashMap的`afterRemove`函数，处理一下度为2的结点在红黑树中删除的逻辑
 
+```java
+/**
+ * 删除结点后的操作，注意这里不是修复红黑树的性质
+ *
+ * @param willNode    红黑树中想要删除的结点
+ * @param removedNode 红黑树中实际要删除的结点
+ */
+protected void afterRemove(Node<K, V> willNode, Node<K, V> removedNode) {
+}
+```
 
+在红黑树删除结点的时候，将刚刚传进来的结点当做`willNode`
 
+```java
+/**
+  * 根据结点删除该结点
+  */
+protected V remove(Node<K, V> node) {
+    if (node == null) return null;
+    // 开始想要删除的结点,此处是为了处理linkedHashMap的删除逻辑
+    Node<K, V> willNode = node;
+    ....其他代码
+}
+```
+
+接着我们只需要在子类中去处理交换链表中结点的逻辑，交换链表中的两个结点的位置，这个应该是比较容易的
+
+![image-20220918203517622](https://cdn.fengxianhub.top/resources-master/202209182035877.png)
+
+先处理所有指向要交换结点的指针
+
+```java
+/**
+ * 这里并不是删除结点后修复红黑树性质的代码，而是修复链表和红黑树结点指向关系的代码
+ */
+@Override
+protected void afterRemove(Node<K, V> willNode, Node<K, V> removedN
+    LinkedNode<K, V> linkedWillNode = (LinkedNode<K, V>) willNode;
+    LinkedNode<K, V> linkedRemoveNode = (LinkedNode<K, V>) removedN
+    // 如果想要删除的实际要删除的结点不一样，表示该结点为红黑树中度为2的结点，需要交换链表的指向
+    if (linkedRemoveNode != linkedWillNode) {
+        // 设置中间结点,处理prev
+        LinkedNode<K, V> temp = linkedWillNode.prev;
+        linkedWillNode.prev = linkedRemoveNode.prev;
+        linkedRemoveNode.prev = temp;
+        if (linkedWillNode.prev == null) {
+            first = linkedWillNode;
+        } else {
+            linkedWillNode.prev.next = linkedWillNode;
+        }
+        if (linkedRemoveNode.prev == null) {
+            first = linkedRemoveNode;
+        } else {
+            linkedRemoveNode.prev.next = linkedRemoveNode;
+        }
+        // 处理next
+        temp = linkedWillNode.next;
+        linkedWillNode.next = linkedRemoveNode.next;
+        linkedRemoveNode.next = temp;
+        if (linkedWillNode.prev == null) {
+            last = linkedWillNode;
+        } else {
+            linkedWillNode.next.prev = linkedWillNode;
+        }
+        if (linkedRemoveNode.next == null) {
+            last = linkedRemoveNode;
+        } else {
+            linkedRemoveNode.next.prev = linkedRemoveNode;
+        }
+    }
+    // 后面的逻辑省略，和上面的是一样的
+}
+```
+
+## 3. LinkedHashMap源码分析
+
+我们通过`LinkedHashMap`的源码可以看到，基本上逻辑和我们的差不多，主要思路也就是用双向链表将添加的结点串起来
+
+![image-20220918230956767](https://cdn.fengxianhub.top/resources-master/202209182309014.png)
 
 
 
