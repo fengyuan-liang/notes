@@ -790,7 +790,12 @@ docker run -p 6500:6379 \
 命令：
 
 ```sh
-docker run -d -p 9528:9528 --name nginx_volunteer -v /root/volunteer/nginx/conf.d:/etc/nginx/conf.d -v /root/volunteer/nginx/html:/usr/share/nginx/html nginx
+docker run -d \
+-p 9528:9528 \
+--name nginx_volunteer \
+-v /root/volunteer/nginx/conf.d:/etc/nginx/conf.d \
+-v /root/volunteer/nginx/html:/usr/share/nginx/html \
+nginx
 ```
 
 -d后台运行 -p映射端口 -v映射目录
