@@ -643,6 +643,10 @@ Optimizations are subject to change between releases.
 db.posts.find().sort({ title : -1 }).limit(2).pretty()
 ```
 
+- `1`-AES - ascend - 升序
+- `-1` - descend - 降序
+
+
 #### 2.3.2 投影 Projection
 
 有些情况, 我们对文档进行查询并不是需要所有的字段, 比如只需要 id 或者 用户名, 我们可以对文档进行“投影”
