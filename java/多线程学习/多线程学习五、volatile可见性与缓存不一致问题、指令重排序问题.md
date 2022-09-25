@@ -6,7 +6,7 @@
 
 思维导图：
 
-![image-20220128113453822](https://gitee.com/fengxian_duck/resources/raw/master/202201281135923.png)
+![image-20220128113453822](https://cdn.fengxianhub.top/resources-master/202201281135923.png)
 
 >先通过一个小栗子来演示一下<code>volatile</code>的作用
 
@@ -50,9 +50,9 @@ class Task implements Runnable{
 
 🚩分析：首先线程在修改变量前，都会向主内存先申请这个变量，然后放到自己的内存地址，在修改了变量后会将这个变量重新刷回到主内存中去，但是此时其他线程中的变量的值已经确定了，这就造成了变量修改不了的情况
 
-![image-20220128133049942](https://gitee.com/fengxian_duck/resources/raw/master/202201281330003.png)
+![image-20220128133049942](https://cdn.fengxianhub.top/resources-master/202201281330003.png)
 
-![image-20220128132046122](https://gitee.com/fengxian_duck/resources/raw/master/202201281320185.png)
+![image-20220128132046122](https://cdn.fengxianhub.top/resources-master/202201281320185.png)
 
 🚩解决方案：引入<code>volatile</code>关键字，给共享变量加上这个关键字。<code>volatile</code>关键字的作用是保证共享变量在多线程之间的可见性，能让每个线程实时感知到这个变量，加了这个关键字的变量，其他线程向主内存写数据时，会先检查该数据和之前取的是否一致，一致即写入，如果不一致会将主内存中的数据重新写入并进行处理，处理完再重复上述操作。这就保证了多线程下的数据一致性问题。
 
@@ -66,7 +66,7 @@ volatile boolean isStop = false;
 
 思维导图：
 
-![image-20220128132600054](https://gitee.com/fengxian_duck/resources/raw/master/202201281326123.png)
+![image-20220128132600054](https://cdn.fengxianhub.top/resources-master/202201281326123.png)
 
 
 
@@ -81,16 +81,16 @@ volatile boolean isStop = false;
 
 **第一个问题解决措施**：在CPU里面设缓存，用来处理<code>I/O</code>操作速度不匹配的问题。
 
-![image-20220128133810373](https://gitee.com/fengxian_duck/resources/raw/master/202201281338459.png)
+![image-20220128133810373](https://cdn.fengxianhub.top/resources-master/202201281338459.png)
 
->现在的CPU都是多核的，每个核心都会有自己的缓存，这些缓存可能还会分为多级，比如一级缓存L1、二级缓存L2、三级缓存L3，在这些缓存中，<code>一级和二级缓存是每个核心私有的</code>，而<code>三级缓存是所有核心所共有的</code>![image-20220128135711286](https://gitee.com/fengxian_duck/resources/raw/master/202201281357352.png)
+>现在的CPU都是多核的，每个核心都会有自己的缓存，这些缓存可能还会分为多级，比如一级缓存L1、二级缓存L2、三级缓存L3，在这些缓存中，<code>一级和二级缓存是每个核心私有的</code>，而<code>三级缓存是所有核心所共有的</code>![image-20220128135711286](https://cdn.fengxianhub.top/resources-master/202201281357352.png)
 
 这里又有两个注意点：
 
 - 缓存系统以<code>缓存行</code>(cache Line)为单位存储，它的存储空间是2的整数幂连续字节，一般在32-256个字节，常见的为64字节. CPU每次将一条内存指令所在的缓存行中的内容从主内存加载到cpu缓存中。
 - cpu只与<code>自己对应的缓存</code>发生作用，当cpu发生数据更新运算时，通过<code>直写</code>或<code>回写</code>将缓存中更新后的数据写到下一级缓存。
 
-![image-20220128135153293](https://gitee.com/fengxian_duck/resources/raw/master/202201281351358.png)
+![image-20220128135153293](https://cdn.fengxianhub.top/resources-master/202201281351358.png)
 
 读到这里我们好像能够窥探到上面栗子中一个线程修改另一个线程里面的变量失败的一些原因了，我们继续往下看。
 
@@ -109,7 +109,7 @@ volatile boolean isStop = false;
 
 思维导图：
 
-![image-20220128151653675](https://gitee.com/fengxian_duck/resources/raw/master/202201281516907.png)
+![image-20220128151653675](https://cdn.fengxianhub.top/resources-master/202201281516907.png)
 
 >解决方案一：通过在总线加<code>锁</code>来解决
 
@@ -129,16 +129,18 @@ volatile boolean isStop = false;
 
 🚩它的核心是:  当CPU写数据时，如果发现操作的变量是<code>共享变量</code>，即在其他<code>CPU中也存在该变量的副本</code>，会发出信号通知其他CPU将该变量的缓存行置为无效状态，因此当其他CPU需要读取这个变量时，发现自己缓存中缓存该变量的缓存行是无效的，那么它就会从内存重新读取
 
-![image-20220128153714367](https://gitee.com/fengxian_duck/resources/raw/master/202201281537515.png)
+![image-20220128153714367](https://cdn.fengxianhub.top/resources-master/202201281537515.png)
 
 >小结一下:<code>总线窥探技术</code>用来判断该数据是否被修改过，<code>缓存一致性协议</code>用来对修改过的数据进行处理
 
 <hr>
+
 ### 2.2 指令重排序问题
+
 
 思维导图：
 
-![image-20220128172216374](https://gitee.com/fengxian_duck/resources/raw/master/202201281722484.png)
+![image-20220128172216374](https://cdn.fengxianhub.top/resources-master/202201281722484.png)
 
 ​		 指令重排序是指通过对指令的重新排序来达到<code>提高运行性能</code>的作用。在<code>单线程情况下</code>，指令重排序并不会有影响，但在<code>多线程情况下</code>，指令重排序可能就会造成一些问题，产生的问题这里不过多赘述，我们重点讨论怎么解决这些问题。
 
@@ -149,7 +151,7 @@ volatile boolean isStop = false;
 
 操作系统提供了一些内存屏障以解决这种问题. 内存屏障是硬件层的技术，它分为两种: <code>Load Barrier </code>和 <code>Store Barrier</code>即<code>读屏障</code>和<code>写屏障</code>. 但不同的硬件提供的内存屏障不同。怎么办?我们的<code>JVM</code>也会提供屏障技术：
 
-![image-20220128173523766](https://gitee.com/fengxian_duck/resources/raw/master/202201281735850.png)
+![image-20220128173523766](https://cdn.fengxianhub.top/resources-master/202201281735850.png)
 
 通过这些屏蔽技术可以保证我们的指令不会被从新排序，从而保存多线程下数据的一致性
 
@@ -168,11 +170,11 @@ volatile boolean isStop = false;
 
 思维导图：
 
-![image-20220128175145968](https://gitee.com/fengxian_duck/resources/raw/master/202201281751132.png)
+![image-20220128175145968](https://cdn.fengxianhub.top/resources-master/202201281751132.png)
 
 原理图：
 
-![image-20220128175604437](https://gitee.com/fengxian_duck/resources/raw/master/202201281756572.png)
+![image-20220128175604437](https://cdn.fengxianhub.top/resources-master/202201281756572.png)
 
 >可以看到，Java内存模型和操作系统得内存模型具有惊人的相识之处
 
@@ -200,7 +202,7 @@ public class _18_volatile {
 
 图示一下这个过程：
 
-![image-20220128180918419](https://gitee.com/fengxian_duck/resources/raw/master/202201281809599.png)
+![image-20220128180918419](https://cdn.fengxianhub.top/resources-master/202201281809599.png)
 
 >但在多线程环境下，<code>t1</code>和<code>t2</code>都会把<code>i=0</code>这个变量先读到工作内存中，当<code>线程一</code>完成了<code>i++</code>的操作并将结果刷新到内存中时，其实<code>线程t2</code>的本地工作内存还没过期（已经读到之前i=0的数据了），那么它读到的数据就是<code>脏数据</code>了，<code>t2线程</code>处理完后又会将<code>i=1</code>再写到内存中，从而导致了问题
 

@@ -85,7 +85,7 @@ double area = pi * r * r; //C
 
 执行过程: 步骤C依赖于步骤A和B，因为指令重排的存在，程序执行顺讯可能是A->B->C,也可能是B->A->C,但是C不能在A或者B前面执行，这将违反as-if-serial语义
 
-![image-20220129225322889](https://gitee.com/fengxian_duck/resources/raw/master/202201292325264.png)
+![image-20220129225322889](https://cdn.fengxianhub.top/resources-master/202201292325264.png)
 
 第二个栗子🌰：
 
@@ -116,11 +116,11 @@ public void add() {
 
   我们假设系统对1和2进行了指令重排序，把2放到了1的前面，然后现在有两个线程同时执行read和add方法，当线程t1执行到<code>flag = true</code>时，b还没来得及赋值线程t2就已经往下执行了，这时候3和4执行结果就会为0
 
-  ![image-20220129230651955](https://gitee.com/fengxian_duck/resources/raw/master/202201292306108.png)
+  ![image-20220129230651955](https://cdn.fengxianhub.top/resources-master/202201292306108.png)
 
 **重排序类型和重排序执行过程**：
 
-![image-20220129231309091](https://gitee.com/fengxian_duck/resources/raw/master/202201292325361.png)
+![image-20220129231309091](https://cdn.fengxianhub.top/resources-master/202201292325361.png)
 
 >可以给变量加上volatile关键字，来保证有序性。当然，也可以通过synchronized和Lock来保证有序性。synchronized和Lock保证某一时刻是只有一个线程执行同步代码，相当于是让线程顺序执行程序代码了，自然就保证了有序性
 
@@ -172,19 +172,19 @@ public void add() {
 
 >假设flag变量的初始值false，现在有两条线程t1和t2要访问它
 
-![image-20220129234801131](https://gitee.com/fengxian_duck/resources/raw/master/202201292350306.png)
+![image-20220129234801131](https://cdn.fengxianhub.top/resources-master/202201292350306.png)
 
 >如果线程t1执行以下代码语句，并且flag没有volatile修饰的话；t1刚修改完flag的值，还没来得及刷新到主内存，t2又跑过来读取了，很容易就数据flag不一致了
 
-![image-20220129235435829](https://gitee.com/fengxian_duck/resources/raw/master/202201292354893.png)
+![image-20220129235435829](https://cdn.fengxianhub.top/resources-master/202201292354893.png)
 
 >如果flag变量是由volatile修饰的话，就不一样了，如果线程t1修改了flag值，volatile能保证修饰的flag变量后，<code>可以立即同步回主内存</code>
 
-![image-20220129235505521](https://gitee.com/fengxian_duck/resources/raw/master/202201292355590.png)
+![image-20220129235505521](https://cdn.fengxianhub.top/resources-master/202201292355590.png)
 
 >volatile还有一个保证，就是每次使用前立即先从主内存<code>刷新最新的值</code>，线程t1修改完后，线程t2的变量副本会过期了
 
-![image-20220129235600124](https://gitee.com/fengxian_duck/resources/raw/master/202201292356185.png)
+![image-20220129235600124](https://cdn.fengxianhub.top/resources-master/202201292356185.png)
 
 >实际上volatile保证可见性和禁止指令重排都跟内存屏障有关，我们编译volatile相关代码看看, 下面以一个<code>DCl单例模式</code>为例来反编译代码学习内存屏障的相关知识，DCL单例模式（Double Check Lock，双重检查锁）比较常用，它是需要volatile修饰的
 
@@ -236,7 +236,7 @@ Singleton::getInstance@24
 
 在JMM中内存屏障分为四种，它们是：
 
-![image-20220130000521822](https://gitee.com/fengxian_duck/resources/raw/master/202201300005881.png)
+![image-20220130000521822](https://cdn.fengxianhub.top/resources-master/202201300005881.png)
 
 >为了实现volatile的内存语义，Java内存模型采取以下的保守策略
 >
@@ -247,7 +247,7 @@ Singleton::getInstance@24
 
 上述第二个栗子🌰中加了volatile关键字后：
 
-![image-20220130000827689](https://gitee.com/fengxian_duck/resources/raw/master/202201300008753.png)
+![image-20220130000827689](https://cdn.fengxianhub.top/resources-master/202201300008753.png)
 
 内存屏障保证前面的指令先执行，所以这就保证了禁止了指令重排啦，同时内存屏障保证缓存写入内存和其他处理器缓存失效，这也就保证了可见性
 

@@ -4,7 +4,7 @@
 
 思维导图：
 
-![image-20220121105323377](https://gitee.com/fengxian_duck/resources/raw/master/202201211053456.png)
+![image-20220121105323377](https://cdn.fengxianhub.top/resources-master/202201211053456.png)
 
 
 
@@ -132,7 +132,7 @@ public static void main(String[] args) {
 
 通过源码分析可知，其实FutureTask 实现 Runnable接口底层还是调用了Callable接口，这体现了适配器设计模式，通过转换接口进行适配
 
-![image-20220121104507280](https://gitee.com/fengxian_duck/resources/raw/master/202201211045456.png)
+![image-20220121104507280](https://cdn.fengxianhub.top/resources-master/202201211045456.png)
 
 
 

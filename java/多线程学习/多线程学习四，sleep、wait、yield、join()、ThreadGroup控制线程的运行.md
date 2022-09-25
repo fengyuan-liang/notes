@@ -2,13 +2,13 @@
 
 思维导图：
 
-![image-20220127233738916](https://gitee.com/fengxian_duck/resources/raw/master/202201272337088.png)
+![image-20220127233738916](https://cdn.fengxianhub.top/resources-master/202201272337088.png)
 
 ## 1. synchronized与sleep关系
 
 思维导图：
 
-![image-20220127233853202](https://gitee.com/fengxian_duck/resources/raw/master/202201272338404.png)
+![image-20220127233853202](https://cdn.fengxianhub.top/resources-master/202201272338404.png)
 
 <hr>
 

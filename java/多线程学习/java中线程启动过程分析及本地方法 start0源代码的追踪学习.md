@@ -4,7 +4,7 @@
 
 流程图：
 
-![image-20220311160938348](https://gitee.com/fengxian_duck/resources/raw/master/202203111609672.png)
+![image-20220311160938348](https://cdn.fengxianhub.top/resources-master/202203111609672.png)
 
 >当我们调用Thread的start方法时（没有放任务，重写了run方法）：
 
@@ -217,7 +217,7 @@ vmSymbols::run_method_name()
 
 我们可以在318查到：
 
-![image-20220311194255458](https://gitee.com/fengxian_duck/resources/raw/master/202203111942665.png)
+![image-20220311194255458](https://cdn.fengxianhub.top/resources-master/202203111942665.png)
 
 其实`vmSymbols::run_method_name()`就是调用了`run`方法
 
