@@ -44,7 +44,7 @@
 
 **MySQL**
 
-- [Mysql索引学习](/mysql进阶/Mysql学习一：索引.md) | [MVCC](/mysql进阶/MySQL MVCC.md)
+- [Mysql索引学习](/mysql进阶/Mysql学习一：索引.md) | [MVCC](/mysql进阶/MySQL_MVCC.md)
 
 **MongoDB**
 
