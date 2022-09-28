@@ -100,7 +100,7 @@
 
 **字典**
 
-[映射](/AlgorithmAndDataStructure/10-映射.md) | [HashMap](/AlgorithmAndDataStructure/11-Hash表.md) | [LinkedHashMap](/AlgorithmAndDataStructure/12-LinkedHashMap.md)
+[映射](/AlgorithmAndDataStructure/10-映射(TreeMap、TreeSet).md) | [HashMap](/AlgorithmAndDataStructure/11-Hash表.md) | [LinkedHashMap](/AlgorithmAndDataStructure/12-LinkedHashMap.md)
 
 **集合**
 
