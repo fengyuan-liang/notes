@@ -1,23 +1,95 @@
 # 笔记
 
+思维导图：
+
+![image-20220929004022268](https://cdn.fengxianhub.top/resources-master/202209290040477.png)
+
+## 1. Vue基础
+
+### 1.1 基本指令
+
+![image-20220929004412115](https://cdn.fengxianhub.top/resources-master/202209290044373.png)
+
+### 1.2 钩子函数生命周期
+
+![image-20220929004613402](https://cdn.fengxianhub.top/resources-master/202209290046558.png)
+
+一、生命周期钩子函数
+
+　　（1）beforeCreate（）       实例创建前触发
+
+　　（2）created（）                实例创建完成，
+
+　　（3）beforeMount（）        模板渲染前，可以访问数据，模板编译完成，虚拟DOM已经存在
+
+　　（4）mounted（）              模板渲染完成，可以拿到DOM节点和数据，`可以使用method里面的方法`
+
+　　（5）beforeUpdate（）      更新前
+
+　　（6）updated（）               更新完成
+
+　　（7）activated（）         　 激活前
+
+　　（8）deactivated（）         激活后
+
+　　（9）beforeDestroy（）　 销毁前
+
+　　（10）destroyed（）　　  销毁后
+
+二、自定义指令directives的钩子函数
+
+　　（1）bind（）         绑定指令到元素上，只执行一次。
+
+　　（2）inserted（）   绑定了指令的元素插入到页面中展示时调用，很常用。
+
+　　（3）update（）　 所有组件节点更新时调用
+
+　　（4）componentUpdated    指令所在的节点及其子节点全部更新完成后调用。
+
+　　（5）unbind（）    解除指令和元素的绑定，只执行一次。
+
+三、路由导航 / 路由守卫  钩子函数
+
+　　（1）全局守卫
+
+　　　　①前置：router.beforeEach（(to,from,next)=>{  }）
+
+　　　　②后置：router.afterEach（(to,from)=>{  }）
+
+　　（2）路由独享守卫
+
+　　　　beforeEnter:（to,from,next)=>{   }
+
+　　（3）导航守卫
+
+　　　　①beforeRouteEnter（to,from,next）{   }
+
+　　　　②beforeRouteLeave（to,from,next）{  }
+
+广义上来说，watch、computed这些也属于钩子函数，watch是在监控的数据变化时就会自动执行对应的方法，而computed是在数据变化时再次计算数据。
+
+
+
 ## 脚手架文件结构
 
-	├── node_modules 
-	├── public
-	│   ├── favicon.ico: 页签图标
-	│   └── index.html: 主页面
-	├── src
-	│   ├── assets: 存放静态资源
-	│   │   └── logo.png
-	│   │── component: 存放组件
-	│   │   └── HelloWorld.vue
-	│   │── App.vue: 汇总所有组件
-	│   │── main.js: 入口文件
-	├── .gitignore: git版本管制忽略的配置
-	├── babel.config.js: babel的配置文件
-	├── package.json: 应用包配置文件 
-	├── README.md: 应用描述文件
-	├── package-lock.json：包版本控制文件
+```Java
+├── node_modules 
+├── public
+│   ├── favicon.ico: 页签图标
+│   └── index.html: 主页面
+├── src
+│   ├── assets: 存放静态资源
+│   │   └── logo.png
+│   │── component: 存放组件
+│   │   └── HelloWorld.vue
+│   │── App.vue: 汇总所有组件
+│   │── main.js: 入口文件
+├── .gitignore: git版本管制忽略的配置
+├── babel.config.js: babel的配置文件
+├── package.json: 应用包配置文件 
+├── README.md: 应用描述文件
+├── package-lock.json：包版本控制文件
+```
 
 ## 关于不同版本的Vue
 

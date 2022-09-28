@@ -112,4 +112,6 @@
 
  [Hadoop CDH集群搭建](/大数据/hadoop/Hadoop_CDH高可用集群搭建.md)  |   [Hadoop HA集群搭建](/大数据/hadoop/Hadoop完全分布式安装（HA、Yarn、ZKFC、flumeGanglia、sqoop一步到位）.md) 
 
-## 🔎项目笔记
+## 🔎大前端
+
+ [Vue](/前端框架Vue/Vue脚手架学习笔记.md)   |   [Vue 3](/前端框架Vue/vue3快速上手.md)  
