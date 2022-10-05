@@ -21,7 +21,7 @@
 
 **java基础**
 
-[Java8新特性](/java/Java8新特性.md)    [注解学习](/java/注解学习一、Java内置注解及注解书写.md)
+[Java8新特性](/java/Java8新特性.md) | [注解学习](/java/注解学习一、Java内置注解及注解书写.md) |  [设计模式](/设计模式/设计模式.md)
 
 **JUC**
 
@@ -111,6 +111,8 @@
 [MapReduce基本使用](/大数据/hadoop/2-MapReduce/5-MapReduce学习.md)    |    [MapReduce原理剖析](/大数据/hadoop/2-MapReduce/6-MapReduce原理剖析.md)   |    [yarn学习](/大数据/hadoop/3-yarn/yarn学习.md)      
 
  [Hadoop CDH集群搭建](/大数据/hadoop/Hadoop_CDH高可用集群搭建.md)  |   [Hadoop HA集群搭建](/大数据/hadoop/Hadoop完全分布式安装（HA、Yarn、ZKFC、flumeGanglia、sqoop一步到位）.md) 
+
+
 
 ## 🔎大前端
 

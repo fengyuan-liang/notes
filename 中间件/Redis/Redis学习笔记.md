@@ -520,11 +520,46 @@ Redis 3.2 中增加了对 GEO 类型的支持。GEO，Geographic，地理信息�
 
 ```css
 subscribe channel # 订阅频道
-
 publish channel hello # 频道发送信息
 ```
 
-## 6.Java操作Redis——Jedis
+### 5.1 发布订阅的简单实现
+
+>订阅命令： subscribe `频道key` ，可以订阅多个频道，用空格隔开
+>
+>例如：定订阅一个key为channel1的频道，`subscribe channel1`
+
+![image-20221002155040631](https://cdn.fengxianhub.top/resources-master/202210021550964.png)
+
+订阅成功后当前客户端就会一直监听`channel`里面值的变化，当有消息时就会进行反馈
+
+>推送消息命令： publish channel名称 消息 ，返回值表示有几个订阅者
+>
+>例如：给`channel1`发送消息hello，`publish channel1 hello`
+
+![image-20221002155632203](https://cdn.fengxianhub.top/resources-master/202210021556407.png)
+
+>当然我们还可以用命令`psubscribe`给多个`channel`发送消息，redis支持通配符`*`来匹配channel进行发送
+>
+>例如：
+>
+>- ` it*` 匹配所有以 it 开头的频道( it.news 、 it.blog 、it.tweets 等等)
+>- `news.*` 匹配所有以 news. 开头的频道( news.it 、 news.global.today 等等)
+
+总结一下：Redis提供了如下6个命令来支持该功能
+
+| **序号** | **命令**                                  | **描述**                         |
+| -------- | ----------------------------------------- | -------------------------------- |
+| 1        | PSUBSCRIBE pattern [pattern …]            | 订阅一个或多个符合给定模式的频道 |
+| 2        | PUBSUB subcommand [argument [argument …]] | 查看订阅与发布系统状态           |
+| 3        | PUBLISH channel message                   | 将消息发送到指定的频道           |
+| 4        | PUNSUBSCRIBE [pattern [pattern …]]        | 退订所有给定模式的频道           |
+| 5        | SUBSCRIBE channel [channel …]             | 订阅给定的一个或多个频道的信息   |
+| 6        | UNSUBSCRIBE [channel [channel …]]         | 指退订给定的频道                 |
+
+
+
+## 6. Java操作Redis——Jedis
 
 > Jedis是Java操作Redis的一种方式，就像JDBC一样
 
