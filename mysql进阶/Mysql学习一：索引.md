@@ -445,6 +445,54 @@ alter table t add index index_name(a,b,c);
 
 三星索引在实际的业务中如果无法同时达到，**一般我们认为第三颗星最重要（不需要回表）**，第一和第二颗星重要性差不多，根据业务情况调整这两颗星的优先度
 
+### 4.7 索引执行计划
+
+![image-20221007160355677](https://cdn.fengxianhub.top/resources-master/202210071603883.png)
+
+```java
+id // 选择标识符
+select_type // 表示查询的类型
+table // 输出结果集的表
+partitions // 匹配的分区
+type // 表示表的连接类型，
+possible_keys // 表示查询时，可能使用的索引
+key // 表示实际使用的索引
+key_len // 索引字段的长度
+ref // 列与索引的比较
+rows // 扫描出的行数(估算的行数)
+filtered // 按表条件过滤的行百分比
+Extra // 执行情况的描述和说明
+```
+
+#### 4.7.1 type列
+
+>表示连接类型，类型有ALL、index、range、 ref、eq_ref、const、system、NULL，这几种类型从左到右，性能越来越高。一般一个好的sql语句至少要达到range级别。all级别应当杜绝
+>
+>阿里开发手册这样规定：
+>
+>【推荐】SQL 性能优化的目标：至少要达到 `range` 级别，要求是 `ref` 级别，如果可以是 `consts `最好。 
+>
+>说明： 
+>
+>- consts 单表中最多只有一个匹配行（主键或者唯一索引），在优化阶段即可读取到数据。 
+>- ref 指的是使用普通的索引（normal index）。 
+>- range 对索引进行范围检索。 
+>
+>反例：explain 表的结果，type=index，索引物理文件全扫描，速度非常慢，这个 index 级别比较 range 还低，与全表扫描是小巫见大巫。
+
+```css
+ALL：全表扫描，应当避免该类型
+index：索引全局扫描，index与ALL区别为index类型只遍历索引树
+range：检索索引一定范围的行
+ref：非唯一性索引扫描，返回匹配某个单独值的所有行
+eq_ref：唯一索引扫描，对于每个索引键，表中只有一条记录与之匹配。常见主键或唯一索引扫描
+const：表示通过一次索引就找到了结果，常出现于primary key或unique索引
+system：system是const类型的特例，当查询的表只有一行的情况下，使用system
+NULL：MySQL在优化过程中分解语句，执行时甚至不用访问表或索引，是最高的登记
+```
+
+
+
 ## 5. 索引选择
 
 ### 5.1 索引字段选择
