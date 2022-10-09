@@ -131,7 +131,8 @@ db.voi_user_online_time.aggregate([
 		{$group:{ 
 		"_id":"$userId",
 		// 将所有文档放入单独的数组中
-		enterTime: { $max: "$enterTime" }}}
+		enterTime: { $max: "$enterTime" }}},
+		{$project:{'userId':'$_id','enterTime':'$enterTime'}}
 ])
 ```
 
@@ -139,18 +140,21 @@ db.voi_user_online_time.aggregate([
 // 1
 {
     "_id": NumberLong("1146537712"),
-    "enterTime": ISODate("2022-10-08T03:34:20.051Z")
+    "userId": NumberLong("1146537712"),
+    "enterTime": ISODate("2022-10-09T08:17:49.761Z")
 }
 
 // 2
 {
     "_id": NumberLong("1146181204"),
+    "userId": NumberLong("1146181204"),
     "enterTime": ISODate("2022-09-21T11:40:39.154Z")
 }
 
 // 3
 {
     "_id": NumberLong("1134320827"),
+    "userId": NumberLong("1134320827"),
     "enterTime": ISODate("2022-09-13T06:48:23.867Z")
 }
 
