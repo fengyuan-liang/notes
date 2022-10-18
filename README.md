@@ -48,7 +48,7 @@
 
 **MongoDB**
 
-- [MongoDB快速上手](/中间件/MongoDB/MongoDB快速上手.md)  |  [MongoDB高级特性](/中间件/MongoDB/MongoDB高级特性.md)
+- [MongoDB快速上手](/中间件/MongoDB/MongoDB快速上手.md)  |  [MongoDB高级特性](/中间件/MongoDB/MongoDB高级特性.md) | [MongoDB生产实践](/中间件/MongoDB/MongoDB生产实践.md)
 
 ## 🥊 框架|中间件
 
