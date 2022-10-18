@@ -4,7 +4,7 @@
 🌟如果已经启动的项目.则使用update更新：
 
 ```jva
-docker update --restart = always 容器id
+docker update --restart=always 容器id
 ```
 
 ## 1. 项目管理工具
@@ -22,6 +22,44 @@ idoop/zentao:latest \
 ```
 
 ### 1.2 安装堡垒机jumpserver
+
+<a href="https://blog.csdn.net/icanflyingg/article/details/121898008?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166589064816800184117777%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=166589064816800184117777&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-2-121898008-null-null.142^v56^pc_search_v2,201^v3^control_2&utm_term=jumpserver%20docker%E5%AE%89%E8%A3%85%E8%AE%BF%E9%97%AE%E4%B8%8D%E4%BA%86&spm=1018.2226.3001.4187">一键部署</a>：
+
+```java
+wget https://github.com/jumpserver/jumpserver/releases/download/v2.16.3/quick_start.sh
+```
+
+```java
+sh quick_start.sh
+```
+
+```java
+>>> 安装完成了
+1. 可以使用如下命令启动, 然后访问
+cd /opt/jumpserver-installer-v2.16.3
+./jmsctl.sh start
+
+2. 其它一些管理命令
+./jmsctl.sh stop
+./jmsctl.sh restart
+./jmsctl.sh backup
+./jmsctl.sh upgrade
+更多还有一些命令, 你可以 ./jmsctl.sh --help 来了解
+
+3. Web 访问
+http://172.16.1.10:80
+默认用户: admin  默认密码: admin
+
+4. SSH/SFTP 访问
+ssh -p2222 admin@172.16.1.10
+sftp -P2222 admin@172.16.1.10
+
+5. 更多信息
+我们的官网: https://www.jumpserver.org/
+我们的文档: https://docs.jumpserver.org/
+```
+
+手动部署：
 
 数据库由 DBA 在 MySQL 中创建：
 
@@ -51,24 +89,44 @@ $ docker run --name jumperserver -d \
 
 
 
-
-
 ## 2. 数据库
 
 ### 2.1 安装mysql
 
 ```java
 docker run -d \
--p 3308:3306 \
---name mysql57 \
+-p 3310:3306 \
+--name mysql57-prod \
 --restart always \
 -e MYSQL_ROOT_PASSWORD=k4uc93i9y7v9r3ernbhijd848dawp6alb8ko8 \
---character-set-server=utf8mb4 \
---collation-server=utf8mb4_unicode_ci \
-mysql:5.7 
+-e TZ=Asia/Shanghai \
+-v /home/data/mysql57/mysql5.7/my.cnf:/etc/mysql/my.cnf \
+-v /home/data/mysql57/mysql5.7/data:/var/lib/mysql \
+-v /home/data/mysql57/mysql5.7/mysql-files:/var/lib/mysql-files \
+-v /home/data/mysql57/mysql5.7/log/mysql/error.log:/var/log/mysql/error.log \
+mysql:5.7
+```
+
+如果远程连接不上，可以这样
+
+```java
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '01a0bd0704aa498fa84b71545a808433' WITH GRANT OPTION
 ```
 
 ### 2.2 安装redis
+
+```java
+docker run -d \
+--name redis \
+-p 6379:6379 \
+--restart unless-stopped \
+--requirepass fsafawfek4uc93i9y7vd848dawp6alb8ko8 \
+-v /mydata/redis/data:/data \
+-v /mydata/redis/conf/redis.conf:/etc/redis/redis.conf \
+redis-server /etc/redis/redis.conf \
+redis:buster 
+
+```
 
 
 
