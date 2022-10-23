@@ -65,9 +65,10 @@
 
 - [Dubbo](/中间件/RPC/Dubbo.md)
 
-**RabbitMQ**
+**MQ**
 
 - [RabbitMQ基本使用](/SpringCloud/黑马SpringCloud-阿里巴巴/3-RabbitMQ.md)    |   [RabbitMQ高级特性](/SpringCloud/黑马SpringCloud-阿里巴巴/11-RabbitMQ-高级篇.md)
+- [Kafka基本使用](/中间件/kafka/Kafka.md)  
 
 **ElasticSearch**
 
