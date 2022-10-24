@@ -68,7 +68,7 @@
 **MQ**
 
 - [RabbitMQ基本使用](/SpringCloud/黑马SpringCloud-阿里巴巴/3-RabbitMQ.md)    |   [RabbitMQ高级特性](/SpringCloud/黑马SpringCloud-阿里巴巴/11-RabbitMQ-高级篇.md)
-- [Kafka基本使用](/中间件/kafka/Kafka.md)  
+- [Kafka基本使用](/中间件/Kafka/Kafka.md)  
 
 **ElasticSearch**
 
@@ -112,8 +112,6 @@
 [MapReduce基本使用](/大数据/hadoop/2-MapReduce/5-MapReduce学习.md)    |    [MapReduce原理剖析](/大数据/hadoop/2-MapReduce/6-MapReduce原理剖析.md)   |    [yarn学习](/大数据/hadoop/3-yarn/yarn学习.md)      
 
  [Hadoop CDH集群搭建](/大数据/hadoop/Hadoop_CDH高可用集群搭建.md)  |   [Hadoop HA集群搭建](/大数据/hadoop/Hadoop完全分布式安装（HA、Yarn、ZKFC、flumeGanglia、sqoop一步到位）.md) 
-
-
 
 ## 🔎大前端
 

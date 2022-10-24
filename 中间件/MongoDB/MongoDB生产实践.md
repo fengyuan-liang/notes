@@ -444,7 +444,8 @@ private Page<ClanJoinAndQuitRecord> filterClanJoinAndQuitRecord(H5ClanMemberVO v
         // 查询全部，不需要筛选  
         lookupMatch = Aggregation.match(new Criteria());  
     } else if (Objects.equals(input.getJoinRoomSign(), 0)) {  
-        // 只查询加入家族的用户，即右边表中记录不为空，`new String[0])` 表示空文档 `[]`        lookupMatch = Aggregation.match(Criteria.where(ClanVoiRoomUser.COLLECTION_NAME).ne(new String[0]));  
+        // 只查询加入家族的用户，即右边表中记录不为空，`new String[0])` 表示空文档 `[]`        
+        lookupMatch = Aggregation.match(Criteria.where(ClanVoiRoomUser.COLLECTION_NAME).ne(new String[0]));  
     } else if (Objects.equals(input.getJoinRoomSign(), 1)) {  
         // 只查询加入家族的用户，即右边表中记录为空  
         lookupMatch = Aggregation.match(Criteria.where(ClanVoiRoomUser.COLLECTION_NAME).is(new String[0]));  

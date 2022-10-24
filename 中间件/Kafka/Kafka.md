@@ -54,8 +54,11 @@ Broker 是一个像数据总线一样的东西，所有的服务要接收数据�
 - 吞吐量提升：无需等待订阅者处理完成，响应更快速
 
 - 故障隔离：服务没有直接调用，不存在级联失败问题
+
 - 调用间没有阻塞，不会造成无效的资源占用
+
 - 耦合度极低，每个服务都可以灵活插拔，可替换
+
 - 流量削峰：不管发布事件的流量波动多大，都由Broker接收，订阅者可以按照自己的速度去处理事件
 
 缺点：
@@ -78,15 +81,15 @@ MQ，中文是消息队列（MessageQueue），字面来看就是存放消息的
 
 几种常见MQ的对比：
 
-|            | **RabbitMQ**            | **ActiveMQ**                   | **RocketMQ** | **Kafka**  |
-| ---------- | ----------------------- | ------------------------------ | ------------ | ---------- |
-| 公司/社区  | Rabbit                  | Apache                         | 阿里         | Apache     |
-| 开发语言   | Erlang                  | Java                           | Java         | Scala&Java |
-| 协议支持   | AMQP，XMPP，SMTP，STOMP | OpenWire,STOMP，REST,XMPP,AMQP | 自定义协议   | 自定义协议 |
-| 可用性     | 高                      | 一般                           | 高           | 高         |
-| 单机吞吐量 | 一般                    | 差                             | 高           | 非常高     |
-| 消息延迟   | 微秒级                  | 毫秒级                         | 毫秒级       | 毫秒以内   |
-| 消息可靠性 | 高                      | 一般                           | 高           | 一般       |
+|       | **RabbitMQ**         | **ActiveMQ**                  | **RocketMQ** | **Kafka**  |
+| ----- | -------------------- | ----------------------------- | ------------ | ---------- |
+| 公司/社区 | Rabbit               | Apache                        | 阿里           | Apache     |
+| 开发语言  | Erlang               | Java                          | Java         | Scala&Java |
+| 协议支持  | AMQP，XMPP，SMTP，STOMP | OpenWire,STOMP，REST,XMPP,AMQP | 自定义协议        | 自定义协议      |
+| 可用性   | 高                    | 一般                            | 高            | 高          |
+| 单机吞吐量 | 一般                   | 差                             | 高            | 非常高        |
+| 消息延迟  | 微秒级                  | 毫秒级                           | 毫秒级          | 毫秒以内       |
+| 消息可靠性 | 高                    | 一般                            | 高            | 一般         |
 
 追求可用性：Kafka、 RocketMQ 、RabbitMQ
 
@@ -122,17 +125,17 @@ kafka是一个分布式的，分区的消息(官方称之为commit log)服务。
 
 首先，让我们来看一下基础的消息(Message)相关术语：
 
-| **名称**        | **解释**                                                     |
-| --------------- | ------------------------------------------------------------ |
-| Broker          | 消息中间件处理节点，一个Kafka节点就是一个broker，一个或者多个Broker可以组成一个Kafka集群 |
-| Topic           | Kafka根据topic对消息进行归类，发布到Kafka集群的每条消息都需要指定一个topic |
-| Producer        | 消息生产者，向Broker发送消息的客户端                         |
-| Consumer        | 消息消费者，从Broker读取消息的客户端                         |
-| ConsumerGroup   | 每个Consumer属于一个特定的Consumer Group，一条消息可以被多个不同的Consumer Group消费，但是一个Consumer Group中只能有一个Consumer能够消费该消息 |
-| Partition       | 物理上的概念，一个topic可以分为多个partition，每个partition内部消息是有序的 |
-| Replica（副本） | 一个 topic 的每个分区都有若干个副本，一个 Leader 和若干个 Follower |
-| Leader：        | 每个分区多个副本的“主”，生产者发送数据的对象，以及消费者消费数 据的对象都是 Leader |
-| Follower        | 每个分区多个副本中的“从”，实时从 Leader 中同步数据，保持和 Leader 数据的同步。Leader 发生故障时，某个 Follower 会成为新的 Leader。 |
+| **名称**        | **解释**                                                                                               |
+| ------------- | ---------------------------------------------------------------------------------------------------- |
+| Broker        | 消息中间件处理节点，一个Kafka节点就是一个broker，一个或者多个Broker可以组成一个Kafka集群                                              |
+| Topic         | Kafka根据topic对消息进行归类，发布到Kafka集群的每条消息都需要指定一个topic                                                      |
+| Producer      | 消息生产者，向Broker发送消息的客户端                                                                                |
+| Consumer      | 消息消费者，从Broker读取消息的客户端                                                                                |
+| ConsumerGroup | 每个Consumer属于一个特定的Consumer Group，一条消息可以被多个不同的Consumer Group消费，但是一个Consumer Group中只能有一个Consumer能够消费该消息 |
+| Partition     | 物理上的概念，一个topic可以分为多个partition，每个partition内部消息是有序的                                                    |
+| Replica（副本）   | 一个 topic 的每个分区都有若干个副本，一个 Leader 和若干个 Follower                                                        |
+| Leader：       | 每个分区多个副本的“主”，生产者发送数据的对象，以及消费者消费数 据的对象都是 Leader                                                       |
+| Follower      | 每个分区多个副本中的“从”，实时从 Leader 中同步数据，保持和 Leader 数据的同步。Leader 发生故障时，某个 Follower 会成为新的 Leader。               |
 
 ![image-20221023160845899](https://cdn.fengxianhub.top/resources-master/202210231608025.png)
 
@@ -162,7 +165,7 @@ kafka是一个分布式的，分区的消息(官方称之为commit log)服务。
 ### 3.1 部署前的准备
 
 - 安装jdk
-
+  
   ```shell
   yum install -y java-1.8.0-openjdk-devel.x86_64 \
   && (
@@ -177,7 +180,7 @@ kafka是一个分布式的，分区的消息(官方称之为commit log)服务。
   ```
 
 - 安装zk
-
+  
   ```java
   docker run -d \
   -e TZ="Asia/Shanghai" \
@@ -188,9 +191,9 @@ kafka是一个分布式的，分区的消息(官方称之为commit log)服务。
   ```
 
 - 官网下载kafka的压缩包:http://kafka.apache.org/downloads 
-
+  
   这里使用清华大学镜像源下载，这里推荐用旧版本的，不然后面搭集群容易出错
-
+  
   ```java
   mkdir /usr/local/kafka \
   && cd /usr/local/kafka \
@@ -200,15 +203,15 @@ kafka是一个分布式的，分区的消息(官方称之为commit log)服务。
   ```
 
 - 解压缩至如下路径
-
+  
   ```java
   /usr/local/kafka/
   ```
 
 - 修改配置文件：/usr/local/kafka/kafka_2.13-2.8.2/config/server.properties
-
-  >注意：这里请不要填`localhost:9092   `，localhost表示只能通过本机连接，可以设置为`0.0.0.0`或本地局域网地址
-
+  
+  > 注意：这里请不要填`localhost:9092   `，localhost表示只能通过本机连接，可以设置为`0.0.0.0`或本地局域网地址
+  
   ```shell
   #broker.id属性在kafka集群中必须要是唯一
   broker.id=0
@@ -221,7 +224,7 @@ kafka是一个分布式的，分区的消息(官方称之为commit log)服务。
   ```
 
 - 添加kafka环境变量
-
+  
   ```shell
   (
   #KAFKA_HOME
@@ -251,21 +254,21 @@ ls /brokers/ids/
 
 **server.properties核心配置详解：**
 
-| **Property**               | **Default**                    | **Description**                                              |
-| -------------------------- | ------------------------------ | ------------------------------------------------------------ |
-| broker.id                  | 0                              | 每个broker都可以用一个唯一的非负整数id进行标识；这个id可以作为broker的“名字”，你可以选择任意你喜欢的数字作为id，只要id是唯一的即可。 |
-| log.dirs                   | /tmp/kafka-logs                | kafka存放数据的路径。这个路径并不是唯一的，可以是多个，路径之间只需要使用逗号分隔即可；每当创建新partition时，都会选择在包含最少partitions的路径下进行。 |
-| listeners                  | PLAINTEXT://192.168.65.60:9092 | server接受客户端连接的端口，ip配置kafka本机ip即可            |
+| **Property**               | **Default**                    | **Description**                                                                                                                                      |
+| -------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| broker.id                  | 0                              | 每个broker都可以用一个唯一的非负整数id进行标识；这个id可以作为broker的“名字”，你可以选择任意你喜欢的数字作为id，只要id是唯一的即可。                                                                        |
+| log.dirs                   | /tmp/kafka-logs                | kafka存放数据的路径。这个路径并不是唯一的，可以是多个，路径之间只需要使用逗号分隔即可；每当创建新partition时，都会选择在包含最少partitions的路径下进行。                                                             |
+| listeners                  | PLAINTEXT://192.168.65.60:9092 | server接受客户端连接的端口，ip配置kafka本机ip即可                                                                                                                     |
 | zookeeper.connect          | localhost:2181                 | zooKeeper连接字符串的格式为：hostname:port，此处hostname和port分别是ZooKeeper集群中某个节点的host和port；zookeeper如果是集群，连接方式为 hostname1:port1, hostname2:port2, hostname3:port3 |
-| log.retention.hours        | 168                            | 每个日志文件删除之前保存的时间。默认数据保存时间对所有topic都一样。 |
-| num.partitions             | 1                              | 创建topic的默认分区数                                        |
-| default.replication.factor | 1                              | 自动创建topic的默认副本数量，建议设置为大于等于2             |
-| min.insync.replicas        | 1                              | 当producer设置acks为-1时，min.insync.replicas指定replicas的最小数目（必须确认每一个repica的写数据都是成功的），如果这个数目没有达到，producer发送消息会产生异常 |
-| delete.topic.enable        | false                          | 是否允许删除主题                                             |
+| log.retention.hours        | 168                            | 每个日志文件删除之前保存的时间。默认数据保存时间对所有topic都一样。                                                                                                                 |
+| num.partitions             | 1                              | 创建topic的默认分区数                                                                                                                                        |
+| default.replication.factor | 1                              | 自动创建topic的默认副本数量，建议设置为大于等于2                                                                                                                          |
+| min.insync.replicas        | 1                              | 当producer设置acks为-1时，min.insync.replicas指定replicas的最小数目（必须确认每一个repica的写数据都是成功的），如果这个数目没有达到，producer发送消息会产生异常                                          |
+| delete.topic.enable        | false                          | 是否允许删除主题                                                                                                                                             |
 
 ### 3.3 Kafka核心概念之Topic
 
->在`Kafka`中，Topic是一个非常重要的概念，topic可以实现消息的分类，不同消费者订阅不同的topic
+> 在`Kafka`中，Topic是一个非常重要的概念，topic可以实现消息的分类，不同消费者订阅不同的topic
 
 ![Kafka Topic](https://cdn.fengxianhub.top/resources-master/202210231415682.png)
 
@@ -335,12 +338,13 @@ kafka自带了一个`producer`命令客户端，可以从本地文件中读取�
 ![image-20221023150727318](https://cdn.fengxianhub.top/resources-master/202210231507470.png)
 
 - 生产者将消息发送给broker，broker会将消息保存在本地的日志文件中
-
+  
   ```java
   /usr/local/kafka/kafka-logs/主题-分区/00000000.log
   ```
 
 - 消息的保存是有序的，通过offset偏移量来描述消息的有序性
+
 - 消费者消费消息时也是通过offset来描述当前要消费的那条消息的位置
 
 ![](https://cdn.fengxianhub.top/resources-master/202210231506804.png)
@@ -371,9 +375,9 @@ kafka自带了一个`producer`命令客户端，可以从本地文件中读取�
 
 ![image-20221023151525771](https://cdn.fengxianhub.top/resources-master/202210231515875.png)
 
->这里就要引申出一个概念：`消费组`，当我们配置多个消费者在一个消费组里面的时候，其实只会有一个消费者进行消费
->
->这样其实才符合常理，毕竟一条消息被消费一次就够了
+> 这里就要引申出一个概念：`消费组`，当我们配置多个消费者在一个消费组里面的时候，其实只会有一个消费者进行消费
+> 
+> 这样其实才符合常理，毕竟一条消息被消费一次就够了
 
 我们可以通过命令`--consumer-property group.id=testGroup`在设置消费者时将其划分到一个消费组里面
 
@@ -387,7 +391,7 @@ kafka自带了一个`producer`命令客户端，可以从本地文件中读取�
 
 ![image-20221023152409328](https://cdn.fengxianhub.top/resources-master/202210231524437.png)
 
->小结一下：**两个消费者在同一个组，只有一个能接到消息，两个在不同组或者未指定组则都能收到**
+> 小结一下：**两个消费者在同一个组，只有一个能接到消息，两个在不同组或者未指定组则都能收到**
 
 ### 3.8 多播消息
 
@@ -439,11 +443,11 @@ kafka自带了一个`producer`命令客户端，可以从本地文件中读取�
 - 00000.log： 这个文件中保存的就是消息
 
 - __consumer_offsets-49:
-
+  
   kafka内部自己创建了`__consumer_offsets`主题包含了50个分区。这个主题用来存放消费者消费某个主题的偏移量。因为每个消费者都会自己维护着消费的主题的偏移量，也就是说**每个消费者会把消费的主题的偏移量自主上报给kafka中的默认主题**：consumer_offsets。因此kafka为了提升这个主题的并发性，默认设置了50个分区。
-
+  
   - 提交到哪个分区：通过hash函数：`hash(consumerGroupId) % __consumer_offsets`主题的分区数
-
+  
   - 提交到该主题中的内容是：key是`consumerGroupId + topic + 分区号`，value就是当前offset的值
 
 - 文件中保存的消息，默认保存7天。七天到后消息会被删除。
@@ -556,34 +560,34 @@ services:
 
 首先我们想要的所有命令都可以通过`sh kafka-topics.sh`看到，主要的命令有：
 
-| 参数                                               | 描述                                 |
-| -------------------------------------------------- | ------------------------------------ |
+| 参数                                                 | 描述                        |
+| -------------------------------------------------- | ------------------------- |
 | --bootstrap-server <String: server to  connect to> | 连接的 Kafka Broker 主机名称和端口号 |
-| --topic <String: topic>                            | 操作的 topic 名称                    |
-| --create                                           | 创建主题                             |
-| --delete                                           | 删除主题                             |
-| --alter                                            | 修改主题                             |
-| --list                                             | 查看所有主题                         |
-| --describe                                         | 查看主题详细描述                     |
-| --partitions <Integer: # of partitions>            | 设置分区数                           |
-| --replication-factor <Integer: replication factor> | 设置分区副本                         |
-| --config <String: name=value>                      | 更新系统默认的配置                   |
+| --topic <String: topic>                            | 操作的 topic 名称              |
+| --create                                           | 创建主题                      |
+| --delete                                           | 删除主题                      |
+| --alter                                            | 修改主题                      |
+| --list                                             | 查看所有主题                    |
+| --describe                                         | 查看主题详细描述                  |
+| --partitions <Integer: # of partitions>            | 设置分区数                     |
+| --replication-factor <Integer: replication factor> | 设置分区副本                    |
+| --config <String: name=value>                      | 更新系统默认的配置                 |
 
 ### 4.2 producer相关命令
 
-| 参数                                               | 描述                                 |
-| -------------------------------------------------- | ------------------------------------ |
+| 参数                                                 | 描述                        |
+| -------------------------------------------------- | ------------------------- |
 | --bootstrap-server <String: server to  connect to> | 连接的 Kafka Broker 主机名称和端口号 |
-| --topic <String: topic>                            | 操作的 topic 名称                    |
+| --topic <String: topic>                            | 操作的 topic 名称              |
 
 ### 4.3 consumer相关命令
 
-| 参数                                               | 描述                                 |
-| -------------------------------------------------- | ------------------------------------ |
+| 参数                                                 | 描述                        |
+| -------------------------------------------------- | ------------------------- |
 | --bootstrap-server <String: server to  connect to> | 连接的 Kafka Broker 主机名称和端口号 |
-| --topic <String: topic>                            | 操作的 topic 名称                    |
-| --from-beginning                                   | 从头开始消费                         |
-| --group <String: consumer group id>                | 指定消费者组名称                     |
+| --topic <String: topic>                            | 操作的 topic 名称              |
+| --from-beginning                                   | 从头开始消费                    |
+| --group <String: consumer group id>                | 指定消费者组名称                  |
 
 ## 5. Kafka集群
 
@@ -616,11 +620,11 @@ services:
 
 首先我们要有三台主机（或者修改端口号，伪分布式搭建）
 
-| 主机名 | IP          |
-| ------ | ----------- |
-| liang  | 172.16.1.7  |
-| dd1    | 172.16.1.4  |
-| dd2    | 172.16.1.12 |
+| 主机名   | IP          |
+| ----- | ----------- |
+| liang | 172.16.1.7  |
+| dd1   | 172.16.1.4  |
+| dd2   | 172.16.1.12 |
 
 将上面的主机信息分别配置到每台机器的`/etc/hosts`目录下
 
@@ -704,7 +708,6 @@ case $1 in
  done
 };;
 esac
-
 ```
 
 ![image-20221023183101611](https://cdn.fengxianhub.top/resources-master/202210231831825.png)
@@ -751,20 +754,20 @@ sh kafka-topics.sh \
 ![](https://cdn.fengxianhub.top/resources-master/202210232036846.png)
 
 - leader
-
+  
   kafka的写和读的操作，都发生在leader上。leader负责把数据同步给follower。当leader挂了，经过主从选举，从多个follower中选举产生一个新的leader
 
 - follower
-
+  
   接收leader的同步的数据
 
 - isr
-
+  
   可以同步和已同步的节点会被存入到isr集合中。这里有一个细节：如果isr中的节点性能较差，会被提出isr集合。
 
->**（重点～！）**此时，broker、主题、分区、副本 这些概念就全部展现了，大家需要把这些概念梳理清楚：
->
->集群中有多个broker，创建主题时可以指明主题有多个分区（把消息拆分到不同的分区中存储），可以为分区创建多个副本，不同的副本存放在不同的broker里。
+> **（重点～！）**此时，broker、主题、分区、副本 这些概念就全部展现了，大家需要把这些概念梳理清楚：
+> 
+> 集群中有多个broker，创建主题时可以指明主题有多个分区（把消息拆分到不同的分区中存储），可以为分区创建多个副本，不同的副本存放在不同的broker里。
 
 ### 5.4 集群消费
 
@@ -789,18 +792,18 @@ sh kafka-topics.sh \
 ./kafka-console-consumer.sh --bootstrap-server localhost:9092,localhost:9093,localhost:9094 --from-beginning --consumer-property group.id=testGroup1 --topic my-replicated-topic
 ```
 
->这里有一个细节，结合上面的`单播消息`我们很容易可以想到下面的这种情况，因为一个`Partition`只能被一个`consumer Group`里面的一个`consumer`，所有很容易就可以形成`组内单播`的现象，即：
->
->- 多Partition与多consumer一一对应
->
->这样的好处是：
->
->- 分区存储，可以解决一个topic中文件过大无法存储的问题
->- **提高了读写的吞吐量，读写可以在多个分区中同时进行**
+> 这里有一个细节，结合上面的`单播消息`我们很容易可以想到下面的这种情况，因为一个`Partition`只能被一个`consumer Group`里面的一个`consumer`，所有很容易就可以形成`组内单播`的现象，即：
+> 
+> - 多Partition与多consumer一一对应
+> 
+> 这样的好处是：
+> 
+> - 分区存储，可以解决一个topic中文件过大无法存储的问题
+> - **提高了读写的吞吐量，读写可以在多个分区中同时进行**
 
 <img src="https://cdn.fengxianhub.top/resources-master/202210232139754.jpg" alt="kafka集群消费" style="zoom:50%;" />
 
->**Kafka这种通过分区与分组进行并行消费的方式，让kafka拥有极大的吞吐量**
+> **Kafka这种通过分区与分组进行并行消费的方式，让kafka拥有极大的吞吐量**
 
 ![image-20221023214517761](https://cdn.fengxianhub.top/resources-master/202210232145931.png)
 
@@ -826,12 +829,12 @@ sh kafka-topics.sh \
 
 ### 6.1 生产者核心概念
 
->在消息发送的过程中，涉及到了两个线程
->
->- main 线程
->- Sender 线程
->
->在 main 线程中创建了一个双端队列 `RecordAccumulator`。main 线程将消息发送给 `RecordAccumulator`， Sender 线程不断从 RecordAccumulator 中拉取消息发送到 `Kafka Broker`
+> 在消息发送的过程中，涉及到了两个线程
+> 
+> - main 线程
+> - Sender 线程
+> 
+> 在 main 线程中创建了一个双端队列 `RecordAccumulator`。main 线程将消息发送给 `RecordAccumulator`， Sender 线程不断从 RecordAccumulator 中拉取消息发送到 `Kafka Broker`
 
 在main线程中，消息的生产，要经历拦截器、序列化器和分区器，其中一个分区就会创建一个队列，这样方便数据的管理
 
@@ -839,7 +842,7 @@ sh kafka-topics.sh \
 
 ![image-20221023235243343](https://cdn.fengxianhub.top/resources-master/202210232352864.png)
 
->send线程发送给kafka集群的时候，我们需要联系到上面的`Topic与Partition已经消费组`，形成一个`Partition`对应`consumer Group`里面的一个`consumer`这种`组内单播的效果`，进行并发读写
+> send线程发送给kafka集群的时候，我们需要联系到上面的`Topic与Partition已经消费组`，形成一个`Partition`对应`consumer Group`里面的一个`consumer`这种`组内单播的效果`，进行并发读写
 
 ### 6.2 生产者代码编写
 
@@ -952,14 +955,3 @@ countDownLatch.await();
 - ack=1（默认）： 多副本之间的leader已经收到消息，并把消息写入到本地的log中，才会返回ack给生产者，性能和安全性是最均衡的
 
 - ack=-1/all。里面有默认的配置`min.insync.replicas=2`(默认为1，推荐配置大于等于2)，此时就需要leader和一个follower同步完后，才会返回ack给生产者（此时集群中有2个broker已完成数据的接收），这种方式最安全，但性能最差。
-
-
-
-
-
-
-
-
-
-
-
