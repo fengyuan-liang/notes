@@ -76,7 +76,7 @@
 
 **Zookeeper**
 
-- [zookeeper基本使用](/中间件/Zookeeper/docker安装zookeeper&zookeeper基本使用.md)   |  [curator&分布式锁](/中间件/Zookeeper/zookeeper操作封装——curator使用.md)
+- [zookeeper基本使用](/中间件/Zookeeper/docker安装zookeeper&zookeeper基本使用.md)  | [zookeeper原理](中间件/Zookeeper/Zookeeper原理.md) |  [curator&分布式锁](/中间件/Zookeeper/zookeeper操作封装——curator使用.md)
 
 **容器技术**
 
