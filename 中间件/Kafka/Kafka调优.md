@@ -190,4 +190,4 @@ kafka的顺序消费使用场景不多，因为牺牲掉了性能，但是比如
 
 ## 附录：Kafka常用配置
 
-![kafka配置图，来自http://shixinke.com/java/kafka-configuration](https://cdn.fengxianhub.top/resources-master/202210301651683.png)
+![Kafka常用配置](https://cdn.fengxianhub.top/resources-master/202210301651683.png)
