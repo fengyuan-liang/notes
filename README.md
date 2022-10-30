@@ -68,7 +68,7 @@
 **MQ**
 
 - [RabbitMQ基本使用](/SpringCloud/黑马SpringCloud-阿里巴巴/3-RabbitMQ.md)    |   [RabbitMQ高级特性](/SpringCloud/黑马SpringCloud-阿里巴巴/11-RabbitMQ-高级篇.md)
-- [Kafka基本使用](/中间件/Kafka/Kafka.md)  
+- [Kafka基本使用](/中间件/Kafka/Kafka.md)  |  [Kafka调优](/中间件/Kafka/Kafka调优.md) 
 
 **ElasticSearch**
 

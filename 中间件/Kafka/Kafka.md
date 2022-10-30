@@ -1,5 +1,7 @@
 # Kafka
 
+![Kafka](https://cdn.fengxianhub.top/resources-master/202210302052683.png)
+
 ## 1. 初识MQ
 
 ### 1.1.同步和异步通讯
@@ -604,12 +606,12 @@ services:
  log.dir=/usr/local/data/kafka-logs-2
 ```
 
-- 通过命令来启动三台broker
+- 通过命令来启动三台broker（单独在三个窗口启动）
 
 ```
- sh kafka-server-start.sh -daemon ../config/server.properties \
- && sh kafka-server-start.sh -daemon ../config/server2.properties \
- && sh kafka-server-start.sh -daemon ../config/server3.properties 
+sh kafka-server-start.sh -daemon ../config/server.properties 
+sh kafka-server-start.sh -daemon ../config/server2.properties 
+sh kafka-server-start.sh -daemon ../config/server3.properties 
 ```
 
 - 校验是否启动成功
@@ -774,7 +776,7 @@ sh kafka-topics.sh \
 #### 5.4.1 向集群发送消息
 
 ```shell
-./kafka-console-producer.sh --broker-list localhost:9092,localhost:9093,localhost:9094 --topic my-replicated-topic
+./kafka-console-producer.sh --broker-list node1:9092,node1:9093,node1:9094 --topic my-replicated-topic
 ```
 
 #### 5.4.2 从集群中消费消息
@@ -789,7 +791,7 @@ sh kafka-topics.sh \
 #### 5.4.3 指定消费组来消费消息
 
 ```shell
-./kafka-console-consumer.sh --bootstrap-server localhost:9092,localhost:9093,localhost:9094 --from-beginning --consumer-property group.id=testGroup1 --topic my-replicated-topic
+./kafka-console-consumer.sh --bootstrap-server node1:9092,node1:9093,node1:9094 --from-beginning --consumer-property group.id=testGroup1 --topic my-replicated-topic
 ```
 
 > 这里有一个细节，结合上面的`单播消息`我们很容易可以想到下面的这种情况，因为一个`Partition`只能被一个`consumer Group`里面的一个`consumer`，所有很容易就可以形成`组内单播`的现象，即：
@@ -1011,8 +1013,6 @@ import java.util.Arrays;
 import java.util.Properties;
 
 public class MySimpleConsumer {
-
-
   private final static String TOPIC_NAME = "my-replicated-topic";
   private final static String CONSUMER_GROUP_NAME = "testGroup";
 
@@ -1027,20 +1027,18 @@ public class MySimpleConsumer {
     KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
     //2. 消费者订阅主题列表
     consumer.subscribe(Arrays.asList(TOPIC_NAME));
-
-    while (true) {
-      /*
-       * 3.poll() API 是拉取消息的长轮询
-       */
-      ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
-      for (ConsumerRecord<String, String> record : records) {
-        //4.打印消息
-        System.out.printf("收到消息：partition = %d,offset = %d, key = %s, value = %s%n", record.partition(),
-          record.offset(), record.key(), record.value());
-      }
-    }
+   while (true) {
+            /*
+             * 3.poll() API 是拉取消息的长轮询
+             */
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+            for (ConsumerRecord<String, String> record : records) {
+                //4.打印消息
+                System.out.printf("收到消息：partition = %d,offset = %d, key = %s, value = %s%n", record.partition(),
+                        record.offset(), record.key(), record.value());
+            }
+            
   }
-
 }
 
 ```
@@ -1062,7 +1060,7 @@ props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
 props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
 ```
 
-注意：自动提交会丢消息。因为消费者在消费前提交offset，有可能提交完后还没消费时消费者挂了。
+注意：自动提交会丢消息。因为消费者将消息poll下来后可能还没来得及进行消费就挂了，但是ack是poll完消息就提交了，所以会丢消息
 
 ### 3）手动提交
 
@@ -1098,8 +1096,6 @@ props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
     }
   ```
 
-  
-
 - 手动异步提交
 
   在消息消费完后提交，不需要等到集群ack，直接执行之后的逻辑，可以设置一个回调方法，供集群调用
@@ -1115,8 +1111,7 @@ props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
             record.offset(), record.key(), record.value());
         }
         //所有的消息已消费完
-        if (records.count() > 0) {
-  
+        if (records.count() > 0) { 
           // 手动异步提交offset，当前线程提交offset不会阻塞，可以继续处理后面的程序逻辑
           consumer.commitAsync(new OffsetCommitCallback() {
             @Override
@@ -1127,15 +1122,14 @@ props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
               }
             }
           });
-  
         }
       }
     }
   ```
-
+  
   
 
-## 3.长轮询poll消息
+## 3. 长轮询poll消息
 
 - 默认情况下，消费者一次会poll500条消息。
 
@@ -1160,34 +1154,70 @@ props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500);
 
 意味着：
 
-- - 如果一次poll到500条，就直接执行for循环
-  - 如果这一次没有poll到500条。且时间在1秒内，那么长轮询继续poll，要么到500条，要么到1s
-  - 如果多次poll都没达到500条，且1秒时间到了，那么直接执行for循环
-- 如果两次poll的间隔超过30s，集群会认为该消费者的消费能力过弱，该消费者被踢出消费组，触发rebalance机制，rebalance机制会造成性能开销。可以通过设置这个参数，让一次poll的消息条数少一点
+>- 如果一次poll到500条，就直接执行for循环
+>- 如果这一次没有poll到500条。且时间在1秒内，那么长轮询继续poll，要么到500条，要么到1s
+>- 如果多次poll都没达到500条，且1秒时间到了，那么直接执行for循环
+
+>如果两次poll的间隔超过30s，集群会认为该消费者的消费能力过弱，该消费者被踢出消费组，触发`rebalance`机制，`rebalance`机制会造成性能开销。可以通过设置这个参数，让一次poll的消息条数少一点
 
 ```java
-  //一次poll最大拉取消息的条数，可以根据消费速度的快慢来设置
-    props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500);
-    //如果两次poll的时间如果超出了30s的时间间隔，kafka会认为其消费能力过弱，将其踢出消费组。将分区分配给其他消费者。-rebalance
-    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 30 * 1000);
+// 一次poll最大拉取消息的条数，可以根据消费速度的快慢来设置
+props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500);
+// 如果两次poll的时间如果超出了30s的时间间隔，kafka会认为其消费能力过弱，将其踢出消费组。将分区分配给其他消费者。-rebalance
+props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 30 * 1000);
 ```
 
+我们可以想一想为什么`kafka`要这么做，这个其实和之前的send消息的时候一样，send消息的时候我们也有两个参数`batch.size`和`linger.ms`，当我们要发送的数据达到`16KB`或者超过`linger.ms`时间才会把消息发送出去
 
+这里消费者消费消息也是同理，通过长轮询`poll`消息，保证每次处理的消息默认至少为`500`条，这样都是为了增加吞吐量
 
-## 4.消费者的健康状态检查
+**总结一下过程**：
 
-消费者每隔1s向kafka集群发送心跳，集群发现如果有超过10s没有续约的消费者，将被踢出消费组，触发该消费组的rebalance机制，将该分区交给消费组里的其他消费者进行消费。
+- 消费者建立了与broker之间的长连接，开始poll消息。
+- 默认一次poll500条消息（如果消费能力弱可以设置小一点，防止被踢出集群）
+
+```
+ props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500);
+```
+
+可以根据消费速度的快慢来设置，因为如果两次poll的时间如果超出了30s的时间间隔，kafka会认为其消费能力过弱，将其踢出消费组。将分区分配给其他消费者。
+
+可以通过这个值进行设置：
+
+```
+ props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 30 * 1000);
+```
+
+- 如果每隔1s内没有poll到任何消息，则继续去poll消息，循环往复，直到poll到消息。如果超出了1s，则此次长轮询结束。
+
+```
+ ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+```
+
+- 消费者发送心跳的时间间隔
+
+```
+ props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 1000);
+```
+
+- kafka如果超过10秒没有收到消费者的心跳，则会把消费者踢出消费组，进行rebalance，把分区分配给其他消费者。
+
+```
+ props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10 * 1000);
+```
+
+## 4. 消费者的健康状态检查
+
+消费者每隔`1s`向kafka集群发送心跳，集群发现如果有超过10s没有续约的消费者，将被踢出消费组，触发该消费组的`rebalance`机制，将该分区交给消费组里的其他消费者进行消费。
 
 ```java
 //consumer给broker发送心跳的间隔时间
-    props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 1000);
-    //kafka如果超过10秒没有收到消费者的心跳，则会把消费者踢出消费组，进行rebalance，把分区分配给其他消费者。
-    props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10 * 1000);
+props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 1000);
+//kafka如果超过10秒没有收到消费者的心跳，则会把消费者踢出消费组，进行rebalance，把分区分配给其他消费者。
+props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10 * 1000);
 ```
 
-
-
-## 5.指定分区和偏移量、时间消费
+## 5. 指定分区和偏移量、时间消费
 
 - 指定分区消费
 
@@ -1195,7 +1225,7 @@ props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500);
 consumer.assign(Arrays.asList(new TopicPartition(TOPIC_NAME, 0)));
 ```
 
-- 从头消费
+- 从头消费（回溯消费）
 
 ```java
 consumer.assign(Arrays.asList(new TopicPartition(TOPIC_NAME, 0)));
@@ -1238,7 +1268,7 @@ List<PartitionInfo> topicPartitions = consumer.partitionsFor(TOPIC_NAME);
 
 ```
 
-## 6.新消费组的消费offset规则
+## 6. 新消费组的消费offset规则
 
 新消费组中的消费者在启动以后，默认会从当前分区的最后一条消息的offset+1开始消费（消费新消息）。可以通过以下的设置，让新的消费者第一次从头开始消费。之后开始消费新消息（最后消费的位置的偏移量+1）
 
@@ -1253,39 +1283,38 @@ props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
 # 八、Springboot中使用Kafka
 
-## 1.引入依赖
+## 1. 引入依赖
 
 ```xml
 <dependency>
       <groupId>org.springframework.kafka</groupId>
       <artifactId>spring-kafka</artifactId>
-    </dependency>
+</dependency>
 ```
 
-## 2.编写配置文件
+## 2. 编写配置文件
 
 ```yml
 server:
   port: 8080
-
 spring:
   kafka:
     bootstrap-servers: 172.16.253.38:9092,172.16.253.38:9093,172.16.253.38:9094
     producer: # 生产者
       retries: 3 # 设置大于0的值，则客户端会将发送失败的记录重新发送
-      batch-size: 16384
-      buffer-memory: 33554432
-      acks: 1
+      batch-size: 16384 # 每次发送时多少一批次 这里设置的是16kb
+      buffer-memory: 33554432 # 设置内存缓存区32Mb
+      acks: 1 # leader收到消息后就返回ack
       # 指定消息key和消息体的编解码方式
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     consumer:
-      group-id: default-group
-      enable-auto-commit: false
-      auto-offset-reset: earliest
+      group-id: default-group # 组内单播，组间广播
+      enable-auto-commit: false # 关闭消费自动提交
+      auto-offset-reset: earliest # 新消费组启动会从头信息消费
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      max-poll-records: 500
+      max-poll-records: 500 # 每次长轮询拉取多少条消息
     listener:
       # 当每一条记录被消费者监听器（ListenerConsumer）处理之后提交
       # RECORD
@@ -1309,7 +1338,7 @@ spring:
 
 
 
-## 3.编写消息生产者
+## 3. 编写消息生产者
 
 ```java
 package com.qf.kafka.spring.boot.demo.controller;
@@ -1336,17 +1365,13 @@ public class MyKafkaController {
     return "send success!";
 
   }
-
-
-
-
 }
 
 ```
 
 
 
-## 4.编写消费者
+## 4. 编写消费者
 
 ```java
 package com.qf.kafka.spring.boot.demo.consumer;
@@ -1373,6 +1398,12 @@ public class MyConsumer {
 
 ```
 
+这里细心的同学可能会注意到，我们在手动进行`poll`消息的时候，是拿到一批消息`ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000))`，但是上面的代码好像并没有去拿一批记录，这样是简写的写法，其实也可以拿一批记录
+
+![image-20221030002727397](https://cdn.fengxianhub.top/resources-master/202210300027808.png)
+
+只是这样我们需要for循环去处理消息，不太优雅，所以可以交给spring给我们循环消息，我们专注处理一条消息即可
+
 ## 5.消费者中配置消费主题、分区和偏移量
 
 ```java
@@ -1395,33 +1426,35 @@ public class MyConsumer {
 
 # 九、kafka集群中的controller、rebalance、HW
 
-## 1.controller
+## 1. controller
 
-- 集群中谁来充当controller
+什么是controller呢？其实就是集群中的一个broker，当集群中的leader挂掉时需要controller来组织进行选举
 
-每个broker启动时会向zk创建一个临时序号节点，获得的序号最小的那个broker将会作为集群中的controller，负责这么几件事：
+那么集群中谁来充当controller呢？
 
-- 当集群中有一个副本的leader挂掉，需要在集群中选举出一个新的leader，选举的规则是从isr集合中最左边获得。
-- 当集群中有broker新增或减少，controller会同步信息给其他broker
-- 当集群中有分区新增或减少，controller会同步信息给其他broker
+>**每个broker启动时会向zk创建一个临时序号节点**，获得的序号最小的那个broker将会作为集群中的controller，负责这么几件事：
+>
+>- 当集群中有一个副本的leader挂掉，需要在集群中选举出一个新的leader，选举的规则是从`isr集合`中最左边获得
+>- 当集群中有broker新增或减少，controller会同步信息给其他broker
+>- 当集群中有分区新增或减少，controller会同步信息给其他broker
 
 
 
-## 2.rebalance机制
+## 2. rebalance机制
 
-- 前提：消费组中的消费者没有指明分区来消费
+- 前提：**消费组中的消费者没有指明分区来消费**
 
-- 触发的条件：当消费组中的消费者和分区的关系发生变化的时候
+- 触发的条件：**当消费组中的消费者和分区的关系发生变化的时候**
 
 - 分区分配的策略：在rebalance之前，分区怎么分配会有这么三种策略
 
-  - range：根据公示计算得到每个消费消费哪几个分区：前面的消费者是分区总数/消费者数量+1,之后的消费者是分区总数/消费者数量
+  - range：根据公式计算得到每个消费者消费哪几个分区：第一个消费者是`（分区总数 / 消费者数量 ）+1`，之后的消费者是分区总数/消费者数量（假设 n＝分区数／消费者数量 = 2， m＝分区数%消费者数量 = 1，那么前 m 个消费者每个分配 n+1 个分区，后面的（消费者数量－m ）个消费者每个分配 n 个分区）
   - 轮询：大家轮着来
-  - sticky：粘合策略，如果需要rebalance，会在之前已分配的基础上调整，不会改变之前的分配情况。如果这个策略没有开，那么就要进行全部的重新分配。建议开启。
+  - sticky：粘合策略，如果需要rebalance，会在之前已分配的基础上调整，不会改变之前的分配情况。如果这个策略没有开，那么就要进行全部的重新分配。建议开启
 
   
 
-## 3.HW和LEO
+## 3. HW和LEO
 
 LEO是某个副本最后消息的消息位置（log-end-offset）
 
@@ -1433,14 +1466,12 @@ HW是已完成同步的位置。消息在写入broker时，且每个broker完成
 
 # 十、Kafka中的优化问题
 
-## 1.如何防止消息丢失
+## 1. 如何防止消息丢失
 
 - 生产者：1）使用同步发送 2）把ack设成1或者all，并且设置同步的分区数>=2
 - 消费者：把自动提交改成手动提交
 
-
-
-## 2.如何防止重复消费
+## 2. 如何防止重复消费
 
 在防止消息丢失的方案中，如果生产者发送完消息后，因为网络抖动，没有收到ack，但实际上broker已经收到了。
 
@@ -1461,16 +1492,20 @@ HW是已完成同步的位置。消息在写入broker时，且每个broker完成
 
 ![截屏2021-08-24 上午11.48.06](https://cdn.fengxianhub.top/resources-master/202210260102527.png)
 
-## 3.如何做到消息的顺序消费
+## 3. 如何做到消息的顺序消费
 
-- 生产者：保证消息按顺序消费，且消息不丢失——使用同步的发送，ack设置成非0的值。
-- 消费者：主题只能设置一个分区，消费组中只能有一个消费者
+其实我们知道在发送消息的时候我们可以通过设置key来指定发送的分区，所以首先我们一定要指定key然后发到同一个分区
+
+![image-20221030160545934](https://cdn.fengxianhub.top/resources-master/202210301605482.png)
+
+- 生产者：使用同步的发送，并且通过设置key指定路由策略，只发送到一个分区中；ack设置成非0的值。
+- 消费者：主题只能设置一个分区，消费组中只能有一个消费者；不要设置异步线程防止异步导致的乱序，或者设置一个阻塞队列进行异步消费
 
 kafka的顺序消费使用场景不多，因为牺牲掉了性能，但是比如rocketmq在这一块有专门的功能已设计好。
 
 
 
-## 4.如何解决消息积压问题
+## 4. 如何解决消息积压问题
 
 ![截屏2021-08-24 下午2.30.44](https://cdn.fengxianhub.top/resources-master/202210260102574.png)
 
@@ -1491,13 +1526,11 @@ kafka的顺序消费使用场景不多，因为牺牲掉了性能，但是比如
 
 
 
-## 5.实现延时队列的效果
+## 5. 	实现延时队列的效果
 
 ### 1）应用场景
 
 订单创建后，超过30分钟没有支付，则需要取消订单，这种场景可以通过延时队列来实现
-
-
 
 ### 2）具体方案
 
