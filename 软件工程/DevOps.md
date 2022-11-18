@@ -1719,14 +1719,20 @@ Kubernetes 搭建需要至少两个节点，一个Master负责管理，一个Sla
   # 只在 master 节点执行
   # 替换 x.x.x.x 为 master 节点实际 IP（请使用内网 IP）
   # export 命令只在当前 shell 会话中有效，开启新的 shell 窗口后，如果要继续安装过程，请重新执行此处的 export 命令
-  export MASTER_IP=192.168.11.32
+  export MASTER_IP=172.16.1.18
   # 替换 apiserver.demo 为 您想要的 dnsName
-  export APISERVER_NAME=apiserver.demo
+  export APISERVER_NAME=cn.hnit
   # Kubernetes 容器组所在的网段，该网段安装完成后，由 kubernetes 创建，事先并不存在于您的物理网络中
   export POD_SUBNET=10.100.0.1/16
   echo "${MASTER_IP}    ${APISERVER_NAME}" >> /etc/hosts
   curl -sSL https://kuboard.cn/install-script/v1.19.x/init_master.sh | sh -s 1.19.5
   ```
+
+  ```java
+  yum install -y kubelet-1.18.0 kubeadm-1.18.0 kubectl-1.18.0
+  ```
+
+  
 
 - 检查Master启动状态
 
@@ -1829,7 +1835,7 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documen
 - 输出结果如下所示：
 
   ```sh
-  [root@k8smaster ~]# kubectl get nodes
+  kubectl apply -f
   ```
 
   |                         搭建成功效果                         |
@@ -2010,6 +2016,7 @@ Deployment部署实现
   apiVersion: apps/v1
   kind: Deployment
   metadata:
+    namespace: test
     name: nginx-deployment
     labels:
       app: nginx
@@ -2025,12 +2032,18 @@ Deployment部署实现
       spec:
         containers:
         - name: nginx
-         image: nginx
+         image: nginx:1.9.1
          ports:
          - containerPort: 80
   ```
-
+  
   正常使用kubectl运行yaml即可
+  
+  ```java
+  kubectl apply -f deployment-nginx.yml
+  ```
+  
+  
 
 弹性伸缩功能
 
