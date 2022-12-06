@@ -6,7 +6,7 @@
 >
 >这里有两种常用的方法，推荐使用第一种：
 >
->- 参考雪花算法，用41位表示时间戳在低位，22位表示score在高位，这样当score相等时才会用时间戳比较，优点是可以拿到时间戳，缺点是22位只能存到417万，超出就需要压缩时间戳bit位了；当然有更多的维度可以继续拆分bit位
+>- 参考雪花算法，用41位表示时间戳在低位，22位表示score在高位，这样当score相等时才会用时间戳比较，优点是可以拿到时间戳，缺点是22位只能存到417万，超出就需要压缩时间戳bit位了（本文中需要至少存到百亿，需要26个bit）；当然有更多的维度可以继续拆分bit位
 >- 用时间戳当做被除数，然后用一个标准值（例如`1000d`）除，得到一个小数放到score的小数部分，这样的话也是时间戳越小的小数部分越大，同样满足需求。这样的好处是方便，坏处是因为浮点数会进度丢失拿不到时间戳了，并且并发情况下由于得到的浮点数会精度丢失会导致排序不稳定，出现错排的情况
 
 ## 1. 分段bit位实现排序
@@ -33,18 +33,21 @@
 
 ![image-20221204225430513](https://cdn.fengxianhub.top/resources-master/202212042254753.png)
 
-
+核心代码如下
 
 ```java
- // 高位存15 低位存14
+/*** 64bit全为1的数，用来做移位操作 **/  
+private static final long FACTORS = 0xFFFFFFFFFFFFFFFFL;
+// 高位存数字15 低位存数字14
 long score = 0L;
 score = (score | 15) << 41;
 // 低32位存14
 score = score | 14;
 // 取出低32位存的值
-System.out.println((int) ((factors )  & score));
+System.out.println((int) ((FACTORS )  & score));
 // 取出高32位存的值
-System.out.println((int) (((factors << 32) & score) >> 32));
+System.out.println((int) (((FACTORS << 32) & score) >> 32));
+// 也可以这样 (long) score >>> 32
 ```
 
 
