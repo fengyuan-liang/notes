@@ -64,7 +64,7 @@ System.out.println((int) (((FACTORS << 32) & score) >> 32));
 
 ```java
 public void increaseRankNum(long uid, int ponit) {  
-    long startTime = SystemClock.now();  
+    long startTime = System.currentTimeMillis();  
     double baseScore = 1000000d;  
     double suffixScore = baseScore / startTime;  
     redisTemplate.opsForZSet().incrementScore(key, String.valueOf(uid), suffixScore + ponit);
@@ -97,7 +97,6 @@ public void increaseRankNum(long uid, int ponit) {
 import cn.hutool.core.collection.CollUtil;  
 import cn.hutool.core.date.SystemClock;  
 import com.google.common.collect.Maps;  
-import com.xhhd.utils.exception.AppException;  
 import lombok.extern.slf4j.Slf4j;  
 import org.springframework.dao.DataAccessException;  
 import org.springframework.data.redis.core.RedisOperations;  
@@ -279,7 +278,7 @@ public class RankOperator {
                         // noting to do ...  
                     } finally {  
                         if (atomicInteger.decrementAndGet() < 0) {  
-                            throw AppException.pop("投票失败，请联系客服");  
+                            throw new RuntimeException("投票失败，请联系客服");  
                         }  
                     }                } while (result == null);  
                 return null;            }  
