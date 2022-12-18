@@ -1001,6 +1001,7 @@ Harbor作为镜像仓库，主要的交互方式就是将镜像上传到Harbor�
 
   ```sh
   docker login -u 用户名 -p 密码 Harbor地址
+  docker login -u  admin -p anMnKB2Jb0Ak51P30vfsAOP5chL7WBB7g7gerCBH1ni6wQUi9Tt 192.168.30.17:9052
   ```
 
 - 推送镜像到Harbor
@@ -1020,6 +1021,13 @@ Harbor作为镜像仓库，主要的交互方式就是将镜像上传到Harbor�
         "insecure-registries": ["192.168.11.11:80"]
 }
 ```
+
+重新加载
+
+```java
+```
+
+
 
 |                           拉取镜像                           |
 | :----------------------------------------------------------: |
@@ -1067,8 +1075,8 @@ Harbor作为镜像仓库，主要的交互方式就是将镜像上传到Harbor�
 ```java
 mv target/*.jar docker/
 docker build -t jenkinsapp:$tag docker/
-docker login -u admin -p anMnKB2Jb0Ak51P30vfsAOP5chL7WBB7g7gerCBH1ni6wQUi9Tt 192.168.2.13:9052
-docker tag jenkinsapp:$tag 192.168.2.13:9052/repo/jenkinsapp:$tag
+docker login -u admin -p anMnKB2Jb0Ak51P30vfsAOP5chL7WBB7g7gerCBH1ni6wQUi9Tt 192.168.30.17:9052
+docker tag jenkinsapp:$tag 192.168.30.17:9052/repo/jenkinsapp:$tag
 docker push 192.168.2.13:9052/repo/jenkinsapp:$tag
 ```
 
@@ -1728,6 +1736,8 @@ Kubernetes 搭建需要至少两个节点，一个Master负责管理，一个Sla
   curl -sSL https://kuboard.cn/install-script/v1.19.x/init_master.sh | sh -s 1.19.5
   ```
 
+  yum安装
+
   ```java
   yum install -y kubelet-1.18.0 kubeadm-1.18.0 kubectl-1.18.0
   ```
@@ -1842,6 +1852,22 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documen
   | :----------------------------------------------------------: |
   | ![image-20211210184851810](https://cdn.fengxianhub.top/resources-master/202205091418882.png) |
 
+>安装看这篇文章：
+>
+>- 安装：https://blog.csdn.net/weixin_53072519/article/details/126199138
+>- 卸载：https://blog.csdn.net/weixin_40161254/article/details/112004106
+>
+>这里有个坑，最后面的`8. 部署 CNI 网络插件`部署会有问题，可以部署这个
+>
+>- https://blog.csdn.net/m0_61237221/article/details/125217833
+>
+>删除
+>
+>- kubectl delete -f https://docs.projectcalico.org/v3.10/manifests/calico.yaml
+>
+>安装完后安装`Kuboard`就行
+>
+>- kubectl apply -f https://addons.kuboard.cn/kuboard/kuboard-v3.yaml
 
 安装Kuboard管理K8s集群
 
@@ -1940,10 +1966,13 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documen
     # 进去pod容器内部
     kubectl exec -it pod名称 -- bash
     
+    # 指定ns
+    kubectl exec -it nginx  -n test -- base
+    
     # 查看kubernetes给Pod分配的ip信息，并且通过ip和容器的端口，可以直接访问
     kubectl get pod -owide
     ```
-
+    
   * yaml方式（推荐）
     ```yaml
     apiVersion: v1
@@ -1961,9 +1990,9 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documen
     # 启动Pod：kubectl apply -f yaml文件名称
     # 删除Pod：kubectl delete -f yaml文件名称
     ```
-
+  
   * Pod中运行多个容器
-
+  
     ```yml
     apiVersion: v1
     kind: Pod
@@ -1980,9 +2009,9 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documen
         name: 容器名称
     …………    
     ```
-
+  
     启动后可以查看到
-
+  
     |                         Kuboard效果                          |
     | :----------------------------------------------------------: |
     | ![image-20220104203155749](https://cdn.fengxianhub.top/resources-master/202205091418094.png) |
@@ -2032,9 +2061,9 @@ Deployment部署实现
       spec:
         containers:
         - name: nginx
-         image: nginx:1.9.1
-         ports:
-         - containerPort: 80
+          image: nginx:latest
+          ports:
+          - containerPort: 80
   ```
   
   正常使用kubectl运行yaml即可
