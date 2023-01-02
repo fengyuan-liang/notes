@@ -1385,9 +1385,69 @@ func main() {
 }
 ```
 
-### 2.17.3 结构体指针
+### 2.18 结构体指针
 
+结构体指针和普通的变量指针相同，我们可以先回顾一下普通变量的指针，例如：
 
+```go
+package main
+
+import "fmt"
+
+func main() {
+	test2()
+}
+
+func test2() {
+	type Person struct {
+		id, age int
+		name string
+	}
+	tom := Person {
+		id : 101,
+		age : 18,
+		name: "tom",
+	}
+	var p_person *Person
+	p_person = &tom 
+	fmt.Printf("tom: %v\n", tom) // tom: {101 18 tom}
+	fmt.Printf("p_person: %T\n", p_person) // p_person: *main.Person
+	fmt.Printf("p_person: %v\n", p_person) // p_person: &{101 18 tom}
+}
+
+func test1() {
+	var name string
+	name = "tom"
+	var p_name *string
+	p_name = &name
+	fmt.Printf("name: %v\n", name) // name: tom
+	fmt.Printf("p_name: %T\n", p_name) // p_name: *string
+	fmt.Printf("p_name: %v\n", *p_name) // p_name: tom
+}
+```
+
+#### 2.18 .1 new关键字创建结构体指针
+
+我们可以通过`new`关键字创建一个结构体指针（有时候不想创建一个有名字的结构体变量，此时用new）
+
+```go
+type Person struct {
+	id, age int
+	name string
+}
+
+func main() {
+	test3()
+}
+
+func test3() {
+	var tom = new(Person)
+	tom.id = 101
+	fmt.Printf("tom: %v\n", tom) // tom: &{101 0 }
+}
+```
+
+#### 2.18 .2 golang结构体作为函数参数
 
 
 
