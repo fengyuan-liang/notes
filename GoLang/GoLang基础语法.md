@@ -14,3 +14,1386 @@
 
 - [Go 教程_w3cschool](https://www.w3cschool.cn/go/)
 - [Go语言入门教程，Golang入门教程（非常详细） (biancheng.net)](http://c.biancheng.net/golang/)
+
+在安装完GO的环境之后需要设置一些环境
+
+我们可以先查看自己的环境
+
+```go
+$ go env
+set GO111MODULE=on
+set GOARCH=amd64
+set GOBIN=
+set GOCACHE=C:\Users\hw\AppData\Local\go-build
+set GOENV=C:\Users\hw\AppData\Roaming\go\env
+set GOEXE=.exe
+set GOEXPERIMENT=
+set GOFLAGS=
+set GOHOSTARCH=amd64
+set GOHOSTOS=windows
+set GOINSECURE=
+set GOMODCACHE=D:\Environment\Go\go1.17.7\pkg\mod
+set GONOPROXY=
+set GONOSUMDB=
+set GOOS=windows
+set GOPATH=D:\Environment\Go\go1.17.7
+set GOPRIVATE=
+set GOPROXY=https://proxy.golang.org,direct
+set GOROOT=D:\Environment\Go\go1.17.7
+set GOSUMDB=sum.golang.org
+set GOTMPDIR=
+set GOTOOLDIR=D:\Environment\Go\go1.17.7\pkg\tool\windows_amd64
+set GOVCS=
+set GOVERSION=go1.17.7
+set GCCGO=gccgo
+set AR=ar
+set CC=gcc
+set CXX=g++
+set CGO_ENABLED=1
+set GOMOD=NUL
+set CGO_CFLAGS=-g -O2
+set CGO_CPPFLAGS=
+set CGO_CXXFLAGS=-g -O2
+set CGO_FFLAGS=-g -O2
+set CGO_LDFLAGS=-g -O2
+set PKG_CONFIG=pkg-config
+set GOGCCFLAGS=-m64 -mthreads -fno-caret-diagnostics -Qunused-arguments -fmessage-length=0 -fdebug-prefix-map=C:\Users\hw\AppData\Local\Temp\go-build404222129=/tmp/go-build -gno-record-gcc-switches
+```
+
+需要设置以下两个（win用户请使用`powershell`）
+
+```go
+# 使用go module管理依赖 1.19后默认开启
+go env -w GO111MODULE=on
+# 设置代理，防止墙导致下不到包
+go env -w GOPROXY="http://goproxy.cn"
+```
+
+
+
+## 1. Go相关命令
+
+直接在终端中输入 `go help` 即可显示所有的 go 命令以及相应命令功能简介，主要有下面这些:
+
+- build: 编译包和依赖
+- clean: 移除对象文件
+- doc: 显示包或者符号的文档
+- env: 打印go的环境信息
+- bug: 启动错误报告
+- fix: 运行go tool fix
+- fmt: 运行gofmt进行格式化
+
+## 2. 基础语法
+
+### 2.1 常量之iota
+
+iota，特殊常量，可以认为是一个可以被编译器修改的常量。
+
+在每一个`const`关键字出现时，被重置为0，然后再下一个`const`出现之前，每出现一次`iota`，其所代表的数字会自动增加1
+
+```go
+const (
+    a = iota
+    b = iota
+    c = iota
+)
+fmt.Printf("a: %v\n", a)
+fmt.Printf("b: %v\n", b)
+fmt.Printf("c: %v\n", c)
+// 输出
+a: 0
+b: 1
+c: 2
+```
+
+第一个 iota 等于 0，每当 iota 在新的一行被使用时，它的值都会自动加 1；所以 a=0, b=1, c=2 可以简写为如下形式：
+
+```go
+const (
+    a = iota
+    b
+    c
+)
+```
+
+再看一下下面的操作（中间插队）
+
+```go
+const (
+    a = iota   //0
+    b          //1
+    c          //2
+    d = "ha"   //独立值，iota += 1
+    e          //"ha"   iota += 1
+    f = 100    //iota +=1
+    g          //100  iota +=1
+    h = iota   //7,恢复计数
+    i          //8
+)
+fmt.Println(a,b,c,d,e,f,g,h,i) // 0 1 2 ha ha 100 100 7 8
+```
+
+当然当常量出现但是我们不想要自增的时候可以用下划线`_`来避免自增
+
+```go
+const (
+	a1 = iota
+	_ // 下划线可以跳过一次自增
+	a2 = iota
+)
+fmt.Printf("a1: %v\n", a1)
+fmt.Printf("a2: %v\n", a2)
+// a1: 0 a2: 2
+```
+
+### 2.2 数据类型
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// 基本类型
+	var name string = "eureka"
+	age := 20
+	b := true
+	fmt.Printf("%T\n", name) // string
+	fmt.Printf("%T\n", age) // int
+	fmt.Printf("%T\n", b) // bool
+
+	// 指针类型
+	a := 100
+	p := &a
+	fmt.Printf("%T\n", p) // *int
+
+	// 数组类型
+	arr := [2]int {1, 2}
+	fmt.Printf("%T\n", arr) // [2]int
+
+	// 切片类型
+	arr2 := []int {1, 2}
+	fmt.Printf("%T\n", arr2) // []int
+
+	// 函数类型
+	fmt.Printf("%T\n", func1) // func() (string, int)
+}
+
+func func1() (name string , age int) {
+	return "张三", 18
+}
+```
+
+### 2.3 number类型
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 2.4 string类型
+
+```go
+package main
+
+import (
+	"bytes"
+	"fmt"
+	"strings"
+)
+
+func main() {
+	var s string = "hello world"
+	var s1 = "hello world"
+	s3 := "hello world"
+	fmt.Printf("s: %v\n", s)
+	fmt.Printf("s1: %v\n", s1)
+	fmt.Printf("s3: %v\n", s3)
+
+	// 多行字符串
+	s4 := `
+		line 1
+		line 2
+		line 3
+	`
+	fmt.Printf("s4: %v\n", s4)
+
+	// 字符串的连接
+	s5 := "tom"
+	s6 := "20"
+	s7 := s5 + s6
+	fmt.Printf("s7: %v\n", s7)
+
+	// 使用strings.Join进行连接
+	s2 := strings.Join([]string{s5, s6}, ",")
+	fmt.Printf("s2: %v\n", s2)
+
+	// 使用buffer进行连接，效率比较高
+	var buffer bytes.Buffer
+	buffer.WriteString("tom")
+	buffer.WriteString(",")
+	buffer.WriteString("20")
+	fmt.Printf("buffer.String(): %v\n", buffer.String())
+
+	// 转义字符
+	s8 := "hello \n world"
+	fmt.Printf("s8: %v\n", s8)
+
+	// =========   字符串切片   =========
+	str := "hello-world"
+	n1 := 3
+	n2 := 5
+	fmt.Printf("str[n1]: %c\n", str[n1])
+	fmt.Printf("str[n2]: %c\n", str[n2])
+	// 输出前闭后开的区间
+	fmt.Printf("str[n1:n2]: %v\n", str[n1:n2])
+	// 从n1到结束，左开
+	fmt.Printf("str[a:]: %v\n", str[n1:])
+	// 从0到n2，右闭
+	fmt.Printf("str[:n2]: %v\n", str[:n2])
+
+	// ===========  字符串常用函数  ===========
+	// 查看字符串的长度
+	fmt.Printf("len(str): %v\n", len(str))
+	// 分割数组
+	fmt.Printf("strings.Split(str, \"\"): %v\n", strings.Split(str, ""))
+	// 是否包含某个串
+	fmt.Printf("strings.Contains(str, \"hello\"): %v\n", strings.Contains(str, "hello"))
+	// 大小写转换
+	fmt.Printf("strings.ToLower(str): %v\n", strings.ToLower(str))
+	fmt.Printf("strings.ToUpper(str): %v\n", strings.ToUpper(str))
+	// 以什么开头，以什么结尾
+	fmt.Printf("strings.HasPrefix(str, \"hello\"): %v\n", strings.HasPrefix(str, "hello"))
+	fmt.Printf("strings.HasSuffix(s, \"world\"): %v\n", strings.HasSuffix(s, "world"))
+	
+}
+```
+
+```go
+[Running] go run "e:\workSpace_goLand\study\mypro\test_string.go"
+s: hello world
+s1: hello world
+s3: hello world
+s4: 
+		line 1
+		line 2
+		line 3
+	
+s7: tom20
+s2: tom,20
+buffer.String(): tom,20
+s8: hello 
+ world
+str[n1]: l
+str[n2]: -
+str[n1:n2]: lo
+str[a:]: lo-world
+str[:n2]: hello
+len(str): 11
+strings.Split(str, ""): [h e l l o - w o r l d]
+strings.Contains(str, "hello"): true
+strings.ToLower(str): hello-world
+strings.ToUpper(str): HELLO-WORLD
+strings.HasPrefix(str, "hello"): true
+strings.HasSuffix(s, "world"): true
+```
+
+### 2.5 格式化输出
+
+```go
+package main
+
+import "fmt"
+
+// 定义一个结构体
+type WebSite struct {
+	Name string
+}
+
+func main() {
+	// 使用结构体
+	site := WebSite{Name: "douke360"}
+	// %v 表示val，任意类型输出
+	fmt.Printf("site: %v\n", site)
+	// %#v输出时带包名
+	fmt.Printf("site: %#v\n", site)
+	// %T表示输出类型
+	fmt.Printf("site: %T\n", site)
+	// bool类型占位符%t
+	b := true
+	fmt.Printf("b: %t\n", b)
+}
+```
+
+### 2.6 运算符
+
+在golang中自增`i++`和自减`i--`是单独的语句，需要单独成一行
+
+![image-20221231163153423](https://cdn.fengxianhub.top/resources-master/202212311631719.png)
+
+### 2.7 for循环
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+// go中只有for循环，没有while和do while循环
+func main() {
+	f4()
+}
+
+// 普通的for循环
+func f1() {
+	for i := 0; i < 10; i++ {
+		fmt.Printf("i:%v\n", i)
+	}
+}
+
+// 缺省的for循环
+
+func f2() {
+	i := 0
+	for ; i < 10; i++ {
+		fmt.Printf("i:%v\n", i)
+	}
+}
+
+// 可以当做while来使用
+func f3() {
+	var i int = 0
+	for i < 10 {
+		fmt.Printf("i:%v\n", i)
+		i++
+	}
+}
+
+// 死循环
+func f4 () {
+	for {
+		fmt.Printf("一直循环，Now is %v\n", time.Now())
+	}
+}
+
+```
+
+>类似于Java的forEach循环的`for range`循环
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	f1()
+}
+
+func f1() {
+	// 先定义一个数组，可以加点省略长度
+	var arr = [...]int{1, 2, 3}
+	// 进行for range循环，类似于java的forEach
+	// i为索引 v为每次循环的值
+	for i, v := range arr {
+		fmt.Printf("i: %v，v：%v\n", i, v)
+	}
+}
+// 当我们不想要一个变量时可以用下划线 _ 表示是一个匿名变量
+func f2() {
+	var arr = [...]int{1, 2, 3}
+	// 使用匿名变量
+	for _, v := range arr {
+		fmt.Printf("v：%v\n", v)
+	}
+}
+// 声明切片
+func f3() {
+	var s = []int {1, 2, 3}
+	for _, v := range s {
+		fmt.Printf("v：%v\n", v)
+	}
+}
+
+// 使用标签和goto语句
+func f4() {
+    // 申明跳转的标签
+	MYLABEL:
+	for i := 0; i < 10; i++ {
+		if i >= 5 {
+            // 跳出后不会再进入循环了
+			break MYLABEL
+		}
+	}
+	fmt.Println("END...")
+}
+
+// goto 语句
+func f4() {
+	for i := 0; i < 100; i++ {
+		if i == 5 {
+			fmt.Printf("i: %v\n", i)
+			goto END
+		}
+	}
+	END:
+	fmt.Println("END ...")
+}
+```
+
+### 2.8 数组
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	f1()
+}
+
+func f1() {
+	var a1 [2]int
+	var a2 [3]string
+	var a3 [2]bool
+	fmt.Printf("a1: %T\n", a1) // a1: [2]int
+	fmt.Printf("a2: %T\n", a2) // a2: [3]string
+	fmt.Printf("a3: %v\n", a3) // a3: [false false]
+	// 初始化列表，如果缺了会补默认值
+	var a4 = [3]int{0, 1, 2}
+	fmt.Printf("a4:%v\n", a4) // a4:[0 1 2]
+	// 数组的长度可以省略
+	var a5 = [...]bool {true, false}
+	fmt.Printf("a5: %v\n", a5) // a5: [true false]
+	// 可以通过下标进行初始化，其他的会取默认值
+	var a6 = [...]int {0: 1, 3:5}
+	fmt.Printf("a6: %v\n", a6) // a6: [1 0 0 5]
+}
+
+```
+
+数组的遍历
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	f2()
+}
+
+func f2() {
+	// 数组的遍历 1. 根据长度和下标
+	var a1 = [3]int {1, 2, 3}
+	for i := 0; i < len(a1); i++ {
+		// 1. 通过下标进行访问
+		fmt.Printf("a1[%v]: %v\n", i, a1[i])
+	}
+	// 2. 通过for range进行遍历
+	for i,v := range a1 {
+		fmt.Printf("i: %v，v：%v\n", i, v)
+	}
+}
+
+func f1() {
+	var a1 [2]int
+	a1[0] = 100
+	a1[1] = 200
+	fmt.Println("-----------")
+	// 数组越界问题
+	fmt.Printf("a1[1]: %v\n", a1[1])
+	// 编译器会进行报错
+	// fmt.Printf("a1[3]: %v\n", a1[3])
+	// 打印数组的长度
+	fmt.Printf("len(a1): %v\n", len(a1))
+}
+```
+
+### 2.9 切片
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	f1()
+}
+
+// 数组和切片一样，也拥有以下的特性
+func f2() {
+	var s1 = []int{0, 1, 2, 3, 4}
+	// 进行切片
+	fmt.Printf("s1[0:3]: %v\n", s1[0:3]) // s2: [0 1 2]
+	// 切片是左开右闭
+	fmt.Printf("s1[3:]: %v\n", s1[3:]) // s1[3:]: [3 4]
+	fmt.Printf("s1[2:5]: %v\n", s1[2:5]) // s1[2:5]: [2 3 4]
+	// 全切
+	fmt.Printf("s1[:]: %v\n", s1[:]) // s1[:]: [0 1 2 3 4]
+}
+
+// 可以通过指定下标进行切片
+func f1() {
+	var s1 = []int{0, 1, 2, 3, 4}
+	// 进行切片
+	fmt.Printf("s1[0:3]: %v\n", s1[0:3]) // s2: [0 1 2]
+	// 切片是左开右闭
+	fmt.Printf("s1[3:]: %v\n", s1[3:]) // s1[3:]: [3 4]
+	fmt.Printf("s1[2:5]: %v\n", s1[2:5]) // s1[2:5]: [2 3 4]
+	// 全切
+	fmt.Printf("s1[:]: %v\n", s1[:]) // s1[:]: [0 1 2 3 4]
+}
+```
+
+>切片的`CRUD`
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	f3()
+}
+
+// 深拷贝和浅拷贝
+func f3() {
+	var s1 = []int {1, 2, 3, 4}
+	var s2 = []int {}
+	// 引用传递 浅拷贝
+    s2 = s1
+	s1[1] = 100
+	fmt.Printf("s2: %v\n", s2) // s2: [1 100 3 4]
+	// 深拷贝，需要先分配内存空间
+	var s3 = make([]int, 4)
+	// copy(目标，源)
+	copy(s3, s1)
+	s1[1] = 200
+	fmt.Printf("s2: %v\n", s3)
+}
+
+// query
+func query() {
+	var s1 = []int {1, 2, 3, 4}
+	for i := 0; i < len(s1); i++ {
+		fmt.Printf("s1[i]: %v\n", s1[i])
+	}
+}
+
+// update
+func update() {
+	var s1 = []int {1, 2, 3, 4}
+	s1[1] = 100
+	fmt.Printf("s1: %v\n", s1)
+}
+
+// del
+// 删除公式：a = append(a[:index], a[index + 1]...)
+func f2 () {
+	var s1 = []int {1, 2, 3, 4}
+	var s2 = []int {}
+	// ...是展开符，作用是将切片打散成个一个个元素，减少了代码量
+	s2 = append(s2, s1[:2]...)
+	s2 = append(s2, s1[3:]...)
+	fmt.Printf("s1: %v\n", s2)
+}
+
+// 可以通过append添加元素
+func f1() {
+	var s1 = []int{}
+	// 添加
+	s1 = append(s1, 100)
+	s1 = append(s1, 200)
+	s1 = append(s1, 300)
+	fmt.Printf("s1: %v\n", s1)
+}
+```
+
+### 2.10 map相关
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	test4()
+}
+
+// for Range遍历map
+func test4() {
+	var m1 = map[string]string {"name":"liang", "age":"20", "email":"liang@foxmail.com"}
+	for index, v := range m1 {
+		fmt.Printf("index: %v\n", index)
+		fmt.Printf("v: %v\n", v)
+	}
+}
+
+func test3() {
+	var m1 = map[string]string {"name":"liang", "age":"20", "email":"liang@foxmail.com"}
+	key := "name"
+	// 通过key获取value
+	fmt.Printf("m1[key]: %v\n", m1[key])
+	// 如果存在返回true 反之返回false
+	k1 := "name2"
+	v, ok := m1[k1]
+	fmt.Printf("v: %v\n", v)
+	fmt.Printf("ok: %v\n", ok)
+	fmt.Println("---------------------")
+	k2 := "name"
+	v, ok = m1[k2]
+	fmt.Printf("v: %v\n", v)
+	fmt.Printf("ok: %v\n", ok)
+}
+
+func testMap2() {
+	// 添加元素
+	// 1. 在声明的时候进行赋值
+	var m1 = map[string]string {"name":"liang", "age":"20", "email":"liang@foxmail.com"}
+	fmt.Printf("m1: %v\n", m1)
+	// 2. make分配内存之后再赋值
+	m2 := make(map[string]string)
+	m2["name"] = "tom"
+	m2["age"] = "20"
+	m2["email"] = "liang@foxmail.com"
+	fmt.Printf("m2: %v\n", m2)
+}
+
+func testMap1() {
+	var m1 map[string]string
+	m1 = make(map[string]string)
+	fmt.Printf("m1: %v\n", m1)
+	fmt.Printf("m1: %T\n", m1)
+}
+```
+
+### 2.11 函数
+
+>函数的go语言中的`一级公民`，我们把所有的功能单元都定义在函数中，可以重复使用。函数包含函数的`名称`、`参数列表`和返`回值`类型，这些构成了`函数的签名(signature)`
+
+#### 2.11.1 golang中函数特性
+
+1. go语言中有3种函数：**普通函数**、**匿名函数(没有名称的函数)**、**方法(定义在struct 上的函数)**。
+2. go语言中不允许函数重载(overload)，也就是说不允许函数同名。
+3. go语言中的函数不能嵌套函数，但可以嵌套匿名函数。
+4. 函数是一个值，可以将函数赋值给变量，使得这个变量也成为函数。
+5. 函数可以作为参数传递给另一个函数。
+6. 函数的返回值可以是一个函数。
+7. 函数调用的时候，如果有参数传递给函数，则先拷贝参数的副本，再将副本传递给函数。
+8. 函数参数可以没有名称。
+
+#### 2.11.2 函数的定义
+
+函数在使用之前必须先定义，可以调用函数来完成某个任务。函数可以重复调用，从而达到代码重用。
+
+```go
+// go中支持多返回值，所以返回参数放到后面了
+func function_name([parameter list]) [return_types] {
+    // 函数体
+}
+```
+
+**语法解析：**
+
+- `func`：函数由`func`声明
+- `function_name`：函数名称，函数名和参数列表一起构成了函数签名
+- `[parameter list]`：参数列表，参数就像一个占位符，当函数被调用时，你可以将值传递给参数，这个值被称为实际参数。参数列表指定的是参数类型、顺序以及参数个数。参数是可选的，也可以说函数也可以不包含参数
+- `[return_types]`：返回类型，函数返回一列值。`return_types`是该列值的数据类型。有些功能不需要返回值，这种情况下`return_types`就不是必须的了
+
+**举个栗子：**
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	r := sum(3, 4)
+	fmt.Printf("r: %v\n", r)
+}
+
+// 定义一个求和函数
+func sum(a int, b int) (returnValue int) {
+	returnValue = a + b
+	return returnValue
+}
+
+// 定义一个比较两个数大小的函数
+func compare(a int, b int) (max int) {
+	if a > b {
+		max = a
+	} else {
+		max = b
+	}
+	return max
+}
+// 没有返回值
+func f1() {
+	fmt.Println("没有返回值的函数...")
+}
+// 有一个返回值
+func sum2(a int, b int) (ret int) {
+	return a + b
+}
+// 多个返回值
+func f2() (name string, age int) {
+	return "张三", 18
+}
+// 有多个返回值，但是返回值名称没有被使用
+func f3()(name string, age int) {
+	name = "张三"
+	age = 18
+	return // 相当于 return name, age
+}
+// return覆盖返回值 返回值名称没有被使用
+func f4() (name string, age int) {
+	n := "张三"
+	a := 18
+	return n,a
+}
+
+```
+
+>- GO中经常会使用其中一个返回值作为函数是否执行成功，是否有错误信息的判断条件。例如`return value, exists`、`return value, ok`、`return value, err`等
+>- 当函数的返回值过多时，例如有四个以上的返回值，应该将这些返回值收集到`容器`中，然后以返回容器的方式去返回。例如，同类型的返回值可以放到`splice`中，不同类型的返回值可以放到`map`中
+>- 当函数由多个返回值时，如果其中某个或某几个返回值不想使用，可以通过下划线`_`来丢弃这些返回值
+
+#### 2.11.3 函数的参数
+
+- go语言函数可以有0或多个参数，参数需要指定数据类型。
+- 声明函数时的参数列表叫做形参，调用时传递的参数叫做实参。
+- go语言是通过传值的方式传参的，意味着传递给函数的是拷贝后的副本，所以函数内部访问、修改的也是这个副本。
+
+>go语言可以使用变长参数，有时候并不能确定参数的个数，可以使用变长参数，可以在函数定义语句的参数部分使用`ARGS ...TYPE`的方式。这时会将`...`代表的参数全部保存到一个名为`ARGS`的`slice`中，注意这些参数的数据类型都是`TYPE`。
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// 这里的sum就是实参
+	sum := sum(1, 9)
+	fmt.Printf("sum: %v\n", sum)
+	// 形参不会改变实参
+	cnt := 100
+	f1(cnt)
+	fmt.Printf("cnt: %v\n", cnt) // 100
+	// 引用类型会改变实参
+	var m1 = map[string]string{"name": "张三"}
+	f2(m1)
+	fmt.Printf("m1: %v\n", m1) // map[name:李四]
+	// 可变参数
+	f3(1, 2, 3, 4, 5)
+	// 多种类型可变长参数
+	f4("张三", false, 1, 2, 3, 4, 5)
+}
+
+// 返回值的名称可以省略
+func sum(a int, b int) int {
+	// 这里的a b就是形参
+	return a + b
+}
+
+func f1(a int) {
+	// 修改基本数据类型的形参的值并不会改变实参，这里和java不一样，java中只有值传递(传内存地址)
+	a = 200
+}
+
+// map slice interface channel这些数据类型本身就是指针类型，所以就算是拷贝值也是拷贝指针
+// 拷贝后的参数任然指向底层的数据结构，所以可能会影响实参
+func f2(m1 map[string]string) {
+	m1["name"] = "李四"
+}
+
+// 可变长参数传递
+func f3(args ...int) {
+	for _, v := range args {
+		fmt.Printf("v: %v\n", v)
+	}
+}
+
+// 多种类型的可变长参数传递
+func f4(name string, ok bool, args ...int) {
+	fmt.Printf("name: %v\n", name)
+	fmt.Printf("ok: %v\n", ok)
+	for _, v := range args {
+		fmt.Printf("v: %v\n", v)
+	}
+}
+
+```
+
+#### 2.11.4 函数类型和变量
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// ff:=sum 就没有函数类型的事了，属于函数调用，你仔细想想这其实就是多态的思想
+	type f1 func(int, int) int
+	var ff f1
+	ff = sum
+	i := ff(1, 2)
+	fmt.Printf("i: %v\n", i)
+	// 也可以赋值给max，因为函数签名是一样的
+	ff = max
+	i2 := ff(1, 2)
+	fmt.Printf("i2: %v\n", i2)
+}
+
+func sum(a int, b int) int {
+	return a + b
+}
+func max(a int, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+func test01() {
+
+}
+```
+
+#### 2.11.5 go高阶函数
+
+**go语言的函数，可以作为函数的参数，传递给另外一个函数，作为另外一个函数的返回值返回**
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	test("张三", sayHello)
+	ff := cal("+")
+	i := ff(1, 2)
+	fmt.Printf("i: %v\n", i) // i: 3
+}
+
+func sayHello(name string) {
+	fmt.Printf("Hello,%s\n", name)
+}
+
+// 函数作为参数
+func test(name string, f func(string)) {
+	f(name)
+}
+func add(a int, b int) int {
+	return a + b
+}
+
+func sub(a int, b int) int {
+	return a - b
+}
+// 函数作为返回值
+func cal(operator string) func(int, int) int {
+	switch operator {
+	case "+":
+		return add
+	case "-":
+		return sub
+	default:
+		return nil
+	}
+}
+
+```
+
+#### 2.11.6 匿名函数
+
+go语言函数不能嵌套，但是在函数内部可以定义匿名函数，实现一下简单功能调用。所谓匿名函数就是，没有名称的函数。
+
+语法格式如下：
+
+```go
+func (参数列表) (返回值)
+```
+
+>当然可以既没有参数也没有返回值
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// 匿名函数
+	max := func(a int, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	fmt.Printf("max(1, 2): %v\n", max(1, 2))
+	// 自己调用自己
+	r := func(a int, b int) int {
+		if a > b {
+			return a
+		}else {
+			return b
+		}
+	}(1, 2)
+	fmt.Printf("r: %v\n", r)
+}
+// 匿名函数的作用是在函数内部做一些运算
+func test() {
+	name := "张三"
+	age := "20"
+	f1 := func() string {
+		return name + age
+	}
+	msg := f1()
+	fmt.Printf("msg: %v\n", msg)
+}
+```
+
+#### 2.11.7 闭包
+
+闭包可以理解成定义在一个函数内部的函数。在本质上，闭包是将函数内部和函数外部连接起来的桥梁。或者说是函数和其引用环境的组合体。
+
+闭包指的是一个**函数和与其相关的引用环境组合而成的实体**。简单来说，`闭包 = 函数 + 引用环境`。
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	f := add()
+	r := f(10)
+	fmt.Printf("r: %v\n", r) // r: 10
+	r = f(20)
+	fmt.Printf("r: %v\n", r) // r: 30
+}
+
+func add() func(y int) int {
+	var x int
+    // 其实这里提示了变量x的作用域，从栈空间到堆空间了
+	return func(y int) int {
+		x += y
+		return x
+	}
+}
+```
+
+### 2.12 递归
+
+函数内部调用函数自身的函数称为递归函数。
+
+**使用递归函数最重要的三点**:
+
+>1. 递归就是自己调用自己。
+>2. 必须先定义函数的退出条件，没有退出条件，递归将成为死循环。
+>3. go语言递归函数很可能会产生一大堆的`goroutine`，也很可能会出现`栈空间内存溢出`问题。
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println(f1())
+	fmt.Printf("fibonacciSequence(10): %v\n", fibonacciSequence(10))
+}
+func f1() int {
+	s := 1
+	for i := 1; i <= 5; i++ {
+		s *= i
+	}
+	return s
+}
+
+func fibonacciSequence(n int) int {
+	// 断点判断
+	if n < 2 {
+		return 1
+	}else {
+		return fibonacciSequence(n - 1) + fibonacciSequence(n - 2)
+	}
+}
+```
+
+### 2.13 def
+
+go语言中的`defer`语句会将其后面跟随的语句进行延迟处理。在`defer`归属的函数即将返回时，将延迟处理的语句按`defer`定义的逆序进行执行，也就是说，先被`defer`的语句最后被执行，最后被`defer`的语句，最先被执行。stack
+
+#### 2.13.1 defer特性
+
+1. 关键字`defer`用于注册延迟调用
+2. 这些调用直到`return`前才会被执行，因此，可以用来做资源清理
+3. 多个`defer`语句，按照先进后出的方式执行
+4. `defer`语句中的变量，在`defer`声明时就决定了
+
+#### 2.13.2 defer用途
+
+1. 关闭文件句柄
+2. 锁资源释放
+3. 数据库连接释放
+
+**举个栗子：**
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("start...")
+	defer fmt.Println("step1...")
+	defer fmt.Println("step2...")
+	defer fmt.Println("step3...")
+	defer fmt.Println("step4...")
+	fmt.Println("end...")
+}
+```
+
+运行结果（类似于栈，先进入的后执行）：
+
+```go
+start...
+end...
+step4...
+step3...
+step2...
+step1...
+```
+
+### 2.14 init函数
+
+golang有一个特殊的函数init函数，先于main函数执行，实现包级别的一些初始化操作。
+
+#### 2.14.1 init函数特点
+
+**init函数的特点有：**
+
+1. `init`函数先于`main`函数**自动执行**，不能被其他函数调用
+2. `init`函数没有输入参数、返回值
+3. 每个包可以有多个`init`函数
+4. 包的每个源文件也可以有多个`init`函数，这点比较特殊
+5. 同一个包的`init`执行顺序，golang没有明确定义，编程时要注意程序不要依赖这个执行顺序
+6. 不同包的`init`函数按照包导入的依赖关系决定执行顺序
+
+#### 2.14.2 golang初始化顺序
+
+```go
+变量初始化  ->  init()  ->  main()
+```
+
+举个栗子：
+
+```go
+package main
+
+import "fmt"
+
+var i int = initVar()
+func main() {
+	fmt.Println("main...")
+}
+
+func init() {
+	fmt.Println("init...")
+}
+
+func initVar() int {
+	fmt.Println("initVar...")
+	return 100
+}
+```
+
+执行结果：
+
+```go
+initVar...
+init...
+main...
+```
+
+### 2.15 🎯golang指针
+
+Go语言中的函数传参都是**值拷贝**，当我们想要修改某个变量的时候，我们可以创建一个指向该变量地址的指针变量。**传递数据使用指针，而无须拷贝数据**。
+
+类型指针不能进行偏移和运算。
+
+Go语言中的指针操作非常简单，只需要记住两个符号：`&`（取地址）和`*`（根据地址取值）
+
+#### 2.15.1 指针地址和指针类型
+
+- 每个变量在运行时都拥有一个地址，这个地址代表变量在内存中的位置，GO使用`&`取地址符在变量前面对变量进行`取地址`操作
+- Go中值的类型，如`int、float、bool、string、array、struct`都有对应的指针类型`*int、*int64、*string`等等
+
+#### 2.15.2 指针语法
+
+一个指针变量指向了一个值的内存地址（也就是说声明了一个指针只有，可以像变量赋值一样，把一个值的内存地址放入到指针当中）
+
+类似于变量和常量，在使用指针前你需要声明指针，格式如下：
+
+```go
+var var_name *var_type
+```
+
+- `var_type`：指针类型
+- `var_name`：指针变量名
+- `*`：用于指定变量是作为一个指针
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var ip *int
+	fmt.Printf("ip: %v\n", ip) // ip: <nil>
+	fmt.Printf("ip: %T\n", ip) // ip: *int
+	// 给指针赋值
+	var i int = 100
+	ip = &i
+	fmt.Printf("ip: %v\n", ip) // ip: 0xc0000140e0
+	// 取值
+	fmt.Printf("ip: %v\n", *ip) // ip: 100
+	// 字符串
+	var sp *string
+	s := "hello"
+	sp = &s
+	fmt.Printf("sp: %v\n", sp) // sp: 0xc00004c230
+	fmt.Printf("sp: %v\n", *sp)  // sp: hello
+	// bool类型
+	var bp *bool
+	var b bool = true
+	fmt.Printf("bp: %v\n", bp) // bp: <nil>
+	bp = &b
+	fmt.Printf("bp: %v\n", bp) // bp: 0xc0000140e8
+	fmt.Printf("bp: %v\n", *bp) // bp: true
+}
+```
+
+#### 2.15.3 指向数组的指针
+
+定义语法：
+
+```go
+// 数组里面的元素的类型是指针
+var ptr [MAX]*int 
+```
+
+举个栗子：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	a := [3]int{1, 2, 3}
+	var pa [3]*int
+	fmt.Printf("pa: %v\n", pa)
+	for i := 0; i < len(a); i++ {
+		pa[i] = &a[i]
+	}
+	fmt.Printf("pa: %v\n", pa)
+	// 打印指针数组的值
+	for _, v := range pa {
+		fmt.Printf("v: %v\n", v)
+		fmt.Printf("v: %v\n", *v)
+	}
+}
+```
+
+>注意：在`golang`中并不能想`c`语言一样进行指针运算，例如：`point ++`
+
+### 2.16 golang类型定义和类型别名
+
+在介绍`结构体`之前，我们需要先看看什么是**类型定义**和**类型别名**
+
+1. 类型定义相当于定义了**一个全新的类型**，与之前的类型不同；但是类型别名并没有定义一个新的类型，而是使用一个别名来替换之前的类型
+2. 类型别名只会在**代码**中存在，在编译完成之后并**不会存在该别名**
+3. 因为类型别名和原来的类型是一致的，所以原来类型所拥有的方法，类型别名中也可以调用，但是如果是重新定义的一个类型，那么**不可以**调用之前的任何方法
+
+**golang类型定义的语法：**
+
+```go
+type NewType Type
+```
+
+**golang类型别名的语法：**
+
+```go
+type NewType = Type
+```
+
+栗子：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// 类型定义
+	type MyInt int
+	var i MyInt
+	i = 100
+	fmt.Printf("i: %T\n", i) // i: main.MyInt
+	fmt.Printf("i: %v\n", i) // i: 100
+	// 类型别名
+	type MyInt2 = int
+	var i2 MyInt2
+	i2 = 100
+	fmt.Printf("i2: %T\n", i2) // i2: int
+	fmt.Printf("i2: %v\n", i2) // i2: 100
+}
+```
+
+### 2.17 🎯golang结构体
+
+golang中没有`面向对象`的概念了，但是可以使用结构体类实现面向对象的一些特性，例如：继承、多态等
+
+#### 2.17.1 golang结构体的定义
+
+结构体的定义和类型定义类似，只不过多了一个`struct`关键字，语法如下：
+
+```go
+type struct_variable_type struct {
+    member definition;
+    member definition;
+    ...
+    member definition;
+}
+```
+
+- `type`：结构体定义关键字
+- `struct_variable_type`：结构体类型名称
+- `struct`：结构体定义关键字
+- `member definition`：成员定义
+
+举个栗子：
+
+下面我们定义一个人的结构体Person
+
+```go
+type Person struct {
+    id int
+    name string
+    age int
+    email string
+}
+```
+
+相同类型也可以**合并到一行**，例如：
+
+```go
+type Person struct {
+    id, age int
+    name, email string 
+}
+```
+
+声明一个结构体变量和声明一个普通变量相同，例如：
+
+```go
+var tom Person
+```
+
+当然还可以申明匿名结构体
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var tom Person
+    // 未初始化的结构体，成员都是类型的默认值
+	fmt.Printf("tom: %v\n", tom) // tom: {0 0  }
+	// 可以通过 . 运算符进行访问
+	tom.id = 101
+	tom.name = "tom"
+	tom.age = 20
+	tom.email = "xxx@xxx.com"
+	fmt.Printf("tom: %v\n", tom) // tom: {101 20 tom xxx@xxx.com}
+	// 定义匿名结构体
+	var eureka struct {
+		id int
+		name string
+		age int
+	}
+	eureka.id = 102
+	eureka.name = "eureka"
+	eureka.age = 18
+	fmt.Printf("eureka:%v\n", eureka) //  eureka:{102 eureka 18}
+}
+
+// 定义一个结构体
+type Person struct {
+	id, age     int
+	name, email string
+}
+```
+
+#### 2.17.2 结构体初始化
+
+- 使用值的列表进行初始化
+- 省略列表初试化
+- 部分初始化
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	type Person struct {
+		id, age     int
+		name, email string
+	}
+	var tom Person
+	// 要和结构体成员定义顺序一样
+	tom = Person {
+		101, 18,
+		"tom", "xxx@xxx.com",
+	}
+	fmt.Printf("tom: %v\n", tom) // tom: {101 18 tom xxx@xxx.com}
+	// 通过列表的方式初始化
+	var jack = Person {
+		id : 101,
+		name : "name",
+		age : 20,
+		email : "xxx@xxx.com",
+	}
+	fmt.Printf("jack: %v\n", jack) // jack: {101 20 name xxx@xxx.com}
+	// 可以部分初始化，未初始化的为默认值
+	marry := Person {
+		id : 101,
+		name : "tom",
+	}
+	fmt.Printf("marry: %v\n", marry) // marry: {101 0 tom }
+}
+```
+
+### 2.17.3 结构体指针
+
+
+
+
+
+
+
+
+
+
+
