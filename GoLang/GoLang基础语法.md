@@ -1385,7 +1385,9 @@ func main() {
 }
 ```
 
-### 2.18 结构体指针
+### 2.18 结构体
+
+**结构体指针**
 
 结构体指针和普通的变量指针相同，我们可以先回顾一下普通变量的指针，例如：
 
@@ -1426,7 +1428,7 @@ func test1() {
 }
 ```
 
-#### 2.18 .1 new关键字创建结构体指针
+#### 2.18.1 new关键字创建结构体指针
 
 我们可以通过`new`关键字创建一个结构体指针（有时候不想创建一个有名字的结构体变量，此时用new）
 
@@ -1447,13 +1449,119 @@ func test3() {
 }
 ```
 
-#### 2.18 .2 golang结构体作为函数参数
+#### 2.18.2 golang结构体作为函数参数
 
+- 值传递
+- 引用传递（传递指针）
 
+举个栗子：
 
+```go
+package main
 
+import "fmt"
 
+type Person struct {
+	id   int
+	name string
+}
 
+func main() {
+	tom := Person {
+		id : 100,
+		name : "tom",
+	}
+	fmt.Printf("tom: %v\n", tom) // person: {101 张三}
+	fmt.Println("---------------")
+	// 值传递，拷贝了一份副本，不会改变之前的值
+	showPersion(tom)
+	fmt.Printf("tom: %v\n", tom) // tom: {100 tom}
+	fmt.Println("---------------")
+	per := &tom
+	// 引用传递，会改变之前的值
+	showPerson2(per)
+	fmt.Printf("per: %v\n", *per) // per: {100 李四}
+}
 
+// 值传递，拷贝了一份副本，不会改变之前的值
+func showPersion(person Person) {
+	person.id = 101
+	person.name = "张三"
+	fmt.Printf("person: %v\n", person) // tom: {100 tom}
+}
 
+func showPerson2(person *Person) {
+	person.id = 100
+	person.name = "李四"
+}
+```
+
+#### 2.18.3 golang嵌套结构体
+
+go语言没有面向对象编程思想，也没有继承关系，但是可以通过结构体嵌套来实现这种效果。
+
+下面通过实例演示如何实现结构体嵌套，加入有一个人`Person`结构体，这个人还养了一个宠物`Dog`结构体
+
+```go
+package main
+
+import "fmt"
+
+type Dog struct {
+	name, color string
+	age         int
+}
+
+type Person struct {
+	dog  Dog
+	name string
+	age  int
+}
+
+func main() {
+	dog := Dog{
+		name:  "花花",
+		age:   2,
+		color: "black",
+	}
+
+	person := Person{
+		dog:  dog,
+		name: "tom",
+		age:  20,
+	}
+	fmt.Printf("person: %v\n", person) // person: {{花花 black 2} tom 20}
+}
+
+```
+
+### 2.19 go方法
+
+**go语言没有面向对象的特性**，也没有**类对象**的概念。但是，可以使用`结构体`来模拟这些特性，我们都知道面向对象里面有类方法等概念。我们也可以声明一些方法，属于某个结构体。
+
+#### 2.19.1 go方法语法
+
+Go中的方法，是一种特殊的函数，定义于`struct`之上(与`struct`关联、绑定)，被称为`struct`的接受者（`receiver`）。通俗的讲，**方法就是有接收者的函数**。
+
+语法格式如下：
+
+```go
+type mytype struct{}
+
+func (recv mytype) my_method(para) return_type {}
+func (recv *mytype) my_method(para) return_type {}
+```
+
+- `mytype`：定义一个结构体
+- `recv`：接收该方法的结构体（receiver）
+- `my_method`：方法名称
+- `para`：参数列表
+- `return_type`：返回值类型
+
+从语法格式可以看出，一个方法和一个函数非常类似，多了一个**接收类型**
+
+举个栗子：
+
+```go
+```
 
