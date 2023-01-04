@@ -182,6 +182,7 @@ docker exec -it mq cat /var/lib/rabbitmq/.erlang.cookie
 
 ```sh
 XBUNTHXLUGMLJKFFCOJY
+VLQDGICHLZERDYSQFGZQ
 ```
 
 
@@ -228,7 +229,7 @@ cd /tmp
 # 创建cookie文件
 touch .erlang.cookie
 # 写入cookie
-echo "XBUNTHXLUGMLJKFFCOJY" > .erlang.cookie
+echo "VLQDGICHLZERDYSQFGZQ" > .erlang.cookie
 # 修改cookie文件的权限
 chmod 600 .erlang.cookie
 ```
@@ -285,12 +286,13 @@ docker volume create
 docker run -d --net mq-net \
 -v ${PWD}/mq1/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
 -v ${PWD}/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie \
--e RABBITMQ_DEFAULT_USER=itcast \
--e RABBITMQ_DEFAULT_PASS=123321 \
+-e RABBITMQ_DEFAULT_USER=hnit \
+-e RABBITMQ_DEFAULT_PASS=5lZBOwAzO2bTxHE \
 --name mq1 \
 --hostname mq1 \
 -p 8071:5672 \
 -p 9081:15672 \
+--privileged=true \
 rabbitmq:3.8-management
 ```
 
@@ -300,12 +302,13 @@ rabbitmq:3.8-management
 docker run -d --net mq-net \
 -v ${PWD}/mq2/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
 -v ${PWD}/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie \
--e RABBITMQ_DEFAULT_USER=itcast \
--e RABBITMQ_DEFAULT_PASS=123321 \
+-e RABBITMQ_DEFAULT_USER=hnit \
+-e RABBITMQ_DEFAULT_PASS=5lZBOwAzO2bTxHE \
 --name mq2 \
 --hostname mq2 \
 -p 8072:5672 \
 -p 9082:15672 \
+--privileged=true \
 rabbitmq:3.8-management
 ```
 
@@ -315,12 +318,13 @@ rabbitmq:3.8-management
 docker run -d --net mq-net \
 -v ${PWD}/mq3/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
 -v ${PWD}/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie \
--e RABBITMQ_DEFAULT_USER=itcast \
--e RABBITMQ_DEFAULT_PASS=123321 \
+-e RABBITMQ_DEFAULT_USER=hnit \
+-e RABBITMQ_DEFAULT_PASS=5lZBOwAzO2bTxHE \
 --name mq3 \
 --hostname mq3 \
 -p 8073:5672 \
 -p 9083:15672 \
+--privileged=true \
 rabbitmq:3.8-management
 ```
 
