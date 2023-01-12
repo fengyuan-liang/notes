@@ -1535,13 +1535,13 @@ func main() {
 
 ```
 
-### 2.19 go方法
+### 2.19 go方法接收
 
 **go语言没有面向对象的特性**，也没有**类对象**的概念。但是，可以使用`结构体`来模拟这些特性，我们都知道面向对象里面有类方法等概念。我们也可以声明一些方法，属于某个结构体。
 
-#### 2.19.1 go方法语法
+#### 2.19.1 go方法接收语法
 
-Go中的方法，是一种特殊的函数，定义于`struct`之上(与`struct`关联、绑定)，被称为`struct`的接受者（`receiver`）。通俗的讲，**方法就是有接收者的函数**。
+Go中的方法，是一种特殊的函数，定义于`struct`之上(与`struct`关联、绑定)，被称为`struct`的接收者（`receiver`）。通俗的讲，**方法就是有接收者的函数**。
 
 语法格式如下：
 
@@ -1613,9 +1613,204 @@ func main() {
 
 #### 2.19.2 go语言方法的注意事项
 
-1. 方法的`receive type`并非一定是一个`struct`类型，type定义的类型别名、slice、map、channel、func类型都可以
+1. 方法的`receive type`并非一定是一个`struct`类型，`type`定义的类型别名、`slice`、`map`、`channel`、`func`类型都可以
 2. `struct`结合它的方法就等价于面向对象中的`类`，只不过struct可以和他的方法分开，不一定在同一个文件中，但一定在同一个包中
 3. 方法有两种接受类型：`(T type) `和`(T *Type)`，他们之间有区别
 4. 方法就是函数，所以golang没有方法重载（overload）的概念，也就是说同一个类型中的所有方法名必须是唯一的
 5. 如果`receive`是一个指针类型，会自动解除引用
 6. 方法和type是分开的，意味着实例的行为`behavior`和数据存储`field`是分开的，它们通过`receive`建立起关联联系
+
+### 2.20 go方法接收类型
+
+结构体实例，有值类型和引用类型。当方法的接受者也是结构体时，也会有值类型和引用类型。区别就是接受者是否复制结构体副本，值类型复制，指针类型不复制
+
+#### 2.20.1 值类型结构体和指针类型结构体
+
+栗子：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	type Person struct {
+		name string
+	}
+
+	p1 := Person{name: "tom"}
+	p2 := &Person{name: "tom"}
+	fmt.Printf("p1: %T \n", p1) // p1: main.Person
+	fmt.Printf("p2: %T \n", p2) // p2: *main.Person
+}
+```
+
+从运行结果来看，p1是值类型，p2是指针类型
+
+如果是方法接收呢？也是一样的，值类型不会修改，指针会修改
+
+```go
+package main
+
+import "fmt"
+
+type Person struct {
+	name string
+}
+
+func main() {
+	per := Person{name: "tom"}
+	showPerson1(per)
+	fmt.Printf("%v \n", per.name) // tom
+	fmt.Printf("-----")
+	showPerson2(&per)
+	fmt.Printf("%v \n", per.name) // tom...
+	// 方法接收者测试
+	per2 := Person{name: "tom2"}
+	per3 := Person{name: "tom3"}
+	per2.showPerson3()
+	fmt.Printf("%v \n", per2.name) // tom2
+	per3.showPerson4()
+	fmt.Printf("%v \n", per3.name) // tom...
+
+}
+
+func showPerson1(per Person) {
+	// 值传递拷贝的是副本，不会对之前的值进行改变
+	per.name = "tom..."
+}
+
+func showPerson2(per *Person) {
+	// 引用传递会对之前的值进行改变
+	// 自动解引用，本来应该写的是 (*per).name = "tom..."，自动解引用可以进行简化
+	per.name = "tom..."
+}
+
+func (per Person) showPerson3() {
+	// 值传递拷贝的是副本，不会对之前的值进行改变
+	per.name = "tom..."
+}
+
+func (per *Person) showPerson4() {
+	// 引用传递会对之前的值进行改变
+	// 自动解引用，本来应该写的是 (*per).name = "tom..."，自动解引用可以进行简化
+	per.name = "tom..."
+}
+
+func test01() {
+	p1 := Person{name: "tom"}
+	p2 := &Person{name: "tom"}
+	fmt.Printf("p1: %T \n", p1) // p1: main.Person
+	fmt.Printf("p2: %T \n", p2) // p2: *main.Person
+}
+```
+
+### 2.21 接口
+
+虽然go并不是oop的语言，但是可以通过接口的结构体实现
+
+接口我们都很熟悉了，它定义了一套准则和规范
+
+go的接口，是一种新的`类型定义`，它把所有具有共性的方法定义在一起，任何其他类型只要实现了这些方法就是实现了这个接口
+
+语法和方法接收非常类似
+
+#### 2.21.1 接口定义的格式
+
+```go
+/* 定义接口 */
+type interface_name interface {
+  method_name1 [return_type]
+  ...
+  method_namen [return_type]
+}
+/* 定义结构体 */
+type struct_name struct {
+  /* variables */
+}
+/* 实现接口方法 */
+func (struct_name_variable struct_name) method_name1() {
+  /* 方法实现 */
+}
+...
+/* 实现接口方法 */
+func (struct_name_variable struct_name) method_namen() {
+  /* 方法实现 */
+}
+```
+
+注意：在接口中定义的方法应该具有通用性
+
+接口主要用在函数传参上，可以把接口作为函数参数，实现了改接口的结构体都可以作为函数参数进行调用
+
+**接口栗子**
+
+下面我们定义一个usb接口，有读read写和write两个方法
+
+```go
+package main
+
+import "fmt"
+
+// 接口要以er结尾
+type USBER interface {
+	read()
+	write()
+}
+
+// 定义结构体
+type Computer struct {
+	name string
+}
+
+func (c Computer) read() {
+	fmt.Printf("c.name:%v \n", c.name)
+	fmt.Printf("read...")
+}
+
+func (c Computer) write() {
+	fmt.Printf("write...")
+}
+
+func main() {
+	c := Computer{name: "联想"}
+	c.read()
+	c.write()
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
