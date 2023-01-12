@@ -1563,5 +1563,59 @@ func (recv *mytype) my_method(para) return_type {}
 举个栗子：
 
 ```go
+package main
+
+import "fmt"
+
+type Person struct {
+	name string
+}
+
+// 属性和方法分开来写
+// (per Person) 接受者 receiver
+func (per Person) eat() {
+	fmt.Printf("%v eat...\n", per)
+}
+
+func (per Person) sleep() {
+	fmt.Printf("%v sleep...\n", per)
+}
+
+type Customer struct {
+	name string
+}
+
+func (customer Customer) login(name string, password int) bool {
+	fmt.Printf("%v 登陆...\n", customer.name)
+	return name == "tom" && password == 123
+}
+
+func main() {
+	per := Person{name: "tom"}
+	per.eat()
+	per.sleep()
+	fmt.Printf("------------------")
+	cus := Customer{name: "tom"}
+	// 登陆
+	fmt.Printf("登陆成功【%v】\n", cus.login("tom", 123))
+}
+
 ```
 
+输出：
+
+```go	
+{tom} eat...
+{tom} sleep...
+------------------tom 登陆...
+登陆【true】
+```
+
+#### 2.19.2 go语言方法的注意事项
+
+1. 方法的`receive type`并非一定是一个`struct`类型，type定义的类型别名、slice、map、channel、func类型都可以
+2. `struct`结合它的方法就等价于面向对象中的`类`，只不过struct可以和他的方法分开，不一定在同一个文件中，但一定在同一个包中
+3. 方法有两种接受类型：`(T type) `和`(T *Type)`，他们之间有区别
+4. 方法就是函数，所以golang没有方法重载（overload）的概念，也就是说同一个类型中的所有方法名必须是唯一的
+5. 如果`receive`是一个指针类型，会自动解除引用
+6. 方法和type是分开的，意味着实例的行为`behavior`和数据存储`field`是分开的，它们通过`receive`建立起关联联系
