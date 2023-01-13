@@ -1,0 +1,6 @@
+# Golang并发编程
+
+笔者在学习golang之前就听过不少golang并发的东西，应该说golang的`goroutine`也就是我们所说的协程，是golang这门语言最具竞争力的优势之一
+
+Go语言中的并发程序主要是通过基于CSP（communicating sequential processes）的goroutine和channel来实现，当然也支持使用传统的多线程共享内存的并发方式
+

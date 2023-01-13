@@ -42,7 +42,7 @@
 
 ## 🎉Golang
 
--  [GoLang基础语法](/GoLang/GoLang基础语法.md)
+-  [GoLang基础语法](/GoLang/GoLang基础语法.md) ｜ [GoLang并发编程](/GoLang/GoLang并发编程.md) 
 
 ## 🐱‍🏍数据库
 

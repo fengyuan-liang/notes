@@ -983,7 +983,7 @@ func main() {
 
 func add() func(y int) int {
 	var x int
-    // 其实这里提示了变量x的作用域，从栈空间到堆空间了
+    // 其实这里提升了变量x的作用域，从栈空间到堆空间了
 	return func(y int) int {
 		x += y
 		return x
@@ -1848,9 +1848,192 @@ func (e *EmailNotifier) notify() {
 }
 ```
 
- 
+### 2.22 异常
 
+GO通过内置的错误接口提供了非常简单的错误处理机制
 
+error类型是一个接口类型，这是它的定义
+
+```go
+type error interface {
+  Error() string
+}
+```
+
+我们可以在编码中通过实现error接口类型来生成错误信息
+
+函数通常在最后的返回值中返回错误信息，使用`errors.New`可以返回一个错误信息
+
+```go
+func Sqrt(f float64) (float64, error) {
+  if f < 0 {
+    return 0, errors.New("math：square root of negative number")
+  }
+  // 具体实现代码
+}
+```
+
+在下面的例子中，我们在调用Sqrt的时候传递的一个负数，然后就得到了`non-nil`的`error`对象，将此对象与`nil`比较，结果为`true`，所以`fmt.Println`(fmt包在处理error时会调用Error方法)被调用，以输出错误，请看下面调用的示例代码：
+
+```go
+result, err:= Sqrt(-1)
+
+if err != nil {
+   fmt.Println(err)
+}
+```
+
+>一个异常处理的完整例子
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+func main() {
+	// 正常情况
+	if result, errorMsg := Divide(100, 10); errorMsg == "" {
+		fmt.Printf("100 / 10 = %v \n", result)
+	}
+	// 当被除数为零的时候会返回错误信息
+	if _, errorMsg := Divide(100, 0); errorMsg != "" {
+		fmt.Println("errorMsg is:", errorMsg)
+	}
+}
+
+// DivideError 定义一个DivideError结构
+type DivideError struct {
+	dividee int
+	divider int
+}
+
+// error是一个接口类型，需要结构体实现这个接口
+func (de *DivideError) Error() string {
+	strFormat := `
+	Cannot proceed，the divider is zero.
+	dividee: %d
+	divider: %d
+`
+	return fmt.Sprintf(strFormat, de.dividee)
+}
+
+// Divide 定义 `int` 类型除法运算的函数
+func Divide(varDividee int, varDivider int) (result int, errorMsg string) {
+	if varDivider == 0 {
+		dData := DivideError{dividee: varDividee, divider: varDivider}
+		errorMsg = dData.Error()
+		return
+	} else {
+		return varDividee / varDivider, ""
+	}
+
+}
+```
+
+### 2.23 Reflect反射
+
+golang提供了一种机制，在不知道具体类型的情况下，可以使用发射来更新变量值、或者查看变量类型
+
+#### 2.23.1 获取值的类型Typeof
+
+**Typeof**
+
+`Typeof`返回接口中保存的值的类型，Typeof(nil)会返回`nil`
+
+栗子：
+
+```go
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+func main() {
+	var bookNum float32 = 6
+	var isBook bool = true
+	bookAuthor := "fengyuan-liang"
+	bookDetail := make(map[string]string)
+	bookDetail["k1"] = "v1"
+	fmt.Println(reflect.TypeOf(bookNum))    // float32
+	fmt.Println(reflect.TypeOf(isBook))     // bool
+	fmt.Println(reflect.TypeOf(bookAuthor)) // string
+	fmt.Println(reflect.TypeOf(bookDetail)) // map[string]string
+}
+```
+
+#### 2.23.2 获取值ValueOf
+
+**ValueOf**
+
+ValueOf返回一个初始化为`interface`接口保管的具体值的`value`，ValueOf(nil)返回Value零值
+
+**通过反射获取值**
+
+```go
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+func main() {
+	var bookNum float32 = 6
+	var isBook bool = true
+	bookAuthor := "fengyuan-liang"
+	bookDetail := make(map[string]string)
+	bookDetail["k1"] = "v1"
+	// 通过反射获取属性的值
+	fmt.Println(reflect.ValueOf(bookNum))    // 6
+	fmt.Println(reflect.ValueOf(isBook))     // true
+	fmt.Println(reflect.ValueOf(bookAuthor)) // fengyuan-liang
+	fmt.Println(reflect.ValueOf(bookDetail)) // mak[k1:v1]
+}
+```
+
+#### 2.23.3 通过反射设置值
+
+```go
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+func main() {
+	address := "I am fengyuan-liang"
+	// 错误反射设置值
+	// reflectSetValue1(address)
+	// 反射修改值必须通过传递变量地址来修改。若函数传递的参数是值拷贝，则会报以下错误
+	// panic: reflect: reflect.Value.SetString using unaddressable value
+	// 正确反射设置值
+	fmt.Printf("反射之前：%v \n", address) // 反射之前：I am fengyuan-liang
+	reflectSetValue2(&address)
+	fmt.Printf("反射之后：%v \n", address) // 反射之后：通过elem方法发射设置值 
+}
+
+func reflectSetValue1(x interface{}) {
+	value := reflect.ValueOf(x)
+	if value.Kind() == reflect.String {
+		value.SetString("通过反射设置值")
+	}
+}
+
+func reflectSetValue2(x interface{}) {
+	value := reflect.ValueOf(x)
+	// 反射中使用了Elem()方法获取了指针所指向的值
+	if value.Elem().Kind() == reflect.String {
+		value.Elem().SetString("通过elem方法发射设置值")
+	}
+}
+
+```
 
 
 
