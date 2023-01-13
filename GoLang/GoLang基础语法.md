@@ -1780,7 +1780,75 @@ func main() {
 
 ```
 
+#### 2.21.2 多态实现
 
+golang中多态的实现是 `接口 + 结构体 + 方法接收者`实现的，具体步骤为：
+
+- 定义一个接口，并且定义接口方法
+- 声明结构体
+- 为结构体绑定方法接收者，方法接收者直接实现接口中的接口方法即可
+- 定义实现多态的方法，方法的传参为该接口，传入具体实现的结构体（结构体绑定了方法接收者）
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	w := &WechatNotifier{name: "微信", message: "微信消息"}
+	q := &QQNotifier{name: "QQ", message: "qq消息"}
+	e := &EmailNotifier{name: "email", message: "email消息"}
+	// 接受微信消息
+	sendNotify(w)
+	// 接受qq类型
+	sendNotify(q)
+	// 接受email消息
+	sendNotify(e)
+}
+
+// 定义发送通知的方法，入参为Notifier，等需要调用的时候，需要传入实现了Notifier中的接口的类型
+func sendNotify(notifier Notifier) {
+	// 调用具体的实现
+	notifier.notify()
+}
+
+// Notifier 定义一个通知接口
+type Notifier interface {
+	// 通知方法，可以由具体的类进行实现
+	notify()
+}
+
+type WechatNotifier struct {
+	name    string
+	message string
+}
+
+// 绑定方法接收
+func (w *WechatNotifier) notify() {
+	fmt.Printf("%v notify %v\n", w.name, w.message)
+}
+
+type QQNotifier struct {
+	name    string
+	message string
+}
+
+// 绑定方法接收
+func (q *QQNotifier) notify() {
+	fmt.Printf("%v notify %v\n", q.name, q.message)
+}
+
+type EmailNotifier struct {
+	name    string
+	message string
+}
+
+func (e *EmailNotifier) notify() {
+	fmt.Printf("%v notify %v\n", e.name, e.message)
+}
+```
+
+ 
 
 
 
