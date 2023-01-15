@@ -93,6 +93,8 @@ golang：【4】
 
 ## 2. channel
 
+![image-20230115230303797](https://cdn.fengxianhub.top/resources-master/image-20230115230303797.png)
+
 golang提供了一种称之为通道的机制，用于在`goroutine`之间共享数据。当您作为`goroutine`执行并发活动时，需要在`goruntine`之间共享资源或数据，通道充当`goroutine`之间的通道（管道）并提供一种机制来保证同步交换
 
 需要在申明通道时指定数据类型。我们可以共享内置、命名、结构和引用类型的值和指针。
@@ -281,6 +283,8 @@ end...
 
 ## 3. 并发编程
 
+![image-20230115231029105](https://cdn.fengxianhub.top/resources-master/image-20230115231029105.png)
+
 ### 3.1 并发编程之runtime包
 
 runtime包里面定义了一些与协程管理相关的api
@@ -419,11 +423,10 @@ runtime包里面定义了一些与协程管理相关的api
   A:9 
   ```
 
-  
 
-### 3.2 mutext互斥锁
+### 3.2 mutex互斥锁
 
-除了使用`channel`管道实现线程同步之外，还可以使用`mutext`互斥锁进行线程之间的同步
+除了使用`channel`管道实现线程同步之外，还可以使用`mutex`互斥锁进行线程之间的同步
 
 ```go
 package main
@@ -460,7 +463,7 @@ sub,i=-331
 
 现在并发操作并不是原子的，有数据不一致的问题
 
-那么如何解决呢？可以通过加`mutext`互斥锁的方式
+那么如何解决呢？可以通过加`mutex`互斥锁的方式
 
 ```go
 package main
@@ -666,9 +669,189 @@ var chanInt = make(chan int)
 var chanStr = make(chan string)
 ```
 
+### 3.5 Timer
 
+#### 3.5.1 time.NewTimer()
 
+Timer顾名思义，就是定时器的意思，可以实现一些定时操作，内部也是通过`channel`来进行实现
 
+例如我要实现一个等待两秒的操作：
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	timer := time.NewTimer(time.Second * 2)
+	fmt.Printf("time is:%v \n", time.Now())
+	// 堵塞中，直到时间到了
+	t1 := <-timer.C
+	fmt.Println("两秒钟后...")
+	fmt.Printf("t1:%v \n", t1)
+}
+// 打印输出
+time is:2023-01-15 20:45:29.048689 +0800 CST m=+0.000103485 
+两秒钟后...
+t1:2023-01-15 20:45:31.049711 +0800 CST m=+2.001108436 
+```
+
+当然我们如果只是休眠可以直接使用`time.Sleep(time.Second)`来实现
+
+我们也可以使用`time.After()`来实现定时操作
+
+```go
+  fmt.Printf("this time is:%v \n", time.Now())
+  // 也可以使用after进行延迟操作
+	<-time.After(time.Second * 2)
+	fmt.Println("两秒钟后...")
+	fmt.Printf("this time is:%v \n", time.Now())
+```
+
+#### 3.5.2 Stop、reset
+
+```go
+  timer := time.NewTimer(time.Second * 2)
+	go func() {
+		<-timer.C
+		fmt.Println("func...")
+	}()
+	// 调用stop方法，暂停记时
+	isStop := timer.Stop()
+	if isStop {
+		fmt.Println("time is stop")
+	}
+	time.Sleep(time.Second * 3)
+	fmt.Println("main end...")
+```
+
+打印：
+
+```go
+time is stop
+main end...
+```
+
+可以看`time.Stop()`是让其他线程的timer停了，主线程的并不会停
+
+如果我们想要重新计时就可以使用`time.Reset(time.Second)`来进行
+
+```go
+timer := time.NewTimer(time.Second * 5)
+// 之前设置的是五秒钟，现在可以重新进行设置
+fmt.Printf("this time is:%v \n", time.Now())
+timer.Reset(time.Second * 1)
+// 堵塞 直到时间到了
+<-timer.C
+fmt.Printf("this time is:%v \n", time.Now())
+```
+
+输出
+
+```go
+this time is:2023-01-15 22:08:44.529515 +0800 CST m=+0.000120579 
+this time is:2023-01-15 22:08:45.530782 +0800 CST m=+1.001387985 
+```
+
+### 3.6 ticker
+
+timer只执行一次，ticker可以周期执行
+
+举个例子：
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	ticker := time.NewTicker(time.Second)
+	for range ticker.C {
+		fmt.Println("ticker...")
+	}
+}
+```
+
+然后就会一秒执行一次，类似于js里面的`setInterval`，而timer类似于`setTimeOut`
+
+## 4. 原子操作
+
+在之前的栗子中我们发现多个协程同时操作一个变量时会发生脏写的问题，之前我们是通过加互斥锁`mutex`进行解决的
+
+在这里我们引入一些原子操作类，进行原子操作，从而保证线程安全
+
+### 4.1 原子操作使用
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync/atomic"
+	"time"
+)
+
+func main() {
+	func() {
+		for i := 0; i < 1_000_000; i++ {
+			go add()
+			go sub()
+		}
+	}()
+	time.Sleep(time.Second * 2)
+	fmt.Println("end, cnt = ", cnt)
+}
+
+var cnt int32 = 100
+
+func add() {
+	// cnt++并不是原子操作，换成原子操作
+	atomic.AddInt32(&cnt, 1)
+}
+
+func sub() {
+	atomic.AddInt32(&cnt, -1)
+}
+
+```
+
+输出：
+
+```go
+end, cnt =  100
+```
+
+### 4.2 原子操作原理
+
+atomic提供的原子操作能够确保任一时刻只有一个`goroutine`对变量进行操作，善用atomic能够避免程序中出现大量的锁操作
+
+常见的atomic操作有：
+
+- 增减
+- 载入（read）
+- cas（比较并交换）
+- 交换
+- 存储
+
+#### 4.2.1 增减操作
+
+atomic包中提供了如下以`Add`为浅醉的增减操作：
+
+```go
+- func AddInt32(addr *int32, delta int32) (new int32)
+- func AddInt64(addr *int64, delta int64) (new int64)
+- func AddUint32(addr *uint, delta uint32) (new uint32)
+- func AddUint64(addr *uint, delta uint64) (new uint64)
+- func AddUintptr(addr *uintptr, delta uintptr) (new uintptr)
+```
+
+#### 4.2.2 载入操作
 
 
 
