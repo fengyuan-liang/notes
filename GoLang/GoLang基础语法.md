@@ -1848,6 +1848,264 @@ func (e *EmailNotifier) notify() {
 }
 ```
 
+#### 2.21.3 接口嵌套
+
+接口可以通过嵌套形成新的接口
+
+例如飞鱼既可以飞、也可以游泳，我们就可以组合飞和游泳这两个接口形成一个新的接口
+
+```go
+type Flyer interface {
+  fly()
+}
+type Swimmer interface {
+  swim()
+}
+// 组合上面的两个接口
+type FlyFish interface {
+  fly()
+  swim()
+}
+// 创建一个结构体Fish
+type Fish struct {
+  
+}
+// 实现这个组合接口
+func (fish *Fish) fly() {
+  fmt.Println("fly...")
+}
+func (fish *Fish) swim() {
+  fmt.Println("swim...")
+}
+```
+
+测试：
+
+```go
+package main
+
+func main() {
+  var ff FlyFish
+	// 向上类型转换
+	ff = &Fish{}
+  ff.fly() // fly...
+  ff.swim() // swim...
+}
+```
+
+
+
+
+
+#### 2.21.4 golang接口与类型的关系
+
+- 一个类型可以实现多个接口
+- 多个类型可以实现同一个接口（多态）
+
+>一个类型实现多个接口
+
+一个类型可以实现多个接口，例如：有一个Player接口可以播放音乐，有一个video接口可以播放视频，有一个mobilePhone实现了两个接口，既可以播放音乐也可以播放视频
+
+定义一个Player接口：
+
+```go
+type Player interface {
+  playMusic()
+}
+```
+
+定义一个video接口：
+
+```go
+type Video interface {
+  playVideo()
+}
+```
+
+定义mobilePhone结构体：
+
+```go
+type MobilePhone struct {
+  
+}
+```
+
+结构体实现两个接口：
+
+```go
+func (m MobilePhone) playMusic() {
+  fmt.Println("正在播放音乐...")
+}
+func (m MobilePhone) playVideo() {
+  fmt.Println("正在播放视频...")
+}
+```
+
+测试：
+
+```go
+package main
+
+func main() {
+  m := MobilePhone{}
+  m.playMusic() // 正在播放音乐...
+  m.playVideo() // 正在播放视频...
+}
+```
+
+多个类型实现同一个接口（多态），多态请看2.21.2小节
+
+### 2.22 golang面向对象
+
+golang并不是面向对象的语言，但是我可以通过go本身的一些特性来模拟面向对象的特征
+
+#### 2.22.1 golang通过接口嵌套实现OCP原则（多态）
+
+ocp原则即`开闭原则`（Open-Closed Principle，常缩写为OCP），是`面向对象的可复用设计`的第一块基石。虽然go不是面向对象的语言，但是也可以模拟实现这个原则
+
+**OCP设计原则实例**：
+
+```go
+// 定义一个宠物接口
+type Pet interface {
+  eat()
+  sleep()
+}
+// 定义dog结构体
+type Dog struct {
+  name string 
+  age int
+}
+// Dog实现接口方法
+func (dog *Dog) eat() {
+  fmt.Println("dog eat...")
+}
+func (dog *Dog) sleep() {
+  fmt.Println("dog sleep...")
+}
+// 定义cat结构体
+type Cat struct {
+  name string 
+  age int
+}
+// cat 实现接口方法
+func (cat *Cat) eat() {
+  fmt.Println("cat eat...")
+}
+func (cat *Cat) sleep() {
+  fmt.Println("cat sleep...")
+}
+// 定义Person结构体
+type Person struct {
+  
+}
+// 定义实现多态的方法，为Person添加一个养宠物的方法
+func (per Person) care(pet Pet) {
+  pet.eat()
+  pet.sleep()
+}
+```
+
+测试一下：
+
+```go
+package main
+
+func main() {
+  dog := Dog{}
+  cat := Cat{}
+  per := Person{}
+  // 多态方法实现
+  per.care(dog) // dog eat... dog sleep...
+  per.care(cat) // cat eat... cat sleep...
+}
+```
+
+#### 2.22.2 golang继承
+
+golang不是面向对象的语言，所以没有继承的概念，但是可以通过`结构体嵌套`来实现继承
+
+举个栗子：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// 嵌套实现继承
+	dog := Dog{
+		animal: Animal{name: "花花", age: 2},
+		color:  "黑色",
+	}
+	dog.animal.eat()   // eat...
+	dog.animal.sleep() // sleep...
+	cat := Cat{animal: Animal{name: "小猫", age: 3}, name: "喵喵"}
+	cat.animal.eat() // eat...
+	cat.animal.sleep() // sleep...
+}
+
+type Animal struct {
+	name string
+	age  int
+}
+
+func (animal *Animal) eat() {
+	fmt.Println("eat...")
+}
+
+func (animal *Animal) sleep() {
+	fmt.Println("sleep...")
+}
+
+// Dog dog也应该拥有Animal的特性（方法），通过嵌套实现继承
+type Dog struct {
+	animal Animal
+	color  string
+}
+
+type Cat struct {
+	animal Animal
+	name   string
+}
+
+
+```
+
+#### 2.22.3 golang构造函数
+
+golang中其实是没有构造函数的概率的，但是我们可以模拟出构造函数
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// 调用结构体的构造函数生成对象
+	person, _ := NewPerson("张三", 18)
+	fmt.Println(person) // &{张三 18}
+	// 错误情况
+	newPerson, err := NewPerson("张三", -1)
+	fmt.Println(newPerson) // <nil>
+	fmt.Println(err)       // 参数异常
+}
+
+type Person2 struct {
+	name string
+	age  int
+}
+
+// NewPerson 模拟实现构造函数
+func NewPerson(name string, age int) (person *Person2, err error) {
+	if name == "" || age < 0 {
+		return nil, fmt.Errorf("参数异常")
+	}
+	return &Person2{name: name, age: age}, nil
+}
+
+```
+
 ### 2.22 异常
 
 GO通过内置的错误接口提供了非常简单的错误处理机制
@@ -2035,17 +2293,61 @@ func reflectSetValue2(x interface{}) {
 
 ```
 
+### 2.24 golang包
 
+包可以区分命名空间（一个文件夹中不能有两个同名文件），也可以更好的管理项目。go中创建一个包，一般是创建一个文件夹，在该文件夹里面的go文件中，使用`package`关键字申明包名称，通常，文件夹名称和包名称相同。并且，同一个文件下面只有一个包
 
+**创建包**
 
+**倒入包**
 
+**包注意事项**
 
+和Java差不多
 
+#### 2.24.1 go module包管理工具
 
+go modeule是golang在1.11后添加的包管理工具
 
+**基本命令**：
 
+- 初始化模块：`go mod init<项目模块名称>`
 
+- 处理依赖关系，根据go.mod文件：`go mod tidy`
 
+- 将依赖包复制到项目下的`vendor`目录：`go mod vendor`
+
+  ⚠️：如果包被墙，可以使用这个命令，随后使用`go build -mod=vendor`编译
+
+- 显示依赖关系：`go list -m all`
+
+- 显示详细的依赖关系：`go list -m -json all`
+
+- 下载依赖：`go mod download [path@version]` （[path@version]是非必写的）
+
+**栗子**：
+
+- 使用go mod管理包；go build发布包使其他模块可以进行导包
+
+![image-20230114133121655](https://cdn.fengxianhub.top/resources-master/image-20230114133121655.png)
+
+- 其他模块进行到包使用
+
+![image-20230114133311930](https://cdn.fengxianhub.top/resources-master/image-20230114133311930.png)
+
+- 除了可以调用自己写的包之外，还可以调用远程包
+
+  - 我们先进入`https://pkg.go.dev/`寻找我们想要的包
+
+    ![image-20230114133829425](https://cdn.fengxianhub.top/resources-master/image-20230114133829425.png)
+
+  - 通过上面的`go get`命令进行下载，下载的包全部在`go1.19.4/pkg/mod/`目录下
+
+  - 再通过`go mod tidy`命令处理依赖，可以看到`go.mod`里面的依赖包都没有了，因为项目现在并没有使用到这些包
+
+  - ![image-20230114143904346](https://cdn.fengxianhub.top/resources-master/image-20230114143904346.png)
+
+  
 
 
 
