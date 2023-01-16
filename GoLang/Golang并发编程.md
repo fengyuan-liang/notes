@@ -841,7 +841,7 @@ atomic提供的原子操作能够确保任一时刻只有一个`goroutine`对变
 
 #### 4.2.1 增减操作
 
-atomic包中提供了如下以`Add`为浅醉的增减操作：
+atomic包中提供了如下以`Add`为前缀的增减操作：
 
 ```go
 - func AddInt32(addr *int32, delta int32) (new int32)

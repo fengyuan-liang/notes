@@ -53,10 +53,13 @@
             });
           },
           function (hook) {
+            // 获取当前的年份
+            var year = new Date().getFullYear()
+            var url = `'<span><a href="https://github.com/fengyuan-liang">Eureka</a> &copy;${year}.</span>'`
             var footer = [
               "<hr/>",
               "<footer>",
-              '<span><a href="https://github.com/fengyuan-liang">Eureka</a> &copy;2022.</span>',
+              url,
               "<span>每天都要加油鸭😜</span>",
               "</footer>",
             ].join("");
