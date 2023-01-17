@@ -835,9 +835,9 @@ atomic提供的原子操作能够确保任一时刻只有一个`goroutine`对变
 
 - 增减
 - 载入（read）
+- 存储（store）
 - cas（比较并交换）
 - 交换
-- 存储
 
 #### 4.2.1 增减操作
 
@@ -851,7 +851,35 @@ atomic包中提供了如下以`Add`为前缀的增减操作：
 - func AddUintptr(addr *uintptr, delta uintptr) (new uintptr)
 ```
 
-#### 4.2.2 载入操作
+#### 4.2.2 载入、存储、cas
+
+载入就是读取，在读的时候容易出现并发问题，其实这就是java中用`volatile`关键字来保证线程可见性一样
+
+那么golang是如何解决多线程间数据不一致问题的呢？就是通过原子载入的方式
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync/atomic"
+)
+
+func main() {
+	var cnt int32 = 100
+	// 原子读
+	cnt = atomic.LoadInt32(&cnt)
+	fmt.Println("原子读读取到的数据，cnt = ", cnt) // 原子读读取到的数据，cnt =  100
+	// 原子写
+	atomic.StoreInt32(&cnt, 1)
+	fmt.Println("原子读读取到的数据，cnt = ", atomic.LoadInt32(&cnt)) // 原子读读取到的数据，cnt =  1
+	// cas
+	ok := atomic.CompareAndSwapInt32(&cnt, 1, 2)
+	fmt.Println("cas 结果：", ok)                            // cas 结果： true
+	fmt.Println("cas后的数据，cnt = ", atomic.LoadInt32(&cnt)) // cas后的数据，cnt =  2
+}
+
+```
 
 
 

@@ -2349,6 +2349,278 @@ go modeule是golang在1.11后添加的包管理工具
 
   
 
+## 3. golang标准库
+
+思维导图：
+
+
+
+### 3.1 os模块-文件目录相关
+
+os标准库实现了平台（操作系统）无关的编程接口
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	createFile()
+}
+
+// 创建文件
+func createFile() {
+	create, err := os.Create("a.txt")
+	if err != nil {
+		return
+	}
+	fmt.Println(create.Name())
+	defer create.Close()
+	// 往文件里面写点东西
+	n, err := create.Write([]byte("hello world"))
+	fmt.Println("写入的字节数，", n)
+}
+
+// 创建目录
+func mkDir() {
+	// 创建一个目录，os.ModePerm表示777权限
+	err := os.Mkdir("test", os.ModePerm)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// 创建级连目录
+	os.MkdirAll("a/b/c", os.ModePerm)
+	// 删除目录下的所有东西
+	os.RemoveAll("test")
+}
+
+// 获取工作目录
+func wd() {
+	dir, _ := os.Getwd()
+	fmt.Println(dir)
+	// 获取临时目录
+	tempDir := os.TempDir()
+	fmt.Println(tempDir)
+	// 修改工作目录
+	os.Chdir("/usr/local")
+	dir, _ = os.Getwd()
+	fmt.Println(dir)
+}
+
+// 文件读写
+func writeRead() {
+	file, _ := os.ReadFile("a.txt")
+	fmt.Println(string(file))
+	// 写文件
+	os.WriteFile("a.txt", []byte("hello world"), os.ModePerm)
+}
+
+```
+
+### 3.2 os模块-File文件相关
+
+读相关操作
+
+```go
+package main
+
+import (
+	"fmt"
+	"io"
+	"os"
+)
+
+func main() {
+	readBuff()
+}
+
+func openClose() {
+	file, err := os.Open("a.txt")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(file.Name())
+	file.Close()
+	// 或者调用这个，如果没有指定的文件就好创建一个
+	openFile, err := os.OpenFile("a.txt", os.O_RDWR|os.O_CREATE, 755)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(openFile)
+	openFile.Close()
+}
+
+// 带缓冲区的读取
+func readBuff() {
+	open, _ := os.Open("a.txt")
+	// 创建一个字节缓冲去
+	buffer := make([]byte, 10)
+	for true {
+		// 读取文件到缓冲区中
+		n, err := open.Read(buffer)
+		if err == io.EOF {
+			fmt.Println("已经读完了...")
+			break
+		}
+		fmt.Println(n)
+		fmt.Println("缓冲区的文件，", string(buffer))
+	}
+}
+
+// 遍历目录
+func rangeDir() {
+	dir, _ := os.ReadDir("os")
+	for _, value := range dir {
+		fmt.Println("是目录吗？", value.IsDir())
+		fmt.Println(value.Name())
+	}
+}
+// 随机读readCharAt()
+```
+
+写相关操作
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	write()
+}
+
+func write() {
+	// O_APPEND表示追加、O_TRUNC表示覆盖
+	file, _ := os.OpenFile("a.txt", os.O_RDWR|os.O_TRUNC, 0755)
+	// 写入一些共享
+	_, err := file.Write([]byte("hello golang"))
+	// 或者可以直接写入字符串
+	_, err2 := file.WriteString("hello hello")
+	if err != nil || err2 != nil {
+		fmt.Println(err, err2)
+	}
+}
+```
+
+### 3.3 os模块-进程相关
+
+用的不多...
+
+### 3.4 os模块-环境变量相关
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	// 获取所有环境变量
+	fmt.Println(os.Environ())
+	// 获取指定环境变量 k -> v
+	envValue := os.Getenv("GOBIN")
+	fmt.Println(envValue)
+	// 检查环境变量是否存在
+	env, ok := os.LookupEnv("GOBIN")
+	if ok {
+		fmt.Println(env)
+	}
+	// 设置环境变量
+	err := os.Setenv("GOBIN", "xxx")
+	if err != nil {
+		fmt.Println(err)
+	}
+	// 用环境变量的值进行替换
+	os.ExpandEnv("$JAVA_HOME and ${GOROOT} ")
+	// 清空所有环境变量
+	os.Clearenv()
+}
+```
+
+### 3.5 IO包
+
+Go语言中，为了方便开发者使用，将IO操作封装在了几个包中：
+
+- io为IO原语（I/O primitives）提供基本的接口
+- io/ioutil 封装了一些常用的IO函数
+- fmt实现格式化IO，类似c中的printf和scanf
+- bufio实现带缓冲IO
+
+**io - 基本的io接口**
+
+在io包中最重要的是两个接口：`Reader`和`Writer`接口，只要实现了这两个接口，就能拥有IO的功能
+
+> Reader接口
+
+```go
+type Reader interface {
+  Read(p []byte) (n int, err error)
+}
+```
+
+>Writer接口
+
+```go
+type Writer interface {
+  Write(p []byte) (n int, err error)
+}
+```
+
+
+
+```go
+func testCopy() {
+	// reader
+	reader := strings.NewReader("hello world")
+	written, err := io.Copy(os.Stdout, reader)
+	if err != nil {
+		fmt.Println(err)
+	}
+	log.Fatal(written)
+}
+```
+
+其他直接看api即可
+
+- https://pkg.go.dev/io#CopyBuffer
+
+### 3.6 ioutil包
+
+![image-20230116224110140](https://cdn.fengxianhub.top/resources-master/image-20230116224110140.png)
+
+### 3.7 bufio
+
+> buffio包实现了有缓冲的io。它包装一个`io.Reader`或者`io.Writer`接口对象，创建另一个也实现了该接口，且同时还提供了缓冲和一些文本IO的帮助函数的对象
+
+**常量**
+
+```go
+const (
+	defaultBufSize = 4096  
+)
+```
+
+**变量**
+
+```go
+var (
+  ErrInvalidUnreadByte = errors.New("bufio: invalid use of UnreadByte")
+  ErrInvalidUnreadRune = errors.New("bufio: invalid use of UnreadRune")
+  ErrBufferFull 			 = errors.New("bufio: buffer full")
+  ErrNegativeCount     = errors.New("bufio: negative count")
+)
+```
+
+
+
 
 
 
