@@ -186,7 +186,7 @@ func func1() (name string , age int) {
 
 ### 2.3 number类型
 
-
+uint 无符号int
 
 
 
@@ -2351,6 +2351,10 @@ go modeule是golang在1.11后添加的包管理工具
 
 ## 3. golang标准库
 
+对应文档：
+
+- [Standard library - Go Packages](https://pkg.go.dev/std)
+
 思维导图：
 
 
@@ -2594,7 +2598,14 @@ func testCopy() {
 
 ### 3.6 ioutil包
 
-![image-20230116224110140](https://cdn.fengxianhub.top/resources-master/image-20230116224110140.png)
+| 名称      | 作用                                                       |
+| --------- | ---------------------------------------------------------- |
+| ReadAll   | 读取数据，返回读到的字节slice                              |
+| ReadDir   | 读取一个目录，返回目录入口数组[]os.FileInfo                |
+| ReadFile  | 读一个文件，返回文件内容（字节slice）                      |
+| WriteFile | 根据文件路径，写入字节slice                                |
+| TempDir   | 在一个目录中创建指定前缀名的临时目录，返回新临时目录的路径 |
+| TempFile  | 在一个目录中创建指定前缀名的临时目录，返回os.File          |
 
 ### 3.7 bufio
 
@@ -2603,6 +2614,7 @@ func testCopy() {
 **常量**
 
 ```go
+// 默认缓冲区大小
 const (
 	defaultBufSize = 4096  
 )
@@ -2611,6 +2623,7 @@ const (
 **变量**
 
 ```go
+// 缓冲区异常提升
 var (
   ErrInvalidUnreadByte = errors.New("bufio: invalid use of UnreadByte")
   ErrInvalidUnreadRune = errors.New("bufio: invalid use of UnreadRune")
@@ -2618,6 +2631,439 @@ var (
   ErrNegativeCount     = errors.New("bufio: negative count")
 )
 ```
+
+#### 3.7.1 建立带缓冲区的buffer Reader
+
+```go
+  open, _ := os.Open("a.txt")
+	defer open.Close()
+	// 默认缓冲区大小为4096，可以通过`bufio.NewReaderSize(open, 1024)`指定
+	bufferReader := bufio.NewReaderSize(open, 1024)
+	readString, _ := bufferReader.ReadString('\n')
+	fmt.Println(readString)
+```
+
+#### 3.7.2 for循环读取
+
+```go
+  reader := strings.NewReader("ABCDEFGHIZKLMNOPQRSTUVWXYZ0123456789")
+	bufferReader := bufio.NewReader(reader)
+	// 缓冲区
+	buffer := make([]byte, 10)
+	for true {
+		// 读到缓冲区内，n表示这一次实际读取到的字节数
+		n, err := bufferReader.Read(buffer)
+		if err == io.EOF {
+			break
+		}
+		// 将读到的打印出来，需要注意可能没有满一个buffer，需要切片
+		fmt.Println(string(buffer[0:n]))
+	}
+```
+
+#### 3.7.3 其他Reader api
+
+- `ReadSlice(',')`：按照某个字符切片读取
+
+#### 3.7.4 Writer
+
+```go
+  file, _ := os.OpenFile("a.txt", os.O_RDWR, 0777)
+	defer file.Close()
+	writer := bufio.NewWriter(file)
+	// 带缓冲区的writer可以直接写入字符串
+	writer.WriteString("hello world")
+	// 必须强制将缓冲区的数据刷新到磁盘中
+	writer.Flush()
+```
+
+#### 3.7.5 scanner
+
+键盘扫描器
+
+```go
+reader := strings.NewReader("ABC DEF GHI")
+scanner := bufio.NewScanner(reader)
+// bufio.ScanWords 表示以空格作为分割
+scanner.Split(bufio.ScanWords)
+for scanner.Scan() {
+	fmt.Println(scanner.Text())
+}
+// 输出
+ABC
+DEF
+GHI
+```
+
+还可以以字符作为分割
+
+```go
+reader := strings.NewReader("hello 世界")
+scanner := bufio.NewScanner(reader)
+// bufio.ScanRunes 表示以字符作为分割
+scanner.Split(bufio.ScanRunes)
+for scanner.Scan() {
+	fmt.Println(scanner.Text())
+}
+// 输出
+h
+e
+l
+l
+o
+ 
+世
+界
+```
+
+### 3.8 log标准库
+
+golang内置了`log`包，实现简单的日志服务。通过调用`log`包的函数，可以实现简单的日志打印功能
+
+**log使用**
+
+log包中有三个系列的日志打印函数，分别是`print`、`panic`、`fatal`
+
+| 函数类型 | 作用                                                         |
+| -------- | ------------------------------------------------------------ |
+| print    | 单纯打印日志                                                 |
+| panic    | 打印日志，并抛出panic异常（异常之后的代码块不会执行，defer会执行） |
+| fatal    | 打印日坠，强制结束程序（使用`os.Exit(1)`，`defer`函数也不会执行） |
+
+### 3.9 标准库之builtin
+
+这个包提供了一些类型声名、变量和常量声名，还有一些遍历函数，这个包不需要导入，这些变量和函数就可以直接使用
+
+#### 3.9.1 常用函数
+
+- append：直接在slice后面添加单个元素，元素类型可以和slice相同，也可以不同
+
+  ```go
+  func append(slice []Type, elems ...Type) []Type
+  // 直接在slice后面添加单个元素，元素类型可以和slice相同，也可以不同
+  slice = append(slice, elem1, elem2)
+  // 直接将另外一个slice添加到slice后面，但其本质还是将anotherSlice中的元素一个一个添加到slice中，和第一种方式类似
+  slice = append(slice, anotherSlice...)
+  
+  ```
+
+- len：计算数组的长度
+
+演示：
+
+```go
+s := []int{1, 2, 3}
+i := append(s, 1)
+fmt.Println(i)
+s2 := []int{1, 2, 3}
+// ...是结构运算符，表示在编译期将数组中的元素解构出来，变成上面的样子
+i2 := append(s, s2...)
+fmt.Println(i2)
+fmt.Println("长度：", len(i2))
+// 打印
+print("builtin包中print")
+println("builtin包中println")
+```
+
+#### 3.9.2 常用函数之`new`和`make`
+
+`new`和`make`的区别为：
+
+1. `make`只能用来分配初始化类型为`slice`、`map`、`chan`的数据，`new`可以分配任意类型的数据
+2. `new`分配返回的是指针，即类型`*T`；`make`返回引用，即`T`
+3. `new`分配的空间被清零，`make`分配后，会进行初始化
+
+**举个栗子**：
+
+>new
+
+```go
+// 使用new初始化的都是一些默认值
+b := new(bool)
+fmt.Printf("%T \n", b)  // *bool
+fmt.Printf("%v \n", *b) // false
+```
+
+>make
+>
+>内建函数make(T, args)与new(T)的用途不一样。它只用来创建`slice`、`map`、`channel`，并且返回一个初始化的（并不是默认值或者说是零值），类型为T的值（而不是*T）。之所以有所不同，是因为这三个类型的背后引用了使用前必须初始化的数据结构。例如，slice是一个三元描述符，包含了一个指向数据（在数组中）的指针，长度已经容量。在这些项被初始化前，slice都是`nil`的/对于`slice`、`map`、`chan`，make初始化这些内部数据结构，并注备好可用的值
+
+```go
+make([]int, 10, 100)
+```
+
+分配了一个有100个int的数组，然后创建一个长度为10，容量为100的slice结构，该slice引用包含前10个元素的数组
+
+对应的，`new([]int)`返回一个指向新分配的，被置零的slice结构体的指针，即指向值为`nil`的`slice`的指针
+
+```go
+p := new([]int) // new出来的都是指针，并没有初始化
+fmt.Println(p) // &[]
+p2 := make([]int, 10) // make的时候已经提前分配空间了，既然有了空间也就有零值了
+fmt.Println(p2) // [0 0 0 0 0 0 0 0 0 0]
+```
+
+### 3.10 标准库之bytes
+
+bytes包提供了对**字节切片**进行读写操作的一系列函数，字节切片处理的函数比较多，可以分为：
+
+- 基本处理函数
+- 比较函数：bytes.Contains(b1, b2)
+- 计数函数：bytes.Count(b1, b2)， 返回b2在b1中出现的次数
+- 后缀检查函数
+- 索引函数
+- 分割函数
+- 大小写处理函数
+- 子切片处理函数
+- 等等
+
+### 3.12 标准库之buffer
+
+跟上面io包的差不多
+
+### 3.13 标准库之errors
+
+errors包实现了操作错误的函数。语言使用`error`类型来返回函数执行过程中遇到的错误，如果返回的error值为nil，则表示未遇到错误，否则error会返回一个字符串，用于说明遇到了什么错误
+
+**error结构**
+
+```go
+type error interface {
+  Error() string
+}
+```
+
+你可以用任何类型去实现它（只需要绑定一个Error方法即可），也就是说，error可以是任意类型，这意味着，函数返回的error值实际可以包含任意信息，不一定是字符串
+
+error不一定表示一个错误，他可以表示任意信息，比如io包中就用error类型的`io.EOF`表示数据读取结束，而不是遇到了什么错误
+
+error包实现了一个最简单的error类型，只包含一个字符串，它可以记录大多数情况下遇到的错误信息。errors包的用法也很简单，只有一个`New`函数，用于生成一个最简单的error对象
+
+>我们封装一个自定义的异常来演示一下
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+	"time"
+)
+
+func main() {
+	if err := oops(); err != nil {
+		fmt.Println(err) // 异常时间：【2023-01-18 18:12:59.325815 +0800 CST m=+0.000114982】，异常提示：【throw an bizError...】
+	}
+}
+
+// BizError 自定义错误
+type BizError struct {
+	when time.Time
+	what string
+}
+
+// 绑定一个方法
+func (bizError *BizError) Error() string {
+	return fmt.Sprintf("异常时间：【%v】，异常提示：【%v】", bizError.when, bizError.what)
+}
+
+// 产生一个错误
+func oops() error {
+	return &BizError{time.Now(), "throw an bizError..."}
+}
+```
+
+### 3.14 标准库之sort包
+
+sort包提供了排序切片和用户自定义数据集以及相关功能的函数
+
+sort包主要针对`[]int`、`[]float64`、`[]string`，以及其他**自定义切片**的排序
+
+**结构体**
+
+```go
+type IntSlice struct
+type Float64Slice
+type StringSlice
+```
+
+**一些函数**：
+
+![image-20230118185036583](https://cdn.fengxianhub.top/resources-master/image-20230118185036583.png)
+
+**接口 type Interface**
+
+自定义的接口如果需要排序以下三个接口
+
+```go
+type MyInterface interface {
+  Len() int // Len方法返回集合中的元素个数
+  Less(i, j int) bool // i > j，该方法返回索引i的元素是否比索引j的元素小
+  Swap(i, j int) // 交换i，j的值
+}
+```
+
+举个例子
+
+#### 3.14.1 排序自定义类型
+
+主要需要实现三个方法
+
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func main() {
+	// 产生几个对象
+	b1 := Person{age: 18, name: "张三"}
+	b2 := Person{age: 14, name: "李四"}
+	b3 := Person{age: 20, name: "王五"}
+	pArray := []Person{b1, b2, b3}
+	// 排序
+	sort.Sort(PersonArray(pArray))
+	fmt.Println(pArray) // [{14 李四} {18 张三} {20 王五}]
+}
+
+type PersonArray []Person
+
+type Person struct {
+	age  int
+	name string
+}
+
+// Len 实现Len方法，返回长度
+func (b PersonArray) Len() int {
+	return len(b)
+}
+
+// Less 判断指定索引的两个数字的大小
+func (b PersonArray) Less(i, j int) bool {
+	fmt.Println(i, j, b[i].age < b[j].age, b)
+	return b[i].age < b[j].age
+}
+
+// Swap 交换两个索引位置的值
+func (b PersonArray) Swap(i, j int) {
+	b[i], b[j] = b[j], b[i]
+}
+
+```
+
+#### 3.14.2 排序map
+
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+type mapArray []map[string]float64
+
+// Len 实现三个方法
+func (m mapArray) Len() int           { return len(m) }
+func (m mapArray) Swap(i, j int)      { m[i], m[j] = m[j], m[i] }
+func (m mapArray) Less(i, j int) bool { return m[i]["a"] < m[j]["a"] } // 按照"a"对应的值来排序
+
+func main() {
+	maps := mapArray{
+		{"a": 4, "b": 12},
+		{"a": 3, "b": 11},
+		{"a": 5, "b": 10},
+	}
+	fmt.Println(maps) // [map[a:4 b:12] map[a:3 b:11] map[a:5 b:10]]
+	sort.Sort(maps)
+	fmt.Println(maps) // [map[a:3 b:11] map[a:4 b:12] map[a:5 b:10]]
+}
+
+```
+
+### 3.15 标准库之time包
+
+time包提供测量和现实时间的功能
+
+#### 3.15.1基本使用
+
+打印出现在的时间，基本示例如下：
+
+其中now为`time.Time`类型，Month为`time.Month`类型
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	now := time.Now() // 获取当前时间
+	year := now.Year()
+	month := now.Month()
+	day := now.Day()
+	hour := now.Hour()
+	minute := now.Minute()
+	second := now.Second()
+	// 2023-01-18 23:07:55
+	fmt.Printf("%d-%02d-%02d %02d:%02d:%02d\n", year, month, day, hour, minute, second)
+	// int time.Month int int int int
+	fmt.Printf("%T %T %T %T %T %T\n", year, month, day, hour, minute, second)
+}
+
+```
+
+**时间戳**
+
+10位毫秒时间戳
+
+```go
+// timeStamp type:int64, timeStamp value:1674054652
+fmt.Printf("timeStamp type:%T, timeStamp value:%v \n", now.Unix(), now.Unix())
+```
+
+19位纳秒时间戳
+
+```go
+// timeStamp type:int64, timeStamp value:1674054740084953000
+fmt.Printf("timeStamp type:%T, timeStamp value:%v \n", now.UnixNano(), now.UnixNano())
+```
+
+#### 3.15.2 操作时间
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
