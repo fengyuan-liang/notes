@@ -3035,7 +3035,369 @@ fmt.Printf("timeStamp type:%T, timeStamp value:%v \n", now.UnixNano(), now.UnixN
 
 #### 3.15.2 操作时间
 
+**Add**
 
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	// 现在的时间 2023-01-19 10:30:03
+	fmt.Println(formatDate(time.Now()))
+	// 增加后的时间 2023-01-19 13:34:08
+	t := add(3, 4, 5, 6, 7, 8)
+	fmt.Println(formatDate(t))
+}
+
+// 增加时间
+func add(h, m, s, mls, msc, ns time.Duration) time.Time {
+	now := time.Now()
+	return now.Add(time.Hour*h + time.Minute*m + time.Second*s + time.Millisecond*mls + time.Microsecond*msc + time.Nanosecond*ns)
+}
+
+func formatDate(now time.Time) string {
+	year := now.Year()
+	month := now.Month()
+	day := now.Day()
+	hour := now.Hour()
+	minute := now.Minute()
+	second := now.Second()
+	// 2023-01-18 23:07:55
+	return fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d\n", year, month, day, hour, minute, second)
+}
+
+```
+
+>注意这里并不能增加`年月日`，仅仅能增加时分秒，也就是以下才被允许
+
+```go
+const (
+	Nanosecond  Duration = 1
+	Microsecond          = 1000 * Nanosecond
+	Millisecond          = 1000 * Microsecond
+	Second               = 1000 * Millisecond
+	Minute               = 60 * Second
+	Hour                 = 60 * Minute
+)
+```
+
+**sub**
+
+sub需要注意，谁的sub就以谁为参考
+
+```go
+func sub() {
+	now := time.Now()
+	targetTime := now.Add(time.Hour)
+	// 目标时间与此时相比相差1h0m0s
+	fmt.Println(targetTime.Sub(now))
+}
+```
+
+**Equal**
+
+判断两个时间是否相同，会考虑时区的影响，因此不同时区标准的时间也可以正确进行比较
+
+```go
+func (t Time) Equal(u Time) bool
+```
+
+**Before**
+
+如果`t`表示的时间点在`u`之前，返回真；否则返回假
+
+```go
+func (t Time) Before(u Time) bool
+```
+
+**定时器time.Tick**
+
+使用`time.Tick(时间间隔)`来设置定时器，定时器的本质上是一个`channel`
+
+```go
+func tick() {
+  ticker := time.Tick(time.Second) // 定义一个1秒间隔的定时器
+  for i := range ticker {
+    fmt.Println(i) // 每秒都会执行的任务
+  }
+}
+```
+
+#### 3.15.3 时间格式化
+
+时间类型有一个自带的方法`Format`进行格式化，需要注意的是GO中格式化的时间模版不是常见的`Y-m-d H:M:S`，而是使用Go诞生时间`2006年1月2号15点04分`，记忆口诀为`2006 1 2 3 4`
+
+需要注意的是如果需要格式化为12小时格式的，需要加上`PM`
+
+```go
+now := time.Now()
+// 格式化的模版为Go的出生时间2006 1/2 15：04 Mon Jan
+// 24小时制 2023-01-19 11:02:41.404 Thu Jan
+fmt.Println(now.Format("2006-01-02 15:04:05.000 Mon Jan"))
+// 12小时制 2023-01-19 11:02:41.404 AM Thu Jan
+fmt.Println(now.Format("2006-01-02 03:04:05.000 PM Mon Jan"))
+// 2023/01/19 11:02
+fmt.Println(now.Format("2006/01/02 15:04"))
+// 11:02 2023/01/19
+fmt.Println(now.Format("15:04 2006/01/02"))
+// 2023/01/19
+fmt.Println(now.Format("2006/01/02"))
+```
+
+**解析字符串格式**
+
+```go
+now := time.Now()
+// 加载时区
+location, err := time.LoadLocation("Asia/Shanghai")
+if err != nil {
+	fmt.Println("加载时区出错", err)
+	return
+}
+// 要解析的时间
+str := "2023/01/19 11:02:02"
+// 按照指定时区和指定格式解析字符串时间
+timeObj, err2 := time.ParseInLocation("2006/01/02 15:04:05", str, location)
+if err2 != nil {
+	fmt.Println("解析时间出错", err)
+	return
+}
+fmt.Println(timeObj) // 2023-01-19 11:02:02 +0800 CST
+fmt.Println(timeObj.Sub(now)) // -9m41.431133s
+```
+
+### 3.16 标准库之encoding/json
+
+#### 3.16.1 基本使用
+
+这个包可以实现`json`的编码和解码，就是将jso`json`字符串转换为`struct`，或者将`struct`转换为`json`
+
+**两个核心函数**
+
+将`struct`编码成`json`，可以接受任意类型
+
+```go
+func marshal(v interface{}) ([]byte, error)
+```
+
+将`json`转码为`struct`结构体
+
+```go
+func Unmarshal(data []byte, v interface{}) error
+```
+
+**两个核心结构体**
+
+从输入流读取并解析json
+
+```go
+type Decoder struct {
+  // contains filtered or unexported fields
+}
+```
+
+写json到输出流
+
+```go
+type Encoder struct {
+  // contains filtered or unexported fields
+}
+```
+
+**举个例子**：
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func main() {
+	UnMarshal()
+}
+// 字符串转结构体
+func UnMarshal() {
+	b1 := []byte(`{"Name":"张三","Age":18,"Email":"zhangsan@xxx.com"}`)
+	var m Person
+	json.Unmarshal(b1, &m)
+	fmt.Println(m) // {张三 18 zhangsan@xxx.com}
+}
+// 结构体转字符串
+func Marshal() {
+	p := Person{Name: "张三", Age: 18, Email: "zhangsan@xxx.com"}
+	fmt.Println(p)
+	// 转换为json
+	marshal, _ := json.Marshal(p)
+	// 返回的是一个byte[]，需要转成字符串
+	fmt.Println(string(marshal)) // {"Name":"张三","Age":18,"Email":"zhangsan@xxx.com"}
+}
+
+type Person struct {
+	Name  string
+	Age   int
+	Email string
+}
+```
+
+#### 3.16.2 io流之网络编程
+
+io流`Reader Writer`可以拓展到`http websocket`等场景
+
+```go
+// 可以从网络中获取json
+f, _ := os.Open("a.json")
+defer f.Close()
+d := json.NewDecoder(f)
+var v map[string]interface{}
+d.Decode(&v)
+fmt.Println(v) // map[Age:18 Email:zhangsan@xxx.com Name:张三]
+```
+
+将对象解析为json存储到文本中（也可以送到网络io里面）
+
+```go
+p := Person{Name: "张三", Age: 18, Email: "zhangsan@xxx.com"}
+file, _ := os.OpenFile("a.json", os.O_WRONLY, 0777)
+defer file.Close()
+encoder := json.NewEncoder(file)
+encoder.Encode(p)
+```
+
+### 3.17 标准库之encoding/xml
+
+xml包实现xml解析
+
+**两个核心函数**
+
+将`struct`编码成xml，可以接受任意类型
+
+```go
+func Marshal(v interface{}) ([]byte, error)
+```
+
+将xml转换为`struct`
+
+```go
+func Unmarshal(data []byte, v interface{}) error
+```
+
+**举个例子**：
+
+>结构体转xml
+
+```go
+package main
+
+import (
+	"encoding/xml"
+	"fmt"
+)
+
+func main() {
+	person := Person{Name: "张三", Age: 18, Email: "张三@xxx.com"}
+	// 这样是没有对齐格式的
+	marshal, _ := xml.Marshal(person)
+	// 这样是有对齐格式的，第二个参数表示前缀，第三个表示缩紧
+	indent, _ := xml.MarshalIndent(person, "", "  ")
+	// 返回的是一个字节数组，需要转成字符串
+	fmt.Println(string(marshal))
+	// 有缩进的格式
+	fmt.Println(string(indent))
+}
+
+type Person struct {
+	XmlName xml.Name `xml:"person"`
+	Name    string   `xml:"name"`
+	Age     int      `xml:"age"`
+	Email   string   `xml:"email"`
+}
+```
+
+输出：
+
+```xml
+<Person><person></person><name>张三</name><age>18</age><email>张三@xxx.com</email></Person>
+<Person>
+  <person></person>
+  <name>张三</name>
+  <age>18</age>
+  <email>张三@xxx.com</email>
+</Person>
+```
+
+> xml转结构体
+
+```go
+str := "<Person><person></person><name>张三</name><age>18</age><email>张三@xxx.com</email></Person>"
+b := []byte(str)
+var p Person
+xml.Unmarshal(b, &p)
+fmt.Println(p) // {{ person} 张三 18 张三@xxx.com}
+```
+
+文件或者网络io读写
+
+```go
+// 读
+file, _ := os.OpenFile("a.xml", os.O_RDONLY, 0777)
+defer file.Close()
+decoder := xml.NewDecoder(file)
+var p Person
+decoder.Decode(&p)
+fmt.Println(p) // {{ person} 张三 18 张三@xxx.com}
+```
+
+```go
+// 写
+file, _ := os.OpenFile("a.xml", os.O_WRONLY, 0777)
+defer file.Close()
+encoder := xml.NewEncoder(file)
+person := Person{Name: "张三", Age: 18, Email: "张三@xxx.com"}
+// 转换为xml
+encoder.Encode(person)
+```
+
+### 3.17 标准库之math
+
+math包包含了一些常量和一些有用的数学计算函数，例如：三角函数、随机数、绝对值、平方根等
+
+**相关常量**
+
+![image-20230119142527992](https://cdn.fengxianhub.top/resources-master/image-20230119142527992.png)
+
+**常用方法**：
+
+- Abs：绝对值
+
+- Pow(a, b)：取a的b次方
+
+- Aqrt(x)：取x的开平方
+
+- Cbrt(x)：取x的开立方
+
+- Ceil(x)：向上取整
+
+- Floor(x)：向下取整
+
+- Mod(a, b)：取余数，等价于 a % b
+
+- Mods(x)：取x的整数和小数
+
+  ```go
+  modf, frac := math.Modf(3.14)
+  fmt.Println(modf) // 3
+  fmt.Println(frac) // 0.14000000000000012
+  ```
+
+- math.rand.Int()：取一个int类型的随机数。可以设置随机数的种子`rand.Seed(time.Now().UnixMicro())`
+
+- rand.Intn(n)：小于n的随机数，取不到n
 
 
 
