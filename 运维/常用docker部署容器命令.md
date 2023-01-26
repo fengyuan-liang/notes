@@ -107,10 +107,16 @@ docker run -d \
 mysql:5.7
 ```
 
+
+
 如果远程连接不上，可以这样
 
 ```java
+// 先使用user库
+use mysql;
+// 建议不要使用root，换一个名字
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '01a0bd0704aa498fa84b71545a808433' WITH GRANT OPTION
+刷新权限：flush privileges
 ```
 
 ### 2.2 安装redis
