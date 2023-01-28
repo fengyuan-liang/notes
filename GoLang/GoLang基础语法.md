@@ -12,6 +12,8 @@
 
 这里放一些比较好的学习资料
 
+- [go 语言-嗨客网 (haicoder.net)](https://haicoder.net/golang/golang-tutorial.html)
+
 - [Go 教程_w3cschool](https://www.w3cschool.cn/go/)
 - [Go语言入门教程，Golang入门教程（非常详细） (biancheng.net)](http://c.biancheng.net/golang/)
 

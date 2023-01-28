@@ -2,7 +2,7 @@
 
 市面上有许多优秀的golang orm框架
 
-- gorm
+- gorm：[GORM - The fantastic ORM library for Golang, aims to be developer friendly.](https://gorm.io/zh_CN/)
 
 ## 1. golang原生操作
 
@@ -645,6 +645,10 @@ func (dbHelper *MongoDbHelper) Del(delFilter bson.D) (int64, bizError.BizErrorer
 
 ## 2. gorm
 
+详情请查看官网：
+
+- [GORM - The fantastic ORM library for Golang, aims to be developer friendly.](https://gorm.io/zh_CN/)
+
 >Orm简介
 >
 >对象关系映射（Object Relational Mapping，简称ORM）模式是一种为了解决对象与关系数据库存在互不匹配问题的技术（例如Java中对象和表之间的映射）
@@ -655,6 +659,171 @@ func (dbHelper *MongoDbHelper) Del(delFilter bson.D) (int64, bizError.BizErrorer
 go get -u gorm.io/gorm
 go get -u gorm.io/driver/mysql
 ```
+
+### 2.1 声明一个Model模型
+
+`Model`是标准的`struct`，由`Go`的基本数据类型，实现了`Scanner`和`Valuer`接口的自定义类型及指针或别名组成
+
+举个例子：
+
+```go
+type User struct {
+  ID           uint
+  Name         string
+  Email        *string
+  Age          uint8
+  Birthday     *time.Time
+  MemberNumber sql.NullString
+  ActivatedAt  sql.NullTime
+  CreatedAt    time.Time
+  UpdatedAt    time.Time
+}
+```
+
+GORM 倾向于约定优于配置 默认情况下，GORM 使用 `ID` 作为主键，使用结构体名的 `蛇形复数` 作为表名，字段名的 `蛇形` 作为列名，并使用 `CreatedAt`、`UpdatedAt` 字段追踪创建、更新时间
+
+如果您遵循 GORM 的约定，您就可以少写的配置、代码。 如果约定不符合您的实际要求，[GORM 允许你配置它们](https://gorm.io/zh_CN/docs/conventions.html)
+
+当然我们一般直接继承`gorm.Model`即可
+
+```go
+// gorm.Model 的定义
+type Model struct {
+  ID        uint           `gorm:"primaryKey"`
+  CreatedAt time.Time
+  UpdatedAt time.Time
+  DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+```
+
+### 2.2 CRUD操作
+
+这里详见官方文档，非常详细
+
+```go
+func InitDriver() (*gorm.DB, bizError.BizErrorer) {
+	dsn := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&parseTime=True", USER_NAME, PASSWORD, URL, PORT, DB_NAME)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, bizError.NewBizError(fmt.Sprintf("数据库连接建立失败，错误信息为：%v", err))
+	}
+	return db, nil
+}
+```
+
+具体操作：
+
+```go
+db, _ := gormUtil.InitDriver()
+// 创建表
+err := db.AutoMigrate(&gormUtil.Product{})
+if err != nil {
+  fmt.Println(err)
+}
+// 插入数据
+p := gormUtil.Product{Code: "1001", Price: 20}
+// 一定要传递指针
+db.Create(&p)
+// 查询
+var p gormUtil.Product
+// 查询主键id为1的记录
+db.First(&p, 1)
+fmt.Println(p)
+// 查询code为1001的记录
+db.First(&p, "code = ?", "1001")
+fmt.Println(p)
+// 更新
+
+// 条件更新
+db.Model(&User{}).Where("active = ?", true).Update("name", "hello")
+// UPDATE users SET name='hello', updated_at='2013-11-17 21:34:10' WHERE active=true;
+
+// User 的 ID 是 `111`
+db.Model(&user).Update("name", "hello")
+// UPDATE users SET name='hello', updated_at='2013-11-17 21:34:10' WHERE id=111;
+
+// 根据条件和 model 的值进行更新
+db.Model(&user).Where("active = ?", true).Update("name", "hello")
+// UPDATE users SET name='hello', updated_at='2013-11-17 21:34:10' WHERE id=111 AND active=true;
+
+// 删除
+
+// Email 的 ID 是 `10`
+db.Delete(&email)
+// DELETE from emails where id = 10;
+
+// 带额外条件的删除
+db.Where("name = ?", "jinzhu").Delete(&email)
+// DELETE from emails where id = 10 AND name = "jinzhu";
+
+```
+
+还可以自己进行映射
+
+```go
+var id int
+var name string
+var age int
+row := db.Table("t_person").Where("id = ?", 1).Row()
+err := row.Scan(&id, &name, &age)
+if err != nil {
+  fmt.Println(err)
+  return
+}
+fmt.Println(id, name, age)
+```
+
+### 2.3 原生sql
+
+- [SQL 构建器 | GORM - The fantastic ORM library for Golang, aims to be developer friendly.](https://gorm.io/zh_CN/docs/sql_builder.html)
+
+```go
+db, _ := gormUtil.InitDriver()
+var p gormUtil.Product
+// RAW执行原生sql
+db.Raw("select * from products where price = 200 limit 1").Scan(&p)
+fmt.Println(p)
+
+// Exec 原生 SQL
+db.Exec("DROP TABLE users")
+db.Exec("UPDATE orders SET shipped_at = ? WHERE id IN ?", time.Now(), []int64{1, 2, 3})
+// Exec with SQL Expression
+db.Exec("UPDATE users SET money = ? WHERE name = ?", gorm.Expr("money * ? + ?", 10000, 1), "jinzhu")
+```
+
+其他详情见官网
+
+## 3. xorm
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
