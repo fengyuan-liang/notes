@@ -643,6 +643,10 @@ func (dbHelper *MongoDbHelper) Del(delFilter bson.D) (int64, bizError.BizErrorer
 
 ```
 
+### 1.4 事物物相关
+
+
+
 ## 2. gorm
 
 详情请查看官网：
@@ -792,6 +796,367 @@ db.Exec("UPDATE users SET money = ? WHERE name = ?", gorm.Expr("money * ? + ?", 
 ```
 
 其他详情见官网
+
+### 2.4 关联查询
+
+我们知道表和表之间的关系有三种：一对一、一对多和多对多
+
+#### 2.4.1 Belongs To
+
+`belongs to` 会与另一个模型建立了一对一的连接。 这种模型的每一个实例都**属于**另一个模型的一个实例
+
+例如，您的应用包含 user 和 company，并且每个 user 能且只能被分配给一个 company。下面的类型就表示这种关系。 注意，在 `User` 对象中，有一个和 `Company` 一样的 `CompanyID`。 默认情况下， `CompanyID` 被隐含地用来在 `User` 和 `Company` 之间创建一个外键关系， 因此必须包含在 `User` 结构体中才能填充 `Company` 内部结构体
+
+```go
+// `User` 属于 `Company`，`CompanyID` 是外键
+type User struct {
+  gorm.Model
+  Name      string
+  CompanyID int
+  Company   Company
+}
+
+type Company struct {
+  ID   int
+  Name string
+}
+```
+
+我们可以生成一下这两张表，然后观察表结构
+
+```sql
+mysql> show create table users;
+CREATE TABLE `users` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` datetime(3) DEFAULT NULL,
+  `updated_at` datetime(3) DEFAULT NULL,
+  `deleted_at` datetime(3) DEFAULT NULL,
+  `name` longtext,
+  `company_id` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_users_deleted_at` (`deleted_at`),
+  KEY `fk_users_company` (`company_id`),
+  CONSTRAINT `fk_users_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+```
+
+我们可以发现产生了一个外键`fk_users_company`，用来联系`company_id`与`id`，这个就是gorm一对一帮我们产生的外键关系
+
+当然我们可以通过制定一个tag标签给这个外键起个名字
+
+```go
+type User struct {
+  gorm.Model
+  Name         string
+  CompanyRefer int
+  Company      Company `gorm:"foreignKey:CompanyRefer"`
+  // 使用 CompanyRefer 作为外键
+}
+```
+
+#### 2.4.1 has one（一对一）
+
+`has one` 与另一个模型建立一对一的关联，但它和一对一关系有些许不同。 这种关联表明一个模型的每个实例都包含或拥有另一个模型的一个实例。
+
+例如，您的应用包含 user 和 credit card 模型，且每个 user 只能有一张 credit card
+
+```go
+// User 有一张 CreditCard，UserID 是外键
+type User struct {
+  gorm.Model
+  CreditCard CreditCard
+}
+
+type CreditCard struct {
+  gorm.Model
+  Number string
+  UserID uint
+}
+```
+
+#### 2.4.3 Has Many(一对多)
+
+`has many` 与另一个模型建立了一对多的连接。 不同于 `has one`，拥有者可以有零或多个关联模型。
+
+例如，您的应用包含 user 和 credit card 模型，且每个 user 可以有多张 credit card
+
+```go
+// User 有多张 CreditCard，UserID 是外键
+type User struct {
+  gorm.Model
+  CreditCards []CreditCard
+}
+
+type CreditCard struct {
+  gorm.Model
+  Number string
+  UserID uint
+}
+```
+
+
+
+#### 2.4.3 Many To Many(多对多)
+
+Many to Many 会在两个 model 中添加一张连接表。
+
+例如，您的应用包含了 user 和 language，且一个 user 可以说多种 language，多个 user 也可以说一种 language
+
+```go
+// User 拥有并属于多种 language，`user_languages` 是连接表
+type User struct {
+  gorm.Model
+  Languages []Language `gorm:"many2many:user_languages;"`
+}
+
+type Language struct {
+  gorm.Model
+  Name string
+}
+```
+
+当使用 GORM 的 `AutoMigrate` 为 `User` 创建表时，GORM 会自动创建连接表
+
+### 2.5 事物相关
+
+**禁用默认事务**
+
+为了确保数据一致性，GORM 会在事务里执行写入操作（创建、更新、删除）。如果没有这方面的要求，您可以在初始化时禁用它，这将获得大约 30%+ 性能提升
+
+```go
+// 全局禁用
+db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{
+  SkipDefaultTransaction: true,
+})
+
+// 持续会话模式
+tx := db.Session(&Session{SkipDefaultTransaction: true})
+tx.First(&user, 1)
+tx.Find(&users)
+tx.Model(&user).Update("Age", 18)
+```
+
+#### 2.5.1 使用事物
+
+要在事务中执行一系列操作，一般流程如下
+
+```go
+db.Transaction(func(tx *gorm.DB) error {
+  // 在事务中执行一些 db 操作（从这里开始，您应该使用 'tx' 而不是 'db'）
+  if err := tx.Create(&Animal{Name: "Giraffe"}).Error; err != nil {
+    // 返回任何错误都会回滚事务
+    return err
+  }
+
+  if err := tx.Create(&Animal{Name: "Lion"}).Error; err != nil {
+    return err
+  }
+
+  // 返回 nil 提交事务
+  return nil
+})
+```
+
+#### 2.5.2 嵌套事务
+
+```go
+db.Transaction(func(tx *gorm.DB) error {
+  tx.Create(&user1)
+
+  tx.Transaction(func(tx2 *gorm.DB) error {
+    tx2.Create(&user2)
+    return errors.New("rollback user2") // Rollback user2
+  })
+
+  tx.Transaction(func(tx2 *gorm.DB) error {
+    tx2.Create(&user3)
+    return nil
+  })
+  // 返回 nil 提交事务
+  return nil
+})
+
+// Commit user1, user3
+```
+
+#### 2.5.3 手动事务
+
+Gorm 支持直接调用事务控制方法（commit、rollback），例如：
+
+```go
+// 开始事务
+tx := db.Begin()
+
+// 在事务中执行一些 db 操作（从这里开始，您应该使用 'tx' 而不是 'db'）
+tx.Create(...)
+
+// ...
+
+// 遇到错误时回滚事务
+tx.Rollback()
+
+// 否则，提交事务
+tx.Commit()
+```
+
+#### 2.5.4 SavePoint、RollbackTo
+
+GORM 提供了 `SavePoint`、`Rollbackto` 方法，来提供保存点以及回滚至保存点功能，例如：
+
+```go
+tx := db.Begin()
+tx.Create(&user1)
+
+tx.SavePoint("sp1")
+tx.Create(&user2)
+tx.RollbackTo("sp1") // Rollback user2
+
+tx.Commit() // Commit user1
+```
+
+
+
+### 2.6 session相关
+
+GORM 提供了 `Session` 方法，这是一个 [`New Session Method`](https://gorm.io/zh_CN/docs/method_chaining.html)，它允许创建带配置的新建会话模式
+
+```go
+// Session 配置
+type Session struct {
+  DryRun                   bool
+  PrepareStmt              bool
+  NewDB                    bool
+  Initialized              bool
+  SkipHooks                bool
+  SkipDefaultTransaction   bool
+  DisableNestedTransaction bool
+  AllowGlobalUpdate        bool
+  FullSaveAssociations     bool
+  QueryFields              bool
+  Context                  context.Context
+  Logger                   logger.Interface
+  NowFunc                  func() time.Time
+  CreateBatchSize          int
+}
+```
+
+#### 2.8.1 DryRun
+
+生成 `SQL` 但不执行。 它可以用于准备或测试生成的 SQL，例如：
+
+```go
+// 新建会话模式
+stmt := db.Session(&Session{DryRun: true}).First(&user, 1).Statement
+stmt.SQL.String() //=> SELECT * FROM `users` WHERE `id` = $1 ORDER BY `id`
+stmt.Vars         //=> []interface{}{1}
+
+// 全局 DryRun 模式
+db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{DryRun: true})
+
+// 不同的数据库生成不同的 SQL
+stmt := db.Find(&user, 1).Statement
+stmt.SQL.String() //=> SELECT * FROM `users` WHERE `id` = $1 // PostgreSQL
+stmt.SQL.String() //=> SELECT * FROM `users` WHERE `id` = ?  // MySQL
+stmt.Vars         //=> []interface{}{1}
+```
+
+你可以使用下面的代码生成最终的 SQL：
+
+```
+// 注意：SQL 并不总是能安全地执行，GORM 仅将其用于日志，它可能导致会 SQL 注入
+db.Dialector.Explain(stmt.SQL.String(), stmt.Vars...)
+// SELECT * FROM `users` WHERE `id` = 1
+```
+
+#### 2.8.2 预编译
+
+`PreparedStmt` 在执行任何 SQL 时都会创建一个 prepared statement 并将其缓存，以提高后续的效率，例如：
+
+```go
+// 全局模式，所有 DB 操作都会创建并缓存预编译语句
+db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{
+  PrepareStmt: true,
+})
+
+// 会话模式
+tx := db.Session(&Session{PrepareStmt: true})
+tx.First(&user, 1)
+tx.Find(&users)
+tx.Model(&user).Update("Age", 18)
+
+// returns prepared statements manager
+stmtManger, ok := tx.ConnPool.(*PreparedStmtDB)
+
+// 关闭 *当前会话* 的预编译模式
+stmtManger.Close()
+
+// 为 *当前会话* 预编译 SQL
+stmtManger.PreparedSQL // => []string{}
+
+// 为当前数据库连接池的（所有会话）开启预编译模式
+stmtManger.Stmts // map[string]*sql.Stmt
+
+for sql, stmt := range stmtManger.Stmts {
+  sql  // 预编译 SQL
+  stmt // 预编译模式
+  stmt.Close() // 关闭预编译模式
+}
+```
+
+#### 2.8.3 NewDB
+
+通过 `NewDB` 选项创建一个不带之前条件的新 DB，例如：
+
+```go
+tx := db.Where("name = ?", "jinzhu").Session(&gorm.Session{NewDB: true})
+
+tx.First(&user)
+// SELECT * FROM users ORDER BY id LIMIT 1
+
+tx.First(&user, "id = ?", 10)
+// SELECT * FROM users WHERE id = 10 ORDER BY id
+
+// 不带 `NewDB` 选项
+tx2 := db.Where("name = ?", "jinzhu").Session(&gorm.Session{})
+tx2.First(&user)
+// SELECT * FROM users WHERE name = "jinzhu" ORDER BY id
+```
+
+#### 2.8.4 初始化
+
+Create a new initialized DB, which is not Method Chain/Goroutine Safe anymore, refer [Method Chaining](https://gorm.io/zh_CN/docs/method_chaining.html)
+
+```go
+tx := db.Session(&gorm.Session{Initialized: true})
+```
+
+#### 2.8.5 跳过钩子
+
+如果您想跳过 `钩子` 方法，您可以使用 `SkipHooks` 会话模式，例如：
+
+```go
+DB.Session(&gorm.Session{SkipHooks: true}).Create(&user)
+
+DB.Session(&gorm.Session{SkipHooks: true}).Create(&users)
+
+DB.Session(&gorm.Session{SkipHooks: true}).CreateInBatches(users, 100)
+
+DB.Session(&gorm.Session{SkipHooks: true}).Find(&user)
+
+DB.Session(&gorm.Session{SkipHooks: true}).Delete(&user)
+
+DB.Session(&gorm.Session{SkipHooks: true}).Model(User{}).Where("age > ?", 18).Updates(&user)
+```
+
+#### 2.8.5 禁用嵌套事务
+
+在一个 DB 事务中使用 `Transaction` 方法，GORM 会使用 `SavePoint(savedPointName)`，`RollbackTo(savedPointName)` 为你提供嵌套事务支持。 你可以通过 `DisableNestedTransaction` 选项关闭它，例如：
+
+```go
+db.Session(&gorm.Session{
+  DisableNestedTransaction: true,
+}).CreateInBatches(&users, 100)
+```
 
 ## 3. xorm
 

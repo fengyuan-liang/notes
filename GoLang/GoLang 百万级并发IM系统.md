@@ -32,3 +32,29 @@
 **消息发送流程**
 
 ![image-20230127204251309](https://cdn.fengxianhub.top/resources-master/image-20230127204251309.png)
+
+## 2. 项目架构
+
+```java
+├── common 
+│   ├── bizError // 异常封装
+│   └── driverUtil // 驱动相关
+│       ├── mongoHelper
+│       └── mysqlHepler
+├── config // 配置文件
+├── models // 实体类
+├── router // 路由
+├── service
+├── sql
+├── test // 单元测试
+└── utils // 工具类
+```
+
+
+
+
+
+
+
+
+
