@@ -896,6 +896,86 @@ SELECT * FROM `user_basic` WHERE `age` = '10' AND `user_basic`.`deleted_at` IS N
 
 ![image-20230129163006242](https://cdn.fengxianhub.top/resources-master/image-20230129163006242.png)
 
+#### 3.1.3 插入相关
+
+这里我们用`validator`用来做参数校验，gin默认的`github.com/go-playground/validator`，可以直接使用
+
+除此之外还有一些其他的工具也挺好用的，例如：
+
+- github.com/asaskevich/govalidator
+
+这里笔者就使用gin默认的了
+
+然后开始使用，我们可以用来校验结构体
+
+```go
+type UserBasic struct {utils.ProcessErr(userParams, err)
+    UserId        uint64 `gorm:"column:user_id" json:"userId"`
+    UserNumber    string `gorm:"column:user_number" json:"userNumber"`
+    Name          string `validate:"required" reg_error_info:"姓名不能为空"`
+    Age           uint8  `validate:"gt=0,lt=200" reg_error_info:"年龄不合法"`
+    PassWord      string `gorm:"column:password" json:"password"`
+    PhoneNum      string `validate:"RegexPhone" reg_error_info:"手机号格式不正确"`
+    Email         string `validate:"email" reg_error_info:"email为空或格式不正确"`
+  ...其他省略
+}
+```
+
+这时一般返回的错误是这样的
+
+![image-20230130225947389](https://cdn.fengxianhub.top/resources-master/image-20230130225947389.png)
+
+当然这样不友好，我们希望能够返回自定义的提醒信息，我们封装一个方法即可
+
+```go
+// ProcessErr go validator参数校验器自定义规则及提示
+func ProcessErr(u interface{}, err error) string {
+	if err == nil { //如果为nil 说明校验通过
+		return ""
+	}
+	invalid, ok := err.(*validator.InvalidValidationError) //如果是输入参数无效，则直接返回输入参数错误
+	if ok {
+		return "输入参数错误：" + invalid.Error()
+	}
+	validationErrs := err.(validator.ValidationErrors) //断言是ValidationErrors
+	for _, validationErr := range validationErrs {
+		fieldName := validationErr.Field() //获取是哪个字段不符合格式
+		typeOf := reflect.TypeOf(u)
+		// 如果是指针，获取其属性
+		if typeOf.Kind() == reflect.Ptr {
+			typeOf = typeOf.Elem()
+		}
+		field, ok := typeOf.FieldByName(fieldName) //通过反射获取filed
+		if ok {
+			errorInfo := field.Tag.Get("reg_error_info") // 获取field对应的reg_error_info tag值
+			return fieldName + ":" + errorInfo           // 返回错误
+		} else {
+			return "缺失reg_error_info"
+		}
+	}
+	return ""
+}
+```
+
+再调用我们的方法即可
+
+```go
+// 参数校验
+validate := validator.New()
+// 自定义校验
+validate.RegisterValidation("RegexPhone", utils.RegexPhone)
+if err := validate.Struct(userParams); err != nil {
+  c.JSON(-1, response.Err.WithMsg(utils.ProcessErr(userParams, err)))
+  return
+}
+```
+
+现在就是我们想要的结果了
+
+![image-20230130230149986](https://cdn.fengxianhub.top/resources-master/image-20230130230149986.png)
+
+
+
 #### 3.1.3 更新相关
 
 和之前的思路差不多，但是这里有一个点需要注意的是，使用gin解析json数据后，所有的数字类型都会被保存为`float64`类型，我们需要通过结构体里面的类型将其类型转换一下，这样更新的时候才不会出问题，详细的转换过程可以看代码；其次就是`userId`这个字段不能被更新，可以添加到方法后面
@@ -905,6 +985,33 @@ SELECT * FROM `user_basic` WHERE `age` = '10' AND `user_basic`.`deleted_at` IS N
 我们最后要达成的效果是，根据前端传递的参数就能进行更新，并且还能够自动忽略一些字段
 
 ![image-20230130143051180](https://cdn.fengxianhub.top/resources-master/image-20230130143051180.png)
+
+这里只展示核心代码：
+
+```go
+// Update 更新用户信息
+// @Tags 更新用户信息
+// @Param param body models.UserBasic true "上传的JSON"
+// @Produce json
+// @Router /user/update [post]
+func Update(c *gin.Context) {
+	jsonMap := make(map[string]interface{}) // 注意该结构接受的内容
+	if err := c.BindJSON(&jsonMap); err != nil || len(jsonMap) <= 0 || jsonMap["userId"] == nil {
+		c.JSON(500, response.Err.WithMsg("参数缺失"))
+		return
+	}
+	// 不能直接用 map[string]interface{}解析，因为int会范化为float，更新会失败，必须要确定类型
+	parseMap := utils.ParseMapFieldType(jsonMap, models.UserBasic{}, "userId")
+	// TODO 从token中拿到userId
+	var userId = uint64(utils.ParseInt(jsonMap["userId"]))
+	models.Update(userId, func(tx *gorm.DB) {
+		tx.Updates(parseMap)
+	})
+	c.JSON(200, response.Ok)
+}
+```
+
+
 
 
 
