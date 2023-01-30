@@ -622,7 +622,9 @@ func f1() {
 }
 ```
 
-### 2.10 map相关
+### 2.10 map&list相关
+
+#### 2.10.1 map
 
 ```go
 package main
@@ -679,6 +681,50 @@ func testMap1() {
 	fmt.Printf("m1: %T\n", m1)
 }
 ```
+
+#### 2.10.2 list
+
+list是列表，一种非连续存储的容器，由多个节点组成，节点通过一些变量记录彼此之间的关系。list有多种实现方法，如单向链表、[双向链表](https://so.csdn.net/so/search?q=双向链表&spm=1001.2101.3001.7020)等
+
+- Go语言中的list的实现原理是双向链表，list能高效地进行任意位置的元素插入和删除操作。
+- Golang的标准库提供了高级的数据结构List，具体在包container/list。
+- container/list包里主要有两个数据结构类型：`Element`、`List`；
+- Element类型代表双向链表中的一个元素，相当于C++里面的“iterator”
+- List代表一个双向链表。List零值为一个空的、可用的链表。
+- Element有Prev和Next方法用于得到前一个或者下一个element，element可以直接调用value属性；
+
+**声明list**
+
+list与切片、Map不一样，没有具体元素类型的限制。在java、c++等里面，list的成员必须是同一个数据类型，但是Go语言中却允许list里插入任意类型成员。
+
+**建议使用New()实现list**
+
+```go
+格式：变量名:= list.New()
+      var 变量名 list.List
+```
+
+**遍历**
+
+```go
+var list2 list.List
+
+//遍历list，顺序遍历
+func iterateList1() {
+	for e := list2.Front(); e != nil; e = e.Next() {
+		fmt.Println(e.Value)
+	}
+}
+ 
+//遍历list，逆序遍历
+func iterateList2() {
+	for e := list2.Back(); e != nil; e = e.Prev() {
+		fmt.Println(e.Value)
+	}
+}
+```
+
+
 
 ### 2.11 函数
 
@@ -2294,6 +2340,13 @@ func reflectSetValue2(x interface{}) {
 }
 
 ```
+
+#### 2.23.4 反射遍历属性
+
+```go
+```
+
+
 
 ### 2.24 golang包
 

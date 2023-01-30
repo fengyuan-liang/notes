@@ -48,8 +48,8 @@ docker run -d \
     -v es-plugins:/usr/share/elasticsearch/plugins \
     --privileged \
     --network es-net \
-    -p 9200:9200 \
-    -p 9300:9300 \
+    -p 19200:9200 \
+    -p 19300:9300 \
 elasticsearch:7.12.1
 ```
 

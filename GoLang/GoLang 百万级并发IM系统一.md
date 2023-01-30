@@ -789,20 +789,122 @@ func PageQueryUserList(c *gin.Context) {
 
 ## 3. 功能开发
 
+为了开发方便我们需要引入一些第三方包
+
+- 结构体之间属性拷贝，类似于（spring中的BeanUtil）：https://github.com/ulule/deepcopier
+
+  这个直接将github上的`deepcopier.go`拷贝到`util`目录下即可
+
+- 用来做参数校验（类似于Spring中的validator） ：https://github.com/go-playground/validator
+
+  根据readme文档引入即可
+
 ### 3.1 用户模块
 
 我们先封装crud操作
 
+- 这里需要生成一个用户内显和用户外显，都必须保证唯一。内显是内部用来查询用户身份的，外显是给用户的id，可能会有靓号或者需要排除一些区间，userNumber不与其他的表进行关联，可以随意更改。具体做法有很多，这里采用最简单的方式进行生成，即用10位数字表示，并在db中查询，只有生成的不存在时才进行插入（**具体见插入代码**）
+
+#### 3.1.1 查询相关
+
+我们在生产的项目中是不可能允许查全表这种情况发生的，所有分页查询是我们获取集合的唯一途径，在前面我们封装gin的时候写过分页查询的接口，接下来我们写带过滤条件的分页查询
+
+**router**
+
 ```go
+u1.GET("/pageQueryByFilter", service.PageQueryByFilter)
 ```
 
+**Service**
 
+```go
+// PageQueryByFilter 带筛选条件的分页查询
+// @Tags 用户相关
+// @BasePath /user
+// @Summary 前端请求参数应为：http://xx:xx/pageQueryByFilter?pageSize=1&pageNo=1&name=1&age=2&email=xxx@xxx
+// @Produce json
+// @Success 200 {UserBasic} []*UserBasic
+// @Router /user/pageQueryByFilter [get]
+func PageQueryByFilter(c *gin.Context) {
+	// 拿到所有的过滤条件
+	queryMap := utils.GetAllQueryParams(c)
+	// 拿到参数
+	page := queryMap["pageNo"]
+	size := queryMap["pageSize"]
+	if page == "" || size == "" {
+		c.JSON(500, response.Err.WithMsg("参数缺失"))
+		return
+	}
+	// 转化类型
+	pageInt, _ := strconv.Atoi(page)
+	sizeInt, _ := strconv.Atoi(size)
+	// 没有过滤条件
+	if len(queryMap) <= 2 {
+		c.JSON(200, response.Ok.WithData(models.PageQueryUserList(pageInt, sizeInt)))
+		return
+	}
+	// 添加所有的过滤条件
+	c.JSON(200, response.Ok.WithData(models.PageQueryByFilter(pageInt, sizeInt, func(tx *gorm.DB) {
+		for k, v := range queryMap {
+			if k == "pageNo" || k == "pageSize" {
+				continue
+			}
+			tx.Where(k, v)
+		}
+	})))
+}
+```
 
+**models**
 
+```go
+// PageQueryByFilter 根据过滤条件进行分页查询。可以使用
+func PageQueryByFilter(pageNo int, pageSize int, filter func(*gorm.DB)) []*UserBasic {
+	db := getDB()
+	// 初始化容器
+	tx := db.Scopes(daoEntity.Paginate(pageNo, pageSize))
+	// 执行回调函数
+	if filter != nil {
+		filter(tx)
+	}
+	// 初始化容器
+	userBasicList := make([]*UserBasic, pageSize)
+	tx.Find(&userBasicList)
+	return userBasicList
+}
+```
 
+**utils**
 
+```go
+// GetAllQueryParams 获取所有请求的参数，并封装为map返回
+func GetAllQueryParams(c *gin.Context) map[string]string {
+	query := c.Request.URL.Query()
+	var queryMap = make(map[string]string, len(query))
+	for k := range query {
+		queryMap[k] = c.Query(k)
+	}
+	return queryMap
+}
+```
 
+可以看到当查询sql，满足我们的预期
 
+```sql
+SELECT * FROM `user_basic` WHERE `age` = '10' AND `user_basic`.`deleted_at` IS NULL LIMIT 10
+```
+
+![image-20230129163006242](https://cdn.fengxianhub.top/resources-master/image-20230129163006242.png)
+
+#### 3.1.3 更新相关
+
+和之前的思路差不多，但是这里有一个点需要注意的是，使用gin解析json数据后，所有的数字类型都会被保存为`float64`类型，我们需要通过结构体里面的类型将其类型转换一下，这样更新的时候才不会出问题，详细的转换过程可以看代码；其次就是`userId`这个字段不能被更新，可以添加到方法后面
+
+![image-20230130142048715](https://cdn.fengxianhub.top/resources-master/image-20230130142048715.png)
+
+我们最后要达成的效果是，根据前端传递的参数就能进行更新，并且还能够自动忽略一些字段
+
+![image-20230130143051180](https://cdn.fengxianhub.top/resources-master/image-20230130143051180.png)
 
 
 
