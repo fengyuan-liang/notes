@@ -799,6 +799,12 @@ func PageQueryUserList(c *gin.Context) {
 
   根据readme文档引入即可
 
+goland可以下载一些插件
+
+- 代码注释自动生成插件：https://github.com/loveinsky100/goanno/
+
+  ![image-20230131113059397](https://cdn.fengxianhub.top/resources-master/image-20230131113059397.png)
+
 ### 3.1 用户模块
 
 我们先封装crud操作
