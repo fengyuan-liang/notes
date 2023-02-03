@@ -803,7 +803,11 @@ goland可以下载一些插件
 
 - 代码注释自动生成插件：https://github.com/loveinsky100/goanno/
 
-  ![image-20230131113059397](https://cdn.fengxianhub.top/resources-master/image-20230131113059397.png)
+  这里默认参数是`@param`，建议改成`@args`，因为swagger会认为这是接口注解从而报错
+  
+  ![image-20230202124948901](https://cdn.fengxianhub.top/resources-master/image-20230202124948901.png)
+  
+  ![image-20230202125042753](https://cdn.fengxianhub.top/resources-master/image-20230202125042753.png)
 
 ### 3.1 用户模块
 
@@ -1016,6 +1020,34 @@ func Update(c *gin.Context) {
 	c.JSON(200, response.Ok)
 }
 ```
+
+### 3.2 基础功能
+
+#### 3.2.1 登陆功能
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

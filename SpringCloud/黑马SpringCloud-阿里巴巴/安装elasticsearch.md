@@ -48,10 +48,26 @@ docker run -d \
     -v es-plugins:/usr/share/elasticsearch/plugins \
     --privileged \
     --network es-net \
-    -p 19200:9200 \
-    -p 19300:9300 \
+    -p 9200:9200 \
+    -p 9300:9300 \
 elasticsearch:7.12.1
 ```
+
+```sh
+docker run -d \
+	--name es-qiniu-761 \
+    -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" \
+    -e "discovery.type=single-node" \
+    -v es-qiniu-761-data:/usr/share/elasticsearch/data \
+    -v es-qiniu-761-plugins:/usr/share/elasticsearch/plugins \
+    --privileged \
+    --network es-qiniu-net \
+    -p 19200:9200 \
+    -p 19300:9300 \
+elasticsearch:7.6.1
+```
+
+![image-20230131213319014](https://cdn.fengxianhub.top/resources-master/image-20230131213319014.png)
 
 命令解释：
 
@@ -86,11 +102,11 @@ kibana可以给我们提供一个elasticsearch的可视化界面，便于我们�
 
 ```sh
 docker run -d \
---name kibana \
--e ELASTICSEARCH_HOSTS=http://es:9200 \
+--name kibana-qiniu-761 \
+-e ELASTICSEARCH_HOSTS=http://es-qiniu-761:9200 \
 --network=es-net \
 -p 5601:5601  \
-kibana:7.12.1
+kibana:7.6.1
 ```
 
 - `--network es-net` ：加入一个名为es-net的网络中，与elasticsearch在同一个网络中
