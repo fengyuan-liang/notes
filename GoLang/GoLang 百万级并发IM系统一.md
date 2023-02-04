@@ -48,6 +48,8 @@ import (
 
 type BizErrorer interface {
 	BizError() string
+	ErrorMsg() string
+	ErrorTime() time.Time
 }
 
 // BizError 自定义错误
@@ -58,9 +60,18 @@ type BizError struct {
 
 const FORMAT_DATA = "2006/01/02 15:04.000" // 标准格式化时间
 
-// 具体打印的异常信息
+// 绑定一个方法
 func (bizError *BizError) Error() string {
 	return fmt.Sprintf("异常时间:【%v】，异常提示:【%v】", bizError.when.Format(FORMAT_DATA), bizError.what)
+}
+
+// ErrorMsg 只返回错误信息本身
+func (bizError *BizError) ErrorMsg() string {
+	return bizError.what
+}
+
+func (bizError *BizError) ErrorTime() time.Time {
+	return bizError.when
 }
 
 // BizError 绑定自定义异常进行区分
@@ -81,7 +92,6 @@ func NewBizError(errMsg ...string) BizErrorer {
 		return totalMsg
 	}()}
 }
-
 ```
 
 ## 2. 引入中间件
@@ -785,6 +795,76 @@ func PageQueryUserList(c *gin.Context) {
 
 ![image-20230128172902081](https://cdn.fengxianhub.top/resources-master/image-20230128172902081.png)
 
+### 2.4 引入redis
+
+我们在后面用户登录功能开发中采用的鉴权方式为`token + redis`的方式，所以这里我们需要引入redis
+
+安装
+
+```go
+go get github.com/redis/go-redis/v9
+```
+
+添加配置文件（我这里是写在db下）
+
+```go
+  redis:
+    URL: "your url"
+    PORT: 6379
+    PASSWORD: ""
+    DB: 0
+    # 数据库连接池连接数量
+    POOL_SIZE: 30
+    # 
+    MinIdleConns: 10
+    # 超时时间，单位毫秒
+    PoolTimeout: 30
+```
+
+添加对应配置类的结构体
+
+```go
+// RedisStruct
+// @Description: redis数据源对应配置
+type RedisStruct struct {
+	URL          string `yaml:"URL"`
+	PORT         string `yaml:"PORT"`
+	PASSWORD     string `yaml:"PASSWORD"`
+	DB           string `yaml:"DB"`
+	POOL_SIZE    int    `yaml:"POOL_SIZE"`
+	MinIdleConns int    `yaml:"MinIdleConns"`
+	PoolTimeout  int    `yaml:"PoolTimeout"`
+}
+```
+
+初始化方法
+
+```go
+func InitRedis() (*redis.Client, bizError.BizErrorer) {
+	if redisClient != nil {
+		return redisClient, nil
+	}
+	// 配置文件
+	configStruct := getDbConfig()
+	redisConfig := configStruct.Db.Redis
+	redisClient = redis.NewClient(&redis.Options{
+		Addr:         redisConfig.URL + ":" + redisConfig.PORT,
+		Password:     redisConfig.PASSWORD,
+		PoolSize:     redisConfig.POOL_SIZE,
+		MinIdleConns: redisConfig.MinIdleConns,
+		PoolTimeout:  time.Duration(redisConfig.PoolTimeout),
+	})
+	// 测试连接
+	result, err := redisClient.Ping().Result()
+	if err != nil {
+		fmt.Println("result is ", result)
+	} else {
+		fmt.Println("=====>>>>err:", err)
+	}
+	return redisClient, nil
+}
+```
+
 
 
 ## 3. 功能开发
@@ -1025,7 +1105,172 @@ func Update(c *gin.Context) {
 
 #### 3.2.1 登陆功能
 
+这里我们需要考虑到项目之后的可拓展性，我们刚开始设计肯定是只支持`账号密码`，但是随着业务的发展，我们肯定需要拓展更多的登录方式，例如:
 
+- 手机号一键登录
+- OAuth2.0认证（例如qq登录、微信登录等等）
+
+所以我们必然在登录接口里面不能把逻辑全部写完，并且这部分逻辑写了之后应该不需要改动，要符合`开闭原则`
+
+我们可以使用`工厂模式 + 策略模式`来完成这部分内容
+
+首先我们定义`LoginHandle`接口，让接口的实现者去实现具体的login逻辑；其次我们再定义`LoginFactory`登录工厂，我们之后的登录handle都会存放到这个里面
+
+```go
+package loginHanle
+
+import (
+	"go-im/common/bizError"
+	"go-im/models"
+	"log"
+)
+
+// LoginHandle
+// @Description: 登录接口
+type LoginHandle interface {
+	// login
+	//  @Description: 登录接口
+	//  @param map[string]interface{} 登录时传递的参数
+	//
+	login(paramsMap map[string]interface{}) (*models.UserBasic, bizError.BizErrorer)
+}
+
+type LoginFactory struct {
+	// 登录工厂
+	loginStrategyFactoryMap map[string]LoginHandle
+}
+
+// GetLoginStrategy
+//
+//	@Description: 获取具体登录逻辑执行的handle
+//	@receiver loginFactory 登录工厂
+//	@args loginSign 登录标识，由前端提供
+//	@return LoginHandle 返回具体执行handle
+func (loginFactory *LoginFactory) GetLoginStrategy(loginSign string) LoginHandle {
+	return loginFactory.loginStrategyFactoryMap[loginSign]
+}
+
+// Register
+//
+//	@Description: 将登录逻辑注册到登录工厂中
+//	@receiver loginFactory 登录工厂
+//	@args loginSign 登录标识，由前端提供
+//	@args loginHandle 具体执行handle
+func (loginFactory *LoginFactory) Register(loginSign string, loginHandle LoginHandle) {
+	if loginSign == "" || loginHandle == nil {
+		log.Fatal("fail register loginHandle，the args is illegal")
+	}
+	loginFactory.loginStrategyFactoryMap[loginSign] = loginHandle
+}
+
+```
+
+再定义我们的登录策略
+
+```go
+package loginHanle
+
+import (
+	"go-im/common/bizError"
+	"go-im/models"
+	"go-im/utils"
+)
+
+var loginFactory LoginFactory
+
+func init() {
+	// 电话登录
+	AddLoginStrategy("PHONE_NUMBER_LOGIN_STRATEGY", &PhoneNumberLoginStrategy{})
+}
+
+// LoginBySign
+//
+//	@Description: 根据登录策略进行登录
+//	@args loginSign 具体的登录方式，ex：账号密码登录，手机号码登录
+//	@args paramsMap 登录的参数
+//	@return *models.UserBasic 返回用户信息
+//	@return bizError.BizErrorer
+func LoginBySign(loginSign string, paramsMap map[string]interface{}) (*models.UserBasic, bizError.BizErrorer) {
+	return loginFactory.GetLoginStrategy(loginSign).login(paramsMap)
+}
+
+// AddLoginStrategy
+//
+//	@Description: 增加登录的逻辑。符合开闭原则
+//	@args loginSign 登录方式标识
+//	@args loginHandle 具体的handle
+func AddLoginStrategy(loginSign string, loginHandle LoginHandle) {
+	loginFactory.Register(loginSign, loginHandle)
+}
+
+type (
+	NamePwdLoginStrategy     struct{}
+	PhoneNumberLoginStrategy struct{}
+)
+
+func (p *NamePwdLoginStrategy) login(paramsMap map[string]interface{}) (*models.UserBasic, bizError.BizErrorer) {
+	// 用户名和密码
+	name := utils.ParseString(paramsMap["name"])
+	password := utils.ParseString(paramsMap["password"])
+	userBasic := models.FindUserByName(name)
+	if userBasic.Name == "" {
+		return nil, bizError.NewBizError("用户不存在，请注册")
+	}
+	if !utils.CheckBySalt(password, userBasic.Salt, userBasic.Password) {
+		return nil, bizError.NewBizError("密码不正确")
+	}
+	return userBasic, nil
+}
+
+func (p *PhoneNumberLoginStrategy) login(params map[string]interface{}) (*models.UserBasic, bizError.BizErrorer) {
+	// p.login(nil)
+	return nil, nil
+}
+```
+
+这样的好处在于我们之后如果需要再添加新的逻辑，只需要将自己的handle和标识`loginSign`注册到`LoginStrategy`中即可，我们service层处理的逻辑完全不用改
+
+例如我这里的为
+
+```go
+// Login 通用登录接口
+// @Tags 通用登录接口
+// @Param param body models.UserBasic true "上传的JSON"
+// @Produce json
+// @Router /user/login [post]
+func Login(c *gin.Context) {
+	type Params struct {
+		Name      string `validate:"required" reg_error_info:"姓名不能为空" json:"name"`
+		Password  bool   `validate:"required" reg_error_info:"密码不能为空" json:"password"`
+		LoginSign string `validate:"required" reg_error_info:"登录标识不能为空" json:"loginSign"`
+	}
+	params := &Params{}
+	if err := c.BindJSON(params); err != nil {
+		c.JSON(-1, response.Err.WithMsg("参数有误，err:"+err.Error()))
+		return
+	}
+	validate := validator.New()
+	if err := validate.Struct(params); err != nil {
+		c.JSON(-1, response.AppErr.WithMsg(utils.ProcessErr(params, err)))
+		return
+	}
+	parseMap, _ := utils.ParseMap(params, "json")
+	// 登录
+	if userBasic, err := loginHanle.LoginBySign(params.LoginSign, parseMap); err != nil {
+		c.JSON(-1, response.AppErr.WithMsg(err.ErrorMsg()))
+	} else {
+		c.JSON(200, response.Ok.WithData(userBasic))
+	}
+}
+```
+
+到这里已经可以看到登录拿到用户信息了
+
+![image-20230204134040312](https://cdn.fengxianhub.top/resources-master/202302041340694.png)
+
+#### 3.2.2 发送消息功能
+
+这里发送消息我们采用的是`webScoket`协议，并且为了解耦我们引入了消息队列（使用redis里的发布订阅`pub/sub`）
 
 
 
