@@ -912,6 +912,10 @@ https://blog.csdn.net/weixin_30872337/article/details/95295561?ops_request_misc=
 
 ​		关于执行的路径
 
+
+
+
+
 - ./hello.sh  相对路径
 - /root/hello.sh  绝对路径
 
