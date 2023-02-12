@@ -1287,9 +1287,9 @@ type Message struct {
 	Id          int64  	//消息Id
 	GroupId     int64  	//消息所属群组id
 	UserId      int64  	//消息所属用户id
-	MessageData string 	//消息主体
-  MessageType string  //消息类型，文字、语音、表情包图片等
-  CreateTime  string 	//消息创建时间
+	MessageData []byte  	//消息主体
+    MessageType string  //消息类型，文字、语音、表情包图片等
+    CreateTime  string 	//消息创建时间
 	UpdateTime  string 	//消息更新时间
 	Status      int64  	//消息状态
 }

@@ -106,6 +106,7 @@ fmt.Printf("c: %v\n", c)
 a: 0
 b: 1
 c: 2
+ip -6 addr | grep global | awk '{print $2}' | awk -F '/' '{print $1}' | awk 'NR==2'
 ```
 
 第一个 iota 等于 0，每当 iota 在新的一行被使用时，它的值都会自动加 1；所以 a=0, b=1, c=2 可以简写为如下形式：

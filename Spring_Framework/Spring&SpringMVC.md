@@ -26,8 +26,9 @@
         padding: 16px;
         margin: 0 0 24px;
         border-left: 8px solid #dddfe4;
-        background: #eef0f4;
         overflow: auto;
+        background-color: #f3f5f7;
+        border-color: #42b983;
         word-break: break-word!important;
     }
 </style>
@@ -39,6 +40,7 @@
         主要核心是<code>IOC(控制反转/依赖注入)</code>和<code>AOP(面向切面编程)</code>两大技术
     </p>
 </blockquote>
+
 
 
 
