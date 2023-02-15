@@ -1,4 +1,4 @@
-# DevOps
+# 	DevOps
 
 ### 一、DevOps介绍
 
@@ -7,7 +7,9 @@
 - 开发计划由[开发团队]()从头开始设计和整体系统的构建。需要系统不停的迭代更新。
 - [运维团队]()将开发团队的Code进行测试后部署上线。希望系统稳定安全运行。
 
-这看似两个目标不同的团队需要协同完成一个软件的开发。
+这看似两个目标不同的团队需
+
+要协同完成一个软件的开发。
 
 在开发团队指定好计划并完成coding后，需要提供到运维团队。
 
@@ -1079,42 +1081,41 @@ docker push 192.168.2.13:9052/repo/jenkinsapp:$tag
   harbor_project_name=$2
   project_name=$3
   tag=$4
-  container_port=$5
-  host_port=$6
-  ```
-
+  host_port=$5
+  container_port=$6
+  
   imageName=$harbor_url/$harbor_project_name/$project_name:$tag
-
+  
   containerId=`docker ps -a | grep ${project_name} | awk '{print $1}'`
   if [ "$containerId" != "" ] ; then
-      docker stop $containerId
-      docker rm $containerId
-      echo "Delete Container Success"
+              docker stop $containerId
+                  docker rm $containerId
+                      echo "Delete Container Success"
   fi
-
+  
   imageId=`docker images | grep ${project_name} | awk '{print $3}'`
-
+  
   if [ "$imageId" != "" ] ; then
-      docker rmi -f $imageId
-      echo "Delete Image Success"
+              docker rmi -f $imageId
+                  echo "Delete Image Success"
   fi
-
+  
   docker login -u admin -p anMnKB2Jb0Ak51P30vfsAOP5chL7WBB7g7gerCBH1ni6wQUi9Tt $harbor_url
-
+  
   docker pull $imageName
-
-  docker run -d -p $container_port:$host_port --name $project_name $imageName
-
+  
+  docker run -d -p $host_port:$container_port --name $project_name $imageName
+  
   echo "Start Container Success"
   echo $project_name
+  ```
+  
 
-```
-并设置权限为可执行
+```shell
+// 并设置权限为可执行
+chmod a+x deploy.sh
 ```
 
-  chmod a+x deploy.sh
-
-```
 |                             如图                             |
 | :----------------------------------------------------------: |
 | ![image-20211203192047357](https://cdn.fengxianhub.top/resources-master/202205091416515.png) |
@@ -1124,8 +1125,6 @@ docker push 192.168.2.13:9052/repo/jenkinsapp:$tag
 |                         执行脚本文件                         |
 | :----------------------------------------------------------: |
 | ![image-20211229155949038](https://cdn.fengxianhub.top/resources-master/202205091416852.png) |
-
-
 
 ### 九、Jenkins流水线
 
