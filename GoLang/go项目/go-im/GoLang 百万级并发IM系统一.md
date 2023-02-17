@@ -865,6 +865,24 @@ func InitRedis() (*redis.Client, bizError.BizErrorer) {
 }
 ```
 
+### 2.5 日志框架logrus
+
+在golang标准库中提供的日志框架比较简单，只提供了`print`、`panic`、`fatal`三个函数。如果我们想实现日志文件分割、更加细腻度的日志级别、将日志发送到elk等等需求，则需要我们使用其他的框架
+
+在golang中没有一个日志框架能够像java中的`slfj`一样拥有绝对的统治地位，目前流行的日志框架包括logrus、zap、zerolog、seelog等
+
+其中`logrus`是目前github上star最多的golang日志框架，许多开源项目（docker等）都使用这个日志框架。在我们的项目中也采用这个日志框架
+
+- https://github.com/sirupsen/logrus
+
+```go
+go get "github.com/sirupsen/logrus"
+```
+
+
+
+#### 2.5.1 基本使用
+
 
 
 ## 3. 功能开发
