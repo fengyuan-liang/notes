@@ -6,7 +6,7 @@
 
 ### 1.1 Netty 是什么？
 
-```
+```java
 Netty is an asynchronous event-driven network application framework
 for rapid development of maintainable high performance protocol servers & clients.
 ```
@@ -39,8 +39,6 @@ Netty 在 Java 网络应用框架中的地位就好比：Spring 框架在 JavaEE
 * Spring 5.x - flux api 完全抛弃了 tomcat ，使用 netty 作为服务器端
 * Zookeeper - 分布式协调框架
 
-
-
 ### 1.4 Netty 的优势
 
 * Netty vs NIO，工作量大，bug 多
@@ -56,8 +54,6 @@ Netty 在 Java 网络应用框架中的地位就好比：Spring 框架在 JavaEE
     * 4.x 2013
     * 5.x 已废弃（没有明显的性能提升，维护成本高）
 
-
-
 ## 2. Hello World
 
 ### 2.1 目标
@@ -66,8 +62,6 @@ Netty 在 Java 网络应用框架中的地位就好比：Spring 框架在 JavaEE
 
 * 客户端向服务器端发送 hello, world
 * 服务器仅接收，不返回
-
-
 
 加入依赖
 
@@ -78,10 +72,6 @@ Netty 在 Java 网络应用框架中的地位就好比：Spring 框架在 JavaEE
     <version>4.1.39.Final</version>
 </dependency>
 ```
-
-
-
-
 
 ### 2.2 服务器端
 
@@ -119,8 +109,6 @@ new ServerBootstrap()
 
 * 6 处，SocketChannel 的业务处理器，使用上一个处理器的处理结果
 
-
-
 ### 2.3 客户端
 
 ```java
@@ -155,8 +143,6 @@ new Bootstrap()
 * 8 处，消息会经过通道 handler 处理，这里是将 String => ByteBuf 发出
 * 数据经过网络传输，到达服务器端，服务器端 5 和 6 处的 handler 先后被触发，走完一个流程
 
-
-
 ### 2.4 流程梳理
 
 ![](img/0040.png)
@@ -165,23 +151,21 @@ new Bootstrap()
 
 > 一开始需要树立正确的观念
 >
-> * 把 channel 理解为数据的通道
-> * 把 msg 理解为流动的数据，最开始输入是 ByteBuf，但经过 pipeline 的加工，会变成其它类型对象，最后输出又变成 ByteBuf
-> * 把 handler 理解为数据的处理工序
->   * 工序有多道，合在一起就是 pipeline，pipeline 负责发布事件（读、读取完成...）传播给每个 handler， handler 对自己感兴趣的事件进行处理（重写了相应事件处理方法）
->   * handler 分 Inbound 和 Outbound 两类
-> * 把 eventLoop 理解为处理数据的工人
->   * 工人可以管理多个 channel 的 io 操作，并且一旦工人负责了某个 channel，就要负责到底（绑定）
->   * 工人既可以执行 io 操作，也可以进行任务处理，每位工人有任务队列，队列里可以堆放多个 channel 的待处理任务，任务分为普通任务、定时任务
->   * 工人按照 pipeline 顺序，依次按照 handler 的规划（代码）处理数据，可以为每道工序指定不同的工人
-
-
+> * 把 `channel `理解为数据的通道
+> * 把 `msg `理解为流动的数据，最开始输入是 `ByteBuf`，但经过 `pipeline `的加工，会变成其它类型对象，最后输出又变成 `ByteBuf`
+> * 把 `handler` 理解为数据的处理工序
+>   * 工序有多道，合在一起就是 `pipeline`，`pipeline `负责发布事件（读、读取完成...）传播给每个 `handler`， `handler `对自己感兴趣的事件进行处理（重写了相应事件处理方法）
+>   * `handler `分 `Inbound (入栈) `和 `Outbound（出栈） `两类
+> * 把 `eventLoop `理解为处理数据的工人
+>   * 工人可以管理多个 `channel `的 `io`操作，并且一旦工人负责了某个 `channel`，就要负责到底（绑定）
+>   * 工人既可以执行 `io` 操作，也可以进行任务处理，每位工人有任务队列，队列里可以堆放多个 channel 的待处理任务，任务分为普通任务、定时任务
+>   * 工人按照 `pipeline`顺序，依次按照 `handler `的规划（代码）处理数据，可以为每道工序指定不同的工人
 
 ## 3. 组件
 
 ### 3.1 EventLoop
 
-事件循环对象
+**事件循环对象**
 
 EventLoop 本质是一个单线程执行器（同时维护了一个 Selector），里面有 run 方法处理 Channel 上源源不断的 io 事件。
 
@@ -192,9 +176,9 @@ EventLoop 本质是一个单线程执行器（同时维护了一个 Selector）�
   * 提供了 boolean inEventLoop(Thread thread) 方法判断一个线程是否属于此 EventLoop
   * 提供了 parent 方法来看看自己属于哪个 EventLoopGroup
 
+<hr/>
 
-
-事件循环组
+**事件循环组**
 
 EventLoopGroup 是一组 EventLoop，Channel 一般会调用 EventLoopGroup 的 register 方法来绑定其中一个 EventLoop，后续这个 Channel 上的 io 事件都由此 EventLoop 来处理（保证了 io 事件处理时的线程安全）
 
@@ -238,13 +222,9 @@ io.netty.channel.DefaultEventLoop@60f82f98
 io.netty.channel.DefaultEventLoop@35f983a6
 ```
 
-
-
 #### 💡 优雅关闭
 
 优雅关闭 `shutdownGracefully` 方法。该方法会首先切换 `EventLoopGroup` 到关闭状态从而拒绝新的任务的加入，然后在任务队列的任务都处理完成后，停止线程的运行。从而确保整体应用是在正常有序的状态下退出的
-
-
 
 #### 演示 NioEventLoop 处理 io 事件
 
@@ -342,7 +322,7 @@ new ServerBootstrap()
 
 输出
 
-```
+```java
 22:19:48 [DEBUG] [nioEventLoopGroup-4-1] i.n.h.l.LoggingHandler - [id: 0x251562d5, L:/127.0.0.1:8080 - R:/127.0.0.1:52588] REGISTERED
 22:19:48 [DEBUG] [nioEventLoopGroup-4-1] i.n.h.l.LoggingHandler - [id: 0x251562d5, L:/127.0.0.1:8080 - R:/127.0.0.1:52588] ACTIVE
 22:19:48 [DEBUG] [nioEventLoopGroup-4-1] i.n.h.l.LoggingHandler - [id: 0x251562d5, L:/127.0.0.1:8080 - R:/127.0.0.1:52588] READ: 8B
@@ -488,8 +468,6 @@ nioWorkers.scheduleAtFixedRate(() -> {
 
 > 可以用来执行定时任务
 
-
-
 ### 3.2 Channel
 
 channel 的主要作用
@@ -501,8 +479,6 @@ channel 的主要作用
 * pipeline() 方法添加处理器
 * write() 方法将数据写入
 * writeAndFlush() 方法将数据写入并刷出
-
-
 
 #### ChannelFuture
 
@@ -651,41 +627,13 @@ public class CloseFutureClient {
 
 * 还有同学会笼统地回答，因为 netty 异步方式用了多线程、多线程就效率高。其实这些认识都比较片面，多线程和异步所提升的效率并不是所认为的
 
-
-
-
-
 思考下面的场景，4 个医生给人看病，每个病人花费 20 分钟，而且医生看病的过程中是以病人为单位的，一个病人看完了，才能看下一个病人。假设病人源源不断地来，可以计算一下 4 个医生一天工作 8 小时，处理的病人总数是：`4 * 8 * 3 = 96`
 
 ![](img/0044.png)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 经研究发现，看病可以细分为四个步骤，经拆分后每个步骤需要 5 分钟，如下
 
 ![](img/0048.png)
-
-
-
-
-
-
-
-
-
-
 
 因此可以做如下优化，只有一开始，医生 2、3、4 分别要等待 5、10、15 分钟才能执行工作，但只要后续病人源源不断地来，他们就能够满负荷工作，并且处理病人的能力提高到了 `4 * 8 * 12` 效率几乎是原来的四倍
 
@@ -693,38 +641,57 @@ public class CloseFutureClient {
 
 要点
 
-* 单线程没法异步提高效率，必须配合多线程、多核 cpu 才能发挥异步的优势
+* **单线程没法异步提高效率，必须配合多线程、多核 cpu 才能发挥异步的优势**
 * 异步并没有缩短响应时间，反而有所增加
-* 合理进行任务拆分，也是利用异步的关键
-
-
+*  合理进行任务拆分，也是利用异步的关键
 
 ### 3.3 Future & Promise
 
 在异步处理时，经常用到这两个接口
 
-首先要说明 netty 中的 Future 与 jdk 中的 Future 同名，但是是两个接口，netty 的 Future 继承自 jdk 的 Future，而 Promise 又对 netty Future 进行了扩展
+**首先要说明 netty 中的 Future 与 jdk 中的 Future 同名**，但是是两个接口，netty 的 Future 继承自 jdk 的 Future，而 Promise 又对 netty Future 进行了扩展
 
-* jdk Future 只能同步等待任务结束（或成功、或失败）才能得到结果
-* netty Future 可以同步等待任务结束得到结果，也可以异步方式得到结果，但都是要等任务结束
-* netty Promise 不仅有 netty Future 的功能，而且脱离了任务独立存在，只作为两个线程间传递结果的容器
+* jdk Future 只能`同步等待`任务结束（或成功、或失败）才能得到结果
+* netty Future 可以`同步等待`任务结束得到结果，也可以`异步方式`得到结果，但**都是要等任务结束**
+* netty Promise 不仅有 netty Future 的功能，而且脱离了任务独立存在，**只作为两个线程间传递结果的容器**
 
-| 功能/名称    | jdk Future                     | netty Future                                                 | Promise      |
-| ------------ | ------------------------------ | ------------------------------------------------------------ | ------------ |
-| cancel       | 取消任务                       | -                                                            | -            |
-| isCanceled   | 任务是否取消                   | -                                                            | -            |
-| isDone       | 任务是否完成，不能区分成功失败 | -                                                            | -            |
-| get          | 获取任务结果，阻塞等待         | -                                                            | -            |
-| getNow       | -                              | 获取任务结果，非阻塞，还未产生结果时返回 null                | -            |
-| await        | -                              | 等待任务结束，如果任务失败，不会抛异常，而是通过 isSuccess 判断 | -            |
-| sync         | -                              | 等待任务结束，如果任务失败，抛出异常                         | -            |
-| isSuccess    | -                              | 判断任务是否成功                                             | -            |
-| cause        | -                              | 获取失败信息，非阻塞，如果没有失败，返回null                 | -            |
-| addLinstener | -                              | 添加回调，异步接收结果                                       | -            |
-| setSuccess   | -                              | -                                                            | 设置成功结果 |
-| setFailure   | -                              | -                                                            | 设置失败结果 |
+| 功能/名称    | jdk Future                                     | netty Future                                                 | Promise      |
+| ------------ | ---------------------------------------------- | ------------------------------------------------------------ | ------------ |
+| cancel       | 取消任务                                       | -                                                            | -            |
+| isCanceled   | 任务是否取消                                   | -                                                            | -            |
+| isDone       | 任务是否完成，不能区分成功失败                 | -                                                            | -            |
+| get          | 获取任务结果，阻塞等待，如果任务失败，抛出异常 | -                                                            | -            |
+| getNow       | -                                              | 获取任务结果，非阻塞，还未产生结果时返回 null                | -            |
+| await        | -                                              | 等待任务结束，如果任务失败，`不会抛异常`，而是通过 isSuccess 判断 | -            |
+| sync         | -                                              | 等待任务结束，如果任务失败，抛出异常                         | -            |
+| isSuccess    | -                                              | 判断任务是否成功                                             | -            |
+| cause        | -                                              | 获取失败信息，非阻塞，如果没有失败，返回null                 | -            |
+| addLinstener | -                                              | 添加回调，异步接收结果                                       | -            |
+| setSuccess   | -                                              | -                                                            | 设置成功结果 |
+| setFailure   | -                                              | -                                                            | 设置失败结果 |
 
+jdk future
 
+```java
+// 同步阻塞
+@Slf4j
+public class JdkFuture {
+    @SneakyThrows
+    public static void main(String[] args) {
+        // 1. 线程池
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        // 2. 提交任务
+        Future<Integer> future = executor.submit(() -> {
+            TimeUnit.SECONDS.sleep(1);
+            return RandomUtil.randomInt(100);
+        });
+        // 3. 通过future获取结果
+        log.debug("等待结果ing...");
+        log.debug("结果为：{}", future.get());
+        executor.shutdown();
+    }
+}
+```
 
 #### 例1
 
@@ -751,14 +718,12 @@ log.debug("{}",promise.get());
 
 输出
 
-```
+```java
 11:51:53 [DEBUG] [main] c.i.o.DefaultPromiseTest2 - start...
 11:51:53 [DEBUG] [main] c.i.o.DefaultPromiseTest2 - null
 11:51:54 [DEBUG] [defaultEventLoop-1-1] c.i.o.DefaultPromiseTest2 - set success, 10
 11:51:54 [DEBUG] [main] c.i.o.DefaultPromiseTest2 - 10
 ```
-
-
 
 #### 例2
 
@@ -790,13 +755,11 @@ log.debug("start...");
 
 输出
 
-```
+```java
 11:49:30 [DEBUG] [main] c.i.o.DefaultPromiseTest2 - start...
 11:49:31 [DEBUG] [defaultEventLoop-1-1] c.i.o.DefaultPromiseTest2 - set success, 10
 11:49:31 [DEBUG] [defaultEventLoop-1-1] c.i.o.DefaultPromiseTest2 - 10
 ```
-
-
 
 #### 例3
 
@@ -824,7 +787,7 @@ DefaultEventLoop eventExecutors = new DefaultEventLoop();
 
 输出
 
-```
+```java
 12:11:07 [DEBUG] [main] c.i.o.DefaultPromiseTest2 - start...
 12:11:07 [DEBUG] [main] c.i.o.DefaultPromiseTest2 - null
 12:11:08 [DEBUG] [defaultEventLoop-1-1] c.i.o.DefaultPromiseTest2 - set failure, java.lang.RuntimeException: error...
@@ -839,8 +802,6 @@ Caused by: java.lang.RuntimeException: error...
 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.lang.Thread.run(Thread.java:745)
 ```
-
-
 
 #### 例4
 
@@ -869,14 +830,12 @@ log.debug("result {}", (promise.isSuccess() ? promise.getNow() : promise.cause()
 
 输出
 
-```
+```java
 12:18:53 [DEBUG] [main] c.i.o.DefaultPromiseTest2 - start...
 12:18:53 [DEBUG] [main] c.i.o.DefaultPromiseTest2 - null
 12:18:54 [DEBUG] [defaultEventLoop-1-1] c.i.o.DefaultPromiseTest2 - set failure, java.lang.RuntimeException: error...
 12:18:54 [DEBUG] [main] c.i.o.DefaultPromiseTest2 - result java.lang.RuntimeException: error...
 ```
-
-
 
 #### 例5
 
@@ -947,7 +906,7 @@ eventExecutors.submit(()->{
 
 输出
 
-```
+```java
 1
 2
 3
@@ -977,20 +936,14 @@ io.netty.util.concurrent.BlockingOperationException: DefaultPromise@47499c2a(inc
 
 ```
 
-
-
-
-
 ### 3.4 Handler & Pipeline
 
-ChannelHandler 用来处理 Channel 上的各种事件，分为入站、出站两种。所有 ChannelHandler 被连成一串，就是 Pipeline
+ChannelHandler 用来处理 Channel 上的各种事件，分为`入站`、`出站`两种。所有 ChannelHandler 被连成一串，就是 Pipeline
 
-* 入站处理器通常是 ChannelInboundHandlerAdapter 的子类，主要用来读取客户端数据，写回结果
-* 出站处理器通常是 ChannelOutboundHandlerAdapter 的子类，主要对写回结果进行加工
+* 入站处理器通常是 `ChannelInboundHandlerAdapter `的子类，主要用来读取客户端数据，写回结果；**入栈顺序执行**
+* 出站处理器通常是 `ChannelOutboundHandlerAdapter `的子类，主要对写回结果进行加工；**出栈逆序执行** 
 
 打个比喻，每个 Channel 是一个产品的加工车间，Pipeline 是车间中的流水线，ChannelHandler 就是流水线上的各道工序，而后面要讲的 ByteBuf 是原材料，经过很多工序的加工：先经过一道道入站工序，再经过一道道出站工序最终变成产品
-
-
 
 先搞清楚顺序，服务端
 
@@ -1079,7 +1032,7 @@ new Bootstrap()
 4
 ```
 
-可以看到，ChannelInboundHandlerAdapter 是按照 addLast 的顺序执行的，而 ChannelOutboundHandlerAdapter 是按照 addLast 的逆序执行的。ChannelPipeline 的实现是一个 ChannelHandlerContext（包装了 ChannelHandler） 组成的双向链表
+可以看到，`ChannelInboundHandlerAdapter `是按照 addLast 的顺序执行的，而 `ChannelOutboundHandlerAdapter `是按照 `addLast `的逆序执行的。`ChannelPipeline `的实现是一个 `ChannelHandlerContext`（包装了 `ChannelHandler`） 组成的双向链表
 
 ![](img/0008.png)
 
@@ -1090,7 +1043,7 @@ new Bootstrap()
   * 如果注释掉 3 处代码，则仅会打印 1 2 3
 * 类似的，出站处理器中，ctx.write(msg, promise) 的调用也会 **触发上一个出站处理器**
   * 如果注释掉 6 处代码，则仅会打印 1 2 3 6
-* ctx.channel().write(msg) vs ctx.write(msg)
+* **ctx.channel().write(msg) vs ctx.write(msg)**
   * 都是触发出站处理器的执行
   * ctx.channel().write(msg) 从尾部开始查找出站处理器
   * ctx.write(msg) 是从当前节点找上一个出站处理器
@@ -1140,8 +1093,6 @@ private static void log(ByteBuf buffer) {
 }
 ```
 
-
-
 #### 2）直接内存 vs 堆内存
 
 可以使用下面的代码来创建池化基于堆的 ByteBuf
@@ -1159,8 +1110,6 @@ ByteBuf buffer = ByteBufAllocator.DEFAULT.directBuffer(10);
 * 直接内存创建和销毁的代价昂贵，但读写性能高（少一次内存复制），适合配合池化功能一起用
 * 直接内存对 GC 压力小，因为这部分内存不受 JVM 垃圾回收的管理，但也要注意及时主动释放
 
-
-
 #### 3）池化 vs 非池化
 
 池化的最大意义在于可以重用 ByteBuf，优点有
@@ -1169,7 +1118,7 @@ ByteBuf buffer = ByteBufAllocator.DEFAULT.directBuffer(10);
 * 有了池化，则可以重用池中 ByteBuf 实例，并且采用了与 jemalloc 类似的内存分配算法提升分配效率
 * 高并发时，池化功能更节约内存，减少内存溢出的可能
 
-池化功能是否开启，可以通过下面的系统环境变量来设置
+池化功能是否开启，可以通过下面的系统环境变量来设置（默认就是开启池化功能的）
 
 ```java
 -Dio.netty.allocator.type={unpooled|pooled}
@@ -1177,6 +1126,10 @@ ByteBuf buffer = ByteBufAllocator.DEFAULT.directBuffer(10);
 
 * 4.1 以后，非 Android 平台默认启用池化实现，Android 平台启用非池化实现
 * 4.1 之前，池化功能还不成熟，默认是非池化实现
+
+> 可以查看类的class信息来进行查看`bytebuf`的信息
+
+![image-20230219205533245](https://cdn.fengxianhub.top/resources-master/202302192055648.png)
 
 
 
@@ -1188,27 +1141,25 @@ ByteBuf 由四部分组成
 
 最开始读写指针都在 0 位置
 
-
-
 #### 5）写入
 
 方法列表，省略一些不重要的方法
 
-| 方法签名                                                     | 含义                   | 备注                                        |
-| ------------------------------------------------------------ | ---------------------- | ------------------------------------------- |
-| writeBoolean(boolean value)                                  | 写入 boolean 值        | 用一字节 01\|00 代表 true\|false            |
-| writeByte(int value)                                         | 写入 byte 值           |                                             |
-| writeShort(int value)                                        | 写入 short 值          |                                             |
-| writeInt(int value)                                          | 写入 int 值            | Big Endian，即 0x250，写入后 00 00 02 50    |
-| writeIntLE(int value)                                        | 写入 int 值            | Little Endian，即 0x250，写入后 50 02 00 00 |
-| writeLong(long value)                                        | 写入 long 值           |                                             |
-| writeChar(int value)                                         | 写入 char 值           |                                             |
-| writeFloat(float value)                                      | 写入 float 值          |                                             |
-| writeDouble(double value)                                    | 写入 double 值         |                                             |
-| writeBytes(ByteBuf src)                                      | 写入 netty 的 ByteBuf  |                                             |
-| writeBytes(byte[] src)                                       | 写入 byte[]            |                                             |
-| writeBytes(ByteBuffer src)                                   | 写入 nio 的 ByteBuffer |                                             |
-| int writeCharSequence(CharSequence sequence, Charset charset) | 写入字符串             |                                             |
+| 方法签名                                                     | 含义                   | 备注                                                    |
+| ------------------------------------------------------------ | ---------------------- | ------------------------------------------------------- |
+| writeBoolean(boolean value)                                  | 写入 boolean 值        | 用一字节 01\|00 代表 true\|false                        |
+| writeByte(int value)                                         | 写入 byte 值           |                                                         |
+| writeShort(int value)                                        | 写入 short 值          |                                                         |
+| writeInt(int value)                                          | 写入 int 值            | Big Endian（大端写入），即 0x250，写入后 00 00 02 50    |
+| writeIntLE(int value)                                        | 写入 int 值            | Little Endian（小端写入），即 0x250，写入后 50 02 00 00 |
+| writeLong(long value)                                        | 写入 long 值           |                                                         |
+| writeChar(int value)                                         | 写入 char 值           |                                                         |
+| writeFloat(float value)                                      | 写入 float 值          |                                                         |
+| writeDouble(double value)                                    | 写入 double 值         |                                                         |
+| writeBytes(ByteBuf src)                                      | 写入 netty 的 ByteBuf  |                                                         |
+| writeBytes(byte[] src)                                       | 写入 byte[]            |                                                         |
+| writeBytes(ByteBuffer src)                                   | 写入 nio 的 ByteBuffer |                                                         |
+| int writeCharSequence(CharSequence sequence, Charset charset) | 写入字符串             |                                                         |
 
 > 注意
 >
@@ -1226,7 +1177,7 @@ log(buffer);
 
 结果是
 
-```
+```java
 read index:0 write index:4 capacity:10
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
@@ -1244,7 +1195,7 @@ log(buffer);
 
 结果是
 
-```
+```java
 read index:0 write index:8 capacity:10
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
@@ -1253,11 +1204,7 @@ read index:0 write index:8 capacity:10
 +--------+-------------------------------------------------+----------------+
 ```
 
-
-
 还有一类方法是 set 开头的一系列方法，也可以写入数据，但不会改变写指针位置
-
-
 
 #### 6）扩容
 
@@ -1272,11 +1219,12 @@ log(buffer);
 
 * 如何写入后数据大小未超过 512，则选择下一个 16 的整数倍，例如写入后大小为 12 ，则扩容后 capacity 是 16
 * 如果写入后数据大小超过 512，则选择下一个 2^n，例如写入后大小为 513，则扩容后 capacity 是 2^10=1024（2^9=512 已经不够了）
+* 其实先是等差数列扩容，后面变成等比数列进行扩容
 * 扩容不能超过 max capacity 会报错
 
 结果是
 
-```
+```java
 read index:0 write index:12 capacity:16
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
@@ -1301,7 +1249,7 @@ log(buffer);
 
 读过的内容，就属于废弃部分了，再读只能读那些尚未读取的部分
 
-```
+```java
 1
 2
 3
@@ -1326,7 +1274,7 @@ log(buffer);
 
 结果
 
-```
+```java
 5
 read index:8 write index:12 capacity:16
          +-------------------------------------------------+
@@ -1345,7 +1293,7 @@ log(buffer);
 
 这时
 
-```
+```java
 read index:4 write index:12 capacity:16
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
@@ -1354,25 +1302,19 @@ read index:4 write index:12 capacity:16
 +--------+-------------------------------------------------+----------------+
 ```
 
-还有种办法是采用 get 开头的一系列方法，这些方法不会改变 read index
-
-
+**还有种办法是采用 get 开头的一系列方法，这些方法不会改变 read index**
 
 #### 8）retain & release
 
 由于 Netty 中有堆外内存的 ByteBuf 实现，堆外内存最好是手动来释放，而不是等 GC 垃圾回收。
 
-* UnpooledHeapByteBuf 使用的是 JVM 内存，只需等 GC 回收内存即可
-* UnpooledDirectByteBuf 使用的就是直接内存了，需要特殊的方法来回收内存
-* PooledByteBuf 和它的子类使用了池化机制，需要更复杂的规则来回收内存
-
-
+* `UnpooledHeapByteBuf `使用的是 JVM 内存，只需等 GC 回收内存即可
+* `UnpooledDirectByteBuf `使用的就是直接内存了，需要特殊的方法来回收内存
+* `PooledByteBuf `和它的子类使用了池化机制，需要更复杂的规则来回收内存
 
 > 回收内存的源码实现，请关注下面方法的不同实现
 >
 > `protected abstract void deallocate()`
-
-
 
 Netty 这里采用了引用计数法来控制回收内存，每个 ByteBuf 都实现了 ReferenceCounted 接口
 
@@ -1380,8 +1322,6 @@ Netty 这里采用了引用计数法来控制回收内存，每个 ByteBuf 都�
 * 调用 release 方法计数减 1，如果计数为 0，ByteBuf 内存被回收
 * 调用 retain 方法计数加 1，表示调用者没用完之前，其它 handler 即使调用了 release 也不会造成回收
 * 当计数为 0 时，底层内存会被回收，这时即使 ByteBuf 对象还在，其各个方法均无法正常使用
-
-
 
 谁来负责 release 呢？
 
@@ -1412,8 +1352,6 @@ try {
 * 异常处理原则
   * 有时候不清楚 ByteBuf 被引用了多少次，但又必须彻底释放，可以循环调用 release 直到返回 true
 
-
-
 TailContext 释放未处理消息逻辑
 
 ```java
@@ -1441,8 +1379,6 @@ public static boolean release(Object msg) {
 }
 ```
 
-
-
 #### 9）slice
 
 【零拷贝】的体现之一，对原始 ByteBuf 进行切片成多个 ByteBuf，切片后的 ByteBuf 并没有发生内存复制，还是使用原始 ByteBuf 的内存，切片后的 ByteBuf 维护独立的 read，write 指针
@@ -1460,7 +1396,7 @@ System.out.println(ByteBufUtil.prettyHexDump(origin));
 
 输出
 
-```
+```java
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
 +--------+-------------------------------------------------+----------------+
@@ -1478,7 +1414,7 @@ System.out.println(ByteBufUtil.prettyHexDump(slice));
 
 输出
 
-```
+```java
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
 +--------+-------------------------------------------------+----------------+
@@ -1495,7 +1431,7 @@ System.out.println(ByteBufUtil.prettyHexDump(origin));
 
 输出
 
-```
+```java
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
 +--------+-------------------------------------------------+----------------+
@@ -1511,7 +1447,7 @@ System.out.println(ByteBufUtil.prettyHexDump(slice));
 
 输出
 
-```
+```java
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
 +--------+-------------------------------------------------+----------------+
@@ -1528,7 +1464,7 @@ System.out.println(ByteBufUtil.prettyHexDump(slice));
 
 输出
 
-```
+```java
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
 +--------+-------------------------------------------------+----------------+
@@ -1544,7 +1480,7 @@ System.out.println(ByteBufUtil.prettyHexDump(origin));
 
 输出
 
-```
+```java
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
 +--------+-------------------------------------------------+----------------+
@@ -1552,21 +1488,15 @@ System.out.println(ByteBufUtil.prettyHexDump(origin));
 +--------+-------------------------------------------------+----------------+
 ```
 
-
-
 #### 10）duplicate
 
 【零拷贝】的体现之一，就好比截取了原始 ByteBuf 所有内容，并且没有 max capacity 的限制，也是与原始 ByteBuf 使用同一块底层内存，只是读写指针是独立的
 
 ![](img/0012.png)
 
-
-
 #### 11）copy
 
 会将底层内存数据进行深拷贝，因此无论读写，都与原始 ByteBuf 无关
-
-
 
 #### 12）CompositeByteBuf
 
@@ -1585,7 +1515,7 @@ System.out.println(ByteBufUtil.prettyHexDump(buf2));
 
 输出
 
-```
+```java
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
 +--------+-------------------------------------------------+----------------+
@@ -1612,7 +1542,7 @@ System.out.println(ByteBufUtil.prettyHexDump(buf3));
 
 结果
 
-```
+```java
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
 +--------+-------------------------------------------------+----------------+
@@ -1634,7 +1564,7 @@ buf3.addComponents(true, buf1, buf2);
 
 结果是一样的
 
-```
+```java
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
 +--------+-------------------------------------------------+----------------+
@@ -1668,7 +1598,7 @@ System.out.println(ByteBufUtil.prettyHexDump(buf3));
 
 输出
 
-```
+```java
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
 +--------+-------------------------------------------------+----------------+
@@ -1686,7 +1616,7 @@ System.out.println(ByteBufUtil.prettyHexDump(buf4));
 
 输出
 
-```
+```java
 class io.netty.buffer.CompositeByteBuf
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
@@ -1785,11 +1715,7 @@ new Thread(() -> {
 
 ### 💡 读和写的误解
 
-
-
 我最初在认识上有这样的误区，认为只有在 netty，nio 这样的多路复用 IO 模型时，读写才不会相互阻塞，才可以实现高效的双向通信，但实际上，Java Socket 是全双工的：在任意时刻，线路上存在`A 到 B` 和 `B 到 A` 的双向信号传输。即使是阻塞 IO，读和写是可以同时进行的，只要分别采用读线程和写线程即可，读不会阻塞写、写也不会阻塞读
-
-
 
 例如
 

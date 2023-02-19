@@ -1576,7 +1576,7 @@ public class GroupMembersRequestMessageHandler extends SimpleChannelInboundHandl
 
 ### 3.5 聊天室业务-退出
 
-```
+```java
 @Slf4j
 @ChannelHandler.Sharable
 public class QuitHandler extends ChannelInboundHandlerAdapter {
