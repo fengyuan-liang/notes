@@ -1,5 +1,9 @@
 # 一. NIO 基础
 
+思维导图
+
+![IO](https://cdn.fengxianhub.top/resources-master/202302191050881.png)
+
 non-blocking io 非阻塞 IO
 
 ## 1. 三大组件
@@ -1015,10 +1019,6 @@ long end = System.currentTimeMillis();
 System.out.println(end - start);
 ```
 
-
-
-
-
 ## 4. 网络编程
 
 ### 4.1 非阻塞 vs 阻塞
@@ -1033,8 +1033,6 @@ System.out.println(end - start);
 * 但多线程下，有新的问题，体现在以下方面
   * 32 位 jvm 一个线程 320k，64 位 jvm 一个线程 1024k，如果连接数过多，必然导致 OOM，并且线程太多，反而会因为频繁上下文切换导致性能降低
   * 可以采用线程池技术来减少线程数和线程上下文切换，但治标不治本，如果有很多连接建立，但长时间 inactive，会阻塞线程池中所有线程，因此不适合长连接，只适合短连接
-
-
 
 服务器端
 
@@ -1076,18 +1074,14 @@ sc.connect(new InetSocketAddress("localhost", 8080));
 System.out.println("waiting...");
 ```
 
-
-
 #### 非阻塞
 
-* 非阻塞模式下，相关方法都会不会让线程暂停
+* 非阻塞模式下，**相关方法都不会让线程暂停**
   * 在 ServerSocketChannel.accept 在没有连接建立时，会返回 null，继续运行
   * SocketChannel.read 在没有数据可读时，会返回 0，但线程不必阻塞，可以去执行其它 SocketChannel 的 read 或是去执行 ServerSocketChannel.accept 
   * 写数据时，线程只是等待数据写入 Channel 即可，无需等 Channel 通过网络把数据发送出去
 * 但非阻塞模式下，即使没有连接建立，和可读数据，线程仍然在不断运行，白白浪费了 cpu
 * 数据复制过程中，线程实际还是阻塞的（AIO 改进的地方）
-
-
 
 服务器端，客户端代码不变
 
@@ -1123,8 +1117,6 @@ while (true) {
 }
 ```
 
-
-
 #### 多路复用
 
 单线程可以配合 Selector 完成对多个 Channel 可读写事件的监控，这称之为多路复用
@@ -1135,8 +1127,6 @@ while (true) {
   * 有可读事件才去读取
   * 有可写事件才去写入
     * 限于网络传输能力，Channel 未必时时可写，一旦 Channel 可写，会触发 Selector 的可写事件
-
-
 
 ### 4.2 Selector
 
@@ -1159,15 +1149,11 @@ end
 * 节约了线程的数量
 * 减少了线程上下文切换
 
-
-
 #### 创建
 
 ```java
 Selector selector = Selector.open();
 ```
-
-
 
 #### 绑定 Channel 事件
 
@@ -1186,8 +1172,6 @@ SelectionKey key = channel.register(selector, 绑定事件);
   * read - 数据可读入时触发，有因为接收能力弱，数据暂不能读入的情况
   * write - 数据可写出时触发，有因为发送能力弱，数据暂不能写出的情况
 
-
-
 #### 监听 Channel 事件
 
 可以通过下面三种方法来监听是否有事件发生，方法的返回值代表有多少 channel 发生了事件
@@ -1198,23 +1182,17 @@ SelectionKey key = channel.register(selector, 绑定事件);
 int count = selector.select();
 ```
 
-
-
 方法2，阻塞直到绑定事件发生，或是超时（时间单位为 ms）
 
 ```java
 int count = selector.select(long timeout);
 ```
 
-
-
 方法3，不会阻塞，也就是不管有没有事件，立刻返回，自己根据返回值检查是否有事件
 
 ```java
 int count = selector.selectNow();
 ```
-
-
 
 #### 💡 select 何时不阻塞
 
@@ -1226,8 +1204,6 @@ int count = selector.selectNow();
 > * 调用 selector.wakeup()
 > * 调用 selector.close()
 > * selector 所在线程 interrupt
-
-
 
 ### 4.3 处理 accept 事件
 
@@ -1246,8 +1222,6 @@ public class Client {
     }
 }
 ```
-
-
 
 服务器端代码为
 
@@ -1295,13 +1269,9 @@ public class ChannelDemo6 {
 }
 ```
 
-
-
 #### 💡 事件发生后能否不处理
 
 > 事件发生后，要么处理，要么取消（cancel），不能什么都不做，否则下次该事件仍会触发，这是因为 nio 底层使用的是水平触发
-
-
 
 ### 4.4 处理 read 事件
 
@@ -1364,7 +1334,7 @@ public class ChannelDemo6 {
 
 开启两个客户端，修改一下发送文字，输出
 
-```
+```java
 sun.nio.ch.ServerSocketChannelImpl[/0:0:0:0:0:0:0:0:8080]
 21:16:39 [DEBUG] [main] c.i.n.ChannelDemo6 - select count: 1
 21:16:39 [DEBUG] [main] c.i.n.ChannelDemo6 - 连接已建立: java.nio.channels.SocketChannel[connected local=/127.0.0.1:8080 remote=/127.0.0.1:60367]
@@ -1384,8 +1354,6 @@ sun.nio.ch.ServerSocketChannelImpl[/0:0:0:0:0:0:0:0:8080]
 +--------+-------------------------------------------------+----------------+
 ```
 
-
-
 #### 💡 为何要 iter.remove()
 
 > 因为 select 在事件发生后，就会将相关的 key 放入 selectedKeys 集合，但不会在处理完后从 selectedKeys 集合中移除，需要我们自己编码删除。例如
@@ -1393,13 +1361,9 @@ sun.nio.ch.ServerSocketChannelImpl[/0:0:0:0:0:0:0:0:8080]
 > * 第一次触发了 ssckey 上的 accept 事件，没有移除 ssckey 
 > * 第二次触发了 sckey 上的 read 事件，但这时 selectedKeys 中还有上次的 ssckey ，在处理时因为没有真正的 serverSocket 连上了，就会导致空指针异常
 
-
-
 #### 💡 cancel 的作用
 
 > cancel 会取消注册在 selector 上的 channel，并从 keys 集合中删除 key 后续不会再监听事件
-
-
 
 #### ⚠️  不处理边界的问题
 
@@ -1454,19 +1418,53 @@ ld�
 
 为什么？
 
-
-
 #### 处理消息的边界
 
 ![](https://cdn.fengxianhub.top/resources-master/202206072258041.png)
 
-* 一种思路是固定消息长度，数据包大小一样，服务器按预定长度读取，缺点是浪费带宽
+* 一种思路是**固定消息长度**，数据包大小一样，服务器按预定长度读取，缺点是浪费带宽
 * 另一种思路是按分隔符拆分，缺点是效率低
 * TLV 格式，即 Type 类型、Length 长度、Value 数据，类型和长度已知的情况下，就可以方便获取消息大小，分配合适的 buffer，缺点是 buffer 需要提前分配，如果内容过大，则影响 server 吞吐量
   * Http 1.1 是 TLV 格式
   * Http 2.0 是 LTV 格式
+  
+  ![image-20230218162753695](https://cdn.fengxianhub.top/resources-master/202302181627102.png)
 
-
+> 我们这里先使用第二种方式来处理消息边界的问题
+>
+> - 这里我们就要接触`register`方法里面的第三个参数了，也就是附件`attachment`
+>
+>   ```java
+>   sc.register(selector, SelectionKey.OP_READ, buffer);
+>   ```
+>
+> - 核心代码
+>
+>   ```java
+>   // 拿到SelectionKey上关联的附件
+>   ByteBuffer buffer = (ByteBuffer)key.attachment();
+>   // 如果是正常断开返回-1
+>   int read = channel.read(buffer);
+>   if (read == -1) {
+>       key.cancel();
+>   } else {
+>       split(buffer);
+>       /*
+>        * 如果buffer不够，即找不到换行符，需要扩容
+>        * 如果此时position等于limit，说明一个字节都没有读取，即没有找到换行符，扩容buffer即可
+>        */
+>       if(buffer.position() == buffer.limit()){
+>           // 扩容
+>           ByteBuffer newBuffer = ByteBuffer.allocate(buffer.capacity() * 2);
+>           // 切换为读模式
+>           buffer.flip();
+>           newBuffer.put(buffer);
+>           // 替换掉旧的关联对象
+>           key.attach(newBuffer);
+>       }
+>   ```
+>
+> - 在netty的实现中，其实不光可以扩容，还能进行缩容，是一个自适应的过程
 
 ```mermaid
 sequenceDiagram 
@@ -1578,24 +1576,14 @@ sc.write(Charset.defaultCharset().encode("0123456789abcdef3333\n"));
 System.in.read();
 ```
 
-
-
-
-
 #### ByteBuffer 大小分配
 
-* 每个 channel 都需要记录可能被切分的消息，因为 ByteBuffer 不能被多个 channel 共同使用，因此需要为每个 channel 维护一个独立的 ByteBuffer
+* 每个 `channel `都需要记录可能被切分的消息，因为 `ByteBuffer `不能被多个 `channel `共同使用，因此需要为每个 `channel `维护一个独立的 `ByteBuffer`
 * ByteBuffer 不能太大，比如一个 ByteBuffer 1Mb 的话，要支持百万连接就要 1Tb 内存，因此需要设计大小可变的 ByteBuffer
   * 一种思路是首先分配一个较小的 buffer，例如 4k，如果发现数据不够，再分配 8k 的 buffer，将 4k buffer 内容拷贝至 8k buffer，优点是消息连续容易处理，缺点是数据拷贝耗费性能，参考实现 [http://tutorials.jenkov.com/java-performance/resizable-array.html](http://tutorials.jenkov.com/java-performance/resizable-array.html)
   * 另一种思路是用多个数组组成 buffer，一个数组不够，把多出来的内容写入新的数组，与前面的区别是消息存储不连续解析复杂，优点是避免了拷贝引起的性能损耗
 
-
-
-
-
 ### 4.5 处理 write 事件
-
-
 
 #### 一次无法写完例子
 
@@ -1604,8 +1592,6 @@ System.in.read();
   * 当消息处理器第一次写入消息时，才将 channel 注册到 selector 上
   * selector 检查 channel 上的可写事件，如果所有的数据写完了，就取消 channel 的注册
   * 如果不取消，会每次可写均会触发 write 事件
-
-
 
 ```java
 public class WriteServer {
@@ -1693,31 +1679,15 @@ public class WriteClient {
 }
 ```
 
-
-
 #### 💡 write 为何要取消
 
 只要向 channel 发送数据时，socket 缓冲可写，这个事件会频繁触发，因此应当只在 socket 缓冲区写不下时再关注可写事件，数据写完之后再取消关注
 
-
-
-
-
-
-
-
-
-
-
 ### 4.6 更进一步
-
-
 
 #### 💡 利用多线程优化
 
 > 现在都是多核 cpu，设计时要充分考虑别让 cpu 的力量被白白浪费
-
-
 
 前面的代码只有一个选择器，没有充分利用多核 cpu，如何改进呢？
 
@@ -1725,8 +1695,6 @@ public class WriteClient {
 
 * 单线程配一个选择器，专门处理 accept 事件
 * 创建 cpu 核心数的线程，每个线程配一个选择器，轮流处理 read 事件
-
-
 
 ```java
 public class ChannelDemo7 {
@@ -1863,19 +1831,16 @@ public class ChannelDemo7 {
 }
 ```
 
-
-
 #### 💡 如何拿到 cpu 个数
 
 > * Runtime.getRuntime().availableProcessors() 如果工作在 docker 容器下，因为容器不是物理隔离的，会拿到物理 cpu 个数，而不是容器申请时的个数
 > * 这个问题直到 jdk 10 才修复，使用 jvm 参数 UseContainerSupport 配置， 默认开启
-
-
+> * 对应计算密集型通常设置为cpu核心数 + 1，如果是io密集型可以通过`阿姆达尔定律`进行计算
 
 ### 4.7 UDP
 
 * UDP 是无连接的，client 发送数据不会管 server 是否开启
-* server 这边的 receive 方法会将接收到的数据存入 byte buffer，但如果数据报文超过 buffer 大小，多出来的数据会被默默抛弃
+* server 这边的 receive 方法会将接 收到的数据存入 byte buffer，但如果数据报文超过 buffer 大小，多出来的数据会被默默抛弃
 
 首先启动服务器端
 
@@ -1902,8 +1867,6 @@ public class UdpServer {
 waiting...
 ```
 
-
-
 运行客户端
 
 ```java
@@ -1922,17 +1885,13 @@ public class UdpClient {
 
 接下来服务器端输出
 
-```
+```java
          +-------------------------------------------------+
          |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
 +--------+-------------------------------------------------+----------------+
 |00000000| 68 65 6c 6c 6f                                  |hello           |
 +--------+-------------------------------------------------+----------------+
 ```
-
-
-
-
 
 ## 5. NIO vs BIO
 
@@ -1942,16 +1901,12 @@ public class UdpClient {
 * stream 仅支持阻塞 API，channel 同时支持阻塞、非阻塞 API，网络 channel 可配合 selector 实现多路复用
 * 二者均为全双工，即读写可以同时进行
 
-
-
 ### 5.2 IO 模型
 
 同步阻塞、同步非阻塞、同步多路复用、异步阻塞（没有此情况）、异步非阻塞
 
 * 同步：线程自己去获取结果（一个线程）
 * 异步：线程自己不去获取结果，而是由其它线程送结果（至少两个线程）
-
-
 
 当调用一次 channel.read 或 stream.read 后，会切换至操作系统内核态来完成真正数据读取，而读取又分为两个阶段，分别为：
 
@@ -1988,8 +1943,6 @@ public class UdpClient {
 
 UNIX 网络编程 - 卷 I
 
-
-
 ### 5.3 零拷贝
 
 #### 传统 IO 问题
@@ -2021,21 +1974,19 @@ socket.getOutputStream().write(buf);
 
 4. 接下来要向网卡写数据，这项能力 java 又不具备，因此又得从**用户态**切换至**内核态**，调用操作系统的写能力，使用 DMA 将 **socket 缓冲区**的数据写入网卡，不会使用 cpu
 
-
+<hr/>
 
 可以看到中间环节较多，java 的 IO 实际不是物理设备级别的读写，而是缓存的复制，底层的真正读写是操作系统来完成的
 
 * 用户态与内核态的切换发生了 3 次，这个操作比较重量级
 * 数据拷贝了共 4 次
 
-
-
 #### NIO 优化
 
 通过 DirectByteBuf 
 
 * ByteBuffer.allocate(10)  HeapByteBuffer 使用的还是 java 内存
-* ByteBuffer.allocateDirect(10)  DirectByteBuffer 使用的是操作系统内存
+* ByteBuffer.allocateDirect(10)  DirectByteBuffer 使用的是操作系统内存（操作系统和java程序都可以访问）
 
 ![](https://cdn.fengxianhub.top/resources-master/202206072259068.png)
 
@@ -2062,8 +2013,6 @@ socket.getOutputStream().write(buf);
 * 只发生了一次用户态与内核态的切换
 * 数据拷贝了 3 次
 
-
-
 进一步优化（linux 2.4）
 
 ![](https://cdn.fengxianhub.top/resources-master/202206072259140.png)
@@ -2078,8 +2027,6 @@ socket.getOutputStream().write(buf);
 * 不利用 cpu 计算，减少 cpu 缓存伪共享
 * 零拷贝适合小文件传输
 
-
-
 ### 5.3 AIO
 
 AIO 用来解决数据复制阶段的阻塞问题
@@ -2091,8 +2038,6 @@ AIO 用来解决数据复制阶段的阻塞问题
 >
 > * Windows 系统通过 IOCP 实现了真正的异步 IO
 > * Linux 系统异步 IO 在 2.6 版本引入，但其底层实现还是用多路复用模拟了异步 IO，性能没有优势
-
-
 
 #### 文件 AIO
 
@@ -2149,13 +2094,9 @@ public class AioDemo1 {
 * 响应文件读取成功的是另一个线程 Thread-5
 * 主线程并没有 IO 操作阻塞
 
-
-
 #### 💡 守护线程
 
 默认文件 AIO 使用的线程都是守护线程，所以最后要执行 `System.in.read()` 以避免守护线程意外结束
-
-
 
 #### 网络 AIO
 
