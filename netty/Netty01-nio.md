@@ -2026,6 +2026,7 @@ socket.getOutputStream().write(buf);
 * 更少的用户态与内核态的切换
 * 不利用 cpu 计算，减少 cpu 缓存伪共享
 * 零拷贝适合小文件传输
+* ![image-20230223012530894](https://cdn.fengxianhub.top/resources-master/202302230125277.png)
 
 ### 5.3 AIO
 
@@ -2078,7 +2079,7 @@ public class AioDemo1 {
 
 输出
 
-```
+```java
 13:44:56 [DEBUG] [main] c.i.aio.AioDemo1 - begin...
 13:44:56 [DEBUG] [main] c.i.aio.AioDemo1 - do other things...
 13:44:56 [DEBUG] [Thread-5] c.i.aio.AioDemo1 - read completed...2

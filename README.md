@@ -42,7 +42,7 @@
 
 ## 🎉 Golang
 
--  [GoLang基础语法](/GoLang/GoLang基础语法.md) ｜ [GoLang并发编程](/GoLang/Golang并发编程.md) |  [GoLang 网络编程](/GoLang/GoLang网络编程.md) 
+-  [GoLang基础语法](/GoLang/GoLang基础语法.md) ｜ [GoLang并发编程](/GoLang/Golang并发编程.md) |  [golang大杀器GMP模型](/GoLang/golang大杀器GMP模型.md)   |  [GoLang 网络编程](/GoLang/GoLang网络编程.md) 
 -   [GoLang 网络框架](/GoLang/golang_网络框架.md) |  [GoLang ORM框架](/GoLang/golang_ORM框架.md)
 
 ## 🐱‍🏍 数据库

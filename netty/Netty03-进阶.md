@@ -99,7 +99,7 @@ public class HelloWorldClient {
 
 服务器端的某次输出，可以看到一次就接收了 160 个字节，而非分 10 次接收
 
-```
+```java
 08:24:46 [DEBUG] [main] c.i.n.HelloWorldServer - [id: 0x81e0fda5] binding...
 08:24:46 [DEBUG] [main] c.i.n.HelloWorldServer - [id: 0x81e0fda5, L:/0:0:0:0:0:0:0:0:8080] bound...
 08:24:55 [DEBUG] [nioEventLoopGroup-3-1] i.n.h.l.LoggingHandler - [id: 0x94132411, L:/127.0.0.1:8080 - R:/127.0.0.1:58177] REGISTERED
@@ -202,7 +202,7 @@ serverBootstrap.option(ChannelOption.SO_RCVBUF, 10);
 
 
 
-本质是因为 TCP 是流式协议，消息无边界
+**本质是因为 TCP 是流式协议，消息无边界**
 
 
 
@@ -385,7 +385,7 @@ public class HelloWorldClient {
 
 客户端输出
 
-```
+```java
 12:07:00 [DEBUG] [nioEventLoopGroup-2-1] c.i.n.HelloWorldClient - connetted...
 12:07:00 [DEBUG] [nioEventLoopGroup-2-1] i.n.h.l.LoggingHandler - [id: 0x3c2ef3c2] REGISTERED
 12:07:00 [DEBUG] [nioEventLoopGroup-2-1] i.n.h.l.LoggingHandler - [id: 0x3c2ef3c2] CONNECT: /192.168.0.103:9090
@@ -406,7 +406,7 @@ public class HelloWorldClient {
 
 服务端输出
 
-```
+```java
 12:06:51 [DEBUG] [main] c.i.n.HelloWorldServer - [id: 0xe3d9713f] binding...
 12:06:51 [DEBUG] [main] c.i.n.HelloWorldServer - [id: 0xe3d9713f, L:/192.168.0.103:9090] bound...
 12:07:00 [DEBUG] [nioEventLoopGroup-3-1] i.n.h.l.LoggingHandler - [id: 0xd739f137, L:/192.168.0.103:9090 - R:/192.168.0.103:53155] REGISTERED
@@ -487,6 +487,13 @@ public class HelloWorldClient {
 服务端加入，默认以 \n 或 \r\n 作为分隔符，如果超出指定长度仍未出现分隔符，则抛出异常
 
 ```java
+// 具体实现类
+- LineBasedFrameDecoder
+```
+
+使用
+
+```java
 ch.pipeline().addLast(new LineBasedFrameDecoder(1024));
 ```
 
@@ -540,7 +547,7 @@ public class HelloWorldClient {
 
 客户端输出
 
-```
+```java
 14:08:18 [DEBUG] [nioEventLoopGroup-2-1] c.i.n.HelloWorldClient - connetted...
 14:08:18 [DEBUG] [nioEventLoopGroup-2-1] i.n.h.l.LoggingHandler - [id: 0x1282d755] REGISTERED
 14:08:18 [DEBUG] [nioEventLoopGroup-2-1] i.n.h.l.LoggingHandler - [id: 0x1282d755] CONNECT: /192.168.0.103:9090
@@ -562,7 +569,7 @@ public class HelloWorldClient {
 
 服务端输出
 
-```
+```java
 14:08:18 [DEBUG] [nioEventLoopGroup-3-5] c.i.n.HelloWorldServer - connected [id: 0xa4b3be43, L:/192.168.0.103:9090 - R:/192.168.0.103:63641]
 14:08:18 [DEBUG] [nioEventLoopGroup-3-5] i.n.h.l.LoggingHandler - [id: 0xa4b3be43, L:/192.168.0.103:9090 - R:/192.168.0.103:63641] READ: 1B
          +-------------------------------------------------+
@@ -629,9 +636,16 @@ public class HelloWorldClient {
 
 缺点，处理字符数据比较合适，但如果内容本身包含了分隔符（字节数据常常会有此情况），那么就会解析错误
 
+### 1.5 解码器
 
+```java
+lengthFieldOffset   = 0
+lengthFieldLength   = 3
+lengthAdjustment
+initialBytesToStrip = 0
+```
 
-#### 方法4，预设长度
+#### 💖方法4，预设长度
 
 在发送消息前，先约定用定长字节表示接下来数据的长度
 
@@ -695,7 +709,7 @@ public class HelloWorldClient {
 
 客户端输出
 
-```
+```java
 14:37:10 [DEBUG] [nioEventLoopGroup-2-1] c.i.n.HelloWorldClient - connetted...
 14:37:10 [DEBUG] [nioEventLoopGroup-2-1] i.n.h.l.LoggingHandler - [id: 0xf0f347b8] REGISTERED
 14:37:10 [DEBUG] [nioEventLoopGroup-2-1] i.n.h.l.LoggingHandler - [id: 0xf0f347b8] CONNECT: /192.168.0.103:9090
@@ -720,7 +734,7 @@ public class HelloWorldClient {
 
 服务端输出
 
-```
+```java
 14:36:50 [DEBUG] [main] c.i.n.HelloWorldServer - [id: 0xdff439d3] binding...
 14:36:51 [DEBUG] [main] c.i.n.HelloWorldServer - [id: 0xdff439d3, L:/192.168.0.103:9090] bound...
 14:37:10 [DEBUG] [nioEventLoopGroup-3-1] i.n.h.l.LoggingHandler - [id: 0x744f2b47, L:/192.168.0.103:9090 - R:/192.168.0.103:49979] REGISTERED
