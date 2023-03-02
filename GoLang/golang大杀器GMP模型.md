@@ -8,9 +8,9 @@
 
 思维导图：
 
-![image-20230224001527616](https://cdn.fengxianhub.top/resources-master/202302240015813.png)
+![image-20230302225012812](https://cdn.fengxianhub.top/resources-master/202303022250106.png)
 
-在单机时代是没有多线程、多进程、协程这些概念的。早期的操作系统都是顺序执行
+在单机时代是没有**多线程、多进程、协程**这些概念的。早期的操作系统都是顺序执行
 
 ![image-20230223231938741](https://cdn.fengxianhub.top/resources-master/202302232319059.png)
 
@@ -41,7 +41,7 @@
 
 既然问题出现在`线程上下文切换`中，那么首先我们需要好好想一想什么是线程的上下文切换
 
-我们知道操作系统的一些核心接口是不能被进程随意调度的，例如进行`io流的读写操作`，需要将最终的执行权交给操作系统（内核态）进行调度
+我们知道操作系统的一些核心接口是不能被进程随意调度的，例如进行`io流的读写操作`，需要将最终的执行权交给操作系统（内核态）进行调度，所以就会有`用户态和内核态`之前的切换
 
 ![](https://cdn.fengxianhub.top/resources-master/202206072259157.png)
 
@@ -49,7 +49,7 @@
 
 <img src="https://cdn.fengxianhub.top/resources-master/202302232339134.png" alt="image-20230223233902015" style="zoom: 33%;" />
 
-一个线程需要在`内核态`与`用户态`之间进行切换，并且切换是受到操作系统控制的，可能这个现在需要等待多个时间片的时间才能切换到内核态再调用操作系统底层的接口
+一个线程需要在`内核态`与`用户态`之间进行切换，并且切换是受到操作系统控制的，可能这个现在需要等待多个时间片才能切换到内核态再调用操作系统底层的接口
 
 >那么我们是否可以用两个线程分别处理这两种状态呢？两个线程之间再`做好绑定`，当用户线程将任务提交给内核线程后，就可以不用`堵塞`了，可以去执行其他的任务了
 
@@ -57,7 +57,7 @@
 
 对于CPU来说（多核CPU），不需要关注线程切换的问题，只需要分配系统资源给`内核线程`进行调度即可
 
-我们来给`用户线程`换个名字——`协程（co-rutine）`
+我们来给`用户线程`换个名字——`协程（co-runtine）`
 
 <img src="https://cdn.fengxianhub.top/resources-master/202302232346545.png" alt="image-20230223234654426" style="zoom:33%;" />
 
@@ -98,11 +98,11 @@
 
 思维导图：
 
-
+![image-20230302233813630](https://cdn.fengxianhub.top/resources-master/202303022338928.png)
 
 ### 2.1 GMP模型
 
-> GMP是goalng的线程模型，包含三个概念：内核线程(M)，goroutine(G),G的上下文环境（P）
+> GMP是goalng的线程模型，包含三个概念：内核线程(M)，goroutine(G)，G的上下文环境（P）
 >
 > - G：`goroutine协程`，基于协程建立的用户态线程
 > - M：`machine`，它直接关联一个os内核线程，用于执行G
@@ -139,7 +139,7 @@ golang调度器的设计策略思想主要有以下几点：
 
 #### 2.2.1 复用线程
 
-golang在复用线程上主要体现在`work stealing机制`和`hand off机制`（别人偷去执行，和自己扔掉执行）
+golang在复用线程上主要体现在`work stealing机制`和`hand off机制`（偷别人的去执行，和自己扔掉执行）
 
 首先我们看`work stealing`，我们在学习java的时候学过fork/join，其中也是通过工作窃取方式来提升效率，`充分利用线程进行并行计算，并减少了线程间的竞争`
 
@@ -162,7 +162,7 @@ golang在复用线程上主要体现在`work stealing机制`和`hand off机制`�
 #### 2.2.3 抢占策略
 
 - 1对1模型的调度器，需要等待一个`co-routine`主动释放后才能轮到下一个进行使用
-- golang中，如果一个`goroutine`使用10ms还没执行完，就会被其他goroutine所抢占
+- golang中，如果一个`goroutine`使用10ms还没执行完，CPU资源就会被其他goroutine所抢占
 
 ![image-20230225235012511](https://cdn.fengxianhub.top/resources-master/202302252350672.png)
 
