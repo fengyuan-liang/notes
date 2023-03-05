@@ -67,8 +67,6 @@ docker run -d \
 elasticsearch:7.6.1
 ```
 
-![image-20230131213319014](https://cdn.fengxianhub.top/resources-master/image-20230131213319014.png)
-
 命令解释：
 
 - `-e "cluster.name=es-docker-cluster"`：设置集群名称

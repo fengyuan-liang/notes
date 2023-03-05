@@ -4,6 +4,8 @@
 
 思维导图：
 
+![GMP](https://cdn.fengxianhub.top/resources-master/202303051547502.png)
+
 ## 1. 发展过程
 
 思维导图：
@@ -178,9 +180,7 @@ golang在复用线程上主要体现在`work stealing机制`和`hand off机制`�
 
 ### 2.3 `go func()`经历了那些过程
 
-![18-go-func调度周期.jpeg](https://cdn.nlark.com/yuque/0/2022/jpeg/26269664/1650776333419-50d3a922-bd53-4bff-b0b6-280e6abc5d74.jpeg?x-oss-process=image%2Fwatermark%2Ctype_d3F5LW1pY3JvaGVp%2Csize_55%2Ctext_5YiY5Li55YawQWNlbGQ%3D%2Ccolor_FFFFFF%2Cshadow_50%2Ct_80%2Cg_se%2Cx_10%2Cy_10%2Fresize%2Cw_1125%2Climit_0%2Finterlace%2C1)
-
-
+![18-go-func调度周期](https://cdn.fengxianhub.top/resources-master/202303051004399.jpeg)
 
 1. 我们通过`go func()`来创建一个goroutine
 2. 有两个存储`G`的队列，一个是`局部调度器P`的本地队列、一个是`全局G队列`。新创建的G会先保存在P的`本地队列`中，如果P的本地队列已经满了就会保存在`全局的队列`中
@@ -212,7 +212,7 @@ golang在复用线程上主要体现在`work stealing机制`和`hand off机制`�
 
 具体流程为：
 
-![17-pic-go调度器生命周期.png](https://cdn.nlark.com/yuque/0/2022/png/26269664/1650776346389-ab0ffa04-c707-4ec8-a810-0929533fd00c.png?x-oss-process=image%2Fwatermark%2Ctype_d3F5LW1pY3JvaGVp%2Csize_13%2Ctext_5YiY5Li55YawQWNlbGQ%3D%2Ccolor_FFFFFF%2Cshadow_50%2Ct_80%2Cg_se%2Cx_10%2Cy_10)
+![17-pic-go调度器生命周期](https://cdn.fengxianhub.top/resources-master/202303051005327.png)
 
 我们来分析一段代码：
 
@@ -355,23 +355,142 @@ hello GMP
 - `runqueue=0`： Scheduler全局队列中G的数量；
 - `[0 0]`: 分别为2个P的local queue中的G的数量。
 
+## 3. GMP场景分析
+
+#### 3.1 G1创建G3
+
+P拥有G1，M1获取P后开始运行G1，G1使用`go func()`创建了G2，**为了局部性G2优先加入到P1的本地队列**
+
+<img src="https://cdn.fengxianhub.top/resources-master/202303041607766.png" alt="image-20230304160753626" style="zoom:67%;" />
+
+#### 3.2 G1执行完毕
+
+G1运行完成后(函数：`goexit`)，M上运行的goroutine切换为G0，G0负责调度时协程的切换（函数：`schedule`）。从P的本地队列取G2，从G0切换到G2，并开始运行G2(函数：`execute`)。实现了线程M1的复用
 
 
 
+![image-20230304193941504](https://cdn.fengxianhub.top/resources-master/202303041939704.png)
 
+#### 3.3 G溢出
 
+假设每个P的本地队列只能存3个G。G2要创建了6个G，前3个G（G3, G4, G5）已经加入p1的本地队列，p1本地队列满了
 
+<img src="https://cdn.fengxianhub.top/resources-master/202303041952934.png" alt="28-gmp场景3" style="zoom:50%;" />
 
+>G2在创建G7的时候，发现P1的`本地队列`已满，需要执行**负载均衡**（把P1中本地队列中前一半的G，还有新创建G**转移**到全局队列）
+>
+>- 移走前一半的`G`是为了防止后面G`饥饿`
 
+<img src="https://cdn.fengxianhub.top/resources-master/202303041954130.png" alt="29-gmp场景4" style="zoom:50%;" />
 
+  这些G被转移到全局队列时，会被打乱顺序。所以G3,G4,G7被转移到全局队列。
 
+>G2创建G8时，P1的本地队列未满，**所以G8会被加入到P1的本地队列**
 
+<img src="https://cdn.fengxianhub.top/resources-master/202303051006078.png" alt="30-gmp场景5" style="zoom: 50%;" />
 
+#### 3.4 唤醒正在休眠的M
 
+规定：**在创建G时，运行的G会尝试唤醒其他空闲的P和M组合去执行**
 
+>假定G2唤醒了M2，M2绑定了P2，并运行G0，但P2本地队列没有G，M2此时为`自旋线程`**（没有G但为运行状态的线程，不断寻找G）** 
+>
+>- 先从全局队列中获取，没有再从其他线程中偷取（**先全后偷**）
 
+![31-gmp场景6](https://cdn.fengxianhub.top/resources-master/202303051010930.png)
 
+#### 3.5 自旋线程获取G
 
+> M2尝试从全局队列(简称“GQ”)取一批G放到P2的本地队列（函数：`findrunnable()`）。M2从全局队列取的G数量符合下面的公式：
+>
+> ```go
+> n =  min(len(GQ) / GOMAXPROCS +  1,  cap(LQ) / 2 )
+> ```
+>
+> - GQ：全局队列总长度（队列中现在元素的个数）
+> - GOMAXPROCS：p的个数
 
+- 至少从全局队列取1个g，但每次不要从全局队列移动太多的g到p本地队列，给其他p留点。这是**从全局队列到P本地队列的负载均衡**
 
+- 假定我们场景中一共有4个P（GOMAXPROCS设置为4，那么我们允许最多就能用4个P来供M使用）。所以M2只从能从全局队列取1个G（即G3）移动P2本地队列，然后完成从G0到G3的切换，运行G3
+- 当M2有了新的G（不再是G0），便不是`自旋线程`了
+
+![32-gmp场景7.001](https://cdn.fengxianhub.top/resources-master/202303051254640.jpeg)
+
+相关源码参考：
+
+```go
+// 从全局队列中偷取，调用时必须锁住调度器
+func globrunqget(_p_ *p, max int32) *g {
+	// 如果全局队列中没有 g 直接返回
+	if sched.runqsize == 0 {
+		return nil
+	}
+
+	// per-P 的部分，如果只有一个 P 的全部取
+	n := sched.runqsize/gomaxprocs + 1
+	if n > sched.runqsize {
+		n = sched.runqsize
+	}
+
+	// 不能超过取的最大个数
+	if max > 0 && n > max {
+		n = max
+	}
+
+	// 计算能不能在本地队列中放下 n 个
+	if n > int32(len(_p_.runq))/2 {
+		n = int32(len(_p_.runq)) / 2
+	}
+
+	// 修改本地队列的剩余空间
+	sched.runqsize -= n
+	// 拿到全局队列队头 g
+	gp := sched.runq.pop()
+	// 计数
+	n--
+
+	// 继续取剩下的 n-1 个全局队列放入本地队列
+	for ; n > 0; n-- {
+		gp1 := sched.runq.pop()
+		runqput(_p_, gp1, false)
+	}
+	return gp
+}
+```
+
+#### 3.6 M2从M1中偷取G
+
+>**全局队列已经没有G，那m就要执行work stealing(偷取)：从其他有G的P哪里偷取一半G过来，放到自己的P本地队列**。P2从P1的本地队列尾部取一半的G，本例中一半则只有1个G8，放到P2的本地队列并执行。
+>
+>- 偷取队列元素的一半
+
+![33-gmp场景8](https://cdn.fengxianhub.top/resources-master/202303051301634.png)
+
+#### 3.7 自旋线程的最大限制
+
+> G1本地队列G5、G6已经被其他M偷走并运行完成，当前M1和M2分别在运行G2和G8，M3和M4没有goroutine可以运行，M3和M4处于**自旋状态**，它们不断寻找goroutine
+>
+> - 正在运行的M + 自旋线程 <= GOMAXPROCS
+> - 如果M大于P，则进入休眠线程队列
+
+![image-20230305132744295](https://cdn.fengxianhub.top/resources-master/202303051327627.png)
+
+- 为什么要让m3和m4自旋，自旋本质是在运行，线程在运行却没有执行G，就变成了浪费CPU
+- 为什么不销毁现场，来节约CPU资源。因为创建和销毁CPU也会浪费时间，我们**希望当有新goroutine创建时，立刻能有M运行它**，如果销毁再新建就增加了时延，降低了效率
+- 当然也考虑了过多的自旋线程是浪费CPU，所以系统中最多有`GOMAXPROCS`个自旋的线程(当前例子中的`GOMAXPROCS`=4，所以一共4个P)，多余的没事做线程会让他们休眠。
+
+#### 3.8 G发送系统调用/阻塞
+
+>假定当前除了M3和M4为自旋线程，还有M5和M6为空闲的线程(没有得到P的绑定，注意我们这里最多就只能够存在4个P，所以P的数量应该永远是M>=P，大部分都是M在抢占需要运行的P)，G8创建了G9，G8进行了**阻塞的系统调用**，M2和P2立即解绑，P2会执行以下判断：如果P2本地队列有G、全局队列有G或有空闲的M，P2都会立马唤醒1个M和它绑定，否则P2则会加入到空闲P列表，等待M来获取可用的p。本场景中，P2本地队列有G9，可以和其他空闲的线程M5绑定
+>
+>- 自旋线程抢占G，不抢占P
+
+![35-gmp场景10](https://cdn.fengxianhub.top/resources-master/202303051537891.png)
+
+#### 3.9 G发送系统调用/非阻塞
+
+上述`G8`如果执行完毕，此时M2会首先寻找之前的P，如果没有则尝试从`空闲p队列`中获取，如果没获取不到，会进入`M阻塞队列`中（长时间休眠等待GC回收销毁）
+
+![36-gmp场景11](https://cdn.fengxianhub.top/resources-master/202303051543204.png)
 
