@@ -645,7 +645,38 @@ lengthAdjustment
 initialBytesToStrip = 0
 ```
 
-#### 💖方法4，预设长度
+#### 💖方法4，预设长度（TLV）
+
+netty源码地址
+
+```java
+io.netty.handler.codec.LengthFieldBasedFrameDecoder
+```
+
+![image-20230305192148805](https://cdn.fengxianhub.top/resources-master/202303051921070.png)
+
+- lengthFieldOffset：长度字段偏移量
+- lengthFieldLength：长度字段长度
+- lengthAdjustment：长度字段为基准，还有几个字节为内容
+- initialBytesToStrip：从头剥离几个字节
+
+我们看netty注解里面给的一个栗子，其中`lengthFieldLength`为2表示用两个字节来记录长度
+
+>如果我们想在长度解析完之后将`lengthFieldLength`去掉，那么我们可以用`initialBytesToStrip`记录，表示要剥离前多少个字节的长度
+
+![image-20230305192831494](https://cdn.fengxianhub.top/resources-master/202303051928634.png)
+
+>有的时候我们需要在消息之前多发一些东西，例如下面的`魔术字`，所以我们可以`lengthFieldOffset`表示长度要从多少个字节后开始读，用`lengthFieldLength`表示记录长度占用的字节数
+
+![image-20230305193009257](https://cdn.fengxianhub.top/resources-master/202303051930395.png)
+
+>下面的例子中，`lengthAdjustment`为2，表示要从`length`字段后跳过多少个（2个）才是真正的数据
+
+![image-20230305193327729](https://cdn.fengxianhub.top/resources-master/202303051933871.png)
+
+>下面的例子中使用了四个参数来记录消息
+
+![image-20230305193609023](https://cdn.fengxianhub.top/resources-master/202303051936198.png)
 
 在发送消息前，先约定用定长字节表示接下来数据的长度
 
@@ -867,6 +898,11 @@ TCP/IP 中消息传输基于流的方式，没有边界。
 ### 2.2 redis 协议举例
 
 ```java
+/**
+  * set key value
+  * 格式为：三段 第一段字节数 第二段字节数 第三段字节数
+  * 例如：set name zhangsan -> *3\r\n$3set\r\n$4name\r\n$8\r\nzhangsan
+  */
 NioEventLoopGroup worker = new NioEventLoopGroup();
 byte[] LINE = {13, 10};
 try {
@@ -999,7 +1035,7 @@ try {
 
 * 魔数，用来在第一时间判定是否是无效数据包
 * 版本号，可以支持协议的升级
-* 序列化算法，消息正文到底采用哪种序列化反序列化方式，可以由此扩展，例如：json、protobuf、hessian、jdk
+* 序列化算法，消息正文到底采用哪种序列化反序列化方式，可以由此扩展，例如：json、protobuf、hessian、jdk（不能跨平台、效率低）
 * 指令类型，是登录、注册、单聊、群聊... 跟业务相关
 * 请求序号，为了双工通信，提供异步能力
 * 正文长度
