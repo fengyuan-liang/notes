@@ -357,13 +357,13 @@ hello GMP
 
 ## 3. GMP场景分析
 
-#### 3.1 G1创建G3
+### 3.1 G1创建G3
 
 P拥有G1，M1获取P后开始运行G1，G1使用`go func()`创建了G2，**为了局部性G2优先加入到P1的本地队列**
 
 <img src="https://cdn.fengxianhub.top/resources-master/202303041607766.png" alt="image-20230304160753626" style="zoom:67%;" />
 
-#### 3.2 G1执行完毕
+### 3.2 G1执行完毕
 
 G1运行完成后(函数：`goexit`)，M上运行的goroutine切换为G0，G0负责调度时协程的切换（函数：`schedule`）。从P的本地队列取G2，从G0切换到G2，并开始运行G2(函数：`execute`)。实现了线程M1的复用
 
@@ -371,7 +371,7 @@ G1运行完成后(函数：`goexit`)，M上运行的goroutine切换为G0，G0负
 
 ![image-20230304193941504](https://cdn.fengxianhub.top/resources-master/202303041939704.png)
 
-#### 3.3 G溢出
+### 3.3 G溢出
 
 假设每个P的本地队列只能存3个G。G2要创建了6个G，前3个G（G3, G4, G5）已经加入p1的本地队列，p1本地队列满了
 
@@ -389,7 +389,7 @@ G1运行完成后(函数：`goexit`)，M上运行的goroutine切换为G0，G0负
 
 <img src="https://cdn.fengxianhub.top/resources-master/202303051006078.png" alt="30-gmp场景5" style="zoom: 50%;" />
 
-#### 3.4 唤醒正在休眠的M
+### 3.4 唤醒正在休眠的M
 
 规定：**在创建G时，运行的G会尝试唤醒其他空闲的P和M组合去执行**
 
@@ -399,7 +399,7 @@ G1运行完成后(函数：`goexit`)，M上运行的goroutine切换为G0，G0负
 
 ![31-gmp场景6](https://cdn.fengxianhub.top/resources-master/202303051010930.png)
 
-#### 3.5 自旋线程获取G
+### 3.5 自旋线程获取G
 
 > M2尝试从全局队列(简称“GQ”)取一批G放到P2的本地队列（函数：`findrunnable()`）。M2从全局队列取的G数量符合下面的公式：
 >
@@ -459,7 +459,7 @@ func globrunqget(_p_ *p, max int32) *g {
 }
 ```
 
-#### 3.6 M2从M1中偷取G
+### 3.6 M2从M1中偷取G
 
 >**全局队列已经没有G，那m就要执行work stealing(偷取)：从其他有G的P哪里偷取一半G过来，放到自己的P本地队列**。P2从P1的本地队列尾部取一半的G，本例中一半则只有1个G8，放到P2的本地队列并执行。
 >
@@ -467,7 +467,7 @@ func globrunqget(_p_ *p, max int32) *g {
 
 ![33-gmp场景8](https://cdn.fengxianhub.top/resources-master/202303051301634.png)
 
-#### 3.7 自旋线程的最大限制
+### 3.7 自旋线程的最大限制
 
 > G1本地队列G5、G6已经被其他M偷走并运行完成，当前M1和M2分别在运行G2和G8，M3和M4没有goroutine可以运行，M3和M4处于**自旋状态**，它们不断寻找goroutine
 >
@@ -480,7 +480,7 @@ func globrunqget(_p_ *p, max int32) *g {
 - 为什么不销毁现场，来节约CPU资源。因为创建和销毁CPU也会浪费时间，我们**希望当有新goroutine创建时，立刻能有M运行它**，如果销毁再新建就增加了时延，降低了效率
 - 当然也考虑了过多的自旋线程是浪费CPU，所以系统中最多有`GOMAXPROCS`个自旋的线程(当前例子中的`GOMAXPROCS`=4，所以一共4个P)，多余的没事做线程会让他们休眠。
 
-#### 3.8 G发送系统调用/阻塞
+### 3.8 G发送系统调用/阻塞
 
 >假定当前除了M3和M4为自旋线程，还有M5和M6为空闲的线程(没有得到P的绑定，注意我们这里最多就只能够存在4个P，所以P的数量应该永远是M>=P，大部分都是M在抢占需要运行的P)，G8创建了G9，G8进行了**阻塞的系统调用**，M2和P2立即解绑，P2会执行以下判断：如果P2本地队列有G、全局队列有G或有空闲的M，P2都会立马唤醒1个M和它绑定，否则P2则会加入到空闲P列表，等待M来获取可用的p。本场景中，P2本地队列有G9，可以和其他空闲的线程M5绑定
 >
@@ -488,7 +488,7 @@ func globrunqget(_p_ *p, max int32) *g {
 
 ![35-gmp场景10](https://cdn.fengxianhub.top/resources-master/202303051537891.png)
 
-#### 3.9 G发送系统调用/非阻塞
+### 3.9 G发送系统调用/非阻塞
 
 上述`G8`如果执行完毕，此时M2会首先寻找之前的P，如果没有则尝试从`空闲p队列`中获取，如果没获取不到，会进入`M阻塞队列`中（长时间休眠等待GC回收销毁）
 
