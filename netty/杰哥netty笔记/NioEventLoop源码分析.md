@@ -6,7 +6,7 @@
 
 我们平常使用Netty的时候，一般都是用NioEventLoopGroup进行操作，所以我们从NioEventLoopGroup开始分析。首先来看一下NioEventLoopGroup的继承体系
 
-![](C:\Users\HYWYZ\Desktop\面试资料\源码\Netty\笔记\EventLoop\NioEventLoopGroup继承图.png)
+![](./EventLoop图片/NioEventLoopGroup继承图.png)
 
 从上图可以看出NioEventLoopGroup是一个线程池，所以有一个execute()方法，并且实现了ScheduledExecutorService接口，说明它还可以执行一些调度任务。但是去看它自身和它的父类的源码，可以发现它并没持有真正的线程资源，而是由NioEventLoop持有。因为NioEventLoopGroup内部管理了多个NioEventLoop，所以我觉得把NioEventLoopGroup叫做线程组会更好理解一些。我们还是先从NioEventLoopGroup的构造开始分析。
 
