@@ -2061,6 +2061,11 @@ private void resize() {
         }
     }
 }
+
+private int index(Node<K, V> node) {
+  return node.hashCode & (table.length - 1);
+}
+
 private void moveNode(Node<K,V> newNode){
     // 重置该结点的所有引用
     newNode.parent = null;
