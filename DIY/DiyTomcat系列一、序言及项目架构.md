@@ -122,7 +122,7 @@ Cookie: _ga=GA1.1.170786272.1675310316
 
 浏览器页面为：
 
-![image-20230322160648390](/Users/fengyuan-liang/Library/Application Support/typora-user-images/image-20230322160648390.png)
+![image-20230322160648390](https://cdn.fengxianhub.top/resources-master/image-20230322160648390.png)
 
 首先我们要知道http请求分为<code>GET请求</code>和<code>POST请求</code>，这里笔者发的是一个GET请求
 

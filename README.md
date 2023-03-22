@@ -78,7 +78,7 @@
 
 **ElasticSearch**
 
-- [ElasticSearch&kibana基本使用](/SpringCloud/黑马SpringCloud-阿里巴巴/4-ElasticSearch.md)   |  [ElasticSearch高级查询](/SpringCloud/黑马SpringCloud-阿里巴巴/5-ElasticSearch之DSL查询.md)
+- [ElasticSearch&kibana基本使用](/SpringCloud/黑马SpringCloud-阿里巴巴/4-ElasticSearch.md)   |  [ElasticSearch高级查询](/SpringCloud/黑马SpringCloud-阿里巴巴/5-ElasticSearch之DSL查询.md) ｜  [ElasticSearch高可用](/SpringCloud/黑马SpringCloud-阿里巴巴/6-分布式搜索引擎03.md) 
 
 **Zookeeper**
 
