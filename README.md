@@ -41,6 +41,10 @@
 
 - [NIO](/netty/Netty01-nio.md) | [Netty入门](/netty/Netty02-入门.md) | [Netty进阶](/netty/Netty03-进阶.md) | [Netty源码学习](/netty/Netty04-优化与源码.md)
 
+**Vertx**
+
+- [阻塞线程模型&异步编程](/vertx/1-阻塞线程模型&异步编程.md)
+
 ## 🎉 Golang
 
 -  [GoLang基础语法](/GoLang/GoLang基础语法.md) ｜ [GoLang并发编程](/GoLang/Golang并发编程.md) |  [golang大杀器GMP模型](/GoLang/golang大杀器GMP模型.md)   |  [GoLang 网络编程](/GoLang/GoLang网络编程.md) 
