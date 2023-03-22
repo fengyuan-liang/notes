@@ -100,29 +100,29 @@ public class Bootstrap {
 上述代码输出http请求的字段为：
 
 ```css
+浏览器的输入信息： 
 GET / HTTP/1.1
-X-Auth-Token:  qxsJNtjAQCVLqEUVwOdhASuRl0HbMmKbwwRxnbv4hfo=
-Accept:  application/json
-Content-Type:  application/json
-User-Agent: PostmanRuntime/7.26.8
-Postman-Token: 5184b6fe-cb3f-4d66-ae76-4502502ceeec
-Host: 127.0.0.1:18080
-Accept-Encoding: gzip, deflate, br
+Host: localhost:18080
 Connection: keep-alive
-Content-Length: 328
+sec-ch-ua: "Microsoft Edge";v="111", "Not(A:Brand";v="8", "Chromium";v="111"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "macOS"
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36 Edg/111.0.1661.44
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+Cookie: _ga=GA1.1.170786272.1675310316
 
-{
-        "level": "1",
-        "tenantId": "default-organization-id",
-        "startTime": "1624782753000",
-        "endTime": "1625301153000",
-        "id": "857b706e-67d9-49c0-b3cd-4bd1e6963c07",
-        "sortColumn": "totalcount",
-        "currPage": "1",
-        "pageSize": "20",
-        "sortType": "desc"
-}
 ```
+
+浏览器页面为：
+
+![image-20230322160648390](/Users/fengyuan-liang/Library/Application Support/typora-user-images/image-20230322160648390.png)
 
 首先我们要知道http请求分为<code>GET请求</code>和<code>POST请求</code>，这里笔者发的是一个GET请求
 
