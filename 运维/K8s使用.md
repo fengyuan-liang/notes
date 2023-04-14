@@ -231,6 +231,10 @@ spec:
   kubectl expose deployment nginx-deployment --port=8081 --target-port=80 --type=LoadBalancer
   ```
 
+  暴露之后就可以使用集群里任何一个结点的ip+后面的端口就行访问
+
+  ![image-20230413215025584](https://cdn.fengxianhub.top/resources-master/202304132150977.png)
+
 - yaml
 
   ```yaml
@@ -275,8 +279,82 @@ spec:
   
   ```
 
+### 1.5 Ingress
 
-### 1.5 Jenkins集成Kubernetes
+Kubernetes推荐将`Ingress`作为所有`Service`的入口，提供统一的入口，避免多个服务之间需要记录大量的IP或者域名，毕竟`IP`可能改变，服务太多域名记录不方便。
+
+Ingress底层其实就是一个Nginx， 可以在Kuboard上直接点击安装
+
+
+
+|                         Kuboard安装                          |
+| :----------------------------------------------------------: |
+| ![image-20220105153343642](https://cdn.fengxianhub.top/resources-master/202205091418669.png) |
+| **![image-20220105153416367](https://cdn.fengxianhub.top/resources-master/202205091418146.png)** |
+
+因为副本数默认为1，但是k8s整体集群就2个节点，所以显示下面即为安装成功
+
+|                           安装成功                           |
+| :----------------------------------------------------------: |
+| ![image-20220105153502619](https://cdn.fengxianhub.top/resources-master/202205091418072.png) |
+
+可以将Ingress接收到的请求转发到不同的Service中。
+
+推荐使用yaml文件方式
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+spec:
+  ingressClassName: ingress
+  rules:
+  - host: nginx.mashibing.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-service
+            port:
+              number: 8888
+```
+
+|                          启动时问题                          |
+| :----------------------------------------------------------: |
+| ![image-20220105203819715](https://cdn.fengxianhub.top/resources-master/202205091418593.png) |
+
+Kuboard安装的Ingress有admission的校验配置，需要先删除配置再启动
+
+找到指定的ingress的校验信息，删除即可
+
+|                           删除信息                           |
+| :----------------------------------------------------------: |
+| ![image-20220105204434044](https://cdn.fengxianhub.top/resources-master/202205091418390.png) |
+
+```sh
+# 查看校验webhook的配置
+kubectl get -A ValidatingWebhookConfiguration
+
+# 删除指定的校验
+kubectl delete ValidatingWebhookConfiguration ingress-nginx-admission-my-ingress-controller
+```
+
+配置本地hosts文件
+
+|                          配置hosts                           |
+| :----------------------------------------------------------: |
+| ![image-20220105204921272](https://cdn.fengxianhub.top/resources-master/202205091418443.png) |
+
+记下来既可以访问在Service中暴露的Nginx信息
+
+|                      服通过Ingress访问                       |
+| :----------------------------------------------------------: |
+| ![image-20220105205407393](https://cdn.fengxianhub.top/resources-master/202205091418593.png) |
+
+### 1.6 Jenkins集成Kubernetes
 
 **准备部署的yml文件** 【部署hnit-cms】
 
