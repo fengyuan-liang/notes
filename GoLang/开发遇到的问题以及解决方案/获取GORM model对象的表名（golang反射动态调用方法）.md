@@ -1,0 +1,1 @@
+# 获取GORM model对象的表名（golang反射动态调用方法）

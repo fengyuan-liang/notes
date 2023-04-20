@@ -1,8 +1,10 @@
-# SpringBoot自动装箱原理
+# SpringBoot自动装配原理
 
 >之前面试被问到这个题目，只会答一些spi、@AutoConfigration注解、@Import之类的，感觉面试官并不是很满意，自己也还停留在八股文的水平，最近有时间了，仔细总结一下
 
 ## 1. 从调用SpringApplication构造器方法开始
+
+> 以下源码分析基于springboot2.6.x
 
 首先一切的开始都是从这个方法开始的`SpringApplication.run()`，所以说自动装箱的核心就是这个`run`方法的执行过程
 
@@ -157,6 +159,8 @@ org.springframework.context.annotation.ConfigurationClassPostProcessor#processCo
 
 然后再到这里面就会去加载`spring.factories`文件了
 
+SpringBoot 定义了一套接口规范，这套规范规定：SpringBoot 在启动时会扫描外部引用 jar 包中的`META-INF/spring.factories`文件，将文件中配置的类型信息加载到 Spring 容器
+
 ```java
 org.springframework.core.io.support.SpringFactoriesLoader#loadSpringFactories
 ```
@@ -169,7 +173,77 @@ org.springframework.core.io.support.SpringFactoriesLoader#loadSpringFactories
 
 ![image-20221113163824676](https://cdn.fengxianhub.top/resources-master/202211131638771.png)
 
-## 3. 面试答法
+那么到底哪些bean会被加载？哪些bean会被过滤掉呢？我们继续往下看
+
+## 4.按需装配
+
+那么面试官可能会问：怎么排除`META-INF/spring.factories`里不需要的bean呢？
+
+我们可以在<a href="https://docs.spring.io/spring-boot/docs/2.6.14/reference/html/features.html#features.developing-auto-configuration">springboot官网上找到答案</a>
+
+![image-20230411105606019](https://cdn.fengxianhub.top/resources-master/image-20230411105606019.png)
+
+我们的`自动装配`依赖`条件注解`，来判断哪些`bean`需要加载进入`IOC`容器，这一类`条件注解`一般是以`@Conditional`开头
+
+![image-20230411110921326](https://cdn.fengxianhub.top/resources-master/image-20230411110921326.png)
+
+### 4.1 分析dubbo自动装配
+
+我们来看一下dubbo所依赖的bean是如何自动装配到ioc容器中的
+
+首先我们需要引入dubbo的starter
+
+```xml
+<!-- dubbo -->
+<dependency>
+    <groupId>org.apache.dubbo</groupId>
+    <artifactId>dubbo-spring-boot-starter</artifactId>
+    <version>3.0.7</version>
+</dependency>
+
+<dependency>
+    <groupId>org.apache.dubbo</groupId>
+    <artifactId>dubbo-dependencies-zookeeper-curator5</artifactId>
+    <version>${dubbo.version}</version>
+    <type>pom</type>
+</dependency>
+```
+
+既然是一个`starter`，肯定得准守springboot约定大于配置的约定，在对应的jar包下一定有个**`META-INF/spring.factories`**文件
+
+![image-20230411115507105](https://cdn.fengxianhub.top/resources-master/image-20230411115507105.png)
+
+在`org.springframework.core.io.support.SpringFactoriesLoader#loadSpringFactories`方法加载完毕后，这些配置的bean就会通过反射进行加载
+
+我们分析一下这个bean，点进去进行查看
+
+![image-20230411112706794](https://cdn.fengxianhub.top/resources-master/image-20230411112706794.png)
+
+![image-20230411113943009](https://cdn.fengxianhub.top/resources-master/image-20230411113943009.png)
+
+但是当我们去查看最终注入到ioc容器里的bean的时候，却没有发现这些bean，甚至一个关于`dubbo`的bean都没有
+
+![image-20230411113853748](https://cdn.fengxianhub.top/resources-master/image-20230411113853748.png)
+
+这是因为我们的项目中并没有添加对`dubbo`的条件注解，没有按需进入注入
+
+这时候其实我们需要的是添加条件注解
+
+![image-20230411115847128](https://cdn.fengxianhub.top/resources-master/image-20230411115847128.png)
+
+![image-20230411115915590](https://cdn.fengxianhub.top/resources-master/image-20230411115915590.png)
+
+![image-20230411115937449](https://cdn.fengxianhub.top/resources-master/image-20230411115937449.png)
+
+可以看到，当项目中有条件注解时，才能加入到ioc容器
+
+## 5. 如果定义自己的starter
+
+> 定义的步骤在springboot官网上非常详细
+>
+> - <a href="https://docs.spring.io/spring-boot/docs/2.6.14/reference/html/features.html#features.developing-auto-configuration">Createing Your Own Auto-configuration</a>
+
+## 6. 面试答法
 
 首先自动装配中最重要的三个类，回答的时候要沿着这三个方法去回答
 
@@ -182,16 +256,13 @@ org.springframework.core.io.support.SpringFactoriesLoader#loadSpringFactories
 第二步：自动装配的过程
 
 1. 当启动springboot应用程序的时候，会先创建`SpringApplication`的对象，在对象的构造方法中会进行某些参数的初始化工作，最主要的是判断当前应用程序的类型以及初始化器和监听器，在这个过程中会加载整个应用程序中的`spring.factories`文件，将文件的内容放到缓存对象中，方便后续获取。
-
 2. SpringApplication对象创建完成之后，开始执行run方法，来完成整个启动，启动过程中最主要的有两个方法，第一个叫做`prepareContext`，第二个叫做`refreshContext`,在这两个关键步骤中完整了自动装配的核心功能，前面的处理逻辑包含了上下文对象的创建，banner的打印，异常报告期的准备等各个准备工作，方便后续来进行调用。
-
 3. 在prepareContext方法中主要完成的是对上下文对象的初始化操作，包括了属性值的设置，比如环境对象，在整个过程中有一个非常重要的方法，叫做load，load主要完战一件事，将当前启动类做为一个`beanDefinition`注册到`registry`中，方便后续在进行`BeanFactoryPostProcessor`调用执行的时候，找到对应的主类，来完成`@SpringBootApplicaiton`，`@EnableAutoConfiguration`等注解的解析工作
-
-4. 在refreshContext方法中会进行整个容器刷新过程，会调用中spring中的refresh方法，refresh中有13个非常关键的方法，来完成整个spring应用程序的启动，在自动装配过程中，会调用invokeBeanFactoryPostProcessor方法，在此方法中主要是对ConfigurationClassPostProcessor类的处理，这次是BFPP的子类也是BDRPP的子类，在调用的时候会先调用BDRPP中的postProcessBeanDefinitionRegistry方法，然后调用postProcessBeanFactory方法，在执行postProcesskeanDefinitionRegistry的时候回解析处理各种注解，包含@PropertySource，@ComponentScan，@ComponentScans，@Bean，@lmport等注解，最主要的是import注解的解析
-
+4. 在refreshContext方法中会进行整个容器刷新过程，会调用中spring中的refresh方法，refresh中有13个非常关键的方法，来完成整个spring应用程序的启动，在自动装配过程中，会调用`invokeBeanFactoryPostProcessor`方法，在此方法中主要是对ConfigurationClassPostProcessor类的处理，这次是BFPP的子类也是BDRPP的子类，在调用的时候会先调用BDRPP中的postProcessBeanDefinitionRegistry方法，然后调用postProcessBeanFactory方法，在执行postProcesskeanDefinitionRegistry的时候回解析处理各种注解，包含@PropertySource，@ComponentScan，@ComponentScans，@Bean，@lmport等注解，最主要的是import注解的解析
 5. 在解析@lmport注解的时候，会有一个getlmports的方法，从主类开始递归解析注解，把所有包含@lmport的注解都解析到，然后在processlmport方法中对Import的类进行分类，此处主要识别的时候AutoConfigurationlmportSelect归属于ImportSelect的子类，在后续过程中会调用`deferredlmportSelectorHandler`中的process方法，来完整`EnableAutoConfiguration`的加载。
+6. 通过@Conditional等条件注解按需加载的配置类，其他的将被过滤掉
 
-   
+> 最后一句话总结：Spring Boot 通过@EnableAutoConfiguration开启自动装配，通过 SpringFactoriesLoader 最终加载META-INF/spring.factories中的自动配置类实现自动装配，自动配置类其实就是通过@Conditional按需加载的配置类，想要其生效必须引入spring-boot-starter-xxx包实现起步依赖
 
 
 
