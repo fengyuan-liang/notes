@@ -106,7 +106,11 @@ func main() {
 
 ### 1.2 最佳实践
 
-![img](https://cdn.fengxianhub.top/resources-master/202303310041136.avif)
+![img](https://cdn.fengxianhub.top/resources-master/202305042113604.avif)
+
+
+
+![image-20230504211407049](https://cdn.fengxianhub.top/resources-master/202305042114298.png)
 
 ## 2. 测试最佳实践
 
