@@ -120,7 +120,7 @@
 
 **堆**
 
-[二叉堆](/AlgorithmAndDataStructure/13-二叉堆.md) 
+[二叉堆](/AlgorithmAndDataStructure/13-二叉堆.md) | [优先级队列](/AlgorithmAndDataStructure/14-优先级队列.md) 
 
 ## 🎈 大数据
 
