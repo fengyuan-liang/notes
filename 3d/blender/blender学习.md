@@ -1,0 +1,51 @@
+# blender学习
+
+快捷键汇总：
+
+```go
+r + y // 沿着y轴移动
+r + x // 沿着x轴移动
+r + r // 自由旋转
+shift + 右键 // 设置游标的位置
+shift + c // 游标回归中心
+切换到英文键盘 ～ // 唤出视图
+S // 进行缩放
+/ 斜杠键 // 进入隔离模式，其他的东西都会消失，只观察当前物体
+s + y  // 往y轴方向压扁一些
+s + z // z轴高一点
+alt + r // 复位旋转
+// 保存模型  按m键
+e 	挤出工具
+ctrl + l // 关联材质
+tab 进入编辑模式 + 3选面 + G + Z = 按照某个面进行缩放
+tab 进入编辑模式 + 1选点模式
+shift + s // 可以选中球体吸附到面上
+选中边 + ctrl + b 进行倒角
+选中面 + i（内插面） + e（挤出）
+//==========第二个素材
+mac（option + 鼠标左键 选中循环边）
+ctrl + r // 环切 + 鼠标中键滑动 => 增加环切段数
+ctrl + 2 给一个细分曲面
+alt(option) + z // 进入透显模式
+shift + alt + 左键 // 选中一个圈
+ctrl + 2 // 应用细分效果
+r + z + 要旋转的度数 // 沿着轴进行选择
+o // 衰减编辑 + g + z 进行缩放，滚动鼠标中键调整衰放的那个圈圈
+ctrl + b // 倒角
+```
+
+动画相关
+
+
+
+## 1. 萌三兄弟
+
+![无标题](https://cdn.fengxianhub.top/resources-master/%E6%97%A0%E6%A0%87%E9%A2%98.png)
+
+## 2. 积木组合
+
+![image-20230618150211667](https://cdn.fengxianhub.top/resources-master/image-20230618150211667.png)
+
+老mac渲染得花几个小时，就不渲染了
+
+![image-20230618151153692](https://cdn.fengxianhub.top/resources-master/image-20230618151153692.png)
