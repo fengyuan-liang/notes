@@ -108,7 +108,7 @@
 
 **树**
 
-[二叉树](/AlgorithmAndDataStructure/4-二叉树.md)     |   [二叉树搜索树](/AlgorithmAndDataStructure/5-二叉树搜索树.md)    |  [AVL树](/AlgorithmAndDataStructure/6-AVL树.md)  |    [B树](/AlgorithmAndDataStructure/7-B树.md)   |    [红黑树](/AlgorithmAndDataStructure/8-红黑树.md)           
+[二叉树](/AlgorithmAndDataStructure/4-二叉树.md)     |   [二叉树搜索树](/AlgorithmAndDataStructure/5-二叉树搜索树.md)    |  [AVL树](/AlgorithmAndDataStructure/6-AVL树.md)  |    [B树](/AlgorithmAndDataStructure/7-B树.md)   |    [红黑树](/AlgorithmAndDataStructure/8-红黑树.md)   |    [Trie前缀树](/AlgorithmAndDataStructure/16-Trie前缀树.md)
 
 **字典**
 
@@ -121,6 +121,10 @@
 **堆**
 
 [二叉堆](/AlgorithmAndDataStructure/13-二叉堆.md) | [优先级队列](/AlgorithmAndDataStructure/14-优先级队列.md) 
+
+**编解码**
+
+[哈夫曼编码](/AlgorithmAndDataStructure/15-哈夫曼编码.md) 
 
 ## 🎈 大数据
 
