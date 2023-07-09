@@ -22,7 +22,7 @@
 **java&scala基础**
 
 - [Java8新特性](/java/Java8新特性.md) | [注解学习](/java/注解学习一、Java内置注解及注解书写.md) |  [设计模式](/设计模式/设计模式.md)
-- [MapReduce基本使用](/大数据/scala/Scala学习一.md) 
+- [scala基础](/大数据/scala/Scala学习一.md) 
 
 **JUC**
 

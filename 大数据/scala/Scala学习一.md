@@ -400,7 +400,272 @@ object Test06_FileIO {
 | Null     | null，Null类型只有一个实例值`null`                           |
 | Noting   | Noting类型在Scala的类层级最底端；它是任何其他类型的子类型。当一个函数，我们确定没有返回正常的返回值，可以用`Noting`来指定返回类型，这样有一个好处，就是我们可以把返回的值（异常）赋给其他的函数或者变量（兼容性） |
 
+```scala
+object Test07_DateType {
+  def main(args: Array[String]): Unit = {
+    // 1. byte
+    val a1: Byte = 127
+    val a2: Byte = -128
 
+    // 5.1 Unit
+    def m1(): Unit = {
+      println("m1被调用执行")
+    }
+
+    val a: Unit = m1()
+    println("a: " + a) // a: () 查看`Unit`的源码，toString输出的就是括号
+    // 5.2 空引用Null
+    // val n: Int = null // error
+    // println(n)
+    var student = new Student("alice", 20)
+    student = null
+    println(student) // null
+
+    // 5.3 noting
+    // noting也是Int的子类，所以抛出异常其实是返回的Noting
+    def m2(n: Int): Int = {
+      if (n == 0)
+        throw new NullPointerException
+      else
+        n
+    }
+
+    val b = m2(2)
+    println("b: " + b) // b: 2
+  }
+}
+
+```
+
+### 2.8 自动类型转换
+
+scala自动类型转换的规则和java相似
+
+- 自动提升原则：有多种类型的数据混合运算时，系统首先`自动将所有数据转换成精度大的那种数据类型`，然后再进行计算
+- `把精度大的数值类型赋值给精度小的数值类型时，就会报错`，反之就会进行自动类型转换
+- （byte、short）和char之间不会相互自动转换
+- byte、short、char他们三者可以计算，在计算时首先转换为int类型
+
+### 2.9 scala运算符的本质
+
+scala运算符和java基本上差不多，但是scala是更加面向对象的语言，scala的运算符本质上其实是`对象的方法调用`
+
+```scala
+object Test01_operator {
+  def main(args: Array[String]): Unit = {
+    // 运算符的本质
+    val n1: Int = 12
+    val n2: Int = 37
+    // 调用n1这个对象的`+`方法
+    println(n1.+(n2))
+    // 可以简写为
+    println(n1 + n2)
+    // toString也可以简写，方便链式调用
+    println(7.5 toString)
+  }
+}
+```
+
+## 3. Loop
+
+### 3.1 遍历
+
+```scala
+object Test02_for_loop {
+  def main(args: Array[String]): Unit = {
+    // 1. 范围遍历, `to`其实就是方法调用，to有到达的意思，当然包含10
+    for (i <- 1 to 10) {
+      println(i + ". hello world")
+    }
+    // 本质上是这样的
+    for (i <- Range.inclusive(1, 10)) {
+      println(i + ". hello world")
+    }
+    // 不包含的写法
+    for (i <- 1 until 10) {
+      println(i + ". hello world")
+    }
+    println("=================")
+    // 2. 数组遍历
+    for (i <- Array(1,4,6)) {
+      println(i)
+    }
+    println("=================")
+    for (i <- List(1, 4, 6)) {
+      println(i)
+    }
+    println("=================")
+    for (i <- Set(1, 4, 6)) {
+      println(i)
+    }
+  }
+}
+```
+
+### 3.2 循环守卫
+
+在scala中没有关键字`continue`
+
+```scala
+// 3. 循环守卫
+for (i <- 1 to 10 if i != 5) {
+  println(i)
+}
+```
+
+### 3.3 循环步长
+
+```scala
+// 4. 循环步长 `by`是range的一个方法
+for (i <- 1 to 10 by 2) {
+  println(i + ". hello world")
+}
+println("=================")
+for (i <- 1 to 10 reverse) {
+  println(i + ". hello world")
+}
+```
+
+### 3.4 循环变量
+
+```scala
+object Test04_practice_pyramid {
+  def main(args: Array[String]): Unit = {
+    for (i <- 1 to 9) {
+      val stars = 2 * i - 1
+      val spaces = 9 - i
+      println(" " * spaces + "*" * stars)
+    }
+    // 使用循环变量
+    for (i <- 1 to 9; stars = 2 * i - 1; spaces = 9 - i) {
+      println(" " * spaces + "*" * stars)
+    }
+  }
+}
+```
+
+### 3.5 循环返回值
+
+注意这里`yield`是一个关键字，跟java里面线程控制的那个方法不一样
+
+```scala
+val r1: immutable.IndexedSeq[Int] = for (i <- 1 to 10) yield i
+println(r1)
+// 输出
+Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+```
+
+### 3.6 退出循环
+
+在scala里面为了配合`函数式编程`和`更加面向对象`，没有`break`和`continue`这两个关键字
+
+```scala
+package demo04
+
+import scala.util.control.Breaks
+
+object Test06_break {
+  def main(args: Array[String]): Unit = {
+    // 1. 采用抛出异常的方式退出循环
+    try {
+      for (i <- 1 to 10) {
+        if (i == 3) {
+          throw new RuntimeException
+        }
+        println(s"s=$i")
+      }
+    } catch {
+      case e => // 在scala中catch是通过模式匹配
+    }
+    // 2. 使用scala中的Breaks类的break方法，实现异常的抛出和捕获
+    // 其实底层就是使用try catch实现的
+    Breaks.breakable(
+      for (i <- 0 until 5) {
+        if (i == 3) {
+          Breaks.break()
+        }
+        println(s"s=$i")
+      }
+    )
+  }
+}
+
+```
+
+## 4. 函数式编程🤩
+
+首先回顾一下面相对象编程：
+
+- 解决问题，分解对象、行为、属性，然后通过对象的关系以及行为的调用来解决问题
+- 对象：用户
+- 行为：登陆、连接JDBC、读取数据库
+- 属性：用户名、密码
+
+> Scala语言是一个完全面相对象编程语言，万物皆对象
+>
+> 对象的本质：对数据和行为的一个封装
+
+函数式编程：
+
+面向过程和面向对象其实都是`命令式编程`，关注的点`计算机执行问题的命令`
+
+函数式编程关注的点是`数据的映射关系`（有点云里雾里 😂）
+
+举个例子🤪：
+
+- 在命令式编程里面`int a = 1`，就是定义了一个变量并且赋值为1，接下来还可以`a = 2`，再赋值
+- 在函数式编程里面，函数其实就是数学里面的函数，例如`x = 1`，就是一条直线，就不能`x = 2`了
+
+区别：命令式编程更适合计算机进行理解（命令式），函数式编程更加适合人来理解
+
+- 函数编程拥有更好的不可变性
+- 函数式编程的不可并性更加适合大数据`分布式并行计算`的场景（不可变意味着没有副作用）
+
+### 4.1 函数基础
+
+#### 4.1.1 基础语法
+
+![image-20230709234032232](https://cdn.fengxianhub.top/resources-master/image-20230709234032232.png)
+
+来个🌰
+
+```scala
+object Test01_function_method {
+  def main(args: Array[String]): Unit = {
+    // 定义函数(狭义的函数)
+    def sayHi(name: String): Unit = {
+      println(s"Hi $name")
+    }
+    // 函数调用
+    sayHi("alice")
+    // 方法调用
+    Test01_function_method sayHi "alice"
+
+    // 获取方法的返回值
+    val str = Test01_function_method sayHello "bob"
+    println(str)
+  }
+
+  // 定义对象的方法
+  def sayHi(name:String): Unit = {
+    println(s"Hiiiii $name")
+  }
+
+  def sayHello(name: String): String = {
+    println(s"Hello $name")
+    "Hello"
+  }
+}
+```
+
+
+
+#### 4.1.2 函数和方法的区别
+
+核心概念：
+
+- 为完成某一功能的程序语句的集合，称为函数
+- 类中的函数称之方法
 
 
 
