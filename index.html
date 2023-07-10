@@ -27,6 +27,8 @@
     />
     <!-- 阿里矢量图 -->
     <link rel="stylesheet" href="iconfont.css" />
+    <!-- 评论系统 -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css">
   </head>
 
   <body>
@@ -95,7 +97,7 @@
           depth: 6,
           maxAge: 86400000, // 过期时间，单位毫秒，默认一天
         }, //添加搜索框
-        //代码复制提示
+        // 代码复制提示
         copyCode: {
           buttonText: '<i class="iconfont zhulin-fuzhi"></i>',
           errorText: "NO",
@@ -145,9 +147,11 @@
     <!-- vue.js -->
     <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/vue.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>
-
+    <!-- 评论系统 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/gitalk.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
     <script type="text/javascript">
-      $(document).ready(function () {
+      $(document).ready(() => {
         $.goup({
           trigger: 100,
           bottomOffset: 52,
@@ -156,6 +160,16 @@
           titleAsText: true,
         });
       });
+      // 评论系统
+      // const gitalk = new Gitalk({
+      //     clientID: 'db682bc37a0ac8167ad5',
+      //     clientSecret: 'b88da18bd59bf2dfa4cc3e7638c9cffa19ff7139',
+      //     repo: 'notes',
+      //     owner: 'fengyuan-liang',
+      //     admin: ['Github repo collaborators, only these guys can initialize github issues'],
+      //     // facebook-like distraction free mode
+      //     distractionFreeMode: false
+      //   })
     </script>
   </body>
 </html>

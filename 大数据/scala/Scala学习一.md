@@ -667,17 +667,312 @@ object Test01_function_method {
 - 为完成某一功能的程序语句的集合，称为函数
 - 类中的函数称之方法
 
+#### 4.1.3 可变参数
 
+```scala
+package demo05
 
+object Test03_function_parameter {
+  def main(args: Array[String]): Unit = {
+    // 1. 可变参数定义规则
+    def f1(str: String*): Unit = {
+      println(str)
+    }
 
+    f1("alice") // WrappedArray(alice)
+    f1("alice", "bob", "eureka") // WrappedArray(alice, bob, eureka)
 
+    // 2. 如果是普通参数和可变参数在一起，可变参数一定放置在最后
+    def f2(str1: String, str2: String*): Unit = {
+      println(s"str1:$str1, str2:$str2")
+    }
 
+    f2("alice", "bob", "eureka") // str1:alice, str2:WrappedArray(bob, eureka)
 
+    // 3. 参数默认值
+    def f3(str: String = "default"): Unit = {
+      println(s"str:$str")
+    }
 
+    f3()
 
+    // 4. 带名参数
+    def f4(name: String = "tom", age: Int = 18): Unit = {
+      println(s"name:$name, age:$age")
+    }
 
+    f4()
+    f4(name = "bob")
+    f4(name = "bob", age = 19)
+  }
+}
+```
 
+#### 4.1.4 函数至简原则
 
+1. return 可以省略，Scala 会使用函数体的最后一行代码作为返回值
+
+   ```scala
+   def sayHello(name: String): String = {
+     println(s"Hello $name")
+     "Hello"
+   }
+   ```
+
+2. 如果函数体只有一行代码，可以省略花括号
+
+   ```scala
+   def f2(name:String):String = name
+   ```
+
+3. 返回值类型如果能够推断出来，那么可以省略（:和返回值类型一起省略）
+
+   ```scala
+   def f2(name:String) = name
+   ```
+
+4. 如果有 return，则不能省略返回值类型，必须指定
+
+5. 如果函数明确声明 unit，那么即使函数体中使用 return 关键字也不起作用
+
+6. Scala 如果期望是无返回值类型，可以省略等号
+
+7. 如果函数无参，但是声明了参数列表，那么调用时，小括号，可加可不加
+
+   ```scala
+   def f7(): Unit = {
+   
+   }
+   
+   f7()
+   // 可以省略小括号
+   f7
+   ```
+
+8. 如果函数没有参数列表，那么小括号可以省略，调用时小括号必须省略
+
+9. 如果不关心名称，只关心逻辑处理，那么函数名（def）可以省略
+
+   ```scala
+   (name:String) => name
+   ```
+
+#### 4.1.5 Lambda
+
+匿名函数至简原则
+
+```scala
+val fun = (name: String) => println(name)
+
+// 定义一个函数，以函数作为参数输入
+def f(func: String => Unit): Unit = {
+  func("hello world")
+}
+```
+
+1. 参数的类型可以省略，会根据形参进行自动的推导
+
+2. 类型省略之后，发现只有一个参数，则圆括号可以省略；其他情况：没有参数和参数超过 1 的永远不能省略圆括号
+
+3. 匿名函数如果只有一行，则大括号也可以省略
+
+   ```scala
+   f(name => println(name)) // hello world
+   ```
+
+4. 如果参数只出现一次，则参数省略且后面参数可以用_代替
+
+   ```scala
+   f(println(_)) // hello world
+   ```
+
+5. 可以直接传入操作，省略下划线
+
+   ```scala
+   f(println) // hello world
+   ```
+
+举个例子
+
+```scala
+// 实例
+def dualFunctionOneAndTwo(func: (Int, Int) => Int): Int = {
+  func(1, 2)
+}
+
+val add = (a: Int, b: Int) => a + b
+val minus = (a: Int, b: Int) => a - b
+// 匿名函数简化
+println(dualFunctionOneAndTwo(add))
+println(dualFunctionOneAndTwo(minus))
+// 进一步简化
+println(dualFunctionOneAndTwo((a, b) => a + b))
+// 再简化，体现的是大数据里面传运算过程而不是数据的思想
+println(dualFunctionOneAndTwo(_ + _))
+println(dualFunctionOneAndTwo(_ - _))
+```
+
+### 4.2 函数高级
+
+#### 4.2.1 高阶函数
+
+函数可以作为值进行传递
+
+```scala
+// 1. 函数可以作为值进行传递
+def f(n: Int): Int = {
+  println("f 被调用")
+  n + 1
+}
+println(f(123))
+// 1. 函数可以作为值进行传递
+val f1: Int => Int = f
+// 可以简写为空格+下划线的形式，表示要的是一个函数
+val f2 = f _
+println(f1) // 对象地址
+println(f1(12)) // 13
+println(f2) // 对象地址
+println(f2(35)) // 36
+// 没有参数的时候可以省略括号，表示调用这个函数
+def fun(): Int = {
+  println("f 被调用")
+  1
+}
+val f3 = fun
+val f4 = fun _
+println(f3) // 1
+println(f4) // 对象地址
+```
+
+函数作为参数进行传递
+
+```scala
+// 2. 函数作为参数进行传递
+// 定义二元计算函数
+def dualEval(op: (Int, Int) => Int, a: Int, b: Int): Int = {
+  op(a, b)
+}
+def add(a: Int, b: Int): Int = {
+  a + b
+}
+println(dualEval(add, 12, 35))
+println(dualEval((a, b) => a + b, 12, 35))
+println(dualEval(_ + _, 12, 35))
+```
+
+函数作为函数的返回值返回（函数嵌套）
+
+```scala
+// 3. 函数作为函数的返回值返回（函数嵌套）
+def f5(): Int => Unit = {
+  def f6(a: Int): Unit = {
+    println(s"f6调用:$a")
+  }
+  f6 // 将函数直接返回
+}
+println(f5()) // lambda表达式对象地址
+val f6 = f5()
+println(f6) // lambda表达式对象地址
+println(f6(25)) // f6调用:25 ()
+println(f5()(25)) // f6调用:25 ()
+```
+
+#### 4.2.2 高阶函数实现map
+
+在大数据处理中，map和reduce都是非常常见的操作，现在我们来实现一个
+
+```scala
+object Test07_Practice_CollectionOperation {
+  def main(args: Array[String]): Unit = {
+    // 对数组进行处理，将操作抽象出来，处理完毕之后的结果返回一个新的数组
+    def arrayOperation(array: Array[Int], op: Int => Int): Array[Int] = {
+      for (elem <- array) yield op(elem)
+    }
+
+    val arr = Array(2, 4, 54, 1, 22)
+
+    // 定义一个加一的操作
+    def addOne(elem: Int): Int = {
+      elem + 1
+    }
+
+    // 调用函数
+    val newArr:Array[Int] = arrayOperation(arr, addOne)
+    println(newArr.mkString(", "))
+
+    // 简写 传入匿名函数  实现元素的翻倍
+    val newArr2: Array[Int] = arrayOperation(arr, _ * 2)
+    println(newArr2.mkString(", "))
+  }
+}
+// 输出
+3, 5, 55, 2, 23
+4, 8, 108, 2, 44
+```
+
+#### 4.2.4 练习
+
+```scala
+object Test08_practice {
+  def main(args: Array[String]): Unit = {
+    // 练习1， 传入三个参数，返回!(i == 0 && s == "" && c == '0')
+    val f1 = (i: Int, s: String, c: Char) => !(i == 0 && s == "" && c == '0')
+
+    println(f1(0, "", '0'))
+    println(f1(0, "", '1'))
+    println(f1(22, "", '0'))
+    println(f1(0, "hello", '0'))
+
+    // 练习2， 使用函数嵌套分别传入三个参数，返回!(i == 0 && s == "" && c == '0')
+    // 外层函数的参数传入内层函数 => 闭包 => 可以使用柯里化简化
+    val func = (i: Int) => (s: String) => (c: Char) => !(i == 0 && s == "" && c == '0')
+    println(func(0)("")('0'))
+    println(func(0)("")('1'))
+    println(func(22)("")('0'))
+    println(func(0)("hello")('0'))
+
+    // 柯里化
+    def func2(i: Int)(s: String)(c: Char) = {
+      !(i == 0 && s == "" && c == '0')
+    }
+
+    println(func2(0)("")('0'))
+    println(func2(0)("")('1'))
+    println(func2(22)("")('0'))
+    println(func2(0)("hello")('0'))
+  }
+}
+```
+
+#### 4.2.4 函数柯里化&闭包
+
+>首先我们需要知道：`闭包`是函数式编程的标配
+>
+>- 闭包：如果一个函数，访问到了它的外部（局部）变量的值，那么这个函数和它所处的环境，称之为`闭包`
+>
+>- 函数柯里化：把一个参数列表的多个参数，变成多个参数列表
+
+举个闭包的例子
+
+```scala
+// 下面的调用中，当f1函数执行完后，在栈空间里面的变量`i`应该就会被释放掉，f2应该就访问不到了
+// 但是f2却可以访问，同理f3也可以访问到f2中被释放的变量`s`
+// 这就是闭包，其实就是栈内内存逃逸
+def f1(i:Int): String => Char => Boolean = {
+  def f2(s: String): Char => Boolean = {
+    def f3(c: Char): Boolean = {
+      !(i == 0 && s == "" && c == '0')
+    }
+    f3
+  }
+  f2
+}
+
+println(f1(0)("")('0'))
+println(f1(0)("")('1'))
+println(f1(22)("")('0'))
+println(f1(0)("hello")('0'))
+```
 
 
 
