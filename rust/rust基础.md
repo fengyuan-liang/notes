@@ -83,7 +83,7 @@ fn main() {
 
 ```rust
 fn main() {
-    le吧 t x = 5;
+    let x = 5;
     let x = x + 1;
     let x = x + 1;
     println!("x is {}", x) // x is 7
@@ -362,6 +362,10 @@ fn main() {
    }
 }
 ```
+
+#### 2.4.3 match
+
+在rust中提供了一个极为强大的控制流运算符`match`，由于`match`和`Option`合在一起更加好理解一些，所以可以看`5.4小节`
 
 ## 3. rust所有权
 
@@ -901,6 +905,1040 @@ struct里也可以存放引用，但是需要使用到`生命周期`
 - 如果struct里面存储引用，而不使用生命周期，就会报错
 
 ![image-20230716113629101](https://cdn.fengxianhub.top/resources-master/image-20230716113629101.png)
+
+**小例子**
+
+我们使用struct来完成一个计算长方形面积的小例子
+
+```rust
+fn main() {
+   let rect = &Rectangle { width: 30, length: 50 };
+   
+   println!("{}", area(rect));
+   // `{:?}` 打印简单的格式化内容 `{:#?}` 打印详细的格式化内容
+   println!("{:?}", rect); // Rectangle { width: 30, length: 50 }
+}
+
+#[derive(Debug)]
+struct Rectangle {
+    width:u32,
+    length:u32,
+}
+
+// 长方形的长和宽是有关联的
+fn area(rect: &Rectangle) -> u32 {
+    rect.width * rect.length
+}
+```
+
+### 4.6 struct的方法
+
+方法和函数类似：`fn`关键字、名称、参数、返回值
+
+方法和函数的不同：
+
+- 方法是在`struct(或enum、trait对象)`的上下文中定义
+- 第一个参数是`self`，表示方法被调用的`struct`实例
+
+那么如何定义方法呢？
+
+- 在`impl`块里定义方法
+- 方法的第一个参数可以是`&self`，也可以获得其所有权或可变借用。和其他参数一样
+
+```rust
+fn main() {
+    let rect = &Rectangle {
+        width: 30,
+        length: 50,
+    };
+
+    println!("{}", rect.area());
+
+    println!("{:?}", rect); // Rectangle { width: 30, length: 50 }
+}
+
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    length: u32,
+}
+
+impl Rectangle {
+    // 长方形的长和宽是有关联的
+    fn area(&self) -> u32 {
+        self.width * self.length
+    }
+}
+
+```
+
+**方法调用的运算符**
+
+在rust中会自动引用和解引用，在调用方法时就会发生这种行为
+
+在调用方法时，rust根据情况自动添加`&`、`&mut`或`*`，以便`object`可以匹配方法的签名
+
+下面两行代码的效果是相同的
+
+```rust
+// 第一种
+p1.distance(&p2);
+// 第二种
+(&p1).distance(&p2);
+```
+
+**方法参数**
+
+方法可以有多个参数
+
+```rust
+fn main() {
+    let rect = &Rectangle {
+        width: 30,
+        length: 50,
+    };
+    let rect2 = &Rectangle {
+        width: 30,
+        length: 50,
+    };
+    let rect3 = &Rectangle {
+        width: 30,
+        length: 50,
+    };
+
+    println!("rect 可以容纳 rect2 {}", rect.can_hold(&rect2));
+    println!("rect 可以容纳 rect3 {}", rect.can_hold(&rect3));
+}
+
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    length: u32,
+}
+
+impl Rectangle {
+    // 长方形的长和宽是有关联的
+    fn area(&self) -> u32 {
+        self.width * self.length
+    }
+
+    fn can_hold(&self, other:&Rectangle) -> bool {
+        self.width > other.width && self.length > other.length
+    }
+}
+
+```
+
+### 4.7 关联函数
+
+可以在`impl`块里定义不把`self`作为第一个参数的函数，它们叫`关联函数（不是方法）`
+
+- 例如：`String::from()`
+
+关联函数通常用于构造器
+
+```rust
+fn main() {
+    // 使用关联函数创建
+    let rect = Rectangle::square(20);
+    let rect2 = &Rectangle {
+        width: 30,
+        length: 50,
+    };
+    let rect3 = &Rectangle {
+        width: 30,
+        length: 50,
+    };
+
+    println!("rect 可以容纳 rect2 {}", rect.can_hold(&rect2));
+    println!("rect 可以容纳 rect3 {}", rect.can_hold(&rect3));
+}
+
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    length: u32,
+}
+
+impl Rectangle {
+    // 长方形的长和宽是有关联的
+    fn area(&self) -> u32 {
+        self.width * self.length
+    }
+
+    fn can_hold(&self, other:&Rectangle) -> bool {
+        self.width > other.width && self.length > other.length
+    }
+
+    // 关联函数
+    fn square(size: u32) -> Rectangle {
+        Rectangle { width: size, length: size }
+    }
+}
+```
+
+>每个函数可以拥有多个`impl`块
+
+## 5. 枚举与模式匹配
+
+### 5.1 枚举的使用
+
+我们直接看枚举的例子
+
+```rust
+fn main() {
+    // 使用枚举创建枚举值
+    let four = IpAddrKind::IPV4;
+    let six = IpAddrKind::IPV6;
+
+    println!("{:?}", four); // IPV4
+    println!("{:?}", six); // IPV6
+}
+
+// 我们将枚举类型里面的值称之为枚举的变体
+#[derive(Debug)]
+enum IpAddrKind {
+    IPV4,
+    IPV6
+}
+```
+
+**我们可以将枚举嵌入到结构体中**
+
+```rust
+fn main() {
+    let addr1 = IpAddr::new(IpAddrKind::IPV4, String::from("127.0.0.1"));
+
+    println!("{:?}", addr1); // IpAddr { kind: IPV4, address: "127.0.0.1" }
+}
+
+// 我们将枚举类型里面的值称之为枚举的变体
+#[derive(Debug)]
+enum IpAddrKind {
+    IPV4,
+    IPV6
+}
+
+#[derive(Debug)]
+struct IpAddr {
+    kind: IpAddrKind,
+    address: String
+}
+
+impl IpAddr {
+    fn new(kind: IpAddrKind, address: String) -> IpAddr {
+        IpAddr { kind: kind, address: address }
+    }
+}
+```
+
+**我们也可以将数据附加到枚举的变体中**
+
+这样做的好处有
+
+- 不需要额外使用`struct`
+- 每个变体可以拥有不同的类型以及关联的数据量
+
+```rust
+fn main() {
+    let addr1 = IpAddr::new(
+        IpAddrKind::IPV4(127, 0, 0, 1), 
+        String::from("127.0.0.1")
+    );
+
+    println!("{:?}", addr1); // IpAddr { kind: IPV4(127, 0, 0, 1), address: "127.0.0.1" }
+}
+
+// 我们将枚举类型里面的值称之为枚举的变体
+#[derive(Debug)]
+enum IpAddrKind {
+    IPV4(u8, u8, u8, u8),
+    IPV6(String)
+}
+
+#[derive(Debug)]
+struct IpAddr {
+    kind: IpAddrKind,
+    address: String
+}
+
+impl IpAddr {
+    fn new(kind: IpAddrKind, address: String) -> IpAddr {
+        IpAddr { kind: kind, address: address }
+    }
+}
+```
+
+标准库里面的`IpAddr`也是使用枚举实现的
+
+### 5.2 枚举的方法
+
+枚举的方法和结构体的方法一样
+
+```rust
+// 我们将枚举类型里面的值称之为枚举的变体
+#[derive(Debug)]
+enum IpAddrKind {
+    IPV4(u8, u8, u8, u8),
+    IPV6(String),
+}
+
+impl IpAddrKind {
+    fn newIpV4(u1 :u8, u2: u8,u3: u8,u4: u8) -> IpAddrKind {
+        IpAddrKind::IPV4(u1, u2, u3, u4)
+    }
+}
+```
+
+### 5.3 Option枚举
+
+- 定义在标准库中
+- 在`Prelude(预导入模块)`中
+- 描述了：某个值可能存在（某种类型）或不存在的情况
+
+我们知道rust中没有`Null`，在其他语言中：
+
+- `Null`是一个值，它表示`没有值`
+- 一个变量可以处于两种状态：`空值(null)`、`非空`
+
+>Null的作者在2009年的一次演讲称Null引用是`Billion Dollar Mistake`
+>
+>[文献链接](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/)
+>
+>- Null的问题在于：当你尝试像使用非`Null`值那样使用`Null`值的时候，就会引起某种错误（例如java中的NPE）
+>- Null的概念还是有用的：因某种原因而变为无效或缺失的值
+
+在Rust中提供了类似`Null`概念的枚举——`Option<T>`
+
+在标准库中的定义是这样的
+
+```rust
+enum Option<T> {
+    Some(T),
+    None,
+}
+```
+
+举个栗子叭
+
+```rust
+fn main() {
+    // 前两个值是有效的值
+    let some_number = Some(5);
+    let some_string = Some("A String");
+    // None表示这是一个无效的值
+    let absent_number: Option<i32> = None;
+}
+```
+
+>那么`Option<T>`比`Null`的设计好在哪呢?
+>
+>- `Option<T>`和`T`是不同的类型，不可以把`Option<T>`直接当做`T`进行使用
+>- 如果想要使用`Option<T>`中的`T`，必须要将它转换为`T`。这样我们就可以在转换的过程中处理为`None`的情况，而不是像其他语言（例如Java的NPE）一样出现问题
+>
+>总结一下就是我们需要主动去处理`Null`的情况，不会出现`Null值泛滥`的情况
+
+### 5.4 match
+
+#### 5.4.1 match使用
+
+在rust中提供了一个极为强大的控制流运算符`match`
+
+- `match`允许一个值与一系列模式进行匹配，并执行匹配的模式对应的代码
+- 这些模式可以是`子面值`、`变量名`、`通配符`等等
+
+来个例子
+
+```rust
+fn main() {
+    println!("penny {}", value_in_cents(Coin::Penny)) // penny 1
+}
+
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
+}
+
+fn value_in_cents(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter => {
+            println!("多行的情况需要加上花括号");
+            25
+        },
+    }
+}
+
+```
+
+**绑定值的模式**
+
+匹配的分支可以绑定到被匹配对象的部分值，因此我们可以从`enum`变体中获取值
+
+```rust
+fn main() {
+    println!("penny {}", value_in_cents(Coin::Quarter(UsState::Alabama))) // State quarter from Alabama\n penny 25 
+}
+
+#[derive(Debug)]
+enum UsState {
+    Alabama,
+    Alaska,
+}
+
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter(UsState),
+}
+
+fn value_in_cents(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        // 绑定值的模式匹配
+        Coin::Quarter(state) => {
+            println!("State quarter from {:?}", state);
+            25
+        },
+    }
+}
+
+```
+
+>在rust的match匹配中，必须要穷举所有的变体
+
+但是如果`match`要匹配的`变体`太多了，我们不想处理那么多该怎么办呢？
+
+- 可以使用通配符`_`来替代其余没列出的值
+
+```rust
+fn main() {
+    let v = 0u8;
+    match v {
+        1 => println!("one"),
+        2 => println!("two"),
+        3 => println!("three"),
+        // 其他的不想匹配了，可以使用`_`替代，下换线通配符只能放到最后一行
+        _ => println!("other")
+    }
+}
+```
+
+#### 5.4.2 if let
+
+上述的例子可以使用`if let`控制流进行改写
+
+```rust
+fn main() {
+    let v = 0u8;
+    match v {
+        1 => println!("one"),
+        2 => println!("two"),
+        3 => println!("three"),
+        // 其他的不想匹配了，可以使用`_`替代，下换线通配符只能放到最后一行
+        _ => println!("other"),
+    }
+    // 可以使用let进行简写
+    if let 3 = v {
+        println!("three");
+    } else {
+        println!("other")
+    }
+}
+
+```
+
+小结一下`if let`的作用
+
+- 处理只关心一种匹配二忽略其他匹配的情况
+- 更少的代码、更少的缩进、更少的模板代码
+- 放弃了穷举的可能
+- 我们可以把`if let`当做是`match`的语法糖
+
+### 5.5 匹配Option\<T>
+
+```rust
+fn main() {
+    let five = Some(5);
+    let six = plus_one(five);
+    let none = plus_one(None);
+    // 使用模式匹配和Option可以避免其他语言出现NPE的问题
+    match six {
+        Some(value) => println!("six: {}", value),
+        None => println!("six: None"),
+    }
+
+    match none {
+        Some(value) => println!("none: {}", value),
+        None => println!("none: None"),
+    }
+}
+
+fn plus_one(x: Option<i32>) -> Option<i32> {
+    match x {
+        None => None,
+        Some(i) => Some(i + 1)
+    }
+}
+```
+
+## 6. package、crate、module
+
+### 6.1 package、crate、定义module
+
+首先我们来看一下rust的代码组织
+
+- 哪些细节可以暴露，哪些细节是私有的
+- 作用域内哪些名称有效
+- 等等
+
+我们也将代码组织称为`模块组织`，在rust中有以下的模块组织：
+
+- Package(包)：Cargo的特性，让我们在构建、测试、共享crate
+- Crate(单元包)：一个模块树，它可以产生一个`library`或可执行文件
+- Module(模块)、use：让我们可以控制代码的组织、作用域、私有路径
+- Path(路径)：为`struct`、`function`、或`module`等项命名的方式
+
+>首先我们来看一下` Package、Crate`的结构:
+>
+>**crate的类型有**：
+>
+>- binary
+>- library
+>
+>**Crate root**：
+>
+>- 是源代码文件
+>- rust编译器从这里开始，组成你的`Crate`的根`Module`
+>
+>**一个Package可以有**：
+>
+>- 包含一个`Cargo.toml`，它描述了如何构建这些`Crates`
+>- 只能包含0-1个`library crate`
+>- 可以包含任意数量的`Binary crate`
+>- 但必须至少包含一个`crate (library 或 binary)`
+
+我们使用`cargo`构建一个新的`package`
+
+![image-20230716165610914](https://cdn.fengxianhub.top/resources-master/image-20230716165610914.png)
+
+在生成的文件中目录结构如下：
+
+```shell
+$  tree
+|   .gitignore
+|   Cargo.toml
+|
+\---src
+        main.rs 
+```
+
+在cargo中有一些惯例：
+
+- `src/main.rs`
+  - 是`binary crate`的`crate root`
+  - crate名宇package名相同
+- `src/lib.rs`
+  - package包含一个`library crate`
+  - 这个文件也就是library crate的crate root
+  - crate名与package名相同
+- 一个package可以同时包含`src/main.rs`和`src/lib.rs`
+  - 其实就是一个binary crate和一个library crate
+  - 名称与package名相同
+- 一个package可以有多个binary crate
+  - 文件放在`src/bin`
+  - 每个文件都是单独的`binary crate`
+
+>Crate的作用
+>
+>- 将相关的功能组合到一个作用域内，便于在项目间进行分享（防止命名的冲突）
+>  - 例如我们有一个叫做`rand`的crate，访问它的功能需要通过它的名字`rand`进行访问
+
+**定义module来控制作用域和私有性**
+
+>Module的作用有:
+>
+>- 在一个`crate`内，将代码进行分组
+>- 增加可读性，易于复用
+>- 控制项目（item）的私有性，例如public、private
+
+那么如何创建`module`呢，其实使用`mod`关键字就可以了
+
+- 使用mod关键字
+- 可以嵌套
+- 可以包含其他项（struct、enum、常量、trait、函数等）的定义
+
+举个例子
+
+```rust
+mod front_of_house {
+    mod hosting {
+        fn add_to_waitlist(){}
+        fn seat_at_table(){}
+    }
+
+    mod serving {
+        fn take_order(){}
+        fn serve_order(){}
+        fn take_payment(){}
+    }
+}
+```
+
+这些`mod`是定义在`lib.rs`这个`crate`里面的，如果要看他们的层级结构，是这样的
+
+```shell
+crate(lib.rs)
+|
+\---front_of_house
+	|
+    \---hosting
+    |	\---add_to_waitlist
+    |	\---seat_at_table
+    \---serving
+    	|
+   		 \---take_order
+   		 \---serve_order
+   		 \---take_payment
+```
+
+>`src/main.rs`和`src/lib.rs`叫做`crate roots`，这两个文件（任意一个）的内容形成了名为`crate`的模块，位于整个模块树的根部
+
+### 6.2 路径（path）
+
+#### 6.2.1 path使用
+
+为了在rust的模块中找到某个条目，需要使用`路径`
+
+路径有两种表示方式：
+
+- 绝对路径：从`crate root`开始，使用crate名或字面值crate
+- 相对路径：从当前模块开始，使用`self`、`super`或当前模块的标识符
+
+路径至少由一个标识符组成，标识符之间使用`::`
+
+举个例子（下面的代码在`lib.rs`这个crate下面）：
+
+```rust
+mod front_of_house {
+    mod hosting {
+        fn add_to_waitlist(){}
+        fn seat_at_table(){}
+    }
+
+    mod serving {
+        fn take_order(){}
+        fn serve_order(){}
+        fn take_payment(){}
+    }
+}
+
+pub fn eat_at_restaurant() {
+    // 绝对路径从crate开始(优先选择)
+    crate::front_of_house::hosting::add_to_waitlist();
+    // 相对路径
+    front_of_house::hosting::add_to_waitlist();
+}
+```
+
+如果我们build上面的代码其实是会报错的
+
+![image-20230716173237727](https://cdn.fengxianhub.top/resources-master/image-20230716173237727.png)
+
+这里引出一个知识点：私有边界（privacy boundary）
+
+- 模块不仅可以组织代码，还可以定义私有边界
+- 如果想把函数或struct等设为私有，可以将它放到某个模块中
+- rust中所有的条目（函数、方法、struct、enum、模块、常量）默认都是私有的
+- 父级模块无法访问子模块中的私有条目
+- 子模块里可以使用所有祖父模块中的条目
+
+我们修改下上面的代码后编译就可以正常通过了
+
+```rust
+pub mod front_of_house {
+    pub mod hosting {
+        pub fn add_to_waitlist(){}
+        fn seat_at_table(){}
+    }
+
+    mod serving {
+        fn take_order(){}
+        fn serve_order(){}
+        fn take_payment(){}
+    }
+}
+
+pub fn eat_at_restaurant() {
+    // 绝对路径从crate开始(优先选择)
+    crate::front_of_house::hosting::add_to_waitlist();
+    // 相对路径
+    front_of_house::hosting::add_to_waitlist();
+}
+```
+
+>使用pub关键字就可以将这些资源定义为公共的了
+>
+>rust中属性大部分都是默认私有的，需要加上pub关键字来暴露
+>
+>但是枚举只需要在枚举前加上pub其所有变体就都是公共的了
+>
+>```rust
+>mod back_of_house {
+>    // 只需要在枚举定义时加上pub，其变体就都是pub的了
+>    pub enum Appetizer {
+>        Soup,
+>        Salad
+>    }
+>}
+>```
+
+我们在文件系统里面经常使用`..`来表示上级目录，在rust中使用的是`super`关键字
+
+- super：用来访问父级模块路径中的内容，类似与文件系统中的`..`
+
+  ```rust
+  fn serve_order() {}
+  
+  mod back_of_house {
+      fn fix_incorrent_order() {
+          cook_order();
+          // 使用super关键字调用上级
+          super::serve_order();
+          // 如果是绝对路径
+          crate::serve_order()
+      }
+  
+      fn cook_order(){}
+  }
+  ```
+
+#### 6.2.2 use
+
+use关键字可以将路径导入到作用域中
+
+```rust
+pub mod front_of_house {
+    pub mod hosting {
+        pub fn add_to_waitlist(){}
+        fn seat_at_table(){}
+    }
+}
+// 使用use关键字，但此时use的内容只能在当前作用域内访问
+use crate::front_of_house::hosting;
+// 如果加上pub关键字后，相当于把use的内容导出了，其他作用域也可以使用 (重导出)
+// pub use crate::front_of_house::hosting;
+
+pub fn eat_at_restaurant() {
+    // 通过`use`导入可以直接使用
+    hosting::add_to_waitlist();
+}
+```
+
+use的习惯用法
+
+- 函数：将函数的父级模块引入作用域（指定到父级）
+
+  ```rust
+  use std::collections::HashMap;
+  
+  fn main() {
+      let mut map = HashMap::new();
+      map.insert(1, 2);
+  }
+  ```
+
+- struct、enum，其他：指定完整路径（指定到本身）
+
+- 同名条目：指定到父级
+
+#### 6.2.3 as关键字
+
+as关键字可以为引入的路径指定本地的别名
+
+```rust
+use std::fmt;
+use std::io;
+
+fn f1() -> fmt::Result {}
+
+fn f2() -> io::Result {}
+```
+
+可以使用as改写为
+
+```rust
+use std::fmt::Result;
+use std::io::Result as ioResult;
+
+fn f1() -> Result {}
+
+fn f2() -> ioResult {}
+```
+
+#### 6.2.4 使用嵌套路径清理大量use语句
+
+```rust
+use std::cmp::Ordering;
+use std::io;
+// 可以写成下面的形式
+use std::{io, cmp::Ordering}
+```
+
+还有一种情况是同级目录
+
+```rust
+use std::io;
+use std::io::Write;
+// 可以写成下面的形式
+use std::{self, write};
+```
+
+我们可以使用`*`号将路径中所有的公共条目都引入到作用域（谨慎使用， 一般不用）
+
+## 7. 常用的集合
+
+在这里我们主要学习以下几种常用的集合类型
+
+- Vector
+- String
+- HashMap
+
+### 7.1 Vector
+
+#### 7.1.1 Vector基本使用
+
+`Vec<T>`叫做vector
+
+- 由标准库提供
+- 可以存储多个值
+- 只能存储相同类型的数据
+- 值在内存中连续存放
+
+```rust
+fn main() {
+    // 创建vector
+    let v:Vec<i32> = Vec::new();
+    // 可以使用宏`vec!`来创建
+    let mut v = vec![1, 2, 3];
+    // 添加元素
+    v.push(4);
+    for ele in v.iter() {
+        println!("{}", ele) // 打印v中的元素
+    }
+    // 删除vector
+    // 当v离开作用域后，就会自动删除，堆里面的空间也会被回收
+}
+```
+
+我们可以通过以下方法进行访问
+
+```rust
+fn main() {
+    // 可以使用宏`vec!`来创建
+    let v = vec![1, 2, 3];
+    // 使用索引访问元素，如果越界就会发生panic
+    let third = &v[2];
+    println!("The third element is {}", third);
+    // 也可以使用get来获取，越界会返回None这个变体，我们会进行处理
+    match v.get(2) {
+        Some(third) => println!("The third element is {}", third),
+        None => println!("There is no third element"),
+    }
+}
+```
+
+**所有权和借用规则**
+
+- 不能在同一作用域内同时拥有可变和不可变引用
+
+举个例子：
+
+![image-20230716193451099](https://cdn.fengxianhub.top/resources-master/image-20230716193451099.png)
+
+**遍历**
+
+```rust
+fn main() {
+    // 申明了一个可变的变量
+    let  v = vec![1, 2, 3];
+    for ele in v {
+        println!("{}", ele)
+    }
+}
+```
+
+我们也可以在遍历的过程中修改里面的值
+
+```rust
+fn main() {
+    // 申明了一个可变的变量
+    let mut v = vec![1, 2, 3];
+    for ele in &mut v {
+        // 解引用
+        *ele += 50;
+    }
+    // 再次打印
+    for ele in v {
+        print!("{} ", ele) // 51 52 53
+    }
+}
+
+```
+
+#### 7.1.2 使用enum来存储多种数据类型
+
+我们知道vector只能存储同类型的数据，我们也知道枚举的变体是可以附加数据的
+
+所以我们可以通过enum来让`vector`来存储多种数据类型
+
+```rust
+fn main() {
+    // 通过可附加数据的枚举可以让vector存放不同的数据
+    let row = vec![
+        SpreadsheetCell::Int(3),
+        SpreadsheetCell::Text(String::from("blue")),
+        SpreadsheetCell::Float(10.12),
+    ];
+    println!("{:?}", row) // [Int(3), Text("blue"), Float(10.12)]
+}
+
+#[derive(Debug)]
+enum SpreadsheetCell {
+    Int(i32),
+    Float(f64),
+    Text(String),
+}
+```
+
+### 7.2 String
+
+在rust的核心语言层面，只有一个字符串类型：字符串切片`str (或 &str)`
+
+字符串切片：是对存储在其他地方、utf-8编码的字符串的引用
+
+- 字符串字面值：存储在二进制文件中，也是字符串切片
+
+我们来看看`String`类型
+
+- 来着`标准库`而不是核心语言
+- 可增长、可修改、可以获得所有权
+
+#### 7.2.1 字符串（String）基本操作
+
+**创建**
+
+```rust
+fn main() {
+    // 可以使用String自带的方法创建
+    let s1 = String::from("hello world");
+
+    // 可以通过字符串切片进行转换
+    let s2 = "hello world".to_string();
+
+    println!("{}", s2);
+}
+```
+
+**更新**
+
+- `put_str()`：可以把一个字符串切片附加到String
+
+  ```rust
+  fn main() {
+      // 可以使用String自带的方法创建
+      let mut s1 = String::from("hello");
+      let s2 = "world".to_string();
+      // push_str方法不会获得所有权，在后续作用域中还是可以使用
+      s1.push_str(&s2);
+  
+      println!("{} {}", s1, s2); // helloworld world
+  }
+  ```
+
+- `push()`：可以将单个字符附加到String
+
+  ```rust
+  fn main() {
+      let mut s1 = String::from("hell");
+      s1.push('o');
+      println!("{}", s1); // hello
+  }
+  
+  ```
+
+- `+`：拼接字符串
+
+  ```rust
+  fn main() {
+      let s1 = String::from("hello");
+      let s2 = String::from(" world");
+      // + 运算符前面要是一个String 后面是字符串切片或者字符串引用
+      let s3 = s1 + &s2;
+      println!("{}", s3); // hello world
+      // s1不能使用了
+      // 其实 + 运算符使用的是类似`fn add(self, s: &str) -> String {...}`的方法
+      // 那为什么我们传入字符串引用也可以呢，rust这里使用解引用强制转换(deref coercion), 保持了作用域
+      // 第一个参数并没有保存作用域，所以在`+`运算符之后使用就会报错
+      println!("{}", s1);
+      println!("{}", s2);
+  }
+  ```
+
+- `format!`：我们也可以使用这个宏来拼接字符串（推荐使用，更加灵活）
+
+  ```rust
+  fn main() {
+      let s1 = String::from("a");
+      let s2 = String::from("b");
+      let s3 = String::from("c");
+  
+      // let s3 = s1 + "-" + &s2 + "-" + &s3;
+  
+      // println!("{}", s3);
+  
+      // 我们可以使用宏format!，不会取得所有权
+      let s3 = format!("{}-{}-{}", s1, s2, s3);
+      println!("{}", s3); // a-b-c
+      println!("{}", s1); // a
+      println!("{}", s2); // b
+  } 
+  ```
+
+  >String的内部结构：
+  >
+  >String其实是对`Vec<u8>`的包装，所以也可以使用Vec的一些API，例如`len()`方法
+
+### 7.2.2 字节、标量值、字形簇
+
+字节（Bytes）、标量值（Scalar Values）、字形簇（Grapheme Clusters）
+
+在rust中有三种看待字符串的方式：
+
+- 字节：使用`bytes`
+- 标量值：使用`chars()`
+- 字形簇（最接近所谓的`字母`）：很复杂，标准库没有提供
+
+>我们可以切割字符串，切割如果有问题就会panic
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
