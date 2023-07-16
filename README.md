@@ -52,6 +52,10 @@
 -   [GoLang网络框架](/GoLang/golang_网络框架.md) |  [GoLang ORM框架](/GoLang/golang_ORM框架.md)
 -   [GoLang最佳实践](/GoLang/golang最佳实践.md)
 
+## ⚙ Rust
+
+- [Rust基础](/rust/rust基础.md)
+
 ## 🐱‍🏍 数据库
 
 **MySQL**
