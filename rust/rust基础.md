@@ -1916,7 +1916,7 @@ fn main() {
   >
   >String其实是对`Vec<u8>`的包装，所以也可以使用Vec的一些API，例如`len()`方法
 
-### 7.2.2 字节、标量值、字形簇
+#### 7.2.2 字节、标量值、字形簇
 
 字节（Bytes）、标量值（Scalar Values）、字形簇（Grapheme Clusters）
 
@@ -1927,6 +1927,469 @@ fn main() {
 - 字形簇（最接近所谓的`字母`）：很复杂，标准库没有提供
 
 >我们可以切割字符串，切割如果有问题就会panic
+
+### 7.3 hashMap
+
+#### 7.3.1 基本的CRUD操作
+
+```rust
+use std::collections::HashMap;
+
+fn main() {
+    // 创建
+    let mut scores = HashMap::new();
+    // 也可以使用两个Vector创建
+    // let kVec = vec![String::from("blue"), String::from("yellow")];
+    // let vVec= vec![10, 50];
+    // let scores2 = kVec.iter().zip(vVec.iter()).collect();
+    // 增
+    let blue = String::from("blue");
+    // 增
+    // 如果传String，其所有权就会改变，所以这里借用所有权
+    scores.insert(&blue, 10);
+    // 查 返回的是option
+    let score = scores.get(&blue);
+    match score {
+        Some(s) => println!("the score of blue is {}", s), // 10
+        None => println!("cannot find score"),
+    }
+    // 遍历hashMap
+    for (k, v) in &scores {
+        println!("k:{} v:{}", k, v) // k:blue v:10
+    }
+    // 改 如果传入同样的k，后一次会覆盖前面的value
+    scores.insert(&blue, 100);
+    match scores.get(&blue) {
+        Some(v) => println!("{}", v), // 100
+        _ => println!("cannot find"),
+    }
+    // 删
+    scores.remove(&blue);
+    match scores.get(&blue) {
+        Some(v) => println!("{}", v),
+        _ => println!("cannot find"), // cannot find
+    }
+}
+```
+
+我们在插入的时候如果`传入同样的k，后一次会覆盖前面的value`
+
+如果我们想要只在`K`不对应任何值的情况下，才插入`V`，可以使用`entry`方法
+
+>**entry方法**：检查指定的`K`是否对应一个`V`
+>
+>- 参数为`K`
+>- 返回`enum Entry`：表示值是否存在
+
+```rust
+use std::collections::HashMap;
+
+fn main() {
+    let mut scores = HashMap::new();
+
+    scores.insert(String::from("blue"), 10);
+
+    scores.entry(String::from("yellow")).or_insert(50);
+    scores.entry(String::from("blue")).or_insert(100);
+
+    for (k, v) in scores {
+        println!("k:{}, v:{}", k, v) // k:yellow, v:50 k:blue, v:10
+    }
+}
+```
+
+我们分解一下上述过程，然后打印一下` scores.entry`的值
+
+我们可以看到`entry`的两个变体`VacantEntry`和`OccupiedEntry`，这两个变体执行的逻辑并不一样
+
+```rust
+use std::collections::HashMap;
+
+fn main() {
+    let mut scores = HashMap::new();
+
+    scores.insert(String::from("blue"), 10);
+
+    let entry = scores.entry(String::from("yellow"));
+    println!("entry:{:?}", entry); // entry:Entry(VacantEntry("yellow"))
+    entry.or_insert(50);
+    // scores.entry(String::from("blue")).or_insert(100);
+    let entry = scores.entry(String::from("blue"));
+    println!("entry:{:?}", entry); // entry:Entry(OccupiedEntry { key: "blue", value: 10, .. })
+    entry.or_insert(100);
+    for (k, v) in scores {
+        println!("k:{}, v:{}", k, v) // k:yellow, v:50 k:blue, v:10
+    }
+}
+
+```
+
+>`Entry`的`or_insert()`方法返回：
+>
+>- 如果`K`存在，返回到对应的`V`的一个可变引用
+>- 如果`K`不存在，将方法参数作为`K`的新值插入，返回到这个值的可变引用
+
+我们来看个例子
+
+```rust
+use std::collections::HashMap;
+
+fn main() {
+    let text = "hello world   wonderful world";
+
+    let mut map = HashMap::new();
+    // split_whitespace 根据空格分割
+    for word in text.split_whitespace() {
+        let count = map.entry(word).or_insert(0);
+        // 如果存在会返回value的可变引用 所以这里我们可以对value进行操作
+        *count += 1;
+    }
+
+    println!("{:?}", map) // {"world": 2, "hello": 1, "wonderful": 1}
+}
+
+```
+
+#### 7.3.2 Hash函数
+
+在默认情况下，`hashMap`使用加密功能强大的`hash函数`，可以抵抗`DOS`攻击
+
+- 不是可用的最快的Hash算法
+- 但具有更好的安全性
+
+我们可以通过指定不同的`hasher`来切换到另一个函数，这里的`hasher`是实现了`BuildHasher trait`的类型
+
+## 8. 错误处理
+
+Rust的可靠性很大程度上是依靠rust强大的错误处理来完成的
+
+在Rust中错误可以分为两类：
+
+- 可恢复的错误：例如文件未找到，可以再次尝试
+- 不可恢复（bug）：例如访问的索引超出范围
+
+在Rust中没有类似异常捕获的机制
+
+- 可恢复的错误：`Result<T, E>`
+- 不可恢复：提供宏`panic!`进行处理
+
+### 8.1 panic!
+
+当`panic!`宏执行的时候，会发生：
+
+- 你的程序会答应一个错误信息
+- 展开（unwind）、清理调用栈（Stack）
+- 退出程序
+
+我们为了应对panic，可以展开或者中止（abort）调用栈
+
+默认情况下档panic发生时，我们可以选择
+
+- 展开调用栈（工作量大）
+  - rust沿着调用栈往回走
+  - 清理每个遇到的函数中的数据
+- 立即终止调用栈
+  - 不进行清理，直接停止程序
+  - 内存需要OS进行清理
+
+>如果我们想要让二进制文件更小，可以设置将`展开`改为`中止`
+>
+>- 在`Cargo.toml`中设置`profile`的设置：`panic = 'abort'`
+
+![image-20230717220429351](https://cdn.fengxianhub.top/resources-master/image-20230717220429351.png)
+
+这里我们直接来一波测试
+
+```rust
+fn main() {
+    panic!("crash and burn")
+}
+```
+
+![image-20230717221124327](https://cdn.fengxianhub.top/resources-master/image-20230717221124327.png)
+
+如果这个`panic!`不是发生在我们写的代码中，并且我们想要查看详细的堆栈信息的话可以`设置环境变量来查看panic！的回溯信息`来查看
+
+测试代码：
+
+```rust
+fn main() {
+   let arr =  vec![1,2,3];
+   arr[1000];
+}
+```
+
+设置环境变量并且运行
+
+```shell
+RUST_BACKTRACE=1
+```
+
+为了获取带有调试信息的回溯，必须启用调试符号（不带 `--release`）
+
+### 8.2 Result与可恢复的错误
+
+#### 8.2.1 Result处理错误
+
+通常我们处理的错误都不会引起`panic`，针对这种错误，我们可以使用`Result`枚举处理
+
+```rust
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+```
+
+我们可以使用`match表达式`来处理
+
+```rust
+use std::{fs::File, io::ErrorKind};
+
+fn main() {
+   let f = File::open("hello.txt");
+   let f = match f {
+        Ok(file) => file,
+        Err(error) => match error.kind() {
+            ErrorKind::NotFound => match File::create("hello.txt") {
+                Ok(fc) => fc,
+                Err(e) => panic!("Error creating file: {:?}", e)
+            }
+            ohter_error => panic!("Error opening the file: {:?}", ohter_error)
+        }
+   };
+}
+```
+
+上面的代码中我们使用许多`match`来处理错误，这种方式其实比较麻烦并且原始，我们可以闭包`closure`来简化
+
+- `Result<T, E>`有很多方法，它们接受闭包作为参数
+- 使用match实现
+
+我们改良一下上面的代码
+
+```rust
+use std::{fs::File, io::ErrorKind};
+
+fn main() {
+    let f = File::open("hello.txt").unwrap_or_else(|error| {
+        if error.kind() == ErrorKind::NotFound {
+            File::create("hello.txt")
+                .unwrap_or_else(|error| panic!("Error creating file: {:?}", error))
+        } else {
+            panic!("Error opening file: {:?}", error)
+        }
+    });
+}
+
+```
+
+#### 8.2.2 unwrap&expect
+
+在上面我们就使用`unwrap`来简化了`match`操作
+
+`unwrap`的作用其实就是如果`Result`返回的结果是`Ok`就执行`Ok`里面的部分，如果不是就会`panic`
+
+但是这样也不好，因为`panic`的信息可能并不是我们想要的，这个时候就可以使用`expect`来自定义信息
+
+```rust
+use std::fs::File;
+
+fn main() {
+    let f = File::open("test.txt").expect("无法打开文件");
+}
+```
+
+![image-20230717224159667](https://cdn.fengxianhub.top/resources-master/image-20230717224159667.png)
+
+### 8.3 传播错误
+
+#### 8.3.1 基本处理
+
+我们有的时候遇到了错误，但是不想自己处理，而是想要给程序调用者进行处理，这个时候就要用到传播错误
+
+我们可以手动进行错误的传递
+
+```rust
+use std::{fs::File, io::{self, Read}};
+
+fn main() {
+    let r = read_username_from_file();
+}
+
+fn read_username_from_file() -> Result<String, io::Error> {
+    let f = File::open("hello.txt");
+
+    let mut f = match f {
+        Ok(file) => file,
+        Err(e) => return Err(e),
+    };
+
+    let mut s = String::new();
+
+    match f.read_to_string(&mut s) {
+        Ok(_) => Ok(s),
+        Err(e) => Err(e)
+    }
+}
+
+```
+
+#### 8.3.2 ?运算符
+
+上面的代码我们也可以进行简写
+
+```rust
+use std::{fs::File, io::{self, Read}};
+
+fn main() {
+    let r = read_username_from_file();
+}
+
+fn read_username_from_file() -> Result<String, io::Error> {
+    let mut f = File::open("hello.txt")?;
+
+    let mut s = String::new();
+
+     f.read_to_string(&mut s)?;
+
+     Ok(s)
+}
+```
+
+这里`?`的作用我们总结一下：
+
+- 如果`Result`是`Ok`：`Ok`中的值就是表达式的结果，然后继续执行程序
+- 如果`Result`是`Err`：`Err`就是`整个函数`的返回值，就像使用了`return`一样
+
+#### 8.3.3 ？与from函数
+
+其实上面`？`运算符隐式的使用了`from`函数
+
+- `Trait std::convert::From::from(value)`函数被用于错误的转换
+- 被`?`所处理的错误，会隐式的被`from`函数所处理
+- 当`?`调用`from`函数时，它所接收的错误类型会被转化为当前函数返回类型所定义的错误类型
+- 针对不同错误原因，返回同一种错误类型（只要每个错误类型实现了转换为所返回的错误类型的from函数）
+
+#### 8.3.4 ?与链式调用
+
+上述的代码我们还可以进行链式调用
+
+```rust
+use std::{
+    fs::File,
+    io::{self, Read},
+};
+
+fn main() {
+    let r = read_username_from_file();
+}
+
+// 进行链式调用
+fn read_username_from_file() -> Result<String, io::Error> {
+    let mut s = String::new();
+    File::open("hello.txt")?.read_to_string(&mut s)?;
+    Ok(s)
+}
+
+```
+
+>最后一点需要注意的是：`？`运算符只能处理`Result`的类型
+
+在`main`方法中也可以使用`？`运算符，只需要改写一下返回值就行
+
+```rust
+use std::{fs::File, error::Error};
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let f = File::open("hello.txt")?;
+    Ok(())
+}
+```
+
+这里`Box<dyn Error>>`是`trait`对象，可以简单理解为：任何可能的错误类型
+
+### 8.4 什么时候应该panic
+
+总体原则：
+
+- 在定义一个可能失败的函数时，优先考虑返回`Result`
+- 否则就`panic!`
+
+![image-20230717233203059](https://cdn.fengxianhub.top/resources-master/image-20230717233203059.png)
+
+
+
+## 9. 泛型、Trait、生命周期
+
+泛型在很多语言里都有，主要是为了提高抽象代码的能力，我们来看一段代码，比如我要找出`Vector`里面的最大值
+
+```rust
+fn main()   {
+    let arr1 = vec![1,4,5,6,7,7];
+    match max(&arr1) {
+        Some(max_num) => println!("max num is {}", max_num), // max num is 
+        None => println!("cannot find")
+    }
+    let arr2 = vec!['a', 'u', 's', 'e'];
+    match max(&arr2) {
+        Some(max_num) => println!("max num is {}", max_num), // max num is u
+        None => println!("cannot find")
+    }
+}
+
+// 泛型限制符，传入的类型必须实现这两个trait
+fn max<T: PartialOrd + Copy>(arr: &Vec<T>) -> Option<T> {
+    if arr.is_empty() {
+        return None;
+    }
+    let mut max_num = arr[0];
+    for &ele in arr.iter() {
+        if ele > max_num {
+            max_num = ele;
+        }
+    }
+    Some(max_num)
+}
+
+```
+
+**在结构体中定义泛型**
+
+```rust
+fn main() {
+    let p1 = Point { x: 5, y: 5 };
+
+    let p2 = Point { x: 5.5, y: 5.5 };
+}
+
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+```
+
+**在枚举中定义泛型**
+
+我们在之前已经见过很多枚举使用泛型的案例了
+
+```rust
+enum Option<T> {
+    Some(T),
+    None,
+}
+
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+```
+
+**方法定义中的泛型**
+
+
+
+
 
 
 
