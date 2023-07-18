@@ -974,9 +974,60 @@ println(f1(22)("")('0'))
 println(f1(0)("hello")('0'))
 ```
 
+#### 4.2.5 递归
 
+我们来写一段递归的代码，作用是计算阶乘
 
+```java
+public class TestRecursion {
+    public static void main(String[] args) {
+        System.out.println(factorial(10));
+    }
 
+    public static int factorial(int n) {
+        if (n == 1) {
+            return 1;
+        }
+        return factorial(n - 1) * n;
+    }
+}
+```
+
+这样的缺点是大大的浪费栈空间
+
+在函数式编程语言中对这种情况会做优化，尾递归不需要一层一层的进行压栈，而是直接覆盖
+
+```scala
+package com.fx.chapter05
+
+import scala.annotation.tailrec
+
+object Test10_Recursion {
+  def main(args: Array[String]): Unit = {
+    println(fact(10))
+    println(tailFact(10))
+  }
+
+  // 普通递归实现 缺点：空间复杂度高
+  def fact(n: Int): Int = {
+    if (n == 0) return 1
+    fact(n - 1) * n
+  }
+
+  // 尾递归实现
+  def tailFact(n: Int): Int = {
+    @tailrec
+    def loop(n: Int, currentResult: Int): Int = {
+      if (n == 0) {
+        return currentResult
+      }
+      loop(n - 1, currentResult * n)
+    }
+    loop(n, 1)
+  }
+}
+
+```
 
 
 
