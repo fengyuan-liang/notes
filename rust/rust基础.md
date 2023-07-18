@@ -2321,6 +2321,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ## 9. 泛型、Trait、生命周期
 
+### 9.1 泛型
+
 泛型在很多语言里都有，主要是为了提高抽象代码的能力，我们来看一段代码，比如我要找出`Vector`里面的最大值
 
 ```rust
@@ -2387,19 +2389,281 @@ enum Result<T, E> {
 
 **方法定义中的泛型**
 
+为`struct`或`enum`实现方法的时候，可在定义中使用泛型
+
+注意：
+
+- 把`T`放在`impl`关键字后，表示在类型`T`上实现方法：例如 `impl<T> Point<T>`
+- 只针对具体类型实现方法（其余类型没实现方法）：例如`impl Point<f32>`
+
+>此外：`struct`里泛型类型参数可以和方法的泛型类型参数不同
+
+```rust
+fn main() {
+    let p1 = Point { x: 5, y: 5 };
+
+    let p2 = Point { x:"Hello", y: 'c' };
+
+    let p3 = p1.mixup(p2);
+
+    println!("p3.x = {}, p3.y = {}", p3.x, p3.y) // p3.x = 5, p3.y = c
+}
+
+struct Point<T, U> {
+    x: T,
+    y: U,
+}
+
+impl<T, U> Point<T, U> {
+    fn mixup<V, W>(self, other: Point<V, W>) -> Point<T, W> {
+        Point {
+            x: self.x,
+            y: other.y,
+        }
+    }
+}
+
+```
+
+**泛型代码的性能**
+
+在rust中使用泛型不会影响性能，原因是rust使用的`单态化（monomorphization）`，在编译时就将泛型替换为具体的类型了
+
+### 9.2 Trait
+
+#### 9.2.1 定义和实现trait
+
+```rust
+fn main() {
+   let artice = NewsArticle {
+        headline:String::from("headline"),
+        location: String::from("location"),
+        author: String::from("author"),
+        content: String::from("content"),
+   };
+
+   println!("NewsArticle: {} ", artice.summarize()) // NewsArticle: headline, by author (location
+}
 
 
+pub trait Summary {
+    fn summarize(&self) -> String;
+}
+
+pub struct NewsArticle {
+    pub headline: String,
+    pub location: String,
+    pub author: String,
+    pub content: String,
+}
+
+// 实现trait
+impl Summary for NewsArticle {
+    fn summarize(&self) -> String {
+        format!("{}, by {} ({})", self.headline, self.author, self.location)
+    }
+}
+```
+
+#### 9.2.2 实现trait的约束
+
+可以在某个类型上实现某个`trait`的前提条件是：这个类型或这个`trait`是在本地`crate`里定义的
+
+无法为外部类型来实现外部的`trait`：
+
+- 这个限制是程序属性的一部分（也就是`一致性`）
+- 更具体的说是`孤儿规则`：之所以这样命名是因为父类型不存在
+- 此规则确保其他人的代码不能破坏你的代码，反之亦然
+- 如果没有这个规则，两个`crate`可以为同一类型实现同一个`trait`，Rust就不知道应该使用那个实现了
+
+#### 9.2.3 trait的默认实现
+
+我们可以在trait中默认进行实现，只要不重写该方法，就可以使用默认方法
+
+```rust
+fn main() {
+   let artice = NewsArticle {
+        headline:String::from("headline"),
+        location: String::from("location"),
+        author: String::from("author"),
+        content: String::from("content"),
+   };
+
+   println!("NewsArticle: {} ", artice.summarize()) // NewsArticle: default imp
+}
 
 
+pub trait Summary {
+    fn summarize(&self) -> String {
+        String::from("default impl")
+    }
+}
+
+pub struct NewsArticle {
+    pub headline: String,
+    pub location: String,
+    pub author: String,
+    pub content: String,
+}
+
+// 实现trait
+impl Summary for NewsArticle {
+    // 使用默认实现
+    // fn summarize(&self) -> String {
+    //     format!("{}, by {} ({})", self.headline, self.author, self.location)
+    // }
+}
+```
+
+#### 9.2.4 trait的默认实现
+
+这里一共有两种情况
+
+第一种：`impl trait`语法，适用于简单情况
+
+```rust
+fn main() {
+   let artice = NewsArticle {
+        headline:String::from("headline"),
+        location: String::from("location"),
+        author: String::from("author"),
+        content: String::from("content"),
+   };
+
+   println!("NewsArticle: {} ", artice.summarize()); // NewsArticle: default imp
+
+   summarize(artice) // default impl
+}
 
 
+pub trait Summary {
+    fn summarize(&self) -> String {
+        String::from("default impl")
+    }
+}
+
+pub struct NewsArticle {
+    pub headline: String,
+    pub location: String,
+    pub author: String,
+    pub content: String,
+}
+
+// 实现trait
+impl Summary for NewsArticle {
+    // 使用默认实现
+    // fn summarize(&self) -> String {
+    //     format!("{}, by {} ({})", self.headline, self.author, self.location)
+    // }
+}
+// `impl trait`语法，适用于简单情况
+fn summarize(s: impl Summary) {
+   println!("{}",  s.summarize())
+}
+```
+
+第二种：`Trait Bound语法`，可用于复杂情况。其实`impl trait`是`Trait Bound`的语法糖
+
+```rust
+fn summarize<T: Summary>(s: T) {
+   println!("{}",  s.summarize())
+}
+```
+
+#### 9.2.5 +号指定多个Trait
+
+使用`+`可以约束必须实现多个`Trait`
+
+```rust
+fn summarize<T: Summary + Display>(s: T) {
+   println!("{}",  s.summarize())
+}
+```
+
+如果我们`Trait`约束比较多，我们就可以使用`where`来简化
+
+```rust
+fn summarize<T: Summary + Display, U: Clone + Dubug>(s: T, b: U) {
+   println!("{}",  s.summarize())
+}
+```
+
+简化为
+
+```rust
+fn summarize<T, U (s: T, b: U) 
+    where 
+        T:Summary + Display,
+        U: Clone + Debug 
+{
+   println!("{}",  s.summarize())
+}
+```
+
+#### 9.2.6 实现Trait作为返回类型
+
+我们可以约束返回类型必须实现Trait，但是如果出现分支语句就可以能报错
+
+这样是可以的
+
+```rust
+fn summarize<T: Summary>(s: T) -> impl Summary {
+    println!("{}",  s.summarize());
+    NewsArticle {
+        headline:String::from("headline"),
+        location: String::from("location"),
+        author: String::from("author"),
+        content: String::from("content"),
+   }
+ }
+```
+
+这样是不行的，返回的类型必须是确定的，是同一种类型
+
+![image-20230718223540834](https://cdn.fengxianhub.top/resources-master/image-20230718223540834.png)
+
+#### 9.2.7 使用Trait Bound有条件的实现方法
+
+在使用泛型参数的`impl`块上使用`Trait Bound`，我们可以有条件的为实现了特定`Trait`的类型来实现方法
+
+```rust
+struct Pair<T> {
+    x: T,
+    y:T
+}
+
+impl <T> Pair<T> {
+    fn new(x: T, y: T) -> Self {
+        Self {x, y}
+    }
+}
 
 
+// 使用`cmp_display`方法，传入的参数必须实现这两个trait
+impl <T: Display + PartialOrd> Pair<T> {
+    fn cmp_display(&self) {
+        if self.x >= self.y {
+            println!("The largest member is x = {}", self.x)
+        } else {
+            println!("The largest member is y = {}", self.y)
+        }
+    }
+}
+```
 
+为满足`Trait Bound`的所有类型上实现`Trait`叫做覆盖实现`blanket implementations`
 
+![image-20230718225206069](https://cdn.fengxianhub.top/resources-master/image-20230718225206069.png)
 
+例如所有的数字都实现了`Display`这个`Trait`，所以可以使用`to_string`方法
 
+```rust
+fn main() {
+    let str = 2.to_string();
+}
+```
 
+### 9.3 生命周期
 
 
 
