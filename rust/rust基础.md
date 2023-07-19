@@ -2665,13 +2665,357 @@ fn main() {
 
 ### 9.3 生命周期
 
+>- 在rust中每个引用都有自己的生命周期
+>
+>- 生命周期：引用保持有效的作用域
+>- 大多数情况：生命周期是隐式的、可被推断的
+>- 当引用的生命周期可能以不同的方式互相关联时：需要手动标注生命周期
+
+这里我们得知道生命周期存在的意义是为了避免 **悬垂引用**（dangling reference）
+
+我们来看一个关于生命周期的例子
+
+![image-20230719201936165](https://cdn.fengxianhub.top/resources-master/image-20230719201936165.png)
+
+这里就是因为`x`的生命周期没有`r`长所导致的
+
+#### 9.3.1 生命周期标注语法
+
+生命周期的标注不会改变引用的生命周期长度
+
+当指定了泛型生命周期参数，函数可以接受带有任何生命周期的引用
+
+生命周期的标注：描述了多个引用的生命周期间的关系，但不会影响生命周期
+
+>生命周期参数名：
+>
+>- 以`'`开头
+>- 通常全小写且非常短
+>- 很多人使用`'a`
+>
+>生命周期标注的位置：
+>
+>- 在引用的`&`符号
+>- 使用空格将标注和引用类型分开
+>
+>我们来看一些例子
+>
+>```rust
+>&i32  // 一个引用
+>&'a i32 // 带有显式生命周期的引用
+>&'a mut i32 // 带有显式生命周期的可变引用
+>```
+>
+>这里我们需要注意的是：单个生命周期标注本身没有意义
+
+我们来看一个例子
+
+![image-20230719205955477](https://cdn.fengxianhub.top/resources-master/image-20230719205955477.png)
+
+上面的代码我们只需要添加上生命周期的标注即可
+
+```rust
+fn main() {
+    let s1 = String::from("abcd");
+    let s2 = "xyz";
+
+    let result = longest(s1.as_str(), s2);
+
+    println!("The longest string is {}", result);
+}
+
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}  
+```
+
+这里需要注意的是，rust默认返回的值的生命周期是参数中生命周期较短的那个
+
+比如下面的代码就会报错，原因是`s2`生命周期较短，但是在作用域后还可能会调用
+
+![image-20230719215910978](https://cdn.fengxianhub.top/resources-master/image-20230719215910978.png)
+
+让我们深入进行理解生命周期
+
+- 从函数返回引用时，返回类型的生命周期参数需要与其中一个参数的生命周期匹配，如果返回的引用没有指向任何参数，那么它只能引用函数内创建的值（这就是悬垂引用：改值在函数结束时就走出了作用域）
+
+我们举个`悬垂引用`的例子，当我们返回的引用指向的内存已经被清理的时候，当然就会出问题
+
+![image-20230719220710385](https://cdn.fengxianhub.top/resources-master/image-20230719220710385.png)
+
+针对上面的代码我们可以直接返回变量本身，将所有权转移出去即可
+
+![image-20230719220854406](https://cdn.fengxianhub.top/resources-master/image-20230719220854406.png)
+
+#### 9.3.2 结构体中生命周期标注
+
+struct里可以包括
+
+- 自持有的类型
+- 引用：需要在每个引用上添加生命周期标准
+
+**输入、输出生命周期**
+
+生命周期在：
+
+- 函数/方法的参数：输入生命周期
+- 函数/方法的返回值：输出生命周期
+
+#### 9.3.3 生命周期省略的三个规则
+
+编译器使用三个规则在没有显式标注生命周期的情况下，来确定引用的生命周期
+
+- 规则一：应用于输入生命周期
+- 规则二三应用于输出生命周期
+- 如果编译器应用完三个规则之后，任然有无法确定生命周期的引用，**就会报错**
+- 这些规则同样适用于`fn`定义和`impl`块
+
+>规则一：每个引用类型的参数都有自己的生命周期
+>
+>规则二：如果只有一个输入生命周期参数，那么该生命周期被赋给所有的输出生命周期参数
+>
+>规则三：如果有多个输入生命周期参数，但其中一个是`&self`或`&mut self`（是方法），那么`self`的生命周期会被赋给所有的输出生命周期参数
+
+我们针对上面的三条规则来举几个例子，这里需要假设我们是编译器
+
+```rust
+// 原代码
+fn first_world(s: &str) -> &str { ... }
+// 编译器运用第二条规则 添加输入生命周期
+fn first_world<'a>(s: &'a str) -> &str { ... }
+// 编译器运用第三条规则，添加输出生命周期
+fn first_world<'a>(s: &'a str) -> &'a str { ... }
+// 这样就是没啥问题的 编译通过
+```
+
+我们再来看个例子
+
+```rust
+// 原代码
+fn longest(x: &str, y: &str) -> &str { ... }
+// 编译器运用第一条规则，给每个参数都添加了生命周期
+fn longest<'a, 'b>(x: &'a str, y: &'b str) -> &str { ... }
+```
+
+#### 9.3.4 方法定义中的生命周期标注
+
+在`struct`上使用生命周期实现方法，语法和泛型参数的语法一样
+
+在哪声明和使用生命周期参数，依赖于：
+
+- 生命周期参数是否和字段、方法的参数或返回值有关
+
+struct字段的生命周期名：
+
+- 在`impl`后声明
+- 在`struct`名后使用
+- 这些生命周期是`struct`类型的一部分
+
+impl块内的方法签名中：
+
+- `引用`必须绑定与struct字段引用的生命周期，或者`引用`是独立的也可以
+- 生命周期省略规则经常使得方法中的生命周期标注不是必须的
+
+```rust
+fn main() {
+    let novel = String::from("Call me Ishmael, Some years age...");
+    let first_sentence = novel.split('.')
+        .next()
+        .expect("Could not found a 'a'");
+    let i = ImportantExcerpt{ part: first_sentence };
+}
+
+
+struct ImportantExcerpt<'a> {
+    part: &'a str,
+}
+
+impl<'a> ImportantExcerpt<'a> {
+    // 根据第一条省略规则可以不为self添加省略规则
+    fn level(&self) -> i32 {
+        3
+    }
+    // 根据第一条规则为self添加生命周期
+    // 根据第三条规则，当输入生命周期有self时，输出生命周期将拥有self的生命周期
+    fn announce_and_return_part(&self, annoucement: &str) -> &str {
+        println!("Attention please: {}", annoucement);
+        self.part
+    }
+}
+```
+
+#### 9.3.5 静态生命周期
+
+`static`是一个特殊的生命周期：整个程序的持续时间
+
+- 例如：所有字符串字面值都拥有`static`生命周期
+
+  ```rust
+  let s: &'static str = "I have a static lifetime"
+  ```
+
+为引用指定`static`生命周期前要三思：是否需要引用在程序整个生命周期内都存活
+
+### 9.4 综合例子
+
+我们来看一个泛型参数类型、Trait Bound、生命周期的例子
+
+```rust
+fn longest_with_an_announcement<'a, T> (x: &'a str, y: &'a str, ann: T) -> &'a str where T: Display {
+    println!("Announcement! {}", ann);
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}
+```
+
+## 10. 自动化测试
+
+测试通常需要执行三个操作（3A操作 Arrange, Act, Assert）
+
+- 准备数据/状态 
+- 运行被测试的代码
+- 断言结果
+
+测试函数需要使用`test`属性（attribute）进行标注
+
+- Attribute就是一段Rust代码的元数据
+- 在函数上加`#[test]`，可以把函数变成测试函数
+- 使用`cargo test`命令来运行所有测试函数
+- 默认使用cargo创造的`Library`项目，默认会有一个`test module`，当然我们可以自己再进行添加
+
+**举个例子**
+
+```shell
+$ cargo new test-project --lib
+     Created library `test-project` package
+
+$ cd test-project/src/
+
+$ cat lib.rs
+pub fn add(left: usize, right: usize) -> usize {
+    left + right
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let result = add(2, 2);
+        assert_eq!(result, 4);
+    }
+}
+
+$ cargo test
+   Compiling test-project v0.1.0 (E:\workspacesJ2SE_VSCode\rust\rustStudy\test-project)
+    Finished test [unoptimized + debuginfo] target(s) in 2.50s                                                          
+     Running unittests src\lib.rs (target\debug\deps\test_project-9a1280a4860686ce.exe)
+
+running 1 test
+test tests::it_works ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests test-project
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+### 10.1 测试常用宏
+
+![image-20230719233539762](https://cdn.fengxianhub.top/resources-master/image-20230719233539762.png)
+
+### 10.2 自定义错误信息
+
+![image-20230719233843610](https://cdn.fengxianhub.top/resources-master/image-20230719233843610.png)
+
+### 10.3 验证错误处理的情况
+
+我们可以使用`should_panic`属性来验证待测试 代码是否会panic，如果panic则测试通过
+
+![image-20230719234200436](https://cdn.fengxianhub.top/resources-master/image-20230719234200436.png)
+
+可以在属性中添加期待的panic信息
+
+![image-20230719234402486](https://cdn.fengxianhub.top/resources-master/image-20230719234402486.png)
+
+### 10.4 使用Result枚举进行测试
+
+如果不会发生panic，可以使用`Result<T, E>`作为返回类型编写测试
+
+- 返回OK：通过
+- 返回Err：失败
+
+### 10.5 测试参数
+
+我们可以通过添加测试参数来控制测试的行为
+
+```rust
+cargo test --help // 查看帮助
+cargo test -- --help // 查看可以在--后的参数 针对二进制文件使用 -- --的形式
+```
+
+### 10.6 并行运行测试
+
+运行多个测试，默认使用多个线程并行运行，要确保好线程安全性
+
+```rust
+cargo test -- --test-threads=1 // 控制运行线程的为1
+```
+
+### 10.7 显示函数输出
+
+默认测试通过是不会打印`println!`里面的内容，如果测试失败会看到里面的内容
+
+```rust
+cargo test -- --show-output // 成功的例子中也要打印
+```
+
+### 10.8 指定测试用例
+
+```rust
+cargo test 测试名称 // 指定测试用例 只能指定一个
+cargo test test   // 会执行所有以 test开头的测试用例
+```
+
+**忽略测试**
+
+![image-20230719235954078](https://cdn.fengxianhub.top/resources-master/image-20230719235954078.png)
+
+只执行ignore的测试
+
+```rust
+cargo test -- --ignored // 注意有个d
+```
+
+## 10.9 测试分类
+
+在rust中测试分为单元测试和集成测试
+
+#### 10.9.1 单元测试
+
+![image-20230720000348363](https://cdn.fengxianhub.top/resources-master/image-20230720000348363.png)
 
 
 
+![image-20230720000423433](https://cdn.fengxianhub.top/resources-master/image-20230720000423433.png)
 
+#### 10.9.2 集成测试
 
+在rust中集成测试完全位于被测试库的外部
 
+目的：是测试被测试库的多个部分是否能正确的一起工作
 
+- 只会在`cargo test`的时候才会编译
 
-
-
+![image-20230720000936462](https://cdn.fengxianhub.top/resources-master/image-20230720000936462.png)
