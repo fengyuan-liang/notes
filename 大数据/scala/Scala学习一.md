@@ -993,7 +993,13 @@ public class TestRecursion {
 }
 ```
 
-这样的缺点是大大的浪费栈空间
+**这样的缺点是大大的浪费栈空间**
+
+>我们来分析一下递归空间浪费在哪里，我们看递归的代码`factorial(n - 1) * n`，这里进行递归，然后上一个函数的变量`n`必须要保存，等下一个递归函数计算出结果再进行相乘操作
+>
+>其实这里主要的矛盾是每一次递归都浪费了一份空间，那么该如何优化呢？
+>
+>答案是使用`尾递归`，尾递归是将参数再作为形参进行传入，每次递归都是直接覆盖前一个栈帧，这样就不会造成浪费，但是有一点需要注意的是，`尾递归`只有`函数式编程语言`才会针对进行优化，在java、golang这些语言中还是会造成空间的浪费
 
 在函数式编程语言中对这种情况会做优化，尾递归不需要一层一层的进行压栈，而是直接覆盖
 
@@ -1026,8 +1032,760 @@ object Test10_Recursion {
     loop(n, 1)
   }
 }
+```
+
+#### 4.2.6 控制抽象
+
+控制抽象是针对函数参数来说的，例如我们非常熟悉的`值调用`，就是参数中需要传入一个值
+
+```scala
+package com.fx.chapter05
+
+object Test11_ControlAbstraction {
+  def main(args: Array[String]): Unit = {
+    f2(23)
+    f2(f1())
+    println("===========")
+  }
+
+  // 1. 传值参数
+  private def f0(a: Int) : Unit = {
+    println(s"a:$a")
+    println(s"a:$a")
+  }
+
+  def f1(): Int ={
+    println("f1被调用")
+    12
+  }
+}
+// 输出
+a:23
+a:23
+f1被调用
+a:12
+a:12
+```
+
+还有一种为`传名调用`
+
+ 我们先来写一段代码
+
+```rust
+package com.fx.chapter05
+
+object Test11_ControlAbstraction {
+  def main(args: Array[String]): Unit = {
+    f2(23)
+    f2(f1())
+  }
+
+  // 1. 传值参数
+  private def f0(a: Int) : Unit = {
+    println(s"a:$a")
+    println(s"a:$a")
+  }
+
+  def f1(): Int ={
+    println("f1被调用")
+    12
+  }
+
+  // 2. 传名参数，传递不再是具体的值，而是代码块
+  private def f2(a: =>Int): Unit = {
+    println(s"a:$a")
+    println(s"a:$a")
+  }
+}
+// 输出
+a:23
+a:23
+f1被调用
+a:12
+f1被调用
+a:12
+```
+
+我们一对比就可以看出不同，在`传名调用`中，相当于传入的是一个函数，然后给函数起了一个名字，再进行调用
+
+这种方式我们就称之为`控制抽象`，将调用的权限交给调用者
+
+当然我们也可以这样写
+
+```scala
+f2({
+  println("f被调用")
+  25
+})
+```
+
+还可以进行简写
+
+```scala
+f2 {
+  println("f被调用")
+  2
+}
+```
+
+>总结一下：传名参数其实就是传递的不再是具体的值，而是`代码块`
+
+#### 4.2.6 高阶函数实现while关键字
+
+我们可以使用控制抽象来实现`while`关键字的效果
+
+这里使用的高阶函数有：
+
+- 函数柯里化&闭包
+- 递归
+- 控制抽象
+
+我们先来写一段正常的`while`代码
+
+```scala
+object MyWhile {
+  def main(args: Array[String]): Unit = {
+    var n = 3
+
+    // 1. 常规的while循环
+    while (n >= 1) {
+      println(n)
+      n -= 1
+    }
+  }
+}
+// 输出
+3
+2
+1
+```
+
+接下来我们要实现`while`关键字
+
+```scala
+package com.fx.chapter05
+
+import scala.annotation.tailrec
+
+object Test12_myWhile {
+  def main(args: Array[String]): Unit = {
+    var n = 3
+
+    // 1. 常规的while循环
+    while (n >= 1) {
+      println(n)
+      n -= 1
+    }
+
+    // 2. 使用闭包实现一个函数 将代码块作为参数传入 递归调用
+    def myWhile(condition: => Boolean): (=> Unit) => Unit = {
+      // 内层函数需要递归调用 参数就是循环体
+      @tailrec
+      def doLoop(op: => Unit): Unit = {
+        if (condition) {
+          // 执行一次函数体
+          op
+          // 递归进行下一次执行
+          doLoop(op)
+        }
+      }
+      // `_` 省略传入代码块参数
+      doLoop _
+    }
+
+    println("===========")
+
+
+    n = 3
+
+    myWhile(n >= 1) {
+      println(n)
+      n -= 1
+    }
+
+    // 3. 使用匿名函数实现
+    def myWhile2(condition: => Boolean): (=> Unit) => Unit = {
+      // 内层函数使用递归调用 参数就是循环体
+      op => {
+        if (condition) {
+          op
+          myWhile(condition)(op)
+        }
+      }
+    }
+
+    println("===========")
+
+
+    n = 3
+
+    myWhile2(n >= 1) {
+      println(n)
+      n -= 1
+    }
+
+    // 4. 使用柯里化实现
+    @tailrec
+    def myWhile3(condition: => Boolean)(op: => Unit): Unit = {
+      if (condition) {
+        op
+        myWhile3(condition)(op)
+      }
+    }
+
+    println("===========")
+
+
+    n = 3
+
+    myWhile3(n >= 1) {
+      println(n)
+      n -= 1
+    }
+  }
+}
 
 ```
+
+#### 4.2.7 惰性加载
+
+当函数返回值被声明为`lazy`时，函数的执行将被推迟，知道我们**首次对此取值**，**该函数才会执行**。这种函数我们称之为**惰性函数**
+
+举个例子
+
+```scala
+package com.fx.chapter05
+
+object Test13_lazy {
+  def main(args: Array[String]): Unit = {
+    lazy val result: Int = sum(13, 47)
+
+    println("1. 函数被调用")
+
+    println(s"2. result=$result")
+  }
+
+  def sum(i: Int, i1: Int):Int = {
+    println("3. sum被调用")
+    i + i1
+  }
+}
+```
+
+我们这里写的代码，按道理`sum(13, 47)`一开始就会执行，所以`3. sum被调用`应该会被先输出，但是结果是
+
+```scala
+1. 函数被调用
+3. sum被调用
+2. result=60
+```
+
+懒加载的意义主要是可以节省内存，对大数据场景特别好
+
+>注意：`lazy` 不能修饰 `var` 类型的变量
+
+## 5. 面向对象
+
+### 5.1 scala包管理
+
+在`scala`中包管理大部分和`Java`中一样，下面的只会指出其中的差异点
+
+#### 5.1.1 包说明
+
+在java中经常通过`.`进行分割来表示层级关系，例如`com.fx.xxx`
+
+在scala中这样也是运行的，但是还有另外一种嵌套的风格用来表示层级关系
+
+```scala
+// 用嵌套风格定义包
+package com {
+  // 在外层包里定义单例对象
+  object Outer {
+    var Out: String = "out"
+  }
+  package fx {
+    package scala {
+      import com.Outer.Out
+      // 内层包定义单例对象
+      object Inner {
+        def main(args: Array[String]): Unit = {
+          println(Out)
+        }
+      }
+    }
+  }
+}
+// 输出
+out
+```
+
+但是这种风格一般不进行使用
+
+#### 5.1.2 包对象
+
+我们可以在包下定义一个包对象   
+
+![image-20230723225259316](https://cdn.fengxianhub.top/resources-master/image-20230723225259316.png)
+
+然后再其他`object`就可以用这个全局的变量和方法
+
+#### 5.1.3 导包
+
+- 和 Java 一样，可以在顶部使用 import 导入，在这个文件中的所有类都可以使用。
+- 局部导入：什么时候使用，什么时候导入。在其作用范围内都可以使用
+- 通配符导入：`import java.util._`
+- 给类起名：`import java.util.{ArrayList=>JL}`
+- 导入相同包的多个类：`import java.util.{HashSet, ArrayList}`
+- 屏蔽类：`import java.util.{ArrayList =>_,_}`（后面的下划线表示导入util下所有的包，前面的表示屏蔽ArrayList）
+- 导入包的绝对路径：`new _root_.java.util.HashMap`
+
+### 5.2 类
+
+再scala中，类并不声明为`public`，所有这些类都是默认`public`的
+
+```scala
+package com.fx.chapter06
+
+import scala.beans.BeanProperty
+
+object Test_Class {
+  def main(args: Array[String]): Unit = {
+    val student = new Student()
+    println(student.age)
+  }
+  
+}
+
+@BeanProperty
+class Student {
+  // 默认就是public
+  var name: String = "alice"
+  // @BeanProperty表示设置为私有 然后声明`set get`方法，为了和javaBean进行兼容
+  @BeanProperty
+  var age: Int = 18
+  // _ 表示初始为空值
+  var sex: String = _
+}
+```
+
+#### 5.2.1 访问权限
+
+在 Java 中，访问权限分为：public，private，protected 和默认。在 Scala 中，你可以通过类似的修饰符达到同样的效果。但是使用上有区别：
+
+- Scala 中属性和方法的默认访问权限为 public，但 Scala 中无 public 关键字
+- private 为私有权限，只在类的内部和伴生对象中可用
+- protected 为受保护权限，Scala 中受保护权限比 Java 中更严格，同类、子类可以访问，同包无法访问
+- `private[包名]`增加包访问权限，包名下的其他类也可以使用
+
+![image-20230723231903000](https://cdn.fengxianhub.top/resources-master/image-20230723231903000.png)
+
+#### 5.2.2 构造器
+
+和 Java 一样，Scala 构造对象也需要调用构造方法，并且可以有任意多个构造方法。
+
+Scala 类的构造器包括：**主构造器和辅助构造器**
+
+```scala
+class 类名(形参列表) { // 主构造器
+  // 类体
+  def this(形参列表) { // 辅助构造器
+  }
+  def this(形参列表) { //辅助构造器可以有多个...
+  }
+}
+```
+
+- 辅助构造器，函数的名称 this，可以有多个，编译器通过参数的个数及类型来区分
+- 辅助构造方法不能直接构建对象，必须直接或者间接调用主构造方法
+- 构造器调用其他另外的构造器，要求被调用构造器必须提前声明
+
+如果主构造器无参数，小括号可省略，构建对象时调用的构造方法的小括号也可以省略
+
+```scala
+//（1）如果主构造器无参数，小括号可省略
+//class Person (){
+class Person {
+  var name: String = _
+  var age: Int = _
+  def this(age: Int): Unit = {
+    this()
+    this.age = age
+    println("辅助构造器")
+  }
+
+  def this(age: Int, name: String) {
+    this(age)
+    this.name = name
+  }
+
+  println("主构造器")
+}
+
+object Person {
+  def main(args: Array[String]): Unit = {
+    val person2 = new Person(18)
+  }
+}  
+```
+
+#### 5.2.3 构造器参数
+
+Scala 类的主构造器函数的形参包括三种类型：未用任何修饰、var 修饰、val 修饰
+
+- 未用任何修饰符修饰，这个参数就是一个局部变量
+- var 修饰参数，作为类的成员属性使用，可以修改
+- val 修饰参数，作为类只读属性使用，不能修改
+
+```scala
+package com.fx.chapter06
+
+object Test06_ConstructorParams {
+  def main(args: Array[String]): Unit = {
+    // 无参构造
+    val student = new Student
+    student.age = 18
+    student.name = "Alice"
+    println(s"s:name = ${student.name}, age=${student.age}")
+    val s2 = new Student2("alice", 18)
+    println(s"s2 =:name = ${s2.name}, age=${s2.age}")
+    // 外界无法访问 只能内部访问
+    new Student3("Alice", 18).showInfo()
+    //
+    new Student4("Alce", 19, "tsinghua").showInfo()
+  }
+}
+
+// 定义类 无参构造器
+class Student {
+  // 单独定义属性
+  var name: String = _
+  var age: Int = _
+}
+
+// 上面的定义等价于
+class Student2(var name:String, var age: Int)
+
+// 主构造器参数无修饰
+class Student3(name:String,  age: Int) {
+  def showInfo(): Unit = {
+    println(s"s =:name = $name, age=$age")
+  }
+}
+
+// 主构造器参数无修饰 使用辅助构造器的情况
+class Student4(name:String,  age: Int) {
+  var school: String = _
+  def this(name:String,  age: Int, school: String) {
+    this(name, age)
+    this.school = school
+  }
+  def showInfo(): Unit = {
+    println(s"s =:name = $name, age=$age, school=$school")
+  }
+}
+// 输出
+s:name = Alice, age=18
+s2 =:name = alice, age=18
+s =:name = Alice, age=18
+s =:name = Alce, age=19, school=tsinghua
+```
+
+#### 5.2.4  继承
+
+```scala
+package com.fx.chapter06
+
+object Test07_Inherit {
+  def main(args: Array[String]): Unit = {
+    new Student7("Alice", 18)
+    new Student7("Alice", 18, "std001").showInfo()
+  }
+}
+
+
+class Person7() {
+  var name: String = _
+  var age: Int = _
+  println("1. 父类主构造器调用")
+
+  def this(name: String, age: Int) {
+    this()
+    println("2. 辅助构造器被调用")
+    this.name = name
+    this.age = age
+  }
+
+  def showInfo(): Unit = {
+    println(s"Person:$name, $age")
+  }
+}
+
+class Student7(name: String, age: Int) extends Person7() {
+  private var stdNo:String = _
+  println("3. 子类的主构造器调用")
+  def this(name: String, age: Int, stdNo: String) {
+    this(name, age)
+    println("4. 子类辅助构造器调用")
+    this.stdNo = stdNo
+  }
+  override def showInfo():Unit = {
+    println(s"Student7:$name, $age, $stdNo")
+  }
+}
+// 输出
+1. 父类主构造器调用
+3. 子类的主构造器调用
+1. 父类主构造器调用
+3. 子类的主构造器调用
+4. 子类辅助构造器调用
+Student7:Alice, 18, std001
+```
+
+#### 5.2.5 多态
+
+在scala中多态和java类似，但是属性是`动态绑定`，而在java中属性是静态绑定的（谁创建就是谁的属性，new谁就是谁的方法）
+
+这里不多赘述
+
+#### 5.2.6 抽象类&匿名对象
+
+基本语法：
+
+- 定义抽象类：`abstract class Person{}` （通过 abstract 关键字标记抽象类） 
+- 定义抽象属性：`val|var name:String`  （一个属性没有初始化，就是抽象属性）
+- 定义抽象方法：`def hello():String` （只声明而没有实现的方法，就是抽象方法）
+
+其实和java类似
+
+```scala
+abstract class Person {
+  val name: String
+  def hello(): Unit
+}
+
+class Teacher extends Person {
+  val name: String = "teacher"
+  def hello(): Unit = {
+    println("hello teacher")
+  }
+}
+```
+
+匿名对象和java也一样，不多赘述
+
+#### 5.2.7 单例对象（伴生对象）
+
+Scala语言是**完全面向对象的语言**，所以并没有静态的操作（即在Scala中没有静态的概念）。但是为了能够和Java语言交互（因为Java中有静态概念），就产生了一种特殊的对象来`模拟类对象`，该对象为`单例对象`。若单例对象名与类名一致，则称该单例对象这个类的伴生对象，这个类的所有`“静态”`内容都可以`放置在它的伴生对象`中声明
+
+#### 5.2.8 apply方法
+
+在scala中有一个方法`apply`，可以创建对象并且更加简单
+
+```scala
+package com.fx.chapter06
+
+import com.fx.chapter06.Student11.school
+
+object Test11_Object {
+  def main(args: Array[String]): Unit = {
+    Student11.newStrudent("Alice", 20).printInfo()
+    // 使用apply简化
+    Student11.apply("Alice", 20).printInfo()
+    // apply可以省略
+    Student11("Alice", 20).printInfo()
+  }
+}
+
+
+class Student11 private(val name: String, val age: Int) {
+  def printInfo(): Unit = {
+    println(s"student:$name, age:$age, school:$school")
+  }
+}
+
+object Student11 {
+  var school: String = "tsinghua"
+  // 定义一个类的对象实例的创建方法
+  def newStrudent(name: String, age: Int): Student11 = new Student11(name, age)
+
+  def apply(name: String, age: Int): Student11 = new Student11(name, age)
+}
+```
+
+>注意：也可以创建其它类型对象，并不一定是伴生类对象
+
+实现单例模式
+
+```scala
+object Student11 {
+  var school: String = "tsinghua"
+
+  private var student: Student11 = _
+
+  def getInstance(): Student11 = {
+    if (student == null) {
+      student = apply("Alice", 20)
+    }
+    student
+  }
+  // 定义一个类的对象实例的创建方法
+  def newStrudent(name: String, age: Int): Student11 = new Student11(name, age)
+
+  def apply(name: String, age: Int): Student11 = new Student11(name, age)
+
+}
+```
+
+### 5.3 Trait
+
+`Scala 语言中，采用特质 trait（特征）来代替接口的概念`，也就是说，多个类具有相同的特质（特征）时，就可以将这个特质（特征）独立出来，采用关键字 trait 声明。
+
+Scala 中的 trait 中即`可以有抽象属性和方法，也可以有具体的属性和方法，一个类可以混入（mixin）多个特质`。这种感觉类似于 `Java 中的抽象类`。Scala 引入 trait 特征，第一可以替代 Java 的接口，第二个也是对单继承机制的一种补充
+
+#### 5.3.1 基本语法
+
+一个类具有某种特质（特征），就意味着这个类满足了这个特质（特征）的所有要素，所以在使用时，也采用了 extends 关键字，如果有多个特质或存在父类，那么需要采用 with关键字连接
+
+- 没有父类：`class 类名 extends 特质 1 with 特质 2 with 特质 3 ...`
+- 有父类：`class 类名 extends 父类 with 特质 1 with 特质 2 with 特质 3..`
+
+一般我们开发遵守：
+
+- 类和特质的关系：使用继承的关系
+- 当一个类去继承特质时，第一个连接词是 extends，后面是 with
+- 如果一个类在同时继承特质和父类时，应当把父类写在 extends 后
+
+>由于可以多实现，所以可能出现菱形继承的问题，在scala中采取的方法是`特质叠加`，就是将混入的多个 trait 中的冲突方法叠加起来
+>
+>如果要指定使用哪个`Trait`里面的方法，可以这样：`super[Category].describe()`，这里的`Category`是其中一个`Trait`，`describe`是发生歧义的方法
+
+### 5.4 类型判断
+
+在Scala中要对类进行类型判断
+
+- `obj.isInstanceOf[T]`：判断 obj 是不是 T 类型
+- `obj.asInstanceOf[T]`：将 obj 强转成 T 类型
+- `classOf` 获取对象的类名
+
+### 5.5 枚举类和应用类
+
+- 枚举类：需要继承 Enumeration
+- 应用类：需要继承 App
+
+```scala
+object Test {
+  def main(args: Array[String]): Unit = {
+    println(Color.RED)
+  }
+}
+// 枚举类
+object Color extends Enumeration {
+  val RED = Value(1, "red")
+  val YELLOW = Value(2, "yellow")
+  val BLUE = Value(3, "blue")
+}
+
+// 应用类 可以当作单元测试
+object Test20 extends App {
+  println("xxxxxxxxxxx");
+}
+```
+
+### 5.6 type关键字
+
+使用 type 关键字可以定义新的数据数据类型名称，本质上就是类型的一个别名
+
+```scala
+object Test {
+  def main(args: Array[String]): Unit = {
+    type S=String
+    var v:S="abc"
+    def test():S="xyz"
+  }
+}
+```
+
+## 6. 集合
+
+Scala 的集合有三大类：`序列 Seq、集 Set、映射 Map`，所有的集合都扩展自`Iterable`特质
+
+>对于几乎所有的集合类，Scala 都同时提供了可变和不可变的版本，分别位于以下两个包
+>
+>- 不可变集合：scala.collection.`immutable`
+>- scala.collection.`mutable`
+>
+>`Scala 不可变集合`，就是指该集合对象不可修改，每次修改就会返回一个新对象，而不会对原对象进行修改。类似于 java 中的 String 对象
+>
+>`可变集合`，就是这个集合可以直接对原对象进行修改，而不会返回新的对象。类似于 java 中 StringBuilder 对象
+>
+>**建议：在操作集合的时候，不可变用符号，可变用方法**
+
+![Scala的可变集合与不可变集合](https://cdn.fengxianhub.top/resources-master/20200325211453185.png)
+
+### 6.1 数组
+
+
+
+```scala
+package com.fx.chapter07
+
+object Test01_ImmutableArray {
+  def main(args: Array[String]): Unit = {
+    // 1. 创建数组
+    val array = new Array[Int](5)
+    // 推荐使用apply创建数组
+    val arr2 = Array(1, 2, 3, 4, 5, 6, 7)
+    // 2.访问元素 其实底层调用的还是apply方法
+    println(arr2(2))
+    // 3. 数组遍历
+    for (i <- arr2.indices) {
+      println(arr2(i))
+    }
+    println("===================================")
+    // 直接遍历元素
+    for(ele <- arr2) {
+      println(ele)
+    }
+    println("===================================")
+    // 使用迭代器访问
+    val iterator = arr2.iterator
+    while (iterator.hasNext) {
+      println(iterator.next())
+    }
+    println("===================================")
+    // 使用foreach
+    arr2.foreach(ele => {
+      println(ele)
+    })
+    println(arr2.mkString("------"))
+  }
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
