@@ -1724,7 +1724,7 @@ Scala 的集合有三大类：`序列 Seq、集 Set、映射 Map`，所有的集
 
 ### 6.1 数组
 
-
+#### 6.1.1 可变数组
 
 ```scala
 package com.fx.chapter07
@@ -1763,9 +1763,141 @@ object Test01_ImmutableArray {
 
 ```
 
+#### 6.1.2 可变数组&n阶数组
 
+```scala
+package com.fx.chapter07
 
+import scala.collection.mutable.ArrayBuffer
 
+object Test02_ArrayBuffer {
+  def main(args: Array[String]): Unit = {
+    // 1. 创建可变数组
+    val arr1 = new ArrayBuffer[Int]()
+    // 使用伴生对象
+    val arr2 = ArrayBuffer(23, 57, 92)
+
+    println(arr1.mkString(", ")) // noting
+    println(arr2) // ArrayBuffer(23, 57, 92)
+    // 2. 访问数组元素
+    println(arr2(0)) // 23
+    // 3. 添加元素
+    val newArr = arr1 :+ 15
+    println(arr1) // ArrayBuffer()
+    println(newArr) // ArrayBuffer(15)
+    println(arr1 == newArr) // false
+    // 可变对象的写法
+    val newArr2 = newArr += 19 // 这种写法不推荐 可以直接用
+    println(newArr) // ArrayBuffer(15, 19)
+    println(newArr == newArr2) // true
+    // 往前面追加
+    77 +=: newArr
+    println(newArr) // ArrayBuffer(77, 15, 19)
+    // 还可以调用方法
+    newArr.append(100)
+    println(newArr)
+    newArr.prepend(100)
+    println(newArr)
+    // 任意位置添加 在索引1之后进行添加
+    newArr.insert(2, 22, 33)
+    println(newArr)
+    // 5. 可变数组转换为不可变数组
+    val arr11: Array[Int] = newArr.toArray
+    val buffer: mutable.Buffer[Int] = arr11.toBuffer
+  }
+}
+```
+
+**n阶数组**
+
+```scala
+// 1. 二维数组
+val array: Array[Array[Int]] = Array.ofDim[Int](2, 3)
+// 2. 访问元素
+array(0)(2) = 19
+array(1)(0) = 25
+array.foreach(arr => {
+    arr.foreach(println)
+})
+// 简写
+array.foreach(_.foreach(println))
+```
+
+### 6.2 List
+
+#### 6.2.1 不可变List
+
+```scala
+package com.fx.chapter07
+
+object Test04_List {
+  def main(args: Array[String]): Unit = {
+    // 1. 使用伴生对象创建
+    val list = List(1, 2, 3, 4)
+    println(list)
+    // 也可以使用索引打印 底层做了封装
+    println(list(1))
+    // 2. 遍历
+    list.foreach(println)
+    // 3. 添加元素
+    val list2 = list.+:(10)
+    val list3 = list :+ 23
+    println(list) // List(1, 2, 3, 4)
+    println(list2) // List(10, 1, 2, 3, 4)
+    println(list3) // List(1, 2, 3, 4, 23)
+    println("================================")
+    val list4 = list2.::(20) // `::`很少用
+    println(list4) // List(20, 10, 1, 2, 3, 4)
+    val list5 = Nil.::(13)
+    println(list5)
+    // 比较常见的创建列表的方法
+    val list6 = 5 :: 4 :: 3 :: 2 :: 1 :: Nil
+    println(list6) // List(5, 4, 3, 2, 1)
+    // 将两个列表合并
+    val list7 = list5 :: list6 // 将list5当作一个元素进行追加
+    println(list7) // List(List(13), 5, 4, 3, 2, 1)
+    // 真正的合并
+    val list8 = list5 ::: list6
+    println(list8) // List(13, 5, 4, 3, 2, 1)
+    // 合并也可以使用`++`
+    val list9 = list5 ++ list6
+    println(list9) // List(13, 5, 4, 3, 2, 1)
+  }
+}
+```
+
+#### 6.2.2 可变ListBuffer
+
+```scala
+package com.fx.chapter07
+
+import scala.collection.mutable.ListBuffer
+
+object Test05_ListBuffer {
+  def main(args: Array[String]): Unit = {
+    val list = ListBuffer(1, 2, 3, 4, 5)
+    println(list) // ListBuffer(1, 2, 3, 4, 5)
+    // 2. 添加元素
+    list.append(6)
+    println(list) // ListBuffer(1, 2, 3, 4, 5, 6)
+    // 指定索引后添加
+    list.insert(1, 9, 8)
+    println(list) // ListBuffer(1, 9, 8, 2, 3, 4, 5, 6)
+    println("========================")
+    // 还可以通过符号进行加
+    11 +=: 22 +=: list += 33 += 44
+    println(list) // ListBuffer(11, 22, 1, 9, 8, 2, 3, 4, 5, 6, 33, 44)
+    list.append(111)
+    println(list)
+    // 更新
+    list(0) = 101
+    println(list) // ListBuffer(101, 22, 1, 9, 8, 2, 3, 4, 5, 6, 33, 44, 111)
+    list.update(0, 202)
+    println(list) // ListBuffer(202, 22, 1, 9, 8, 2, 3, 4, 5, 6, 33, 44, 111)
+  }
+}
+
+```
 
 
 
