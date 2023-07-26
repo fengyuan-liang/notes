@@ -2998,7 +2998,7 @@ cargo test test   // 会执行所有以 test开头的测试用例
 cargo test -- --ignored // 注意有个d
 ```
 
-## 10.9 测试分类
+### 10.9 测试分类
 
 在rust中测试分为单元测试和集成测试
 
@@ -3014,8 +3014,408 @@ cargo test -- --ignored // 注意有个d
 
 在rust中集成测试完全位于被测试库的外部
 
-目的：是测试被测试库的多个部分是否能正确的一起工作
+目的：是测试被测试库的 多个部分是否能正确的一起工作
 
 - 只会在`cargo test`的时候才会编译
 
 ![image-20230720000936462](https://cdn.fengxianhub.top/resources-master/image-20230720000936462.png)
+
+## 11. 闭包
+
+>闭包：可以捕获其所在环境的匿名函数
+>
+>- 是匿名函数
+>- 保存为变量、作为参数
+>- 可在一个地方创建闭包，然后在另一个上下文中调用闭包来完成运算
+>- 可从其定义的作用域捕获值
+
+为了搞懂闭包的作用，我们来看一段例子
+
+```rust
+fn main() {
+    let add = |a, b| a + b;
+    let result = add(2, 3);
+    println!("Result: {}", result);
+}
+```
+
+这里的闭包省略的返回值，因为编译器会自动进行返回，但是这种绑定是一次性的，如果下次再传入不一样类型的值就会报错
+
+![image-20230726220216054](https://cdn.fengxianhub.top/resources-master/image-20230726220216054.png)
+
+这里我们来一个小案例（运动计划）来看看闭包的作用以及一些使用的最佳实践，这里我们也是通过`闭包`来实现了一个运动计划的小案例
+
+```rust
+use std::{thread, time::Duration};
+
+fn main() {
+   let simulated_user_specified_value = 10;
+   let simulated_random_number = 7;
+
+   generate_workout(simulated_user_specified_value, simulated_random_number);
+}
+
+
+fn generate_workout(intensity:u32, random_number:u32) {
+    // 闭包
+    let expensive_closure = |num| {
+        println!("calculating slowly...");
+        thread::sleep(Duration::from_secs(2));
+        num
+    };
+    if intensity < 25 {
+        // 再后续编译器可以推断出闭包能够返回的类型
+        println!("Today, do {} pushups!", expensive_closure(intensity));
+        println!("Next, do {} situps!", expensive_closure(intensity));
+    } else {
+        if random_number == 3 {
+            println!("Take a break today! Remember to stay hydrated");
+        } else {
+            println!("Today, run for {} minutes", expensive_closure(intensity));
+        }
+    }
+}
+
+```
+
+### 11.1 使用泛型参数和Fn Trait来存储闭包
+
+在我们上面运动计划的小案例中，我们看到闭包其实被调用了两次，执行了多次比较耗时的操作
+
+其实我们可以创建一个`struct`，它持有闭包及其调用结果（第一次调用的时候就缓存起来）
+
+这种模式通常叫做`记忆化 (memoization)`或`延迟计算(lazy evaluation)`
+
+>如果让struct持有闭包
+>
+>- struct的定义需要知道所有字段的类型，需要指明闭包的类型
+>- 每个闭包实例都有自己唯一的匿名类型，即使两个闭包签名完全一样
+>- 所以需要使用：泛型和`Trait Bound`
+
+在标准库中提供了许多`Fn Trait`，所有的闭包都至少实现了以下`Trait`之一：
+
+- Fn
+- FnMut
+- FnOnce
+
+我们这里修改一下上面的案例
+
+```rust
+use std::{thread, time::Duration};
+
+fn main() {
+    let simulated_user_specified_value = 10;
+    let simulated_random_number = 7;
+
+    generate_workout(simulated_user_specified_value, simulated_random_number);
+}
+
+struct Cacher<F>
+where
+    F: Fn(u32) -> u32,
+{
+    calculation: F,
+    value: Option<u32>,
+}
+
+impl<F> Cacher<F>
+where
+    F: Fn(u32) -> u32,
+{
+    fn new(calculation: F) -> Cacher<F> {
+        Cacher {
+            calculation,
+            value: None,
+        }
+    }
+
+    fn value(&mut self, arg: u32) -> u32 {
+        match self.value {
+            Some(v) => v,
+            None => {
+                let v = (self.calculation)(arg);
+                self.value = Some(v);
+                v
+            }
+        }
+    }
+}
+
+fn generate_workout(intensity: u32, random_number: u32) {
+    // 闭包
+    let mut expensive_closure = Cacher::new(|num| {
+        println!("calculating slowly...");
+        thread::sleep(Duration::from_secs(2));
+        num
+    });
+    if intensity < 25 {
+        // 再后续编译器可以推断出闭包能够返回的类型
+        println!("Today, do {} pushups!", expensive_closure.value(intensity));
+        println!("Next, do {} situps!", expensive_closure.value(intensity));
+    } else {
+        if random_number == 3 {
+            println!("Take a break today! Remember to stay hydrated");
+        } else {
+            println!(
+                "Today, run for {} minutes",
+                expensive_closure.value(intensity)
+            );
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn call_with_defferent_values() {
+        let mut c = super::Cacher::new(|a| a);
+        let v1 = c.value(1);
+        let v2 = c.value(2);
+        assert_eq!(v2, 2)
+    }
+}
+
+```
+
+但是如果我们执行test会发现会失败，因为我们没有比较传入的值，而是直接将结果缓存
+
+现在我们用`HashMap`进行优化
+
+- key：arg参数
+- value：执行闭包的结果
+
+```rust
+use std::{thread, time::Duration, collections::HashMap, hash::Hash};
+
+fn main() {
+    let simulated_user_specified_value = 10;
+    let simulated_random_number = 7;
+
+    generate_workout(simulated_user_specified_value, simulated_random_number);
+}
+
+struct Cacher<F>
+where
+    F: Fn(u32) -> u32,
+{
+    calculation: F,
+    value: HashMap<u32, u32>,
+}
+
+impl<F> Cacher<F>
+where
+    F: Fn(u32) -> u32,
+{
+    fn new(calculation: F) -> Cacher<F> {
+        Cacher {
+            calculation,
+            value: HashMap::new(),
+        }
+    }
+
+    fn value(&mut self, arg: u32) -> u32 {
+        match self.value.get(&arg) {
+            Some(v) => *v,
+            None => {
+                let v = (self.calculation)(arg);
+                self.value.insert(arg, v);
+                v
+            },
+        }
+    }
+}
+
+fn generate_workout(intensity: u32, random_number: u32) {
+    // 闭包
+    let mut expensive_closure = Cacher::new(|num| {
+        println!("calculating slowly...");
+        thread::sleep(Duration::from_secs(2));
+        num
+    });
+    if intensity < 25 {
+        // 再后续编译器可以推断出闭包能够返回的类型
+        println!("Today, do {} pushups!", expensive_closure.value(intensity));
+        println!("Next, do {} situps!", expensive_closure.value(intensity));
+    } else {
+        if random_number == 3 {
+            println!("Take a break today! Remember to stay hydrated");
+        } else {
+            println!(
+                "Today, run for {} minutes",
+                expensive_closure.value(intensity)
+            );
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn call_with_defferent_values() {
+        let mut c = super::Cacher::new(|a| a);
+        let v1 = c.value(1);
+        let v2 = c.value(2);
+        assert_eq!(v2, 2)
+    }
+}
+
+```
+
+### 11.2 使用闭包捕获环境
+
+闭包可以访问定义它作用域内的变量，函数不可以
+
+```rust
+fn main() {
+    let x = 4;
+    let equal_to_x = |z| z == x;
+    
+    let y = 4;
+    assert!(equal_to_x(y)); // true
+}
+```
+
+闭包从所在环境捕获值的方式有（与函数获得参数的三种方式一样）：
+
+- 获得所有权：FnOnce（值捕获）
+- 可变借用：FnMut（引用捕获）
+- 不可变借用：Fn
+
+创建闭包时，通过闭包对环境值的使用，Rust推断出具体使用哪个`Trait`
+
+- 所有的闭包都实现了`FnOnce`
+- 没有移动捕获变量的实现了`FnMut`
+- 无需可变访问捕获变量的闭包实现了`Fn`
+
+所有实现了`Fn`的都实现了`FnMut`，所有实现了`FnMut`的都实现了`FnOnce`，即`FnOnce{ FnMut { Fn } }`
+
+>move关键字
+>
+>在参数列表前使用`move`关键字，可以强制闭包取得它所使用的环境值的所有权
+>
+>- 当将闭包传递给新县城以移动数据使其归新线程所有时，此技术最为有用
+
+![image-20230726234648106](https://cdn.fengxianhub.top/resources-master/image-20230726234648106.png)
+
+我们来看一下最佳实践
+
+- 当指定`Fn trait bound`之一时，首先用`Fn`，基于闭包体的情况，如果需要`FnOnce`或`FnMut`，编译器会再告诉你
+
+### 11.3 迭代器
+
+迭代器：对一系列执行某些任务
+
+迭代器负责：
+
+- 遍历每个项
+- 确定序列（遍历）何时完成
+
+Rust的迭代器
+
+- 懒惰的：除非调用消费迭代器的方法，否则迭代器本身没有任何效果
+
+
+
+#### 11.3.1 Iterator trait和next方法
+
+所有的迭代器都实现了`Iterator trait`，`Iterator trait`定义于标准库，定义大致如下：
+
+```rust
+pub trait Iterator {
+    type Item;
+    
+    fn next(&mut self) -> Option<Self::Item>;
+}
+```
+
+`type Item`和`Self::Item`定义了与此该`trait`关联的类型，实现`Iterator trait`需要定义一个`Item`类型，它用于`next`方法的返回类型（迭代器的返回类型）
+
+- `Iterator trait`仅要求实现一个方法：`next`
+- next：
+  - 每次返回迭代器中的一项
+  - 返回结果包裹在`Some`里
+  - 迭代结束，返回`None`
+- 所以可以直接在迭代器上调用`Next`方法
+
+```rust
+#[test]
+fn iterator_demonstration() {
+    let v1 = vec![1, 2, 3];
+    let mut v1_iter = v1.iter();
+    assert_eq!(v1_iter.next(), Some(&1));
+    assert_eq!(v1_iter.next(), Some(&2));
+    assert_eq!(v1_iter.next(), Some(&3));
+}
+```
+
+`for in` 循环其实是语法糖，本质也是通过获取到迭代器的所有权，然后通过`match result`，直到遇到`None` ，`IntoIterator`是个`tarit`，它的`into_iter`方法会取得 `for .. in ..`中 `in` 右边的东西
+
+>**我们总结一下这几种迭代方法**
+>
+>- `iter`方法：在不可变引用上创建迭代器
+>- `into_iter`方法：创建的迭代器会获得所有权
+
+#### 11.3.2 消耗迭代器的方法
+
+在标准库中，`Iterator trait`有一些带默认实现的方法，其中有一些方法会调用`next`方法
+
+- 实现`Iterator trait`时必须实现`next`方法的原因之一
+- 调用`next`的方法叫做`消耗性适配器`
+
+定义在`Iterator trait`上的另外一些方法叫做`迭代器适配器`，即 **把迭代器转换为不同种类的迭代器**
+
+可以通过链式调用使用多个迭代器是配置来执行复杂的操作，这种调用可读性较高
+
+例如：**map**
+
+- 接受一个闭包，闭包作用于每个元素
+- 产生一个新的迭代器
+
+```rust
+#[test]
+fn iterator_sum() {
+    let v1 = vec![1, 2, 3];
+    // collect就是一个消耗性的方法
+    let v2: Vec<_> = v1.iter().map(|x| x + 1).collect();
+    println!("{:?}", v2) // [2, 3, 4]
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
