@@ -3381,25 +3381,536 @@ fn iterator_sum() {
 }
 ```
 
+#### 11.3.3 创建自定义迭代器
+
+我们自定义一个迭代器并且实现`next`方法
+
+```rust
+struct Counter {
+    count: u32,
+}
+
+impl Counter {
+    fn new() -> Counter {
+        Counter { count: 0 }
+    }
+}
+
+impl Iterator for Counter {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.count < 5 {
+            self.count += 1;
+            Some(self.count)
+        } else {
+            None
+        }
+    }
+}
+
+#[test]
+fn calling_next_directly() {
+    let mut counter = Counter::new();
+
+    assert_eq!(counter.next(), Some(1));
+    assert_eq!(counter.next(), Some(2));
+    assert_eq!(counter.next(), Some(3));
+    assert_eq!(counter.next(), Some(4));
+    assert_eq!(counter.next(), Some(5));
+    assert_eq!(counter.next(), None);
+}
+
+#[test]
+fn using_other_iterator_trait_methods() {
+    let sum: u32 = Counter::new()
+        .zip(Counter::new().skip(1))
+        .map(|(a, b)| a * b)
+        // 2、6、12、20
+        .filter(|x| x % 3 == 0)
+        // 6、12
+        .sum();
+    assert_eq!(18, sum);
+}
+
+```
+
+#### 11.3.4 循环&迭代器性能对比
+
+迭代器其实在底层编译之后会编程for循环的形式，我们将其称之为`零开销抽象(Zero-Cost Abstraction)`，即使用抽象时不会引入额外的运行时开销
+
+## 12. cargo、crates.io
+
+在这里我们主要学习：
+
+- 通过`release profile`来自定义构建
+- 在`https://crates.io`上发布库
+- 通过`workspaces`组织大工程
+- 从`https://crates.io/`来安装库
+- 使用自定义命令扩展`cargo`
+
+### 12.1 通过release profile自定义构建
+
+release profile：
+
+- 是预定义的
+- 可自定义，可使用不同的配置，对代码编译拥有更多的控制
+
+每个`profile`的配置都独立于其他的`profile`
+
+>Cargo主要的两个profile：
+>
+>- dev profile：适用于开发，`cargo build`
+>- release profile：适用于发布，`cargo build --release`
+
+那么如何自定义profile呢？
+
+- 针对每个profile，Cargo都提供了默认的配置
+- 如果想自定义`xxx profile`的配置，可以在`Cargo.toml`里添加`[profile.xxxx]`区域，在里面覆盖默认配置的子集
+
+![image-20230730130956144](https://cdn.fengxianhub.top/resources-master/image-20230730130956144.png)
+
+>更多的命令可以在这里看到：https://doc.rust-lang.org/stable/cargo/
+
+### 12.2 发布crate到crates.io
+
+#### 12.2.1 文档注释
+
+我们先了解一下rust的文档注释
+
+使用`///`进行注释，举个例子
+
+![image-20230730131535544](https://cdn.fengxianhub.top/resources-master/image-20230730131535544.png)
+
+我们可以使用`cargo doc`命令生成文档，它会运行`rustdoc`工具（rust安装包会自带）
+
+```shell
+$ cargo doc --open
+ Documenting rustDemo01 v0.1.0 (E:\workspace\vscode\rustStudy\rustDemo01)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.29s
+     Opening E:\workspace\vscode\rustStudy\rustDemo01\target\doc\rustDemo01\index.html
+```
+
+![image-20230730134413907](https://cdn.fengxianhub.top/resources-master/image-20230730134413907.png)
+
+上面的例子中`# Examples`表示的是章节，还有几个其他的常用章节：
+
+- Panics：函数可能发生`panic`的场景
+- Errors：如果函数返回`Result`，描述可能的错误种类，以及可导致错误的条件
+- Safety：如果函数处于`unsafe`调用，就应该解释函数`unsafe`的原因，以及调用者确保的使用前提
+
+>文档注释作为测试：
+>
+>示例代码块的附加值：
+>
+>- 运行`cargo test`：将把文档注释中的示例代码作为测试来运行
+>
+>再上面的例子中我们就写过一个`Example`，当我们`cargo test`的时候就会执行里面的测试的代码
+>
+>![image-20230730133624560](https://cdn.fengxianhub.top/resources-master/image-20230730133624560.png)
+
+#### 12.2.2 为包含注释的项添加文档注释
+
+使用符号`//!`来对crate进行描述注释（注意这种注释只能出现在最前面）
+
+![image-20230730134950905](https://cdn.fengxianhub.top/resources-master/image-20230730134950905.png)
+
+我们再生成文档
+
+![image-20230730134935356](https://cdn.fengxianhub.top/resources-master/image-20230730134935356.png)
+
+#### 12.2.3 pub use简化路径
+
+我们来看下下面的注释生成的文档
+
+![image-20230730135544661](https://cdn.fengxianhub.top/resources-master/image-20230730135544661.png)
+
+![image-20230730135620984](https://cdn.fengxianhub.top/resources-master/image-20230730135620984.png)
+
+这个时候我们就可以使用`pub use`将文档导出到首页（其实就是简化了路径）
+
+![image-20230730135811687](https://cdn.fengxianhub.top/resources-master/image-20230730135811687.png)
+
+![image-20230730135909714](https://cdn.fengxianhub.top/resources-master/image-20230730135909714.png)
+
+#### 12.2.4 创建并设置Crates.io账号
+
+发布crate前，需要先在`crates.io`创建账号并获得`API token`
+
+![image-20230730142530353](https://cdn.fengxianhub.top/resources-master/image-20230730142530353.png)
+
+运行命令`cargo login [你的API token]`，这个命令会通知`cargo`，将你的API token 存储在本地`~/.cargo/credientials.toml`上
+
+在发布`crate`之前，需要在`cargo.toml`的`[package]`区域为`crate`添加一些元数据
+
+- crate需要唯一的名称：name
+- description：一两句话即可，会出现在crate搜索的结果里
+- license：需提供许可证标识值（可到`http://spdx.org/licenses/`查找），可以使用`OR`指定多个
+- version
+- author
+
+使用`cargo publish`命令发布
+
+>注意：crate一旦发布，就是永久性的，该版本无法覆盖，代码也无法删除（为了让依赖该版本的项目可以继续正常工作）
+>
+>可以使用`cargo yank --vers 1.0.1`命令标记当前版本不可使用（之前依赖的还可以继续使用，但是新创建的依赖就不能依赖了），可以使用`cargo yank --vers 1.0.1 --undo`命令取消撤回
+
+#### 12.2.5 cargo工作空间（Workspace）
+
+创建工作空间的方式有很多种，我们来举个创建一个二进制crate，两个库crate的例子
+
+![image-20230730144705653](https://cdn.fengxianhub.top/resources-master/image-20230730144705653.png)
+
+![image-20230730144648131](https://cdn.fengxianhub.top/resources-master/image-20230730144648131.png)
+
+#### 12.2.6 cargo install
+
+我们可以使用`cargo install`来安装在`cargo.io`上的`binary crate`并且进行执行，并且可以添加到我们的环境变量中
+
+## 13. 智能指针
+
+智能指针是这样一些数据结构：
+
+- 行为和指针相似
+- 有额外的元数据和功能
+
+### 13.1 引用计数智能指针
+
+引用计数（reference counting）智能指针类型
+
+- 通过记录所有者的数量，使一份数据被多个所有者同时持有
+- 并在没有任何所有者时自动清理数据
+
+>引用和智能指针的其他不同
+>
+>- 引用：只借用数据
+>- 智能指针：很多时候拥有它所指向的数据
+
+智能指针的例子：
+
+- String和`Vec<T>`
+- 都拥有一片内存区域，且运行用户对其操作
+- 用于元数据（例如容量等）
+- 提供额外的功能或保障（String保障其数据是合法的`UTF-8`编码）
+
+### 13.2 智能指针的实现
+
+智能指针通常使用`struct`实现，并且实现了`Deref`和`Drop`这两个`trait`
+
+- Deref trait：允许智能指针struct的实例像引用一样使用
+- Drop trait：允许你自定义当智能指针实例走出作用域时的代码
+
+### 13.3 使用Box\<T>来执行Heap上的数据
+
+Box\<T>是最简单的智能指针：
+
+- 允许你在heap上存储数据（而不是stack）
+- stack上是指向heap数据的指针
+- 没有性能开销，但是也没有其他额外的功能
+
+**Box\<T>的常用场景**：
+
+- 在编译时，某类型的大小无法确定。但使用该类型时，上下文却需要知道它的确切大小
+- 当你有大量数据，想移交所有权，但需要确保在操作时数据不会被复制
+
+举个例子
+
+```rust
+fn main() {
+    // 使用box在堆上分配内存
+    let b = Box::new(5);
+    println!("b = {}", b)
+} // b的生命周期在作用域结束后也会结束，在堆上的空间会被释放掉
+```
+
+使用Box\<T>赋能递归类型
+
+- 在编译时，Rust需要知道一个类型所占空间的大小
+- 而递归类型的大小无法在编译时确定
+- 但Box类型的大小时确定的，在递归类型中使用Box就可以解决上述问题（例如`Cons list`）
+
+**关于Cons list**
+
+- Cons List是来自`lisp`语言的一种数据结构
+- Cons List里每个成员由两个元素组成
+  - 当前项的值
+  - 下一个元素
+- Cons List里最后一个成员只包含一个`Nil`值，没有下一个元素
+
+**举个例子**
+
+![image-20230730152640632](https://cdn.fengxianhub.top/resources-master/image-20230730152640632.png)
+
+那我们用Box优化一下7
+
+![image-20230730152907919](https://cdn.fengxianhub.top/resources-master/image-20230730152907919.png)
+
+### 13.4 Deref Trait
+
+实现`Deref Trait`使我们可以自定义解引用运算符`*`的行为，通过实现`Deref Trait`，智能指针可以像常`规引用一样来处理`
+
+```rust
+fn main() {
+    let x = 5;
+    let y = &x;
+    assert_eq!(5, x);
+    assert_eq!(5, *y);
+} 
+```
+
+```rust
+fn main() {
+    let x = 5;
+    let y = Box::new(x);
+    assert_eq!(5, x);
+    assert_eq!(5, *y);
+} 
+```
+
+**定义自己的智能指针**
+
+Box\<T>被定义成拥有一个元素的`tuple struct`，我们现在定义一个`MyBox<T>`，也是拥有一个元素的`tuple struct`
+
+标准库中的`Deref trait`要求我们实现一个`deref`方法：
+
+- 该方法借用`self`
+- 返回一个指向内部数据的引用
+
+```rust
+use std::ops::Deref;
+
+fn main() {
+    let x = 5;
+    let y = MyBox::new(x);
+    assert_eq!(5, x);
+    assert_eq!(5, *y); // 等价于 `*(y.deref())`
+}
+
+struct MyBox<T>(T);
+
+impl <T> MyBox<T> {
+    fn new(x: T) -> MyBox<T> {
+        MyBox(x)
+    }
+}
+
+impl<T> Deref for MyBox<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+```
+
+**函数和方法的隐式解引用转化（Deref Coercion）**
+
+- 隐式解引用转化（Deref Coercion）是为函数和方法提供的一种便捷特性
+- 假设`T`实现了`Deref trait`，`Deref Coercion`可以把`T`的引用转化为`T`经过`Deref`操作后生成的引用
+- 当把某类型的引用传递给函数或方法时，但它的类型和定义的参数类型不匹配
+  - `Deref Coercion`就会自动发生
+  - 编译器会对`deref`进行一系列调用，来把它转为所需的参数类型
+  - 在编译时就以及完成了，没有额外的性能开销
+
+**解引用与可变性**
+
+- 可使用`DerefMut trait`重载可变引用的`*`运算符
+- 在类型和trait在下列三种情况发生时，Rust会执行`deref coercion`：
+  - 当`T:Deref<Target=U>`，允许`&T`转换为`&U`
+  - 当`T:DerefMut<Target=U>`，允许`&mut T`转换为`&mut U`
+  - 当`T:Deref<Target=U>`，允许`&mut T`转换为`&mut U`
+
+### 13.5 Drop Trait
+
+实现Drop Trait，可以让我们自定义**当值将要离开作用域时发生的动作**
+
+- 例如：文件、网络资源释放等
+- 任何类型都可以实现`Drop trait`
+
+Drop trait只要求你实现drop方法
+
+- 参数：对self的可变引用
+- Drop trait在预导入模块中（prelude）
+
+我们看个例子：
+
+```rust
+fn main() {
+   let c = CustomSmartPointer {data: String::from("my stuff") };
+   let d = CustomSmartPointer {data: String::from("other stuff")};
+
+   println!("CustomSmartPointers created.")
+}
+
+
+struct CustomSmartPointer {
+    data: String
+}
+
+impl Drop for CustomSmartPointer {
+    fn drop(&mut self) {
+        println!("Dropping CustomSmartPointer with data `{}`!", self.data)
+    }
+}
+```
+
+我们看下输出
+
+```shell
+$ cargo run
+    Finished dev [unoptimized + debuginfo] target(s) in 0.29s
+     Running `target\debug\rustDemo01.exe`
+CustomSmartPointers created.
+Dropping CustomSmartPointer with data `other stuff`!
+Dropping CustomSmartPointer with data `my stuff`!
+```
+
+我们发现刚好与输入的顺序相反，是**后进先出**，这里可以结合之前的生命周期就明白为啥了，我能保持和self一样长的寿命，但是self是后出，所以我比self先出，self都没了,我的寿命也早就没了
+
+**使用std::mem::drop来提前drop值**
+
+- 很难直接禁用自动的`drop`功能，也没必要，因为`Drop trait`的目的就是进行自动的释放处理逻辑
+- Rust不允许手动调用`Drop trait`的`drop`方法
+- 但可以调用标准库的`std::mem::drop`函数，来提前`drop`值
+- `drop`即使写了多次也不会出现`double free`的情况
+
+我们在上面的例子中试下：
+
+![image-20230730194642316](https://cdn.fengxianhub.top/resources-master/image-20230730194642316.png)
+
+```shell
+$ cargo run
+    Finished dev [unoptimized + debuginfo] target(s) in 0.29s
+     Running `target\debug\rustDemo01.exe`
+Dropping CustomSmartPointer with data `my stuff`!
+CustomSmartPointers created.
+Dropping CustomSmartPointer with data `other stuff`!
+```
+
+### 13.6 Rc\<T>引用计数智能指针
+
+有时一个值会有多个所有者，例如下面的`6`就有多个变量同时引用它
+
+![image-20230730220635460](https://cdn.fengxianhub.top/resources-master/image-20230730220635460.png)
+
+为了支持多重所有权可以使用`Rc<T>`（reference couting引用计数），即可以追踪所有到值的引用，如果是`0`个引用，该值可能被清理掉
+
+> **Rc\<T>的使用场景**：
+>
+>- 需要在heap上分配数据，这些数据被程序的多个部分读取（只读），但在编译时无法确定哪个部分最后使用完这些数据
+>-  Rc\<T>只适合单线程的场景（14章会研究多线程的场景）
+
+我们用一个例子来使用一下
+
+![image-20230730195730941](https://cdn.fengxianhub.top/resources-master/image-20230730195730941.png)
+
+```rust
+use std::rc::Rc;
+
+fn main() {
+   let a = Rc::new(Cons(5, 
+        Rc::new(Cons(10,
+            Rc::new(Nil) )))); 
+
+    let b = Cons(3, Rc::clone(&a)); // 计数器加一
+    let c = Cons(3, Rc::clone(&a)); // 计数器加一
+}
+
+
+enum List {
+    Cons(i32, Rc<List>),
+    Nil
+}
+```
+
+>`Rc::clone()` 与 类型的`clone()` 方法
+>
+>- `Rc::clone()` ：增加引用，不会执行数据的深度拷贝操作
+>- 类型的clone方法：很多都会深拷贝
+>
+>`Rc<T>`通过**不可变引用**，使你可以在程序不同部分之间共享只读数据
+
+### 13.7 RefCell\<T>和内部可变性
+
+内部可变性（interior mutability）
+
+- 内部可变性是Rust的设计模式之一
+- 它允许你在只持有不可变引用的前提下对数据进行修改
+  - 数据结构中使用了`unsafe`代码来绕过Rust正常的可变性和借用规则
+
+**RefCell\<T>**
+
+- 与Rc\<T>不同，RefCell\<T>类型代表了其持有数据的唯一所有权
+- 与`Rc<T>`相似，只能用于`单线程`场景
+
+>这里我们回忆一下借用规则：
+>
+>- 在任何给定的时间里，你要么只能拥有一个可变引用，要么只能拥有任意数量的不可变引用
+>- 引用总是有效的
+
+![image-20230730202404654](https://cdn.fengxianhub.top/resources-master/image-20230730202404654.png)
+
+![image-20230730202455134](https://cdn.fengxianhub.top/resources-master/image-20230730202455134.png)
+
+![image-20230730203115882](https://cdn.fengxianhub.top/resources-master/image-20230730203115882.png)
+
+>内部可变性：可变的借用一个不可变的值 
+>
+>如果没有内部可变性，下面的代码就无法修改
+>
+>![image-20230730203421874](https://cdn.fengxianhub.top/resources-master/image-20230730203421874.png)
+
+![image-20230730204716906](https://cdn.fengxianhub.top/resources-master/image-20230730204716906.png)
+
+![image-20230730204808395](https://cdn.fengxianhub.top/resources-master/image-20230730204808395.png)
+
+**其他可实现内部可变性的类型**
+
+- Cell\<T>：通过复制来访问数据
+- Mutex\<T>：用于实现跨线程情况下的内部可变性模式
+
+### 13.8 循环引用导致内存泄漏
+
+当我们使用`Rc<T>`和`Rcell<T>`就可能创造出循环引用，从而发生内存泄漏
+
+那么如何防止内存泄漏呢
+
+- 依靠开发者来保障
+- 重新组织数据结构，一些引用来表达所有权，一些引用不表达所有权
+  - 循环引用中的一部分具有所有权关系，另一部分不涉及所有权关系
+  - 而只有所有权关系才影响值的清理
+
+我们来看个例子
+
+```rust
+```
 
 
 
+为了防止循环引用可以将`Rc<T>`换成`Weak<T>`
+
+- `Rc::clone`为`Rc<T>`实例的`strong_count`加1，`Rc<T>`的实例只有在`strong_count`为0的时候才会被清理
+- `Rc<T>`实例通过调用`Rc::downgrade`方法可以创建值的`Weak Reference (弱引用)`
+  - 返回的类型是`Weak<T> (智能指针)`
+  - 调用`Rc::downgrade会为weak_count`加1
+  - `Rc<T>`使用`weak_count`来追踪存在多少`Weak<T>`
+  - `weak_count`不为0并不影响`Rc<T>`实例的清理
+
+![image-20230730212235562](https://cdn.fengxianhub.top/resources-master/image-20230730212235562.png)
 
 
 
+### 13.9 小结
 
+在本章介绍了标准库中常见的智能指针
 
+- `Box<T>`：在heap内存上分配值
+- `Rc<T>`：启用多重所有权的引用计数类型
+- `Ref<T>`和`RefMut<T>`，通过`RefCell<T>`访问：在运行时而不是编译时强制借用规则的类型
 
+此外：
 
-
-
-
-
-
-
-
-
-
+- 内部可变模式（interior mutability pattern）：不可变类型暴露出可修改其内布值的API
+- 引用循环（reference cycles）：它们如何泄露内层，以及如何防止其发生
 
 
 
