@@ -2515,7 +2515,7 @@ impl Summary for NewsArticle {
 }
 ```
 
-#### 9.2.4 trait的默认实现
+#### 9.2.4 trait的实现
 
 这里一共有两种情况
 
@@ -3627,7 +3627,7 @@ fn main() {
 
 - 在编译时，Rust需要知道一个类型所占空间的大小
 - 而递归类型的大小无法在编译时确定
-- 但Box类型的大小时确定的，在递归类型中使用Box就可以解决上述问题（例如`Cons list`）
+- 但Box类型的大小是确定的，在递归类型中使用Box就可以解决上述问题（例如`Cons list`）
 
 **关于Cons list**
 
@@ -3641,7 +3641,7 @@ fn main() {
 
 ![image-20230730152640632](https://cdn.fengxianhub.top/resources-master/image-20230730152640632.png)
 
-那我们用Box优化一下7
+那我们用Box优化一下
 
 ![image-20230730152907919](https://cdn.fengxianhub.top/resources-master/image-20230730152907919.png)
 
@@ -3803,6 +3803,12 @@ Dropping CustomSmartPointer with data `other stuff`!
 
 ![image-20230730195730941](https://cdn.fengxianhub.top/resources-master/image-20230730195730941.png)
 
+我们看下面的代码，其实会报错
+
+![image-20230731211057192](https://cdn.fengxianhub.top/resources-master/image-20230731211057192.png)
+
+这个时候我们就可以使用`Rc<T>`这个数据类型了
+
 ```rust
 use std::rc::Rc;
 
@@ -3810,9 +3816,37 @@ fn main() {
    let a = Rc::new(Cons(5, 
         Rc::new(Cons(10,
             Rc::new(Nil) )))); 
-
+	// 这里可以通过clone获得引用，而不是所有权
     let b = Cons(3, Rc::clone(&a)); // 计数器加一
     let c = Cons(3, Rc::clone(&a)); // 计数器加一
+}
+
+
+enum List {
+    Cons(i32, Rc<List>),
+    Nil
+}
+```
+
+使用`Rc::clone(&a)`可以获得不可变的引用，并且引用计数器会加一，等该引用结束（离开其作用域后）计数器将减一
+
+```rust
+use crate::List::{Cons, Nil};
+use std::rc::Rc;
+
+fn main() {
+   let a = Rc::new(Cons(5, 
+        Rc::new(Cons(10,
+            Rc::new(Nil) )))); 
+    println!("count after creating a = {}", Rc::strong_count(&a)); // 1
+	// 这里可以通过clone获得引用，而不是所有权
+    let b = Cons(3, Rc::clone(&a)); // 计数器加一
+    println!("count after creating b = {}", Rc::strong_count(&a)); // 2
+    {
+        let c = Cons(3, Rc::clone(&a)); // 计数器加一
+        println!("count after creating c = {}", Rc::strong_count(&a)); // 3
+    }
+   println!("count after c goes out of scope = {}", Rc::strong_count(&a)); // 2
 }
 
 
@@ -3828,6 +3862,8 @@ enum List {
 >- 类型的clone方法：很多都会深拷贝
 >
 >`Rc<T>`通过**不可变引用**，使你可以在程序不同部分之间共享只读数据
+>
+>`Rc<T>`为了防止悬垂引用，不允许`&`多引用。而Rc里维护了一个引用计数器，会在没有引用时析构。**防止一段内存多次free**
 
 ### 13.7 RefCell\<T>和内部可变性
 
@@ -3844,7 +3880,7 @@ enum List {
 
 >这里我们回忆一下借用规则：
 >
->- 在任何给定的时间里，你要么只能拥有一个可变引用，要么只能拥有任意数量的不可变引用
+>- 在任何给定的时间里，你**要么只能拥有一个可变引用**，要么只能**拥有任意数量的不可变引用**
 >- 引用总是有效的
 
 ![image-20230730202404654](https://cdn.fengxianhub.top/resources-master/image-20230730202404654.png)
@@ -3853,22 +3889,196 @@ enum List {
 
 ![image-20230730203115882](https://cdn.fengxianhub.top/resources-master/image-20230730203115882.png)
 
->内部可变性：可变的借用一个不可变的值 
+>内部可变性：允许可变的借用一个不可变的值 （rust所有权规则是不允许的）
 >
 >如果没有内部可变性，下面的代码就无法修改
 >
 >![image-20230730203421874](https://cdn.fengxianhub.top/resources-master/image-20230730203421874.png)
 
+我们来看一下详细一点的例子
+
+```rust
+/// 这里简单说就是有一个trait规定了只能是对结构体的不可变引用<br/>
+/// 但我们希望实现这个trait的时候能对结构体进行修改<br/>
+/// 就可以把希望修改的字段用智能指针包装一下
+pub trait Messenger {
+    fn send(&self, msg: &str);
+}
+
+pub struct LimitTracker<'a, T: 'a + Messenger> {
+    messenger: &'a T,
+    value: usize,
+    max: usize,
+}
+
+impl <'a, T> LimitTracker<'a, T> 
+where
+    T: Messenger,
+{
+    pub fn new(messenger: &T, max: usize) -> LimitTracker<T> {
+        LimitTracker { messenger, value: 0, max }
+    }
+
+    pub fn set_value(&mut self, value: usize) {
+        self.value = value;
+        let percentage_of_max = self.value as f64 / self.max as f64;
+        if percentage_of_max >= 1.0 {
+            self.messenger.send("Error: You are over your quota!");
+        } else if percentage_of_max >= 0.9 {
+            self.messenger.send("Urgent warning: You've used up over 90% of your");
+        } else if percentage_of_max >= 0.75 {
+            self.messenger.send("Warning: You've used up over 75% of your quota");
+        }
+    }
+}
+
+mod tests {
+    use super::*;
+
+    struct MockMessenger {
+        sent_messages: Vec<String>,
+    }
+
+    impl MockMessenger {
+        fn new() -> MockMessenger {
+            MockMessenger { sent_messages: vec![] }
+        }
+    }
+
+    impl Messenger for MockMessenger {
+        // 2. 确实需要改变实参的状态(需要的是可变引用），但又不能修改接口定义
+        // 3. 这时就可以用不安全的refcell方法，传入不可变引用，以改变值
+        fn send(&mut self, msg: &str) {
+            self.sent_messages.push(String::from(msg));
+        }
+    }
+
+    #[test]
+    fn it_sends_an_over_75_percent_warning_message() {
+        let mock_messager = MockMessenger::new();
+        let mut limit_tracker = LimitTracker::new(&mock_messager, 100);
+        limit_tracker.set_value(80);
+        assert_eq!(mock_messager.sent_messages.len(), 1);
+    }
+}
+```
+
+使用`RefCell<T>`修改后逻辑如下：
+
+```rust
+/// 这里简单说就是有一个trait规定了只能是对结构体的不可变引用<br/>
+/// 但我们希望实现这个trait的时候能对结构体进行修改<br/>
+/// 就可以把希望修改的字段用智能指针包装一下
+pub trait Messenger {
+    fn send(&self, msg: &str);
+}
+
+pub struct LimitTracker<'a, T: 'a + Messenger> {
+    messenger: &'a T,
+    value: usize,
+    max: usize,
+}
+
+impl <'a, T> LimitTracker<'a, T> 
+where
+    T: Messenger,
+{
+    pub fn new(messenger: &T, max: usize) -> LimitTracker<T> {
+        LimitTracker { messenger, value: 0, max }
+    }
+
+    pub fn set_value(&mut self, value: usize) {
+        self.value = value;
+        let percentage_of_max = self.value as f64 / self.max as f64;
+        if percentage_of_max >= 1.0 {
+            self.messenger.send("Error: You are over your quota!");
+        } else if percentage_of_max >= 0.9 {
+            self.messenger.send("Urgent warning: You've used up over 90% of your");
+        } else if percentage_of_max >= 0.75 {
+            self.messenger.send("Warning: You've used up over 75% of your quota");
+        }
+    }
+}
+
+mod tests {
+    use super::*;
+    use std::cell::RefCell;
+    struct MockMessenger {
+        sent_messages: RefCell<Vec<String>>,
+    }
+
+    impl MockMessenger {
+        fn new() -> MockMessenger {
+            MockMessenger { sent_messages: RefCell::new(vec![])}
+        }
+    }
+
+    impl Messenger for MockMessenger {
+        // 2. 确实需要改变实参的状态(需要的是可变引用），但又不能修改接口定义
+        // 3. 这时就可以用不安全的refcell方法，传入不可变引用，以改变值
+        fn send(&self, msg: &str) {
+            self.sent_messages.borrow_mut().push(String::from(msg));
+        }
+    }
+
+    #[test]
+    fn it_sends_an_over_75_percent_warning_message() {
+        let mock_messager = MockMessenger::new();
+        let mut limit_tracker = LimitTracker::new(&mock_messager, 100);
+        limit_tracker.set_value(80);
+        assert_eq!(mock_messager.sent_messages.borrow().len(), 1);
+    }
+}
+```
+
+**我们来看下修改的内容**：
+
+![image-20230801230545879](https://cdn.fengxianhub.top/resources-master/image-20230801230545879.png)
+
+>上面的修改中，我们将不可变的引用套在`RefCell<T>`中
+
 ![image-20230730204716906](https://cdn.fengxianhub.top/resources-master/image-20230730204716906.png)
 
 ![image-20230730204808395](https://cdn.fengxianhub.top/resources-master/image-20230730204808395.png)
+
+### 13.8 使用Rc\<T>和RefCell\<T>结合实现一个拥有多重所有权的可变数据
+
+我们直接看例子
+
+```rust
+use crate::List::{Cons, Nil};
+use std::{rc::Rc, cell::RefCell};
+
+fn main() {
+   let value = Rc::new(RefCell::new(5));
+   let a = Rc::new(Cons(Rc::clone(&value), Rc::new(Nil)));
+   let b = Cons(Rc::new(RefCell::new(6)), Rc::clone(&a));
+   let c = Cons(Rc::new(RefCell::new(10)), Rc::clone(&a));
+
+   *value.borrow_mut() += 10;
+
+   println!("a after = {:?}", a);
+   println!("b after = {:?}", b);
+   println!("c after = {:?}", c);
+}
+
+#[derive(Debug)]
+enum List {
+    Cons(Rc<RefCell<i32>>, Rc<List>),
+    Nil
+}
+```
+
+
+
+ 
 
 **其他可实现内部可变性的类型**
 
 - Cell\<T>：通过复制来访问数据
 - Mutex\<T>：用于实现跨线程情况下的内部可变性模式
 
-### 13.8 循环引用导致内存泄漏
+### 13.9 循环引用导致内存泄漏
 
 当我们使用`Rc<T>`和`Rcell<T>`就可能创造出循环引用，从而发生内存泄漏
 
