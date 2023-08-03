@@ -4069,9 +4069,17 @@ enum List {
 }
 ```
 
+输出
 
-
- 
+```shell
+$ cargo run
+   Compiling refdemo v0.1.0 (E:\workspace\vscode\rustStudy\refdemo)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.36s
+     Running `target\debug\refdemo.exe`
+a after = Cons(RefCell { value: 15 }, Nil)
+b after = Cons(RefCell { value: 6 }, Cons(RefCell { value: 15 }, Nil))
+c after = Cons(RefCell { value: 10 }, Cons(RefCell { value: 15 }, Nil))
+```
 
 **其他可实现内部可变性的类型**
 
