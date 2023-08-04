@@ -4100,22 +4100,78 @@ c after = Cons(RefCell { value: 10 }, Cons(RefCell { value: 15 }, Nil))
 我们来看个例子
 
 ```rust
+use std::{rc::Rc, cell::RefCell};
+use crate::List::{Cons, Nil};
+
+fn main() {
+    let a = Rc::new(Cons(5, RefCell::new(Rc::new(Nil))));
+
+    println!("a initial rc count = {}", Rc::strong_count(&a));
+    println!("a next item = {:?}", a.tail());
+
+    let b = Rc::new(Cons(10, RefCell::new(Rc::clone(&a))));
+
+    println!("a rc count after b creation = {}", Rc::strong_count(&a));
+    println!("b initial rc count = {}", Rc::strong_count(&b));
+    println!("b next item = {:?}", b.tail());
+
+    if let Some(link) = a.tail() {
+        *link.borrow_mut() = Rc::clone(&b);
+    }
+
+    println!("b rc count after changing a = {}", Rc::strong_count(&b));
+    println!("a rc count after changing a = {}", Rc::strong_count(&a));
+
+    // cycle, it will overflow the stack
+    println!("a next item = {:?}", a.tail())
+}
+
+
+#[derive(Debug)]
+enum List {
+    Cons(i32, RefCell<Rc<List>>),
+    Nil
+}
+
+impl List {
+    fn tail(&self) -> Option<&RefCell<Rc<List>>> {
+        match self {
+            Cons(_, item) => Some(item),
+            Nil => None,
+        }
+    }
+}
 ```
 
+我们允许一下
 
+```shell
+$ cargo run
+   Compiling demo03 v0.1.0 (E:\workspace\vscode\rustStudy\demo03)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.23s
+     Running `target\debug\demo03.exe`
+a initial rc count = 1
+a next item = Some(RefCell { value: Nil })
+a rc count after b creation = 2
+b initial rc count = 1
+b next item = Some(RefCell { value: Cons(5, RefCell { value: Nil }) })
+b rc count after changing a = 2
+a rc count after changing a = 2
+a next item = Some(RefCell { value: Cons(10, RefCell ...省略很多
+thread 'main' has overflowed its stack
+error: process didn't exit successfully: `target\debug\demo03.exe` (exit code: 0xc00000fd, STATUS_STACK_OVERFLOW)
+```
 
-为了防止循环引用可以将`Rc<T>`换成`Weak<T>`
-
-- `Rc::clone`为`Rc<T>`实例的`strong_count`加1，`Rc<T>`的实例只有在`strong_count`为0的时候才会被清理
-- `Rc<T>`实例通过调用`Rc::downgrade`方法可以创建值的`Weak Reference (弱引用)`
-  - 返回的类型是`Weak<T> (智能指针)`
-  - 调用`Rc::downgrade会为weak_count`加1
-  - `Rc<T>`使用`weak_count`来追踪存在多少`Weak<T>`
-  - `weak_count`不为0并不影响`Rc<T>`实例的清理
+>为了防止循环引用可以将`Rc<T>`换成`Weak<T>`
+>
+>- `Rc::clone`为`Rc<T>`实例的`strong_count`加1，`Rc<T>`的实例只有在`strong_count`为0的时候才会被清理
+>- `Rc<T>`实例通过调用`Rc::downgrade`方法可以创建值的`Weak Reference (弱引用)`
+>  - 返回的类型是`Weak<T> (智能指针)`
+>  - 调用`Rc::downgrade会为weak_count`加1
+>  - `Rc<T>`使用`weak_count`来追踪存在多少`Weak<T>`
+>  - `weak_count`不为0并不影响`Rc<T>`实例的清理
 
 ![image-20230730212235562](https://cdn.fengxianhub.top/resources-master/image-20230730212235562.png)
-
-
 
 ### 13.9 小结
 
@@ -4129,6 +4185,443 @@ c after = Cons(RefCell { value: 10 }, Cons(RefCell { value: 15 }, Nil))
 
 - 内部可变模式（interior mutability pattern）：不可变类型暴露出可修改其内布值的API
 - 引用循环（reference cycles）：它们如何泄露内层，以及如何防止其发生
+
+## 14. 无畏并发
+
+在大部分OS里，代码允许在`进程(process)`中，OS同时管理多个进程。在我们的程序中，各独立部分可以同时运行，运行这些独立部分的就是线程`Thread`
+
+多线程运行一般：
+
+- 提高性能
+- 增加复杂性，无法保障各线程的执行顺序
+
+多线程会带来一些问题：
+
+- 竞争状态，线程以不一致的顺序访问数据或资源
+- 死锁
+- 线程可见性带来的bug
+
+在常见的实现线程的方式有：
+
+- 通过调用OS的API来创建线程：`1:1模型`，需要比较小的运行时
+- 语言自己实现的线程（绿色线程）：`M:N模型`，需要更大的运行时
+
+>rust为了权衡运行时的支持，标准库仅提供`1:1`模型的线程
+
+### 14.1 创建多线程
+
+在rust中可以通过`spawn`创建新线程
+
+```rust
+use std::{thread, time::Duration};
+
+fn main() {
+    thread::spawn(|| {
+        for i in 1..10 {
+            println!("hi number {} from the spawned thread!", i);
+            thread::sleep(Duration::from_millis(1));
+        }
+    });
+
+    for i in 1..5 {
+        println!("hi number {} from the main thread!", i);
+        thread::sleep(Duration::from_millis(1));
+    }
+}
+```
+
+我们运行一下
+
+```shell
+$ cargo run
+   Compiling threadStudy v0.1.0 (E:\workspace\vscode\rustStudy\threadStudy)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.47s
+     Running `target\debug\threadStudy.exe`
+hi number 1 from the main thread!
+hi number 1 from the spawned thread!
+hi number 2 from the spawned thread!
+hi number 2 from the main thread!
+hi number 3 from the main thread!
+hi number 3 from the spawned thread!
+hi number 4 from the main thread!
+hi number 4 from the spawned thread!
+```
+
+当然也可以`join`一下，通过`join Handle`来等待所有线程的完成
+
+- `thread::spawn`函数的返回值类型是  **JoinHandle**
+- JoinHandle持有值的所有权，调用其join方法，可以等待对应的其他线程完成
+- join方法：调用handle的join方法会组织当前运行线程的执行，直到handle所表示的这些线程终结
+
+```rust
+use std::{thread, time::Duration};
+
+fn main() {
+    let handle = thread::spawn(|| {
+        for i in 1..10 {
+            println!("hi number {} from the spawned thread!", i);
+            thread::sleep(Duration::from_millis(1));
+        }
+    });
+
+    for i in 1..5 {
+        println!("hi number {} from the main thread!", i);
+        thread::sleep(Duration::from_millis(1));
+    }
+
+    handle.join().unwrap();
+}
+```
+
+```shell
+$ cargo run
+   Compiling threadStudy v0.1.0 (E:\workspace\vscode\rustStudy\threadStudy)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.47s
+     Running `target\debug\threadStudy.exe
+hi number 1 from the main thread!
+hi number 1 from the spawned thread!
+hi number 2 from the spawned thread!
+hi number 2 from the main thread!
+hi number 3 from the main thread!
+hi number 3 from the spawned thread!
+hi number 4 from the main thread!
+hi number 4 from the spawned thread!
+hi number 5 from the spawned thread!
+hi number 6 from the spawned thread!
+hi number 7 from the spawned thread!
+hi number 8 from the spawned thread!
+hi number 9 from the spawned thread!
+```
+
+**使用move闭包**
+
+- move闭包通常和`thread::spawn`函数一起使用，它允许你使用其他线程的数据
+- 创建线程时，把值的所有权从一个线程转移到另一个线程
+
+我们看下面的代码
+
+```rust
+mod tests {
+    use std::thread;
+    #[test]
+    fn test01() {
+        let v = vec![1, 2, 3];
+        let handle = thread::spawn(|| {
+            println!("Here's a vector:{:?}", v);
+        });
+
+
+        handle.join().unwrap();
+    }
+}
+```
+
+如果允许会报错，因为在闭包里使用的`v`，不确定什么时候会被回收
+
+```shell
+error[E0373]: closure may outlive the current function, but it borrows `v`, which is owned by the current function
+  --> src\main.rs:25:36
+   |
+25 |         let handle = thread::spawn(|| {
+   |                                    ^^ may outlive borrowed value `v`
+26 |             println!("Here's a vector:{:?}", v);
+   |                                              - `v` is borrowed here
+   |
+note: function requires argument type to outlive `'static`
+  --> src\main.rs:25:22
+   |
+25 |           let handle = thread::spawn(|| {
+   |  ______________________^
+26 | |             println!("Here's a vector:{:?}", v);
+27 | |         });
+   | |__________^
+help: to force the closure to take ownership of `v` (and any other referenced variables), use the `move` keyword
+   |
+25 |         let handle = thread::spawn(move || {
+   |                                    ++++
+```
+
+所以我们可以使用`move`关键字将`v`的所有权移入到闭包里面
+
+```rust
+mod tests {
+    use std::thread;
+    #[test]
+    fn test01() {
+        let v = vec![1, 2, 3];
+        let handle = thread::spawn(move || {
+            println!("Here's a vector:{:?}", v);
+        });
+
+
+        handle.join().unwrap();
+    }
+}
+```
+
+### 14.2 线程通信
+
+线程之间通信的方式有很多种，例如Java中使用共享内存的方式进行通信，比如常见的`ReentrantLock`里面为了记录锁重入次数，使用的`volatile`关键字修饰的共享内存：`state`
+
+现在有一种很流行且能保证安全并发的技术是：`消息传递`
+
+线程（或Actor）通过彼此发送消息（数据）来进行通信
+
+>GO的名言就是：不要用共享内存来通信，要用通信来共享内存
+
+#### 14.2.1 channel
+
+- channel包含：发送端、接收端
+- 调用发送端的方法，发送数据
+- 接受端会检查和接受到达的数据
+- 如果发送端、接收端中任何一端被丢弃了，那么channel就关闭了
+
+创建channel可以使用`mpsc::channel`函数来创建channel
+
+- mpsc表示：multiple producer，single consumer（多个生产者、一个消费者）
+- 返回一个tuple：里面元素分别是发送端、接受端
+
+**举个例子**
+
+```rust
+#[test]
+fn test02() {
+    let (tx, rx) = mpsc::channel();
+    thread::spawn(move || {
+        let val = String::from("hello");
+        tx.send(val).unwrap();
+    });
+    let received = rx.recv().unwrap();
+    println!("Got: {}", received); // Got: hello
+}
+```
+
+>发送端的`send`方法
+>
+>- 参数：想要发送的数据
+>- 返回：Result<T, E>，如果有问题（例如接收端已经被丢弃），就返回一个错误
+>
+>接收端的`recv`方法
+>
+>- `recv`方法：阻塞当前线程执行，直到channel中有值被送来，收到后返回`Result<T, E>`，如有问题返回错误
+>- `try_recv`方法：不会阻塞
+>  - 立刻返回Result<T, E>
+>    - 有数据到达，返回OK，里面包裹着数据
+>    - 否则，返回错误
+>  - 通常会使用循环调用来检查`try_recv`的结果
+
+#### 14.2.2 channel所有权转移
+
+所有权在消息系统中传递时非常重要的，可以帮助我们编写安全、并发的代码
+
+上面的例子中如果我们想要把已经发送到channel里面的值再打印一下的话，就会报错
+
+![image-20230803230148213](https://cdn.fengxianhub.top/resources-master/image-20230803230148213.png)
+
+可以不断的向channel中发送元素，然后进行接收
+
+```rust
+#[test]
+fn test04() {
+    let (tx, rx) = mpsc::channel();
+    thread::spawn(move || {
+        let vals = vec![
+            String::from("hello"),
+            String::from("hello"),
+            String::from("hello"),
+            String::from("hello"),
+        ];
+        for val in vals {
+            tx.send(val).unwrap();
+            thread::sleep(Duration::from_millis(100));
+        }
+    });
+    for received in rx {
+        println!("Got: {}", received)
+    }
+}
+```
+
+#### 14.2.3 多生产者
+
+我们可以使用clone来创建多个生产者
+
+```rust
+#[test]
+fn test05() {
+    let (tx, rx) = mpsc::channel();
+    let txcopy = mpsc::Sender::clone(&tx);
+    thread::spawn(move || {
+        let vals = vec![
+            String::from("sendCopy: hello"),
+            String::from("sendCopy: hello"),
+            String::from("sendCopy: hello"),
+            String::from("sendCopy: hello"),
+        ];
+        for val in vals {
+            txcopy.send(val).unwrap();
+            thread::sleep(Duration::from_millis(100));
+        }
+    });
+    thread::spawn(move || {
+        let vals = vec![
+            String::from("send: hello"),
+            String::from("send: hello"),
+            String::from("send: hello"),
+            String::from("send: hello"),
+        ];
+        for val in vals {
+            tx.send(val).unwrap();
+            thread::sleep(Duration::from_millis(100));
+        }
+    });
+    for received in rx {
+        println!("Got: {}", received)
+    }
+}
+// 输出
+Got: sendCopy: hello
+Got: send: hello    
+Got: send: hello
+Got: sendCopy: hello
+Got: send: hello
+Got: sendCopy: hello
+Got: send: hello
+Got: sendCopy: hello
+```
+
+### 14.3 共享状态的并发
+
+上一节讲的是使用channel的方法进行并发，这里要使用`共享内存`的方式进行并发
+
+channel类似单所有权，一旦将值的所有权转移至`channel`，就无法使用它了
+
+共享内存并发类似多所有权：多个线程可以同时访问同一块内存
+
+#### 14.3.1 Mutex锁
+
+既然有共享内存，那么保障线程安全的方式最简单的就是加锁，rust提供了`Mutex`
+
+Mutex是mutual exclusion（互斥锁）的简写
+
+- 在同一时刻，Mutex只允许一个线程来访问某些数据
+- 想要访问数据
+  - 线程必须先获取互斥锁（lock）：lock数据结构是mutex的一部分，它能跟踪谁对数据拥有独占访问权
+  - mutex通常被描述为：通过锁定系统来保护它所持有的数据
+
+>Mutex的两条规则
+>
+>- 在使用数据之前，必须尝试获取锁（lock）
+>- 使用完mutex所保护的数据，必须对数据进行解锁，以便其他线程可以获取锁
+
+Mutex\<T>常用的API：
+
+- 通过Mutex::new(数据)来创建Mutex\<T>，Mutex\<T>是一个智能指针
+- 访问数据前，通过lock方法来获取锁
+  - 会阻塞当前线程
+  - lock可能会失败
+  - 返回的是MutexGuard（智能指针，实现了Deref和Drop）
+
+举个例子
+
+```rust
+#[test]
+fn test06() {
+    let m = Mutex::new(5);
+    {
+        let mut num = m.lock().unwrap();
+        *num = 6;
+        // mutex 实现了drop trait，所以作用域完之后会自动解锁
+    }
+}
+```
+
+我们再看一段代码
+
+![image-20230803232708439](https://cdn.fengxianhub.top/resources-master/image-20230803232708439.png)
+
+这里因为`counter`在第一次循环的时候所有权已经被移动过了，所以后面的线程获取不到所有权
+
+这里我们要用到**多线程的多重所有权**这个概念了
+
+上面的例子我们可以使用`Arc<T>`来进行原子引用计数，跟Rc不同的是可以用于并发场景
+
+- A：atomic，原子的
+
+```rust
+#[test]
+fn test07() {
+    let counter = Arc::new( Mutex::new(0));
+    let mut handles = vec![];
+    for _ in 0..10 {
+        let counter = Arc::clone(&counter);
+        let handle = thread::spawn(move || {
+            let mut num = counter.lock().unwrap();
+            *num += 1;
+        });
+        handles.push(handle);
+    }
+    for handle in handles {
+        handle.join().unwrap();
+    }
+    println!("Result: {}", *counter.lock().unwrap()); // 10
+}
+```
+
+>RefCell\<T> / Rc\<T>  VS  Mutex\<T> / Arc\<T>
+>
+>- Mutex\<T>提供了内部可变性，和Cell家族一样
+>- 我们使用RecCell \<T>来改变Rc\<T>里面的内容
+>- 我们使用Mutex\<T>来改变Arc\<T>里面的内容
+>- 注意：Mutex\<T>有死锁的风险
+
+### 13.4 通过Send/Sync trait来拓展并发
+
+rust语言的并发特性是比较少的，目前的并发都是来自标准库的（而不是语言本身）
+
+我们无需局限于标准库的并发 ，可以自己实现并发
+
+在rust中有两个并发的概念：
+
+- `std::marker:Sync`和`std::marker::Send`这两个trait
+
+>**Send是一个Trait**
+>
+>- Send trait：允许线程间转移所有权，Rust里几乎所有的类型都实现了Send（Rc\<T>没有实现，只能用于单线程的场景）
+>- 任何完全由Send类型组成的类型也被标记为Send
+>- 除了原始指针之外，几乎所有的基础类型都是Send
+>
+>**Sync：允许从多线程访问**
+>
+>- 实现Sync的类型可以安全的被多个线程引用
+>- 也就是说：如果T是Sync，那么&T也是Send（引用可以被安全的送往另一个线程）
+>- 基础类型都是Sync
+>- 完全有Sync类型组成的类型也是Sync
+>  - 但是，Rc\<T>不是Sync的
+>  - RefCell\<T>和Cell\<T>家族也不是Sync的
+>  - Mutex\<T>是Sync的
+>
+>最后📢注意：如果我们自己手动实现Send和Sync是及其不安全的，我们很难保证线程安全！
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
