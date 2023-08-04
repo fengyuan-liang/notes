@@ -6,6 +6,7 @@
 >
 >- rust程序设计语言：https://rust.bootcss.com/title-page.html
 >- rust权威指南：https://kaisery.github.io/trpl-zh-cn/foreword.html
+>- rust语言圣经：https://course.rs/about-book.html
 
 ![rust-analyzer 成为 Rust 官方项目 - 知乎](https://cdn.fengxianhub.top/resources-master/v2-04b522fa2e503a42ec48155fd70e6927_720w.jpg)
 
@@ -1444,7 +1445,7 @@ $  tree
 
 - `src/main.rs`
   - 是`binary crate`的`crate root`
-  - crate名宇package名相同
+  - crate名字与package名相同
 - `src/lib.rs`
   - package包含一个`library crate`
   - 这个文件也就是library crate的crate root
