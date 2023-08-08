@@ -124,3 +124,108 @@ func main() {
 
 
 
+## 3. context
+
+在golang里面context的定义如下
+
+```go
+type Context interface {
+    Deadline(deadline time.Time, ok bool)
+    Done() <- chan struct{}
+    Err() error
+    Value(key any) any
+}
+```
+
+首先全三个是一起的
+
+- Deadline：记录超时时间
+- Done()：返回一个**只读管道**
+- Err()：返回管道关闭的错误信息
+
+当我们把context当作一个map使用的时候，可以使用第四个参数取出map里面的值，并且值都是`any`类型
+
+在golang里面有默认的实现
+
+```go
+type emptyCtx int
+
+func (*emptyCtx) Deadline() (deadline time.Time, ok bool) {
+	return
+}
+
+func (*emptyCtx) Done() <-chan struct{} {
+	return nil
+}
+
+func (*emptyCtx) Err() error {
+	return nil
+}
+
+func (*emptyCtx) Value(key any) any {
+	return nil
+}
+```
+
+emptyCtx以小写开头，包外不可见，所以golang又提供了Background和TODO这2个函数让我们能获取到emptyCtx 
+
+```go
+var (
+        background = new(emptyCtx)
+        todo       = new(emptyCtx)
+)
+func Background() Context {
+        return background
+}
+func TODO() Context {
+        return todo
+}
+```
+
+context的作用主要有：
+
+![image-20230808210104526](https://cdn.fengxianhub.top/resources-master/image-20230808210104526.png)
+
+### 3.1 传递参数
+
+```go
+func Test01(t *testing.T) {
+	ctx := context.Background()
+	childCtx := context.WithValue(ctx, "k1", "v1")
+	t.Logf("%v", childCtx.Value("k1")) // v1
+}
+```
+
+### 3.2 超时
+
+```go
+func Test01(t *testing.T) {
+	t1 := time.Now()
+	ctx, cancel := context.WithTimeout(context.TODO(), time.Millisecond*100)
+	defer cancel()
+	select {
+	case <-ctx.Done():
+		t.Logf("Time consumption:%v\n", time.Now().Sub(t1).Milliseconds()) // Time consumption:100
+		t.Logf("%v\n", ctx.Err())                                          // context deadline exceeded
+	}
+}
+```
+
+如果父子ctx都有超时时间，并且父短子长，父接受后子也会结束
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
