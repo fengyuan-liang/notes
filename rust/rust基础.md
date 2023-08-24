@@ -1363,6 +1363,24 @@ fn main() {
 - 放弃了穷举的可能
 - 我们可以把`if let`当做是`match`的语法糖
 
+#### 5.4.3 while let
+
+一个与 `if let` 结构类似的是 `while let` 条件循环，它允许只要模式匹配就一直进行 `while` 循环。下面是展示了一个使用 `while let` 的例子，它使用 vector 作为栈并以先进后出的方式打印出 vector 中的值：
+
+```rust
+let mut stack = Vec::new();
+
+stack.push(1);
+stack.push(2);
+stack.push(3);
+
+while let Some(top) = stack.pop() {
+    println!("{}", top);
+}
+```
+
+这个例子会打印出 3、2 接着是 1。`pop` 方法取出 vector 的最后一个元素并返回 `Some(value)`。如果 vector 是空的，它返回 `None`。`while` 循环只要 `pop` 返回 `Some` 就会一直运行其块中的代码。一旦其返回 `None`，`while` 循环停止。我们可以使用 `while let` 来弹出栈中的每一个元素
+
 ### 5.5 匹配Option\<T>
 
 ```rust
@@ -2516,7 +2534,7 @@ impl Summary for NewsArticle {
 }
 ```
 
-#### 9.2.4 trait的默认实现
+#### 9.2.4 trait的实现
 
 这里一共有两种情况
 
@@ -3382,29 +3400,2659 @@ fn iterator_sum() {
 }
 ```
 
+#### 11.3.3 创建自定义迭代器
+
+我们自定义一个迭代器并且实现`next`方法
+
+```rust
+struct Counter {
+    count: u32,
+}
+
+impl Counter {
+    fn new() -> Counter {
+        Counter { count: 0 }
+    }
+}
+
+impl Iterator for Counter {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.count < 5 {
+            self.count += 1;
+            Some(self.count)
+        } else {
+            None
+        }
+    }
+}
+
+#[test]
+fn calling_next_directly() {
+    let mut counter = Counter::new();
+
+    assert_eq!(counter.next(), Some(1));
+    assert_eq!(counter.next(), Some(2));
+    assert_eq!(counter.next(), Some(3));
+    assert_eq!(counter.next(), Some(4));
+    assert_eq!(counter.next(), Some(5));
+    assert_eq!(counter.next(), None);
+}
+
+#[test]
+fn using_other_iterator_trait_methods() {
+    let sum: u32 = Counter::new()
+        .zip(Counter::new().skip(1))
+        .map(|(a, b)| a * b)
+        // 2、6、12、20
+        .filter(|x| x % 3 == 0)
+        // 6、12
+        .sum();
+    assert_eq!(18, sum);
+}
+
+```
+
+#### 11.3.4 循环&迭代器性能对比
+
+迭代器其实在底层编译之后会编程for循环的形式，我们将其称之为`零开销抽象(Zero-Cost Abstraction)`，即使用抽象时不会引入额外的运行时开销
+
+## 12. cargo、crates.io
+
+在这里我们主要学习：
+
+- 通过`release profile`来自定义构建
+- 在`https://crates.io`上发布库
+- 通过`workspaces`组织大工程
+- 从`https://crates.io/`来安装库
+- 使用自定义命令扩展`cargo`
+
+### 12.1 通过release profile自定义构建
+
+release profile：
+
+- 是预定义的
+- 可自定义，可使用不同的配置，对代码编译拥有更多的控制
+
+每个`profile`的配置都独立于其他的`profile`
+
+>Cargo主要的两个profile：
+>
+>- dev profile：适用于开发，`cargo build`
+>- release profile：适用于发布，`cargo build --release`
+
+那么如何自定义profile呢？
+
+- 针对每个profile，Cargo都提供了默认的配置
+- 如果想自定义`xxx profile`的配置，可以在`Cargo.toml`里添加`[profile.xxxx]`区域，在里面覆盖默认配置的子集
+
+![image-20230730130956144](https://cdn.fengxianhub.top/resources-master/image-20230730130956144.png)
+
+>更多的命令可以在这里看到：https://doc.rust-lang.org/stable/cargo/
+
+### 12.2 发布crate到crates.io
+
+#### 12.2.1 文档注释
+
+我们先了解一下rust的文档注释
+
+使用`///`进行注释，举个例子
+
+![image-20230730131535544](https://cdn.fengxianhub.top/resources-master/image-20230730131535544.png)
+
+我们可以使用`cargo doc`命令生成文档，它会运行`rustdoc`工具（rust安装包会自带）
+
+```shell
+$ cargo doc --open
+ Documenting rustDemo01 v0.1.0 (E:\workspace\vscode\rustStudy\rustDemo01)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.29s
+     Opening E:\workspace\vscode\rustStudy\rustDemo01\target\doc\rustDemo01\index.html
+```
+
+![image-20230730134413907](https://cdn.fengxianhub.top/resources-master/image-20230730134413907.png)
+
+上面的例子中`# Examples`表示的是章节，还有几个其他的常用章节：
+
+- Panics：函数可能发生`panic`的场景
+- Errors：如果函数返回`Result`，描述可能的错误种类，以及可导致错误的条件
+- Safety：如果函数处于`unsafe`调用，就应该解释函数`unsafe`的原因，以及调用者确保的使用前提
+
+>文档注释作为测试：
+>
+>示例代码块的附加值：
+>
+>- 运行`cargo test`：将把文档注释中的示例代码作为测试来运行
+>
+>再上面的例子中我们就写过一个`Example`，当我们`cargo test`的时候就会执行里面的测试的代码
+>
+>![image-20230730133624560](https://cdn.fengxianhub.top/resources-master/image-20230730133624560.png)
+
+#### 12.2.2 为包含注释的项添加文档注释
+
+使用符号`//!`来对crate进行描述注释（注意这种注释只能出现在最前面）
+
+![image-20230730134950905](https://cdn.fengxianhub.top/resources-master/image-20230730134950905.png)
+
+我们再生成文档
+
+![image-20230730134935356](https://cdn.fengxianhub.top/resources-master/image-20230730134935356.png)
+
+#### 12.2.3 pub use简化路径
+
+我们来看下下面的注释生成的文档
+
+![image-20230730135544661](https://cdn.fengxianhub.top/resources-master/image-20230730135544661.png)
+
+![image-20230730135620984](https://cdn.fengxianhub.top/resources-master/image-20230730135620984.png)
+
+这个时候我们就可以使用`pub use`将文档导出到首页（其实就是简化了路径）
+
+![image-20230730135811687](https://cdn.fengxianhub.top/resources-master/image-20230730135811687.png)
+
+![image-20230730135909714](https://cdn.fengxianhub.top/resources-master/image-20230730135909714.png)
+
+#### 12.2.4 创建并设置Crates.io账号
+
+发布crate前，需要先在`crates.io`创建账号并获得`API token`
+
+![image-20230730142530353](https://cdn.fengxianhub.top/resources-master/image-20230730142530353.png)
+
+运行命令`cargo login [你的API token]`，这个命令会通知`cargo`，将你的API token 存储在本地`~/.cargo/credientials.toml`上
+
+在发布`crate`之前，需要在`cargo.toml`的`[package]`区域为`crate`添加一些元数据
+
+- crate需要唯一的名称：name
+- description：一两句话即可，会出现在crate搜索的结果里
+- license：需提供许可证标识值（可到`http://spdx.org/licenses/`查找），可以使用`OR`指定多个
+- version
+- author
+
+使用`cargo publish`命令发布
+
+>注意：crate一旦发布，就是永久性的，该版本无法覆盖，代码也无法删除（为了让依赖该版本的项目可以继续正常工作）
+>
+>可以使用`cargo yank --vers 1.0.1`命令标记当前版本不可使用（之前依赖的还可以继续使用，但是新创建的依赖就不能依赖了），可以使用`cargo yank --vers 1.0.1 --undo`命令取消撤回
+
+#### 12.2.5 cargo工作空间（Workspace）
+
+创建工作空间的方式有很多种，我们来举个创建一个二进制crate，两个库crate的例子
+
+![image-20230730144705653](https://cdn.fengxianhub.top/resources-master/image-20230730144705653.png)
+
+![image-20230730144648131](https://cdn.fengxianhub.top/resources-master/image-20230730144648131.png)
+
+#### 12.2.6 cargo install
+
+我们可以使用`cargo install`来安装在`cargo.io`上的`binary crate`并且进行执行，并且可以添加到我们的环境变量中
+
+## 13. 智能指针
+
+智能指针是这样一些数据结构：
+
+- 行为和指针相似
+- 有额外的元数据和功能
+
+### 13.1 引用计数智能指针
+
+引用计数（reference counting）智能指针类型
+
+- 通过记录所有者的数量，使一份数据被多个所有者同时持有
+- 并在没有任何所有者时自动清理数据
+
+>引用和智能指针的其他不同
+>
+>- 引用：只借用数据
+>- 智能指针：很多时候拥有它所指向的数据
+
+智能指针的例子：
+
+- String和`Vec<T>`
+- 都拥有一片内存区域，且运行用户对其操作
+- 用于元数据（例如容量等）
+- 提供额外的功能或保障（String保障其数据是合法的`UTF-8`编码）
+
+### 13.2 智能指针的实现
+
+智能指针通常使用`struct`实现，并且实现了`Deref`和`Drop`这两个`trait`
+
+- Deref trait：允许智能指针struct的实例像引用一样使用
+- Drop trait：允许你自定义当智能指针实例走出作用域时的代码
+
+### 13.3 使用Box\<T>来执行Heap上的数据
+
+Box\<T>是最简单的智能指针：
+
+- 允许你在heap上存储数据（而不是stack）
+- stack上是指向heap数据的指针
+- 没有性能开销，但是也没有其他额外的功能
+
+**Box\<T>的常用场景**：
+
+- 在编译时，某类型的大小无法确定。但使用该类型时，上下文却需要知道它的确切大小
+- 当你有大量数据，想移交所有权，但需要确保在操作时数据不会被复制
+
+举个例子
+
+```rust
+fn main() {
+    // 使用box在堆上分配内存
+    let b = Box::new(5);
+    println!("b = {}", b)
+} // b的生命周期在作用域结束后也会结束，在堆上的空间会被释放掉
+```
+
+使用Box\<T>赋能递归类型
+
+- 在编译时，Rust需要知道一个类型所占空间的大小
+- 而递归类型的大小无法在编译时确定
+- 但Box类型的大小是确定的，在递归类型中使用Box就可以解决上述问题（例如`Cons list`）
+
+**关于Cons list**
+
+- Cons List是来自`lisp`语言的一种数据结构
+- Cons List里每个成员由两个元素组成
+  - 当前项的值
+  - 下一个元素
+- Cons List里最后一个成员只包含一个`Nil`值，没有下一个元素
+
+**举个例子**
+
+![image-20230730152640632](https://cdn.fengxianhub.top/resources-master/image-20230730152640632.png)
+
+那我们用Box优化一下
+
+![image-20230730152907919](https://cdn.fengxianhub.top/resources-master/image-20230730152907919.png)
+
+### 13.4 Deref Trait
+
+实现`Deref Trait`使我们可以自定义解引用运算符`*`的行为，通过实现`Deref Trait`，智能指针可以像常`规引用一样来处理`
+
+```rust
+fn main() {
+    let x = 5;
+    let y = &x;
+    assert_eq!(5, x);
+    assert_eq!(5, *y);
+} 
+```
+
+```rust
+fn main() {
+    let x = 5;
+    let y = Box::new(x);
+    assert_eq!(5, x);
+    assert_eq!(5, *y);
+} 
+```
+
+**定义自己的智能指针**
+
+Box\<T>被定义成拥有一个元素的`tuple struct`，我们现在定义一个`MyBox<T>`，也是拥有一个元素的`tuple struct`
+
+标准库中的`Deref trait`要求我们实现一个`deref`方法：
+
+- 该方法借用`self`
+- 返回一个指向内部数据的引用
+
+```rust
+use std::ops::Deref;
+
+fn main() {
+    let x = 5;
+    let y = MyBox::new(x);
+    assert_eq!(5, x);
+    assert_eq!(5, *y); // 等价于 `*(y.deref())`
+}
+
+struct MyBox<T>(T);
+
+impl <T> MyBox<T> {
+    fn new(x: T) -> MyBox<T> {
+        MyBox(x)
+    }
+}
+
+impl<T> Deref for MyBox<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+```
+
+**函数和方法的隐式解引用转化（Deref Coercion）**
+
+- 隐式解引用转化（Deref Coercion）是为函数和方法提供的一种便捷特性
+- 假设`T`实现了`Deref trait`，`Deref Coercion`可以把`T`的引用转化为`T`经过`Deref`操作后生成的引用
+- 当把某类型的引用传递给函数或方法时，但它的类型和定义的参数类型不匹配
+  - `Deref Coercion`就会自动发生
+  - 编译器会对`deref`进行一系列调用，来把它转为所需的参数类型
+  - 在编译时就以及完成了，没有额外的性能开销
+
+**解引用与可变性**
+
+- 可使用`DerefMut trait`重载可变引用的`*`运算符
+- 在类型和trait在下列三种情况发生时，Rust会执行`deref coercion`：
+  - 当`T:Deref<Target=U>`，允许`&T`转换为`&U`
+  - 当`T:DerefMut<Target=U>`，允许`&mut T`转换为`&mut U`
+  - 当`T:Deref<Target=U>`，允许`&mut T`转换为`&mut U`
+
+### 13.5 Drop Trait
+
+实现Drop Trait，可以让我们自定义**当值将要离开作用域时发生的动作**
+
+- 例如：文件、网络资源释放等
+- 任何类型都可以实现`Drop trait`
+
+Drop trait只要求你实现drop方法
+
+- 参数：对self的可变引用
+- Drop trait在预导入模块中（prelude）
+
+我们看个例子：
+
+```rust
+fn main() {
+   let c = CustomSmartPointer {data: String::from("my stuff") };
+   let d = CustomSmartPointer {data: String::from("other stuff")};
+
+   println!("CustomSmartPointers created.")
+}
 
 
+struct CustomSmartPointer {
+    data: String
+}
+
+impl Drop for CustomSmartPointer {
+    fn drop(&mut self) {
+        println!("Dropping CustomSmartPointer with data `{}`!", self.data)
+    }
+}
+```
+
+我们看下输出
+
+```shell
+$ cargo run
+    Finished dev [unoptimized + debuginfo] target(s) in 0.29s
+     Running `target\debug\rustDemo01.exe`
+CustomSmartPointers created.
+Dropping CustomSmartPointer with data `other stuff`!
+Dropping CustomSmartPointer with data `my stuff`!
+```
+
+我们发现刚好与输入的顺序相反，是**后进先出**，这里可以结合之前的生命周期就明白为啥了，我能保持和self一样长的寿命，但是self是后出，所以我比self先出，self都没了,我的寿命也早就没了
+
+**使用std::mem::drop来提前drop值**
+
+- 很难直接禁用自动的`drop`功能，也没必要，因为`Drop trait`的目的就是进行自动的释放处理逻辑
+- Rust不允许手动调用`Drop trait`的`drop`方法
+- 但可以调用标准库的`std::mem::drop`函数，来提前`drop`值
+- `drop`即使写了多次也不会出现`double free`的情况
+
+我们在上面的例子中试下：
+
+![image-20230730194642316](https://cdn.fengxianhub.top/resources-master/image-20230730194642316.png)
+
+```shell
+$ cargo run
+    Finished dev [unoptimized + debuginfo] target(s) in 0.29s
+     Running `target\debug\rustDemo01.exe`
+Dropping CustomSmartPointer with data `my stuff`!
+CustomSmartPointers created.
+Dropping CustomSmartPointer with data `other stuff`!
+```
+
+### 13.6 Rc\<T>引用计数智能指针
+
+有时一个值会有多个所有者，例如下面的`6`就有多个变量同时引用它
+
+![image-20230730220635460](https://cdn.fengxianhub.top/resources-master/image-20230730220635460.png)
+
+为了支持多重所有权可以使用`Rc<T>`（reference couting引用计数），即可以追踪所有到值的引用，如果是`0`个引用，该值可能被清理掉
+
+> **Rc\<T>的使用场景**：
+>
+>- 需要在heap上分配数据，这些数据被程序的多个部分读取（只读），但在编译时无法确定哪个部分最后使用完这些数据
+>-  Rc\<T>只适合单线程的场景（14章会研究多线程的场景）
+
+我们用一个例子来使用一下
+
+![image-20230730195730941](https://cdn.fengxianhub.top/resources-master/image-20230730195730941.png)
+
+我们看下面的代码，其实会报错
+
+![image-20230731211057192](https://cdn.fengxianhub.top/resources-master/image-20230731211057192.png)
+
+这个时候我们就可以使用`Rc<T>`这个数据类型了
+
+```rust
+use std::rc::Rc;
+
+fn main() {
+   let a = Rc::new(Cons(5, 
+        Rc::new(Cons(10,
+            Rc::new(Nil) )))); 
+	// 这里可以通过clone获得引用，而不是所有权
+    let b = Cons(3, Rc::clone(&a)); // 计数器加一
+    let c = Cons(3, Rc::clone(&a)); // 计数器加一
+}
 
 
+enum List {
+    Cons(i32, Rc<List>),
+    Nil
+}
+```
+
+使用`Rc::clone(&a)`可以获得不可变的引用，并且引用计数器会加一，等该引用结束（离开其作用域后）计数器将减一
+
+```rust
+use crate::List::{Cons, Nil};
+use std::rc::Rc;
+
+fn main() {
+   let a = Rc::new(Cons(5, 
+        Rc::new(Cons(10,
+            Rc::new(Nil) )))); 
+    println!("count after creating a = {}", Rc::strong_count(&a)); // 1
+	// 这里可以通过clone获得引用，而不是所有权
+    let b = Cons(3, Rc::clone(&a)); // 计数器加一
+    println!("count after creating b = {}", Rc::strong_count(&a)); // 2
+    {
+        let c = Cons(3, Rc::clone(&a)); // 计数器加一
+        println!("count after creating c = {}", Rc::strong_count(&a)); // 3
+    }
+   println!("count after c goes out of scope = {}", Rc::strong_count(&a)); // 2
+}
 
 
+enum List {
+    Cons(i32, Rc<List>),
+    Nil
+}
+```
+
+>`Rc::clone()` 与 类型的`clone()` 方法
+>
+>- `Rc::clone()` ：增加引用，不会执行数据的深度拷贝操作
+>- 类型的clone方法：很多都会深拷贝
+>
+>`Rc<T>`通过**不可变引用**，使你可以在程序不同部分之间共享只读数据
+>
+>`Rc<T>`为了防止悬垂引用，不允许`&`多引用。而Rc里维护了一个引用计数器，会在没有引用时析构。**防止一段内存多次free**
+
+### 13.7 RefCell\<T>和内部可变性
+
+内部可变性（interior mutability）
+
+- 内部可变性是Rust的设计模式之一
+- 它允许你在只持有不可变引用的前提下对数据进行修改
+  - 数据结构中使用了`unsafe`代码来绕过Rust正常的可变性和借用规则
+
+**RefCell\<T>**
+
+- 与Rc\<T>不同，RefCell\<T>类型代表了其持有数据的唯一所有权
+- 与`Rc<T>`相似，只能用于`单线程`场景
+
+>这里我们回忆一下借用规则：
+>
+>- 在任何给定的时间里，你**要么只能拥有一个可变引用**，要么只能**拥有任意数量的不可变引用**
+>- 引用总是有效的
+
+![image-20230730202404654](https://cdn.fengxianhub.top/resources-master/image-20230730202404654.png)
+
+![image-20230730202455134](https://cdn.fengxianhub.top/resources-master/image-20230730202455134.png)
+
+![image-20230730203115882](https://cdn.fengxianhub.top/resources-master/image-20230730203115882.png)
+
+>内部可变性：允许可变的借用一个不可变的值 （rust所有权规则是不允许的）
+>
+>如果没有内部可变性，下面的代码就无法修改
+>
+>![image-20230730203421874](https://cdn.fengxianhub.top/resources-master/image-20230730203421874.png)
+
+我们来看一下详细一点的例子
+
+```rust
+/// 这里简单说就是有一个trait规定了只能是对结构体的不可变引用<br/>
+/// 但我们希望实现这个trait的时候能对结构体进行修改<br/>
+/// 就可以把希望修改的字段用智能指针包装一下
+pub trait Messenger {
+    fn send(&self, msg: &str);
+}
+
+pub struct LimitTracker<'a, T: 'a + Messenger> {
+    messenger: &'a T,
+    value: usize,
+    max: usize,
+}
+
+impl <'a, T> LimitTracker<'a, T> 
+where
+    T: Messenger,
+{
+    pub fn new(messenger: &T, max: usize) -> LimitTracker<T> {
+        LimitTracker { messenger, value: 0, max }
+    }
+
+    pub fn set_value(&mut self, value: usize) {
+        self.value = value;
+        let percentage_of_max = self.value as f64 / self.max as f64;
+        if percentage_of_max >= 1.0 {
+            self.messenger.send("Error: You are over your quota!");
+        } else if percentage_of_max >= 0.9 {
+            self.messenger.send("Urgent warning: You've used up over 90% of your");
+        } else if percentage_of_max >= 0.75 {
+            self.messenger.send("Warning: You've used up over 75% of your quota");
+        }
+    }
+}
+
+mod tests {
+    use super::*;
+
+    struct MockMessenger {
+        sent_messages: Vec<String>,
+    }
+
+    impl MockMessenger {
+        fn new() -> MockMessenger {
+            MockMessenger { sent_messages: vec![] }
+        }
+    }
+
+    impl Messenger for MockMessenger {
+        // 2. 确实需要改变实参的状态(需要的是可变引用），但又不能修改接口定义
+        // 3. 这时就可以用不安全的refcell方法，传入不可变引用，以改变值
+        fn send(&mut self, msg: &str) {
+            self.sent_messages.push(String::from(msg));
+        }
+    }
+
+    #[test]
+    fn it_sends_an_over_75_percent_warning_message() {
+        let mock_messager = MockMessenger::new();
+        let mut limit_tracker = LimitTracker::new(&mock_messager, 100);
+        limit_tracker.set_value(80);
+        assert_eq!(mock_messager.sent_messages.len(), 1);
+    }
+}
+```
+
+使用`RefCell<T>`修改后逻辑如下：
+
+```rust
+/// 这里简单说就是有一个trait规定了只能是对结构体的不可变引用<br/>
+/// 但我们希望实现这个trait的时候能对结构体进行修改<br/>
+/// 就可以把希望修改的字段用智能指针包装一下
+pub trait Messenger {
+    fn send(&self, msg: &str);
+}
+
+pub struct LimitTracker<'a, T: 'a + Messenger> {
+    messenger: &'a T,
+    value: usize,
+    max: usize,
+}
+
+impl <'a, T> LimitTracker<'a, T> 
+where
+    T: Messenger,
+{
+    pub fn new(messenger: &T, max: usize) -> LimitTracker<T> {
+        LimitTracker { messenger, value: 0, max }
+    }
+
+    pub fn set_value(&mut self, value: usize) {
+        self.value = value;
+        let percentage_of_max = self.value as f64 / self.max as f64;
+        if percentage_of_max >= 1.0 {
+            self.messenger.send("Error: You are over your quota!");
+        } else if percentage_of_max >= 0.9 {
+            self.messenger.send("Urgent warning: You've used up over 90% of your");
+        } else if percentage_of_max >= 0.75 {
+            self.messenger.send("Warning: You've used up over 75% of your quota");
+        }
+    }
+}
+
+mod tests {
+    use super::*;
+    use std::cell::RefCell;
+    struct MockMessenger {
+        sent_messages: RefCell<Vec<String>>,
+    }
+
+    impl MockMessenger {
+        fn new() -> MockMessenger {
+            MockMessenger { sent_messages: RefCell::new(vec![])}
+        }
+    }
+
+    impl Messenger for MockMessenger {
+        // 2. 确实需要改变实参的状态(需要的是可变引用），但又不能修改接口定义
+        // 3. 这时就可以用不安全的refcell方法，传入不可变引用，以改变值
+        fn send(&self, msg: &str) {
+            self.sent_messages.borrow_mut().push(String::from(msg));
+        }
+    }
+
+    #[test]
+    fn it_sends_an_over_75_percent_warning_message() {
+        let mock_messager = MockMessenger::new();
+        let mut limit_tracker = LimitTracker::new(&mock_messager, 100);
+        limit_tracker.set_value(80);
+        assert_eq!(mock_messager.sent_messages.borrow().len(), 1);
+    }
+}
+```
+
+**我们来看下修改的内容**：
+
+![image-20230801230545879](https://cdn.fengxianhub.top/resources-master/image-20230801230545879.png)
+
+>上面的修改中，我们将不可变的引用套在`RefCell<T>`中
+
+![image-20230730204716906](https://cdn.fengxianhub.top/resources-master/image-20230730204716906.png)
+
+![image-20230730204808395](https://cdn.fengxianhub.top/resources-master/image-20230730204808395.png)
+
+### 13.8 使用Rc\<T>和RefCell\<T>结合实现一个拥有多重所有权的可变数据
+
+我们直接看例子
+
+```rust
+use crate::List::{Cons, Nil};
+use std::{rc::Rc, cell::RefCell};
+
+fn main() {
+   let value = Rc::new(RefCell::new(5));
+   let a = Rc::new(Cons(Rc::clone(&value), Rc::new(Nil)));
+   let b = Cons(Rc::new(RefCell::new(6)), Rc::clone(&a));
+   let c = Cons(Rc::new(RefCell::new(10)), Rc::clone(&a));
+
+   *value.borrow_mut() += 10;
+
+   println!("a after = {:?}", a);
+   println!("b after = {:?}", b);
+   println!("c after = {:?}", c);
+}
+
+#[derive(Debug)]
+enum List {
+    Cons(Rc<RefCell<i32>>, Rc<List>),
+    Nil
+}
+```
+
+输出
+
+```shell
+$ cargo run
+   Compiling refdemo v0.1.0 (E:\workspace\vscode\rustStudy\refdemo)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.36s
+     Running `target\debug\refdemo.exe`
+a after = Cons(RefCell { value: 15 }, Nil)
+b after = Cons(RefCell { value: 6 }, Cons(RefCell { value: 15 }, Nil))
+c after = Cons(RefCell { value: 10 }, Cons(RefCell { value: 15 }, Nil))
+```
+
+**其他可实现内部可变性的类型**
+
+- Cell\<T>：通过复制来访问数据
+- Mutex\<T>：用于实现跨线程情况下的内部可变性模式
+
+### 13.9 循环引用导致内存泄漏
+
+当我们使用`Rc<T>`和`Rcell<T>`就可能创造出循环引用，从而发生内存泄漏
+
+那么如何防止内存泄漏呢
+
+- 依靠开发者来保障
+- 重新组织数据结构，一些引用来表达所有权，一些引用不表达所有权
+  - 循环引用中的一部分具有所有权关系，另一部分不涉及所有权关系
+  - 而只有所有权关系才影响值的清理
+
+我们来看个例子
+
+```rust
+use std::{rc::Rc, cell::RefCell};
+use crate::List::{Cons, Nil};
+
+fn main() {
+    let a = Rc::new(Cons(5, RefCell::new(Rc::new(Nil))));
+
+    println!("a initial rc count = {}", Rc::strong_count(&a));
+    println!("a next item = {:?}", a.tail());
+
+    let b = Rc::new(Cons(10, RefCell::new(Rc::clone(&a))));
+
+    println!("a rc count after b creation = {}", Rc::strong_count(&a));
+    println!("b initial rc count = {}", Rc::strong_count(&b));
+    println!("b next item = {:?}", b.tail());
+
+    if let Some(link) = a.tail() {
+        *link.borrow_mut() = Rc::clone(&b);
+    }
+
+    println!("b rc count after changing a = {}", Rc::strong_count(&b));
+    println!("a rc count after changing a = {}", Rc::strong_count(&a));
+
+    // cycle, it will overflow the stack
+    println!("a next item = {:?}", a.tail())
+}
 
 
+#[derive(Debug)]
+enum List {
+    Cons(i32, RefCell<Rc<List>>),
+    Nil
+}
+
+impl List {
+    fn tail(&self) -> Option<&RefCell<Rc<List>>> {
+        match self {
+            Cons(_, item) => Some(item),
+            Nil => None,
+        }
+    }
+}
+```
+
+我们允许一下
+
+```shell
+$ cargo run
+   Compiling demo03 v0.1.0 (E:\workspace\vscode\rustStudy\demo03)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.23s
+     Running `target\debug\demo03.exe`
+a initial rc count = 1
+a next item = Some(RefCell { value: Nil })
+a rc count after b creation = 2
+b initial rc count = 1
+b next item = Some(RefCell { value: Cons(5, RefCell { value: Nil }) })
+b rc count after changing a = 2
+a rc count after changing a = 2
+a next item = Some(RefCell { value: Cons(10, RefCell ...省略很多
+thread 'main' has overflowed its stack
+error: process didn't exit successfully: `target\debug\demo03.exe` (exit code: 0xc00000fd, STATUS_STACK_OVERFLOW)
+```
+
+>为了防止循环引用可以将`Rc<T>`换成`Weak<T>`
+>
+>- `Rc::clone`为`Rc<T>`实例的`strong_count`加1，`Rc<T>`的实例只有在`strong_count`为0的时候才会被清理
+>- `Rc<T>`实例通过调用`Rc::downgrade`方法可以创建值的`Weak Reference (弱引用)`
+>  - 返回的类型是`Weak<T> (智能指针)`
+>  - 调用`Rc::downgrade会为weak_count`加1
+>  - `Rc<T>`使用`weak_count`来追踪存在多少`Weak<T>`
+>  - `weak_count`不为0并不影响`Rc<T>`实例的清理
+
+![image-20230730212235562](https://cdn.fengxianhub.top/resources-master/image-20230730212235562.png)
+
+### 13.9 小结
+
+在本章介绍了标准库中常见的智能指针
+
+- `Box<T>`：在heap内存上分配值
+- `Rc<T>`：启用多重所有权的引用计数类型
+- `Ref<T>`和`RefMut<T>`，通过`RefCell<T>`访问：在运行时而不是编译时强制借用规则的类型
+
+此外：
+
+- 内部可变模式（interior mutability pattern）：不可变类型暴露出可修改其内布值的API
+- 引用循环（reference cycles）：它们如何泄露内层，以及如何防止其发生
+
+## 14. 无畏并发
+
+在大部分OS里，代码允许在`进程(process)`中，OS同时管理多个进程。在我们的程序中，各独立部分可以同时运行，运行这些独立部分的就是线程`Thread`
+
+多线程运行一般：
+
+- 提高性能
+- 增加复杂性，无法保障各线程的执行顺序
+
+多线程会带来一些问题：
+
+- 竞争状态，线程以不一致的顺序访问数据或资源
+- 死锁
+- 线程可见性带来的bug
+
+在常见的实现线程的方式有：
+
+- 通过调用OS的API来创建线程：`1:1模型`，需要比较小的运行时
+- 语言自己实现的线程（绿色线程）：`M:N模型`，需要更大的运行时
+
+>rust为了权衡运行时的支持，标准库仅提供`1:1`模型的线程
+
+### 14.1 创建多线程
+
+在rust中可以通过`spawn`创建新线程
+
+```rust
+use std::{thread, time::Duration};
+
+fn main() {
+    thread::spawn(|| {
+        for i in 1..10 {
+            println!("hi number {} from the spawned thread!", i);
+            thread::sleep(Duration::from_millis(1));
+        }
+    });
+
+    for i in 1..5 {
+        println!("hi number {} from the main thread!", i);
+        thread::sleep(Duration::from_millis(1));
+    }
+}
+```
+
+我们运行一下
+
+```shell
+$ cargo run
+   Compiling threadStudy v0.1.0 (E:\workspace\vscode\rustStudy\threadStudy)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.47s
+     Running `target\debug\threadStudy.exe`
+hi number 1 from the main thread!
+hi number 1 from the spawned thread!
+hi number 2 from the spawned thread!
+hi number 2 from the main thread!
+hi number 3 from the main thread!
+hi number 3 from the spawned thread!
+hi number 4 from the main thread!
+hi number 4 from the spawned thread!
+```
+
+当然也可以`join`一下，通过`join Handle`来等待所有线程的完成
+
+- `thread::spawn`函数的返回值类型是  **JoinHandle**
+- JoinHandle持有值的所有权，调用其join方法，可以等待对应的其他线程完成
+- join方法：调用handle的join方法会组织当前运行线程的执行，直到handle所表示的这些线程终结
+
+```rust
+use std::{thread, time::Duration};
+
+fn main() {
+    let handle = thread::spawn(|| {
+        for i in 1..10 {
+            println!("hi number {} from the spawned thread!", i);
+            thread::sleep(Duration::from_millis(1));
+        }
+    });
+
+    for i in 1..5 {
+        println!("hi number {} from the main thread!", i);
+        thread::sleep(Duration::from_millis(1));
+    }
+
+    handle.join().unwrap();
+}
+```
+
+```shell
+$ cargo run
+   Compiling threadStudy v0.1.0 (E:\workspace\vscode\rustStudy\threadStudy)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.47s
+     Running `target\debug\threadStudy.exe
+hi number 1 from the main thread!
+hi number 1 from the spawned thread!
+hi number 2 from the spawned thread!
+hi number 2 from the main thread!
+hi number 3 from the main thread!
+hi number 3 from the spawned thread!
+hi number 4 from the main thread!
+hi number 4 from the spawned thread!
+hi number 5 from the spawned thread!
+hi number 6 from the spawned thread!
+hi number 7 from the spawned thread!
+hi number 8 from the spawned thread!
+hi number 9 from the spawned thread!
+```
+
+**使用move闭包**
+
+- move闭包通常和`thread::spawn`函数一起使用，它允许你使用其他线程的数据
+- 创建线程时，把值的所有权从一个线程转移到另一个线程
+
+我们看下面的代码
+
+```rust
+mod tests {
+    use std::thread;
+    #[test]
+    fn test01() {
+        let v = vec![1, 2, 3];
+        let handle = thread::spawn(|| {
+            println!("Here's a vector:{:?}", v);
+        });
 
 
+        handle.join().unwrap();
+    }
+}
+```
+
+如果允许会报错，因为在闭包里使用的`v`，不确定什么时候会被回收
+
+```shell
+error[E0373]: closure may outlive the current function, but it borrows `v`, which is owned by the current function
+  --> src\main.rs:25:36
+   |
+25 |         let handle = thread::spawn(|| {
+   |                                    ^^ may outlive borrowed value `v`
+26 |             println!("Here's a vector:{:?}", v);
+   |                                              - `v` is borrowed here
+   |
+note: function requires argument type to outlive `'static`
+  --> src\main.rs:25:22
+   |
+25 |           let handle = thread::spawn(|| {
+   |  ______________________^
+26 | |             println!("Here's a vector:{:?}", v);
+27 | |         });
+   | |__________^
+help: to force the closure to take ownership of `v` (and any other referenced variables), use the `move` keyword
+   |
+25 |         let handle = thread::spawn(move || {
+   |                                    ++++
+```
+
+所以我们可以使用`move`关键字将`v`的所有权移入到闭包里面
+
+```rust
+mod tests {
+    use std::thread;
+    #[test]
+    fn test01() {
+        let v = vec![1, 2, 3];
+        let handle = thread::spawn(move || {
+            println!("Here's a vector:{:?}", v);
+        });
 
 
+        handle.join().unwrap();
+    }
+}
+```
+
+### 14.2 线程通信
+
+线程之间通信的方式有很多种，例如Java中使用共享内存的方式进行通信，比如常见的`ReentrantLock`里面为了记录锁重入次数，使用的`volatile`关键字修饰的共享内存：`state`
+
+现在有一种很流行且能保证安全并发的技术是：`消息传递`
+
+线程（或Actor）通过彼此发送消息（数据）来进行通信
+
+>GO的名言就是：不要用共享内存来通信，要用通信来共享内存
+
+#### 14.2.1 channel
+
+- channel包含：发送端、接收端
+- 调用发送端的方法，发送数据
+- 接受端会检查和接受到达的数据
+- 如果发送端、接收端中任何一端被丢弃了，那么channel就关闭了
+
+创建channel可以使用`mpsc::channel`函数来创建channel
+
+- mpsc表示：multiple producer，single consumer（多个生产者、一个消费者）
+- 返回一个tuple：里面元素分别是发送端、接受端
+
+**举个例子**
+
+```rust
+#[test]
+fn test02() {
+    let (tx, rx) = mpsc::channel();
+    thread::spawn(move || {
+        let val = String::from("hello");
+        tx.send(val).unwrap();
+    });
+    let received = rx.recv().unwrap();
+    println!("Got: {}", received); // Got: hello
+}
+```
+
+>发送端的`send`方法
+>
+>- 参数：想要发送的数据
+>- 返回：Result<T, E>，如果有问题（例如接收端已经被丢弃），就返回一个错误
+>
+>接收端的`recv`方法
+>
+>- `recv`方法：阻塞当前线程执行，直到channel中有值被送来，收到后返回`Result<T, E>`，如有问题返回错误
+>- `try_recv`方法：不会阻塞
+>  - 立刻返回Result<T, E>
+>    - 有数据到达，返回OK，里面包裹着数据
+>    - 否则，返回错误
+>  - 通常会使用循环调用来检查`try_recv`的结果
+
+#### 14.2.2 channel所有权转移
+
+所有权在消息系统中传递时非常重要的，可以帮助我们编写安全、并发的代码
+
+上面的例子中如果我们想要把已经发送到channel里面的值再打印一下的话，就会报错
+
+![image-20230803230148213](https://cdn.fengxianhub.top/resources-master/image-20230803230148213.png)
+
+可以不断的向channel中发送元素，然后进行接收
+
+```rust
+#[test]
+fn test04() {
+    let (tx, rx) = mpsc::channel();
+    thread::spawn(move || {
+        let vals = vec![
+            String::from("hello"),
+            String::from("hello"),
+            String::from("hello"),
+            String::from("hello"),
+        ];
+        for val in vals {
+            tx.send(val).unwrap();
+            thread::sleep(Duration::from_millis(100));
+        }
+    });
+    for received in rx {
+        println!("Got: {}", received)
+    }
+}
+```
+
+#### 14.2.3 多生产者
+
+我们可以使用clone来创建多个生产者
+
+```rust
+#[test]
+fn test05() {
+    let (tx, rx) = mpsc::channel();
+    let txcopy = mpsc::Sender::clone(&tx);
+    thread::spawn(move || {
+        let vals = vec![
+            String::from("sendCopy: hello"),
+            String::from("sendCopy: hello"),
+            String::from("sendCopy: hello"),
+            String::from("sendCopy: hello"),
+        ];
+        for val in vals {
+            txcopy.send(val).unwrap();
+            thread::sleep(Duration::from_millis(100));
+        }
+    });
+    thread::spawn(move || {
+        let vals = vec![
+            String::from("send: hello"),
+            String::from("send: hello"),
+            String::from("send: hello"),
+            String::from("send: hello"),
+        ];
+        for val in vals {
+            tx.send(val).unwrap();
+            thread::sleep(Duration::from_millis(100));
+        }
+    });
+    for received in rx {
+        println!("Got: {}", received)
+    }
+}
+// 输出
+Got: sendCopy: hello
+Got: send: hello    
+Got: send: hello
+Got: sendCopy: hello
+Got: send: hello
+Got: sendCopy: hello
+Got: send: hello
+Got: sendCopy: hello
+```
+
+### 14.3 共享状态的并发
+
+上一节讲的是使用channel的方法进行并发，这里要使用`共享内存`的方式进行并发
+
+channel类似单所有权，一旦将值的所有权转移至`channel`，就无法使用它了
+
+共享内存并发类似多所有权：多个线程可以同时访问同一块内存
+
+#### 14.3.1 Mutex锁
+
+既然有共享内存，那么保障线程安全的方式最简单的就是加锁，rust提供了`Mutex`
+
+Mutex是mutual exclusion（互斥锁）的简写
+
+- 在同一时刻，Mutex只允许一个线程来访问某些数据
+- 想要访问数据
+  - 线程必须先获取互斥锁（lock）：lock数据结构是mutex的一部分，它能跟踪谁对数据拥有独占访问权
+  - mutex通常被描述为：通过锁定系统来保护它所持有的数据
+
+>Mutex的两条规则
+>
+>- 在使用数据之前，必须尝试获取锁（lock）
+>- 使用完mutex所保护的数据，必须对数据进行解锁，以便其他线程可以获取锁
+
+Mutex\<T>常用的API：
+
+- 通过Mutex::new(数据)来创建Mutex\<T>，Mutex\<T>是一个智能指针
+- 访问数据前，通过lock方法来获取锁
+  - 会阻塞当前线程
+  - lock可能会失败
+  - 返回的是MutexGuard（智能指针，实现了Deref和Drop）
+
+举个例子
+
+```rust
+#[test]
+fn test06() {
+    let m = Mutex::new(5);
+    {
+        let mut num = m.lock().unwrap();
+        *num = 6;
+        // mutex 实现了drop trait，所以作用域完之后会自动解锁
+    }
+}
+```
+
+我们再看一段代码
+
+![image-20230803232708439](https://cdn.fengxianhub.top/resources-master/image-20230803232708439.png)
+
+这里因为`counter`在第一次循环的时候所有权已经被移动过了，所以后面的线程获取不到所有权
+
+这里我们要用到**多线程的多重所有权**这个概念了
+
+上面的例子我们可以使用`Arc<T>`来进行原子引用计数，跟Rc不同的是可以用于并发场景
+
+- A：atomic，原子的
+
+```rust
+#[test]
+fn test07() {
+    let counter = Arc::new( Mutex::new(0));
+    let mut handles = vec![];
+    for _ in 0..10 {
+        let counter = Arc::clone(&counter);
+        let handle = thread::spawn(move || {
+            let mut num = counter.lock().unwrap();
+            *num += 1;
+        });
+        handles.push(handle);
+    }
+    for handle in handles {
+        handle.join().unwrap();
+    }
+    println!("Result: {}", *counter.lock().unwrap()); // 10
+}
+```
+
+>RefCell\<T> / Rc\<T>  VS  Mutex\<T> / Arc\<T>
+>
+>- Mutex\<T>提供了内部可变性，和Cell家族一样
+>- 我们使用RecCell \<T>来改变Rc\<T>里面的内容
+>- 我们使用Mutex\<T>来改变Arc\<T>里面的内容
+>- 注意：Mutex\<T>有死锁的风险
+
+### 13.4 通过Send/Sync trait来拓展并发
+
+rust语言的并发特性是比较少的，目前的并发都是来自标准库的（而不是语言本身）
+
+我们无需局限于标准库的并发 ，可以自己实现并发
+
+在rust中有两个并发的概念：
+
+- `std::marker:Sync`和`std::marker::Send`这两个trait
+
+>**Send是一个Trait**
+>
+>- `Send trait`：允许线程间转移所有权，Rust里几乎所有的类型都实现了Send（Rc\<T>没有实现，只能用于单线程的场景）
+>- 任何完全由Send类型组成的类型也被标记为Send
+>- 除了原始指针之外，几乎所有的基础类型都是Send
+>
+>**Sync：允许从多线程访问**
+>
+>- 实现Sync的类型可以安全的被多个线程引用
+>- 也就是说：如果T是Sync，那么&T也是Send（引用可以被安全的送往另一个线程）
+>- 基础类型都是Sync
+>- 完全有Sync类型组成的类型也是Sync
+>  - 但是，Rc\<T>不是Sync的
+>  - RefCell\<T>和Cell\<T>家族也不是Sync的
+>  - Mutex\<T>是Sync的
+>
+>最后📢注意：如果我们自己手动实现Send和Sync是及其不安全的，我们很难保证线程安全！
+
+## 15. rust面向对象
+
+### 15.1 面向对象
+
+rust在设计的时候收到很多编程范式的影响，包括面向对象，面向对象通常包含以下特征：封装、继承、多态
+
+《设计模式》作者GOF四人帮中给面向对象的定义：
+
+- 面向对象的程序由对象组成
+- 对象包装了数据和操作这些数据的过程，这些过程通常被称作方法或操作
+
+基于此定义，Rust是面向对象的
+
+- struct、enum包含数据
+- impl块为之提供了方法
+- 但带有方法的struct、enum并没有被称之为对象
+
+我们对面向对象的三个特征进行分析：
+
+- 在rust中用`pub`关键字，并且struct里面的结构体默认就是私有的，所以rust是满足封装的特性的
+- rust没有继承
+  - 代码复用：继承主要是为了进行代码复用，在rust中代码复用使用`trait`来进行代码分享
+  - 多态：泛型和trait约束（限定参数化多态 bounded parametric）
+
+### 15.2 使用trait对象来存储不同类型的值
+
+我们现在有一个需求，创建一个GUI工具：
+
+- 它会遍历某个元素的列表，依次调用元素的draw方法进行绘制
+- 例如：Button、TextField等元素
+
+在面向对象的语言中，做法通常是这样的：
+
+- 定义一个Component父类，里面定义了draw方法
+- 定义Button、TextField等类，继承Component
+
+在Rust中是这样做的，**为公有行为定义一个trait**：
+
+- 在rust中避免将struct或enum称之为对象，因为它们与impl块是分开的
+- 但是trait对象有些类似其他语言中的对象
+  - 它们某种程度上组合了数据和行为
+- trait对象与传统对象不同的地方
+  - 无法为trait对象添加数据
+- trait对象被专门用于抽象某些共有行为，它没其他语言中的对象那么通用
+
+可以用个小例子来理解一下：
+
+```rust
+pub trait Draw {
+    fn draw(&self);
+}
+
+pub struct Screen {
+    // 只要实现了Draw就可以放到里面
+    pub components: Vec<Box<dyn Draw>>
+}
 
 
+impl Screen {
+    pub fn run(&self) {
+        for component in self.components.iter() {
+            component.draw();
+        }
+    }
+}
+
+pub struct Button {
+    pub width: u32,
+    pub height: u32,
+    pub label: String,
+}
+
+impl Draw for Button {
+    fn draw(&self) {
+        // 绘制一个按钮
+        println!("Button draw")
+    }
+}
+
+// --------------------------------------------------------
+
+struct SelectBox {
+    width: u32,
+    height: u32,
+    options: Vec<String>,
+}
+
+impl Draw for SelectBox {
+    fn draw(&self) {
+        // 绘制一个选择框
+        println!("SelectBox draw")
+    }
+}
+
+mod tests {
+    use crate::{Screen, SelectBox, Button};
 
 
+    #[test]
+    fn test01() {
+        let screen = Screen {
+            components: vec![
+                Box::new(SelectBox {
+                    width: 75,
+                    height: 10,
+                    options: vec![
+                        String::from("Yes"),
+                        String::from("Maybe"),
+                        String::from("No"),
+                    ]
+                }),
+                Box::new(Button {
+                    width: 50,
+                    height: 10,
+                    label: String::from("OK"),
+                })
+            ]
+        };
+        screen.run(); // SelectBox draw \n Button draw  
+    }
+}
+```
 
+>Trait对象执行的是动态派发
+>
+>- 将trait约束作用于泛型时，Rust编译器会执行单态化
+>  - 编译器会为我们用来替换泛型类型参数的每一个具体类型生成对应函数和方法的非泛型实现
+>- 通过单态化生成的代码会执行`静态派发（static dispatch）`，在编译过程中确定调用的具体方法
+>- 动态派发
+>  - 无法在编译过程中确定你调用的究竟是哪一种方法
+>  - 编译器会产生额外的代码以便于在运行时找出希望调用的方法
+>
+>我们使用trait对象，会执行动态派发：
+>
+>- 产生运行时开销
+>- 阻止编译器内联方法代码，使得部分优化操作无法进行
+>
+>Trait对象必须保证对象安全
+>
+>- 只能把满足对象安全（object-safe）的trait转化为trait对象
+>- rust采用一系列规则来判定某个对象是否安全，我们只需要记住两条
+>  - 方法的返回类型不是`Self`（如果返回Self，则指实现了该Trait的实例，大小是不确定的）
+>  - 方法中不包含任何泛型类型参数（泛型同理）
+>
+>![image-20230805005111275](https://cdn.fengxianhub.top/resources-master/image-20230805005111275.png)
 
+### 15.3 面向对象设计模式
 
+接下来我们用rust实现一些常见的设计模式
 
+- 状态模式（state pattern）是一种面向对象设计模式
+  - 一个值拥有的内部状态由数个状态对象（state object）表达而成，而值的行为则随着内部状态的改变而改变
+- 使用状态模式意味着：
+  - 在业务需求变化时，不需要修改持有状态的值的代码，或者使用这个值的代码
+  - 只需要更新状态对象内部的代码，以便改变其规则。或者增加一些新的状态对象
 
+## 16. 模式匹配
 
+模式是Rust中的一种特殊语法，用于匹配复杂和简单类型的结构
 
+将模式与匹配表达式和其他构造结合使用，可以更好的控制程序的控制流
+
+模式由以下元素（的一些组合）组成：
+
+- 字面值
+- 解构的数组、enum、struct和tuple
+- 变量
+- 通配符
+- 占位符
+
+想要使用模式，需要将其与某个值进行比较，如果模式匹配，就可以在代码中使用这个值的相应部分
+
+### 16.1 使用模式
+
+模式出现在 Rust 的很多地方。你已经在不经意间使用了很多模式！本部分是一个所有有效模式位置的参考
+
+- match分支
+- if let
+- while let
+- for循环
+  - `for` 循环是 Rust 中最常见的循环结构，不过还没有讲到的是 `for` 可以获取一个模式。在 `for` 循环中，模式是 `for` 关键字直接跟随的值，正如 `for x in y` 中的 `x
+- let语句
+- 函数参数
+
+### 16.2 可辨驳性
+
+这里我们主要`了解模式是否会无法匹配`。模式分为两种：
+
+- refutable（可辨驳的）
+  - 例如：if let *Some(x)* = a_value，这里如果右边为`None`就会匹配失败，也就是可辨驳的，可失败的
+- irrefutable（不可辨驳的）
+  - 例如：let *x* = 5;  x不可能匹配失败，因为x可以匹配任何类型
+
+>函数参数、`let`语句、`for`循环只接受无可辩驳的模式（也就是不能匹配失败）
+>
+>`if let`和`while let`接受**可辨驳**和**无可辩驳**的模式
+
+### 16.3 模式语法
+
+#### 16.3.1 匹配字面值
+
+```rust
+
+#![allow(unused_variables)]
+fn main() {
+let x = 1;
+
+    match x {
+        1 => println!("one"),
+        2 => println!("two"),
+        3 => println!("three"),
+        _ => println!("anything"),
+    }
+}
+```
+
+#### 16.3.2 匹配命名变量
+
+**命名变量是匹配任何值的不可反驳模式**，这在之前已经使用过数次。然而当其用于 `match` 表达式时情况会有些复杂。因为 `match` 会开始一个新作用域，`match` 表达式中作为模式的一部分声明的变量会覆盖 `match` 结构之外的同名变量，与所有变量一样。在示例 18-11 中，声明了一个值为 `Some(5)` 的变量 `x` 和一个值为 `10` 的变量 `y`。接着在值 `x` 上创建了一个 `match` 表达式。观察匹配分支中的模式和结尾的 `println!`，并在运行此代码或进一步阅读之前推断这段代码会打印什么
+
+```rust
+fn main() {
+    let x = Some(5);
+    let y = 10;
+
+    match x {
+        Some(50) => println!("Got 50"),
+        // 这里的y并不是外面的变量，而是一个命名变量，所以输出5
+        Some(y) => println!("Matched, y = {:?}", y),
+        _ => println!("Default case, x = {:?}", x),
+    }
+	// 此作用域下的y是变量y
+    println!("at the end: x = {:?}, y = {:?}", x, y);
+}
+```
+
+最后的输出是
+
+```shell
+Matched, y = 5
+at the end: x = Some(5), y = 10
+```
+
+#### 16.3.3 多重模式
+
+在match表达式中，使用`|`语法（就是或的意思），可以匹配多种模式
+
+```rust
+#![allow(unused_variables)]
+fn main() {
+let x = 1;
+
+    match x {
+        1 | 2 => println!("one or two"),
+        3 => println!("three"),
+        _ => println!("anything"),
+    }
+}
+
+```
+
+**通过 `..=` 匹配值的范围**
+
+`..=` 语法允许你匹配一个闭区间范围内的值。在如下代码中，当模式匹配任何在此范围内的值时，该分支会执行：
+
+```rust
+#![allow(unused_variables)]
+fn main() {
+let x = 5;
+
+    match x {
+        1..=5 => println!("one through five"),
+        _ => println!("something else"),
+    }
+}
+```
+
+范围只允许用于数字或 `char` 值，因为编译器会在编译时检查范围不为空。`char` 和 数字值是 Rust 仅有的可以判断范围是否为空的类型。
+
+```rust
+#![allow(unused_variables)]
+fn main() {
+let x = 'c';
+
+    match x {
+        'a'..='j' => println!("early ASCII letter"),
+        'k'..='z' => println!("late ASCII letter"),
+        _ => println!("something else"),
+    }
+}
+// Rust 知道 c 位于第一个模式的范围内，并会打印出 early ASCII letter。
+```
+
+**解构结构体**
+
+```rust
+#[test]
+fn test03() {
+    struct Point {
+        x: u32,
+        y: u32,
+    }
+    let p = Point { x: 0, y: 7 };
+    // 解构结构体，这样相当于对变量a、b进行赋值
+    let Point { x: a, y: b } = p;
+    assert_eq!(0, a);
+    assert_eq!(7, b);
+    // 上面的写法有些麻烦，可以简写为
+    let Point { x, y} = p;
+    assert_eq!(0, x);
+    assert_eq!(7, y);
+    // 也可以更加灵活的使用
+    match p {
+        Point {x, y: 0} => println!("On the x axis at {}", x),
+        Point {x:0, y} => println!("On the x axis at {}", y),
+        Point {x, y} => println!("On neither axis:({}, {})", x, y),
+    }
+}
+```
+
+**结构枚举**
+
+```rust
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+
+fn main() {
+    let msg = Message::ChangeColor(0, 160, 255);
+
+    match msg {
+        Message::Quit => {
+            println!("The Quit variant has no data to destructure.")
+        }
+        Message::Move { x, y } => {
+            println!(
+                "Move in the x direction {} and in the y direction {}",
+                x,
+                y
+            );
+        }
+        Message::Write(text) => println!("Text message: {}", text),
+        Message::ChangeColor(r, g, b) => {
+            println!(
+                "Change the color to red {}, green {}, and blue {}",
+                r,
+                g,
+                b
+            )
+        }
+    }
+}
+
+```
+
+**解构嵌套的结构体和枚举**
+
+```rust
+enum Color {
+   Rgb(i32, i32, i32),
+   Hsv(i32, i32, i32),
+}
+
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(Color),
+}
+
+fn main() {
+    let msg = Message::ChangeColor(Color::Hsv(0, 160, 255));
+
+    match msg {
+        Message::ChangeColor(Color::Rgb(r, g, b)) => {
+            println!(
+                "Change the color to red {}, green {}, and blue {}",
+                r,
+                g,
+                b
+            )
+        }
+        Message::ChangeColor(Color::Hsv(h, s, v)) => {
+            println!(
+                "Change the color to hue {}, saturation {}, and value {}",
+                h,
+                s,
+                v
+            )
+        }
+        _ => ()
+    }
+}
+
+```
+
+**解构结构体和元组**
+
+甚至可以用复杂的方式来混合、匹配和嵌套解构模式。如下是一个复杂结构体的例子，其中结构体和元组嵌套在元组中，并将所有的原始类型解构出来
+
+```rust
+
+#![allow(unused_variables)]
+fn main() {
+    struct Point {
+        x: i32,
+        y: i32,
+    }
+    let ((feet, inches), Point {x, y}) = ((3, 10), Point { x: 3, y: -10 });
+}
+
+```
+
+**忽略模式中的值**
+
+有时忽略模式中的一些值是有用的，比如 `match` 中最后捕获全部情况的分支实际上没有做任何事，但是它确实对所有剩余情况负责。有一些简单的方法可以忽略模式中全部或部分值：使用 `_` 模式（我们已经见过了），在另一个模式中使用 `_` 模式，使用一个以下划线开始的名称，或者使用 `..` 忽略所剩部分的值。让我们来分别探索如何以及为什么要这么做
+
+**使用 _ 忽略整个值**
+
+我们已经使用过下划线（`_`）作为匹配但不绑定任何值的通配符模式了。虽然 `_` 模式作为 `match` 表达式最后的分支特别有用，也可以将其用于任意模式，包括函数参数中
+
+```rust
+fn foo(_: i32, y: i32) {
+    println!("This code only uses the y parameter: {}", y);
+}
+
+fn main() {
+    foo(3, 4);
+}
+```
+
+**使用嵌套的 _ 忽略部分值**
+
+```rust
+#![allow(unused_variables)]
+fn main() {
+    let mut setting_value = Some(5);
+    let new_setting_value = Some(10);
+
+    match (setting_value, new_setting_value) {
+        // 只要是Some类型就行，里面是啥值不在乎
+        (Some(_), Some(_)) => {
+            println!("Can't overwrite an existing customized value");
+        }
+        _ => {
+            setting_value = new_setting_value;
+        }
+    }
+
+    println!("setting is {:?}", setting_value);
+}
+```
+
+还可以匹配想要的数据
+
+```rust
+#[test]
+fn test04() {
+    let numbers = (2, 4, 8, 16, 32);
+    match numbers {
+        (first, _, third, _, fifth) => {
+            println!("Some numbers:{}, {}, {}", first, third, fifth)
+        }
+    }
+}
+```
+
+**通过在名字前以一个下划线开头来忽略未使用的变量**
+
+解构也会转移所有权
+
+![image-20230805172901241](https://cdn.fengxianhub.top/resources-master/image-20230805172901241.png)
+
+**用 .. 忽略剩余值**
+
+```rust
+#![allow(unused_variables)]
+fn main() {
+    struct Point {
+        x: i32,
+        y: i32,
+        z: i32,
+    }
+
+    let origin = Point { x: 0, y: 0, z: 0 };
+
+    match origin {
+        Point { x, .. } => println!("x is {}", x),
+    }
+    // 还可以这样
+    let numbers = (2, 4, 8, 16, 32);
+    match numbers {
+        (first, .., fifth) => {
+            println!("Some numbers:{}, {}, {}", first, third, fifth)
+        }
+    }
+}
+```
+
+**匹配守卫提供的额外条件**
+
+**匹配守卫**（*match guard*）是一个指定于 `match` 分支模式之后的额外 `if` 条件，它也必须被满足才能选择此分支。匹配守卫用于表达比单独的模式所能允许的更为复杂的情况。
+
+这个条件可以使用模式中创建的变量。下面 展示了一个 `match`，其中第一个分支有模式 `Some(x)` 还有匹配守卫 `if x < 5`
+
+```rust
+#![allow(unused_variables)]
+fn main() {
+    let num = Some(4);
+
+    match num {
+        Some(x) if x < 5 => println!("less than five: {}", x),
+        Some(x) => println!("{}", x),
+        None => (),
+    }
+}
+```
+
+```rust
+#![allow(unused_variables)]
+fn main() {
+    let x = 4;
+    let y = false;
+
+    match x {
+        4 | 5 | 6 if y => println!("yes"),
+        _ => println!("no"),
+    }
+}
+```
+
+**@ 绑定**
+
+*at* 运算符（`@`）允许我们在创建一个存放值的变量的同时测试其值是否匹配模式
+
+```rust
+#![allow(unused_variables)]
+fn main() {
+    enum Message {
+        Hello { id: i32 },
+    }
+
+    let msg = Message::Hello { id: 5 };
+
+    match msg {
+        Message::Hello { id: id_variable @ 3..=7 } => {
+            println!("Found an id in range: {}", id_variable)
+        },
+        Message::Hello { id: 10..=12 } => {
+            println!("Found an id in another range")
+        },
+        Message::Hello { id } => {
+            println!("Found some other id: {}", id)
+        },
+    }
+}
+```
+
+## 17. rust 高阶编程
+
+这节包含的内容有：
+
+- 不安全rust
+- 高级trait
+- 高级类型
+- 高级函数和闭包
+- 宏
+
+### 17.1 rust unsafe
+
+许多语言里面都有unsafe，在rust中隐藏了太多的内存安全保障
+
+但是在rust中还隐藏这`Unsafe rust`，它没有强制内存安全保证，但是提供了许多黑魔法
+
+unsafe rust存在的原因有：
+
+- 静态分析是保守的，我们可以使用unsafe rust，并且承担相应的风险
+- 计算机硬件本身就是不安全的，Rust需要能够进行底层系统编程
+
+**unsafe超能力**
+
+使用unsafe关键字来切换到unsafe rust，可以开启一个代码块，里面存放unsafe的代码
+
+unsafe rust里可以执行四个动作（**unsafe超能力**）
+
+- 解引用原始指针
+- 调用unsafe函数或方法
+- 访问或修改可变的静态变量
+- 实现`unsafe trait`
+
+>注意：
+>
+>- unsafe并没有关闭借用检查或停用其他安全检查
+>- 任何内存安全相关的错误必须留在unsafe块中
+>- 尽可能隔离unsafe代码，最好将其封装在安全的抽象里，提供安全的API
+
+#### 17.1.1 解引用原始指针
+
+ 原始指针
+
+- 可变的：`*mut T`
+- 不可变的：`*const T`。意味着指针在解引用后不能直接对其进行赋值
+- 注意：这里的`*`不是解引用符号，它是类型名的一部分
+
+与引用不同，原始指针：
+
+- 允许通过同时具有不可变和可变指针或多个指向同一位置的可变指针来忽略借用规则
+- 无法保证能指向合理的内存
+- 允许为null
+- 不实现任何自动清理
+
+放弃保证的安全，换取更好的性能/与其他语言或硬件接口的能力
+
+我们来看一个原始指针的例子
+
+```rust
+#[test]
+fn test05() {
+    let mut num = 5;
+    let r1 = &num as *const i32;
+    let r2 = &mut num as *mut i32;
+    // 不会报错
+    unsafe {
+        println!("r1: {}", *r1);
+        println!("r2: {}", *r2);
+    }
+    // 声明了一个未知的内存地址，取不到想要的i32类型，所以会报错
+    let address = 0x012345usize;
+    let r = address as *const i32;
+    unsafe {
+        println!("r: {}", *r);
+    }
+}
+```
+
+那么我们为什么要使用原始指针呢？
+
+- 与c语言进行接口
+- 构建借用检查器无法理解的安全抽象
+
+**调用unsafe函数或方法**
+
+- unsafe函数或方法：在定义前加了unsafe关键字
+  - 调用前需手动满足一些条件（主要靠看文档），因为rust无法对这些条件进行校验
+  - 需要在unsafe块里进行调用
+
+![image-20230805194500743](https://cdn.fengxianhub.top/resources-master/image-20230805194500743.png)
+
+**创建unsafe代码的安全抽象**
+
+函数包含unsafe代码并不意味着需要将整个函数标记为unsafe
+
+将unsafe代码包裹在安全函数中是一个常见的抽象
+
+**使用extern函数调用外部代码**
+
+有时你的 Rust 代码可能需要与其他语言编写的代码交互。为此 Rust 有一个关键字，`extern`，有助于创建和使用 **外部函数接口**（*Foreign Function Interface*， FFI）。外部函数接口是一个编程语言用以定义函数的方式，其允许不同（外部）编程语言调用这些函数。
+
+- extern关键字：简化创建和使用外部函数接口（FFI，*Foreign Function Interface*）的过程
+- 外部函数接口（FFI）：它允许一种编程语言定义函数，并让其他编程语言能调用这些函数
+
+下面展示了如何集成 C 标准库中的 `abs` 函数。`extern` 块中声明的函数在 Rust 代码中总是不安全的。因为其他语言不会强制执行 Rust 的规则且 Rust 无法检查它们，所以确保其安全是程序员的责任：
+
+```rust
+extern "C" {
+    fn abs(input: i32) -> i32;
+}
+
+fn main() {
+    unsafe {
+        println!("Absolute value of -3 according to C: {}", abs(-3));
+    }
+}
+```
+
+在 `extern "C"` 块中，列出了我们希望能够调用的另一个语言中的外部函数的签名和名称。`"C"` 部分定义了外部函数所使用的 **应用程序接口**（*application binary interface*，ABI） —— ABI 定义了如何在汇编语言层面调用此函数。`"C"` ABI 是最常见的，并遵循 C 编程语言的 ABI
+
+**从其他语言调用rust函数**
+
+- 可以使用extern创建接口，其他语言通过它们可以调用rust的函数
+- 在fn前添加extern关键字，并指定ABI
+- 还需要添加`#[no_mangle]`注解，避免rust在编译时改变它的名称
+
+在如下的例子中，一旦其编译为动态库并从 C 语言中链接，`call_from_c` 函数就能够在 C 代码中访问：
+
+```rust
+fn main() {
+    #[no_mangle]
+    pub extern "C" fn call_from_c() {
+        println!("Just called a Rust function from C!");
+    }
+}
+```
+
+`extern` 的使用无需 `unsafe`
+
+**访问或修改一个可变静态变量**
+
+- rust支持全局变量，但因为所有权机制可能产生某些问题，例如数据竞争
+- 在rust中全局变量叫做静态（static）变量
+
+```rust
+static HELLO_WORLD: &str = "Hello, world!";
+
+fn main() {
+    println!("name is: {}", HELLO_WORLD);
+}
+```
+
+**静态变量**
+
+- 静态变量与常量类似
+- 命名：SCREAMING_SNAKE_CASE写法，即使用下划线作为分隔符，大写单词，例如`const MAX_NUM: u32 = 100`
+- 必须标注类型
+- 静态变量只能存储`'static`生命周期的引用，无需显示标注
+- 访问不可变静态变量是安全的
+
+```rust
+static mut COUNTER: u32 = 0;
+
+fn add_to_count(inc: u32) {
+    unsafe {
+        COUNTER += inc;
+    }
+}
+
+fn main() {
+    add_to_count(3);
+
+    unsafe {
+        println!("COUNTER: {}", COUNTER); // COUNTER: 3
+    }
+}
+```
+
+**实现不安全（unsafe）trait**
+
+- 当某个trait中存在至少一个方法拥有编译器无法校验的不安全因素时，就称这个trait是不安全的
+- 声明unsafe trait：在定义前加unsafe关键字
+
+```rust
+#![allow(unused_variables)]
+fn main() {
+    unsafe trait Foo {
+        // methods go here
+    }
+
+    unsafe impl Foo for i32 {
+        // method implementations go here
+    }
+}
+```
+
+**何时使用不安全代码**
+
+使用 `unsafe` 来进行这四个操作（超级力量）之一是没有问题的，甚至是不需要深思熟虑的，不过使得 `unsafe` 代码正确也实属不易，因为编译器不能帮助保证内存安全。当有理由使用 `unsafe` 代码时，是可以这么做的，通过使用显式的 `unsafe` 标注使得在出现错误时易于追踪问题的源头
+
+### 17.2 高级Trait
+
+在trait定义中使用关联类型来指定占位类型
+
+- 关联类型（associated type）是Trait中的类型占位符，它可以用于Trait的方法签名
+- 可以定义出包含某些类型的trait，而在实现前无需知道这些类似是什么
+
+举个例子
+
+```rust
+pub trait Iterator {
+    type Item
+    
+    fn next(&mut self) -> Option<Self::Item>;
+}
+
+fn main() {
+    println!("hello world")
+}
+```
+
+看起来我们使用泛型也可以达到同样的效果，但是如果我们使用泛型的话就不得不在每一个实现中标注类型
+
+```rust
+
+fn main() {
+    pub trait Iterator<T> {
+        fn next(&mut self) -> Option<T>;
+    }
+}
+```
+
+当 trait 有泛型参数时，可以多次实现这个 trait，每次需改变泛型参数的具体类型。接着当使用 `Counter` 的 `next` 方法时，必须提供类型注解来表明希望使用 `Iterator` 的哪一个实现。
+
+通过关联类型，则无需标注类型因为不能多次实现这个 trait。对于上面例子中使用关联类型的定义，我们只能选择一次 `Item` 会是什么类型，因为只能有一个 `impl Iterator for Counter`。当调用 `Counter` 的 `next` 时不必每次指定我们需要 `u32` 值的迭代器
+
+![image-20230805204818435](https://cdn.fengxianhub.top/resources-master/image-20230805204818435.png)
+
+**默认泛型参数和运算符重载**
+
+- 可以在使用泛型参数时为泛型指定一个默认的具体类型
+- 语法：`<PlaceholderType=ConcreteType>`
+- 这种技术常用于运算符重载（operator overloading）
+- rust不允许创建自己的运算符及重载任意的运算符
+- 但可以通过实现`std::ops`中列出的那些trait来重载一部分相应的运算符
+
+举个例子
+
+```rust
+use std::ops::Add;
+
+#[derive(Debug, PartialEq)]
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+impl Add for Point {
+    type Output = Point;
+
+    fn add(self, other: Point) -> Point {
+        Point {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
+fn main() {
+    // 这里实现了运算符重载
+    assert_eq!(Point { x: 1, y: 0 } + Point { x: 2, y: 3 },
+               Point { x: 3, y: 3 });
+}
+```
+
+上面的例子中实现 `Add` trait 重载 `Point` 实例的 `+` 运算符
+
+`add` 方法将两个 `Point` 实例的 `x` 值和 `y` 值分别相加来创建一个新的 `Point`。`Add` trait 有一个叫做 `Output` 的关联类型，它用来决定 `add` 方法的返回值类型。
+
+这里默认泛型类型位于 `Add` trait 中。这里是其定义：
+
+```rust
+fn main() {
+    trait Add<RHS=Self> {
+        type Output;
+
+        fn add(self, rhs: RHS) -> Self::Output;
+    }
+}
+```
+
+这看来应该很熟悉，这是一个带有一个方法和一个关联类型的 trait。比较陌生的部分是尖括号中的 `RHS=Self`：这个语法叫做 **默认类型参数**（*default type parameters*）。`RHS` 是一个泛型类型参数（“right hand side” 的缩写），它用于定义 `add` 方法中的 `rhs` 参数。如果实现 `Add` trait 时不指定 `RHS` 的具体类型，`RHS` 的类型将是默认的 `Self` 类型，也就是在其上实现 `Add` 的类型。
+
+当为 `Point` 实现 `Add` 时，使用了默认的 `RHS`，因为我们希望将两个 `Point` 实例相加。让我们看看一个实现 `Add` trait 时希望自定义 `RHS` 类型而不是使用默认类型的例子
+
+这里有两个存放不同单元值的结构体，`Millimeters` 和 `Meters`。我们希望能够将毫米值与米值相加，并让 `Add` 的实现正确处理转换。可以为 `Millimeters` 实现 `Add` 并以 `Meters` 作为 `RHS`
+
+举个例子
+
+```rust
+fn main() {
+    use std::ops::Add;
+
+    struct Millimeters(u32);
+    struct Meters(u32);
+
+    impl Add<Meters> for Millimeters {
+        type Output = Millimeters;
+
+        fn add(self, other: Meters) -> Millimeters {
+            Millimeters(self.0 + (other.0 * 1000))
+        }
+    }
+}
+```
+
+为了使 `Millimeters` 和 `Meters` 能够相加，我们指定 `impl Add<Meters>` 来设定 `RHS` 类型参数的值而不是使用默认的 `Self`。
+
+默认参数类型主要用于如下两个方面：
+
+- 扩展类型而不破坏现有代码。
+- 在大部分用户都不需要的特定情况进行自定义。
+
+标准库的 `Add` trait 就是一个第二个目的例子：大部分时候你会将两个相似的类型相加，不过它提供了自定义额外行为的能力。在 `Add` trait 定义中使用默认类型参数意味着大部分时候无需指定额外的参数。换句话说，一小部分实现的样板代码是不必要的，这样使用 trait 就更容易了。
+
+第一个目的是相似的，但过程是反过来的：如果需要为现有 trait 增加类型参数，为其提供一个默认类型将允许我们在不破坏现有实现代码的基础上扩展 trait 的功能。
+
+**完全限定语法（Fully Qualified Syntax）与消歧义：调用相同名称的方法**
+
+我们先看下下面的代码，看会输出什么
+
+```rust
+fn main() {
+    trait Pilot {
+        fn fly(&self);
+    }
+
+    trait Wizard {
+        fn fly(&self);
+    }
+
+    struct Human;
+
+    impl Pilot for Human {
+        fn fly(&self) {
+            println!("This is your captain speaking.");
+        }
+    }
+
+    impl Wizard for Human {
+        fn fly(&self) {
+            println!("Up!");
+        }
+    }
+
+    impl Human {
+        fn fly(&self) {
+            println!("*waving arms furiously*");
+        }
+    }
+    
+    let person = Human;
+    person.fly(); // *waving arms furiously*
+}
+```
+
+那么怎么调用对应trait里面的方法呢？
+
+```rust
+Pilot::fly(&person);
+Wizard::fly(&person);
+```
+
+但是如果我们在定义`trait`的时候没有把`self`那该怎么办呢？这个时候就可以使用完全限定语法了
+
+完全限定语法：`<Type as Trait>::function(receiver_if_method, next_arg, ...);`
+
+- 可以在任何调用函数或方法的地方使用
+- 允许忽略那些从其他上下文能推到出来的部分
+- 当rust无法区分你期望调用哪个具体实现的时候，才需要使用这种语法
+
+举个例子
+
+```rust
+trait Animal {
+    fn baby_name() -> String;
+}
+
+struct Dog;
+
+impl Dog {
+    fn baby_name() -> String {
+        String::from("Spot")
+    }
+}
+
+impl Animal for Dog {
+    fn baby_name() -> String {
+        String::from("puppy")
+    }
+}
+
+fn main() {
+    println!("A baby dog is called a {}", Dog::baby_name());
+    // 使用完全限定语法
+    println!("A baby dog is called a {}", <Dog as Animal>::baby_name());
+}
+```
+
+**使用supertrait来要求trait附带其他trait的功能**
+
+有时候我们需要在一个trait中使用其他trait的功能
+
+- 需要被依赖的trait也被实现
+- 那个被间接依赖的trait就叫做这个trait的`supertrait`
+
+举个例子
+
+```rust
+use std::fmt;
+
+fn main() {
+    trait OutlinePrint: fmt::Display {
+        fn outline_print(&self) {
+            let output = self.to_string();
+            let len = output.len();
+            println!("{}", "*".repeat(len + 4));
+            println!("*{}*", " ".repeat(len + 2));
+            println!("* {} *", output);
+            println!("*{}*", " ".repeat(len + 2));
+            println!("{}", "*".repeat(len + 4));
+        }
+    }
+}
+```
+
+**newtype 模式用以在外部类型上实现外部 trait**
+
+- 孤儿规则：只有当trait或类型定义在本地包时，才能为该类型实现这个trait
+- 可以通过`newtype`模式来绕过这一规则
+  - 利用tuple struct构建一个新的类型
+
+```rust
+use std::fmt;
+
+struct Wrapper(Vec<String>);
+
+impl fmt::Display for Wrapper {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "[{}]", self.0.join(", "))
+    }
+}
+
+fn main() {
+    let w = Wrapper(vec![String::from("hello"), String::from("world")]);
+    println!("w = {}", w); // w = [hello, world]
+}
+```
+
+### 17.3 高级类型
+
+使用`newtype`模式实现类型安全和抽象，我们先总结一下`newtype`模式的作用：
+
+- 用来静态的保证各种值之间不会混淆并表明值的单位
+- 为类型的某些细节提供抽象能力
+- 通过轻量级的封装来隐藏内部实现的细节
+
+**使用类型别名创建类型的同义词**
+
+rust提供了类型别名的功能（主要用途是为了减少代码字符重复）：
+
+- 为现有类型类型生产另外得名称（同义词）
+- 并不是一个独立得类型
+- 使用`type`关键字
+
+```rust
+fn main() {
+    type Kilometers = i32;
+
+    let x: i32 = 5;
+    let y: Kilometers = 5;
+
+    println!("x + y = {}", x + y);
+}
+```
+
+**Never类型**
+
+有一个名为`!`的特殊类型，其实是rust为了类型一致性引入的概念
+
+- 它没有任何值，经常被称为空类型（empty type）
+- 我们更倾向于称之为`never`类型，因为它在不返回的函数中充当返回类型
+
+不返回值的函数也被称作发散函数（diverging function）
+
+**动态大小和Sized Trait**
+
+- rust需要在编译时确定为一个特定类型的值分配多少空间
+- 动态大小的类型（Dynamically Sized Types，DST）
+  - 在编写代码的时候使用在运行时才能确定大小的值
+  - 比如类型`str`，就是只能在运行时才能确定字符串的长度（动态空间）
+
+Rust 需要知道应该为特定类型的值分配多少内存，同时所有同一类型的值必须使用相同数量的内存。如果允许编写这样的代码，也就意味着这两个 `str` 需要占用完全相同大小的空间，不过它们有着不同的长度。这也就是为什么不可能创建  一个存放动态大小类型的变量的原因
+
+**Rust使用动态大小类型的通用方式**
+
+通过`&str`我们可以知道rust在存储动态大小类型时候的做法为：
+
+- 附带一些额外的元数据来存储动态信息的大小
+- 即使用动态大小类型时总会把它的值放到某种指针后面
+
+**另外一种动态大小的类型：trait**
+
+- 每个trait都是一个动态大小得类型，可以通过名称对其进行引用
+- 为了将trait用作trait对象，必须将它放置再某种指针之后。例如`&dyn Trait`或`Box<dyn Trait>（Rc<dyn Trait>）`之后
+
+**Sized trait**
+
+为了处理动态大小得类型，Rust提供了一个`Sized trait`来确定一个类型的大小在编译时是否已知
+
+- 编译时可计算出大小的类型会自动实现这一trait
+- rust还会为每一个泛型函数隐式的添加Sized约束
+
+对于如下泛型函数定义：
+
+```rust
+fn generic<T>(t: T) {
+    // --snip--
+}
+```
+
+实际上被当作如下处理：
+
+```rust
+fn generic<T: Sized>(t: T) {
+    // --snip--
+}
+```
+
+**泛型函数默认只能用于在编译时已知大小的类型。然而可以使用如下特殊语法来放宽这个限制**
+
+```rust
+fn generic<T: ?Sized>(t: &T) {
+    // --snip--
+}
+```
+
+`?Sized` trait bound 与 `Sized` 相对；也就是说，它可以读作 “`T` 可能是也可能不是 `Sized` 的”。这个语法只能用于 `Sized` ，而不能用于其他 trait。
+
+另外注意我们将 `t` 参数的类型从 `T` 变为了 `&T`：因为其类型可能不是 `Sized` 的，所以需要将其置于某种指针之后。在这个例子中选择了引用
+
+### 17.4 高级函数和闭包
+
+函数指针
+
+- 可以将函数传递给其他函数
+- 函数在传递过程中会被强制转换为`fn`类型
+- fn类型就是`函数指针（function pointer）`
+
+```rust
+fn add_one(x: i32) -> i32 {
+    x + 1
+}
+
+fn do_twice(f: fn(i32) -> i32, arg: i32) -> i32 {
+    f(arg) + f(arg)
+}
+
+fn main() {
+    let answer = do_twice(add_one, 5);
+
+    println!("The answer is: {}", answer); // The answer is: 12
+}
+```
+
+函数指针与闭包的不同
+
+- fn是一个类型，不是一个trait。可以直接指定fn为参数类型，不用声明一个以`Fn trait`为约束的泛型参数
+- 函数指针实现了全部三种闭包trait（Fn、FnMut、FnOnce）
+  - 总是可以把函数指针用作参数传递给一个接受闭包的函数
+  - 所以，更加倾向于搭配闭包`trait`的泛型来编写函数：可以同时接受闭包和普通函数
+- 某些情景下，只想接受`fn`而不接受闭包
+  - 与外部不支持闭包的函数交互（例如c语言）
+
+```rust
+#[test]
+fn test07() {
+    let list_of_numbers = vec![1, 2, 3];
+    let list_of_strings:Vec<String> = list_of_numbers.iter()
+    									.map(|i| i.to_string())
+    									.collect();
+    // 可以写成这样
+    let list_of_numbers = vec![1, 2, 3];
+    let list_of_strings:Vec<String> = list_of_numbers.iter()
+    									.map(ToString::to_string)
+    									.collect();
+}
+```
+
+**返回闭包**
+
+闭包使用trait进行表达，无法在函数中直接返回一个闭包，可以将一个实现了该trait的具体类型作为返回值
+
+![image-20230806140820732](https://cdn.fengxianhub.top/resources-master/image-20230806140820732.png)
+
+### 17.5 宏
+
+宏 macro：宏在rust里指的是一组相关特性的集合称谓
+
+- 使用`macro_rules!`构建的声明宏（declarative macro）
+- 三种过程宏
+  - 自定义`#[derive]宏`，用于`struct`或`enum`，可以为其指定随`derive`属性添加的代码
+  - 类似属性的宏，在任何条目上添加自定义属性
+  - 类似函数的宏，看起来像函数调用，对其指定为参数的token进行操作
+
+**函数与宏的差别**
+
+- 本质上，宏是用来编写可以生成其他代码的代码（元编程，metaprogramming）
+- 函数在定义签名时，必须声明参数的个数和类型，宏可处理可变的参数
+- 编译器会在解释代码前展开宏
+- 宏的定义比函数复杂得多，难以阅读、理解、维护
+- 在某个文件调用宏时，必须提前定义宏或将宏引入当前作用域
+- 函数可以在任何位置定义并在任何位置使用
+
+**macro_rules! 申明宏（可能马上要弃用了）**
+
+rust中最常见得宏形式：声明宏
+
+- 类似match得模式匹配
+- 需要使用`macro_rules!`
+
+我们看看`vec!`这个宏
+
+```rust
+#[macro_export]
+macro_rules! vec {
+    ( $( $x:expr ),* ) => {
+        {
+            let mut tmp_vec = Vec::new();
+            $(
+                temp_vec.push($x);
+            )*
+            temp_vec
+        }
+    };
+}
+```
+
+**基于属性来生成代码得过程宏**
+
+这种形式更像函数（某种形式得过程）一些
+
+- 接受并操作输入得rust代码
+- 生成另外一些rust代码作为结果
+
+一共有三种过程宏
+
+- 自定义派生
+- 属性宏
+- 函数宏
+
+创建过程宏时：
+
+- 宏定义必须单独放在它们自己的包中，并使用特殊的包类型
+
+**自定义derive宏**
+
+现在有个需求，需要创建一个`hello_macro`包，定义一个拥有关联函数`hello_macro`的`HelloMacro trait`
+
+- 需要提供一个能自动实现trait的过程宏
+- 在它们的类型上标注`#[derive(HelloMacro)]`，进而得到`hello_macro`的默认实现
+
+**类似属性的宏**
+
+属性宏与自定义derive宏类似
+
+- 允许创建新的属性
+- 但不是为derive属性生成代码
+
+属性宏更加灵活
+
+- derive只能用于struct和enum
+- 属性宏可以用于任何条目，例如函数
+
+## 18. 构建多线程web服务器
+
+在这里我们会把之前学习到的知识点都穿起来
+
+- 在socket上监听TCP连接
+- 解析少量的HTTP请求
+- 创建一个合适的HTTP相应
+- 使用线程池改进服务器的吞吐量
+
+首先是`main.rs`，这里需要添加一个包`num_cpus = "1.0"`，用来获取CPU的核心数
+
+```rust
+use std::{
+    fs,
+    io::{Read, Write},
+    net::{TcpListener, TcpStream},
+};
+
+use httpServer::ThreadPool;
+use num_cpus;
+
+fn main() {
+    let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
+    // 创建一个线程池
+    let pool = ThreadPool::new(num_cpus::get()); // 使用 num_cpus 库获取 CPU 核心数
+    for stream in listener.incoming() {
+        match stream {
+            Ok(stream) => {
+                // 使用多线程处理每个连接
+                pool.execute(|| {
+                    handle_client(stream);
+                })
+            }
+            Err(e) => {
+                eprintln!("Error accepting connection: {}", e);
+            }
+        }
+    }
+}
+
+fn handle_client(mut stream: TcpStream) {
+    // 获取客户端的IP地址和端口号
+    let client_address = stream.peer_addr().unwrap();
+    println!("Client connected: {}", client_address);
+
+    // 读取客户端发送的数据
+    let mut buffer = [0; 1024];
+    stream.read(&mut buffer).unwrap();
+
+    // 解析请求数据，获取请求的 Host
+    let request = String::from_utf8_lossy(&buffer[..]);
+    let host = extract_host_from_request(&request);
+
+    // 打印请求的 Host 和 IP 信息
+    println!("========= 新的请求开始 ===========");
+    println!("Request Host: {}", host);
+    println!("Client IP: {}", client_address.ip());
+    // 构造响应
+    let response = read_file();
+    // 给客户端发送响应数据
+    let response_headers = format!(
+        "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\n\r\n",
+        response.len()
+    );
+    let combined_response = format!("{}{}", response_headers, response);
+    stream.write(combined_response.as_bytes()).unwrap();
+}
+
+fn extract_host_from_request(request: &str) -> &str {
+    // 简化的从请求中提取 Host 的逻辑，实际情况可能更复杂
+    let host_start = request.find("Host: ").unwrap() + 6;
+    let host_end = request[host_start..].find("\r\n").unwrap() + host_start;
+    &request[host_start..host_end]
+}
+
+/// 缓存一下读取的文件 防止大量重复的磁盘IO
+static mut RESPONSE: Option<String> = None;
+
+fn read_file() -> &'static str {
+    unsafe {
+        if let Some(ref content) = RESPONSE {
+            return content;
+        }
+
+        let content = fs::read_to_string("hello.html").unwrap();
+        RESPONSE = Some(content.clone());
+        RESPONSE.as_ref().unwrap()
+    }
+}
+```
+
+其次是`lib.rs`，主要写的是自定义线程池的逻辑
+
+```rust
+use std::sync::{mpsc, Arc, Mutex};
+use std::thread;
+
+pub struct ThreadPool {
+    workers: Vec<Worker>,
+    /// thread: thread::JoinHandle<()> 是一个线程句柄，用于管理工作线程的生命周期。
+    /// JoinHandle 是一个类型，它可以在线程完成执行后进行线程的清理操作。
+    /// 这里的 <()> 表示线程执行完成后不返回任何结果
+    ///  mpsc（多个生产者，单个消费者）通道，。每个工作线程都通过循环等待接收任务，然后执行任务
+    sender: mpsc::Sender<Job>,
+}
+
+impl ThreadPool {
+    pub fn new(size: usize) -> ThreadPool {
+        assert!(size > 0);
+
+        let (sender, receiver) = mpsc::channel();
+        let receiver = Arc::new(Mutex::new(receiver));
+
+        let mut workers = Vec::with_capacity(size);
+        for id in 0..size {
+            workers.push(Worker::new(id, Arc::clone(&receiver)));
+        }
+
+        ThreadPool { workers, sender }
+    }
+
+    pub fn execute<F>(&self, f: F)
+    where
+        F: FnOnce() + Send + 'static,
+    {
+        let job = Box::new(f);
+        self.sender.send(job).unwrap();
+    }
+}
+
+struct Worker {
+    id: usize,
+    thread: thread::JoinHandle<()>,
+}
+
+type Job = Box<dyn FnOnce() + Send + 'static>;
+
+impl Worker {
+    fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
+        let thread = thread::spawn(move || loop {
+            let job = receiver.lock().unwrap().recv().unwrap();
+
+            println!("Worker {} got a job; executing.", id);
+
+            job();
+        });
+
+        Worker { id, thread }
+    }
+}
+
+```
+
+压测一把
+
+![image-20230806164438755](https://cdn.fengxianhub.top/resources-master/image-20230806164438755.png)
+
+相比之下如果使用golang原生的`http`库压测能到1w＋的qps，主要是原生就已经支持io多路复用了
+
+这里我们再使用`actix-web`库起一个io多路复用的服务器压测试试
+
+```toml
+actix-web = "3.0"
+```
+
+```rust
+use actix_web::{web, App, HttpServer, Responder};
+
+async fn hello() -> impl Responder {
+    "Hello, World!"
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new()
+            .route("/hello", web::get().to(hello))
+    })
+        .bind("127.0.0.1:8080")?
+        .run()
+        .await
+}
+```
+
+最后压测结果也能达到1w的qps
+
+![image-20230806173924915](https://cdn.fengxianhub.top/resources-master/image-20230806173924915.png)
 
 
 

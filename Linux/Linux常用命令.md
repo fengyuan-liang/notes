@@ -161,7 +161,6 @@
     <li><code>选项</code>是对命令的特别定义，指出命令的<code>操作方式</code></li>
     <li><code>方括号</code>括起来的部分表名该项是<code>可选的</code></li>
 </ul>
-
 <strong>举个栗子:</strong>
 
 <blockquote>
