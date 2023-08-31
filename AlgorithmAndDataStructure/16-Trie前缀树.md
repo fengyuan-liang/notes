@@ -11,6 +11,14 @@
 
 我们可以使用`Trie前缀树`
 
+我们常常在路由中使用前缀树这一数据结构，用来匹配`/api/:id`这样的路由
+
+>- Trie的优点：搜索前缀的效率主要跟前缀的长度有关
+>
+>- Trie的缺点：浪费内存
+>
+>- 更多Trie的数据结构和算法有：Double-array Trie（DAT）、Suffix Tree（后缀树）、Patricia Tree（Radix Trie 或 Compact Trie）、Crit-bit Tree (二进制位压缩树)、AC自动机
+
 ## 1. Trie前缀树
 
 >- Trie也叫字典树、前缀树（prefix Tree）、单词查找树
@@ -41,7 +49,7 @@ V remove(String str);
 boolean starsWith(String prefix);
 ```
 
-
+第一套接口很像`set`，第二套接口很像`map`
 
 
 
