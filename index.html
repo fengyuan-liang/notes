@@ -107,6 +107,17 @@
           successText: "OK",
         },
       };
+      // 向下划动的时候上面的导航栏隐藏
+      var prevScrollpos = window.pageYOffset;
+        window.onscroll = function () {
+          var currentScrollPos = window.pageYOffset;
+          if (prevScrollpos > currentScrollPos) {
+            document.querySelector('.app-nav').style.top = '0';
+          } else {
+            document.querySelector('.app-nav').style.top = '-3rem';
+          }
+          prevScrollpos = currentScrollPos;
+        }
     </script>
     <!-- Docsify v4 -->
     <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify.js"></script>
@@ -115,6 +126,7 @@
     <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
     <!-- 图片缩放 -->
     <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/zoom-image.min.js"></script>
+    <!-- <script src="//unpkg.com/docsify/lib/plugins/zoom-image.js"></script> -->
     <!-- 代码复制 -->
     <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify-copy-code.min.js"></script>
     <!-- 代码高亮 -->
@@ -153,8 +165,8 @@
     <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/vue.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>
     <!-- 评论系统 -->
-    <!-- <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/gitalk.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script> -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/gitalk.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
     <script type="text/javascript">
       $(document).ready(() => {
         $.goup({
@@ -166,15 +178,15 @@
         });
       });
       // 评论系统
-      // const gitalk = new Gitalk({
-      //     clientID: 'db682bc37a0ac8167ad5',
-      //     clientSecret: 'b88da18bd59bf2dfa4cc3e7638c9cffa19ff7139',
-      //     repo: 'notes',
-      //     owner: 'fengyuan-liang',
-      //     admin: ['Github repo collaborators, only these guys can initialize github issues'],
-      //     // facebook-like distraction free mode
-      //     distractionFreeMode: false
-      //   })
+      const gitalk = new Gitalk({
+          clientID: '6c108cf3fe3e99fef424',
+          clientSecret: '938a310a9eef9e412f0af8d325b38cfe36dfb1b4',
+          repo: 'notes',
+          owner: 'fengyuan-liang',
+          admin: ['Github repo collaborators, only these guys can initialize github issues'],
+          // facebook-like distraction free mode
+          distractionFreeMode: false
+        })
     </script>
   </body>
 </html>
