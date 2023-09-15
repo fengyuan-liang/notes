@@ -418,3 +418,205 @@ spec:
               number: 8081
 ```
 
+## 2. 使用kk部署k8s集群
+
+>https://www.kubesphere.io/zh/docs/v3.3/installing-on-kubernetes/introduction/overview/
+
+可以先使用命令创建配置文件
+
+```shell
+$ ./kk create config -f config.yaml
+```
+
+修改配置文件
+
+```shell
+$ ./kk create cluster -f config-sample.yaml --with-kubesphere v3.3.2 # --with-kubesphere v3.3.2 表示同时安装kubesphere
+```
+
+添加集群节点
+
+- 修改config.yaml文件
+- 执行命令`./kk add nodes -f config.yaml`
+
+### 添加节点
+
+将新节点的信息添加到集群配置文件，然后应用更改。
+
+```
+./kk add nodes -f config-sample.yaml
+```
+
+
+
+### 删除节点
+
+通过以下命令删除节点，nodename指需要删除的节点名。
+
+```shell
+./kk delete node <nodeName> -f config-sample.yaml
+```
+
+
+
+### 删除集群
+
+您可以通过以下命令删除集群：
+
+- 如果您以快速入门（all-in-one）开始：
+
+```shell
+./kk delete cluster
+```
+
+
+
+- 如果从高级安装开始（使用配置文件创建的集群）：
+
+```shell
+./kk delete cluster [-f config-sample.yaml]
+```
+
+
+
+### 集群升级
+
+#### 单节点集群
+
+升级集群到指定版本。
+
+```shell
+./kk upgrade [--with-kubernetes version] [--with-kubesphere version] 
+```
+
+
+
+- `--with-kubernetes` 指定kubernetes目标版本。
+- `--with-kubesphere` 指定kubesphere目标版本。
+
+#### 多节点集群
+
+通过指定配置文件对集群进行升级。
+
+```shell
+./kk upgrade [--with-kubernetes version] [--with-kubesphere version] [(-f | --filename) path]
+```
+
+
+
+- `--with-kubernetes` 指定kubernetes目标版本。
+- `--with-kubesphere` 指定kubesphere目标版本。
+- `-f` 指定集群安装时创建的配置文件。
+
+> 注意: 升级多节点集群需要指定配置文件. 如果集群非kubekey创建，或者创建集群时生成的配置文件丢失，需要重新生成配置文件，或使用以下方法生成。
+
+Getting cluster info and generating kubekey's configuration file (optional).
+
+```shell
+./kk create config [--from-cluster] [(-f | --filename) path] [--kubeconfig path]
+```
+
+
+
+- `--from-cluster` 根据已存在集群信息生成配置文件.
+- `-f` 指定生成配置文件路径.
+- `--kubeconfig` 指定集群kubeconfig文件.
+- 由于无法全面获取集群配置，生成配置文件后，请根据集群实际信息补全配置文件
+
+### 更新集群证书
+
+查看证书情况
+
+```shell
+./kk certs check-expiration
+```
+
+![image-20230910113515202](https://cdn.fengxianhub.top/resources-master/image-20230910113515202.png)
+
+集群证书在`/etc/kubernetes/pki/`
+
+执行命令更新证书
+
+```shell
+./kk certs renew -f config.yaml
+```
+
+在新版本的kk中其实集成了自动刷新证书的插件
+
+### 启用可插拔插件
+
+>文档：https://www.kubesphere.io/zh/docs/v3.4/pluggable-components/app-store/
+
+搜索`clusterconfig`
+
+![image-20230910114305911](https://cdn.fengxianhub.top/resources-master/image-20230910114305911.png)
+
+依次把`devops、logging、metrics_server、openpitrix、servicemesh、evnet`全部置为true
+
+## 3. service mesh
+
+服务网格
+
+现在主流的service mesh是`Istio`
+
+### istio
+
+```shell
+istioctl install --set profile=demo -y
+
+```
+
+
+
+安装kiali
+
+```shell
+kubectl -n istio-system patch svc kiali -p '{"spec":{"type":"NodePort", "ports":[{"port":20001, "protocol":"TCP", "targetPort":20001, "nodePort":30001}]}}'
+```
+
+查看暴露的端口
+
+```shell
+$ kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}'
+```
+
+
+
+## 4. kubevirt
+
+kubevirt是基于k8s的分布式虚拟化技术
+
+![image-20230910142035123](https://cdn.fengxianhub.top/resources-master/image-20230910142035123.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

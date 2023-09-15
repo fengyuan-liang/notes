@@ -2057,6 +2057,8 @@ ClusterIP是集群内部Pod之间的访问方式
   ```sh
   # 通过生成service映射一个Deployment下的所有pod中的某一个端口的容器
   kubectl expose deployment Deployment名称 --port=Service端口号 --target-port=Pod内容器端口
+  # 例如上面的nginx
+  kubectl expose deployment nginx-deployment --port=80--target-port=80 -n test
   ```
   
   之后通过`kubectl get service`查看Service提供的ip，即可访问
@@ -2080,6 +2082,7 @@ ClusterIP的方式只能在Pod内部实现访问，但是一般需要对外暴�
   ```sh
   # 通过生成service映射一个Deployment下的所有pod中的某一个端口的容器
   kubectl expose deployment Deployment名称 --port=Service端口号 --target-port=Pod内容器端口 --type=NodePort
+  kubectl expose deployment nginx-deployment --port=80 --target-port=80 --type=NodePort -n test
   ```
   
   | 查看Service效果                                                                                  |

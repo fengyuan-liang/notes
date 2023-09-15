@@ -1707,6 +1707,12 @@ object Test {
 
 ## 6. 集合
 
+在Java中集合有三大类：List、Set和Map
+
+在Java中List和Set都继承接口`collection`，让其拥有了一些集合的能力，但是在Map这个接口中，跟接口`collection`并没有任何的关系，但是我们经常使用`keySet、values`等方法又能获取到集合，这里其实是有集合的性质的，并且可以复用代码的
+
+![image-20230914212925306](https://cdn.fengxianhub.top/resources-master/image-20230914212925306.png)
+
 Scala 的集合有三大类：`序列 Seq、集 Set、映射 Map`，所有的集合都扩展自`Iterable`特质
 
 >对于几乎所有的集合类，Scala 都同时提供了可变和不可变的版本，分别位于以下两个包
@@ -1903,7 +1909,284 @@ object Test05_ListBuffer {
 
 
 
+我写了一个golang的map
 
+```go
+// Copyright The GoKit authors. All rights reserved.
+// Use of this source code is governed by a MIT style
+// license that can be found in the LICENSE file.
+
+package maps
+
+import "reflect"
+
+func NewEnhancedMap[K comparable, V any]() IMap[K, V] {
+	return &EnhancedMap[K, V]{
+		m: map[K]V{},
+	}
+}
+
+type EnhancedMap[K comparable, V any] struct {
+	m map[K]V
+}
+
+func (m *EnhancedMap[K, V]) Put(k K, v V) {
+	m.m[k] = v
+}
+
+func (m *EnhancedMap[K, V]) Get(k K) (v V) {
+	if got, ok := m.m[k]; ok {
+		return got
+	}
+	return v
+}
+
+func (m *EnhancedMap[K, V]) Remove(k K) {
+	delete(m.m, k)
+}
+
+func (m *EnhancedMap[K, V]) KeySet() []K {
+	keySet := make([]K, 0)
+	m.ForEach(func(k K, v V) {
+		keySet = append(keySet, k)
+	})
+	return keySet
+}
+
+func (m *EnhancedMap[K, V]) Values() []V {
+	valueSet := make([]V, 0)
+	m.ForEach(func(k K, v V) {
+		valueSet = append(valueSet, v)
+	})
+	return valueSet
+}
+
+func (m *EnhancedMap[K, V]) Size() int {
+	return len(m.m)
+}
+
+func (m *EnhancedMap[K, V]) ForEach(f func(K, V)) {
+	for k, v := range m.m {
+		f(k, v)
+	}
+}
+
+func (m *EnhancedMap[K, V]) ContainsKey(k K) bool {
+	_, ok := m.m[k]
+	return ok
+}
+
+func (m *EnhancedMap[K, V]) ContainsValue(value V) bool {
+	for _, v := range m.m {
+		if reflect.DeepEqual(v, value) {
+			return true
+		}
+	}
+	return false
+}
+
+```
+
+
+
+请帮我完善下面的测试用例，顺便帮我看看我的EnhancedMap写的怎么样，如果有建议，请给出修改的代码并且完善测试用例
+
+```go
+func TestEnhancedMap_ContainsKey(t *testing.T) {
+	type args[K comparable] struct {
+		k K
+	}
+	type testCase[K comparable, V any] struct {
+		name string
+		m    EnhancedMap[K, V]
+		args args[K]
+		want bool
+	}
+	tests := []testCase[ /* TODO: Insert concrete types here */ ]{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.m.ContainsKey(tt.args.k); got != tt.want {
+				t.Errorf("ContainsKey() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEnhancedMap_ContainsValue(t *testing.T) {
+	type args[V any] struct {
+		value V
+	}
+	type testCase[K comparable, V any] struct {
+		name string
+		m    EnhancedMap[K, V]
+		args args[V]
+		want bool
+	}
+	tests := []testCase[ /* TODO: Insert concrete types here */ ]{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.m.ContainsValue(tt.args.value); got != tt.want {
+				t.Errorf("ContainsValue() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEnhancedMap_ForEach(t *testing.T) {
+	type args[K comparable, V any] struct {
+		f func(K, V)
+	}
+	type testCase[K comparable, V any] struct {
+		name string
+		m    EnhancedMap[K, V]
+		args args[K, V]
+	}
+	tests := []testCase[ /* TODO: Insert concrete types here */ ]{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.m.ForEach(tt.args.f)
+		})
+	}
+}
+
+func TestEnhancedMap_Get(t *testing.T) {
+	type args[K comparable] struct {
+		k K
+	}
+	type testCase[K comparable, V any] struct {
+		name  string
+		m     EnhancedMap[K, V]
+		args  args[K]
+		wantV V
+	}
+	tests := []testCase[ /* TODO: Insert concrete types here */ ]{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotV := tt.m.Get(tt.args.k); !reflect.DeepEqual(gotV, tt.wantV) {
+				t.Errorf("Get() = %v, want %v", gotV, tt.wantV)
+			}
+		})
+	}
+}
+
+func TestEnhancedMap_KeySet(t *testing.T) {
+	type testCase[K comparable, V any] struct {
+		name string
+		m    EnhancedMap[K, V]
+		want []K
+	}
+	tests := []testCase[ /* TODO: Insert concrete types here */ ]{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.m.KeySet(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("KeySet() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEnhancedMap_Put(t *testing.T) {
+	type args[K comparable, V any] struct {
+		k K
+		v V
+	}
+	type testCase[K comparable, V any] struct {
+		name string
+		m    EnhancedMap[K, V]
+		args args[K, V]
+	}
+	tests := []testCase[ /* TODO: Insert concrete types here */ ]{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.m.Put(tt.args.k, tt.args.v)
+		})
+	}
+}
+
+func TestEnhancedMap_Remove(t *testing.T) {
+	type args[K comparable] struct {
+		k K
+	}
+	type testCase[K comparable, V any] struct {
+		name string
+		m    EnhancedMap[K, V]
+		args args[K]
+	}
+	tests := []testCase[ /* TODO: Insert concrete types here */ ]{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.m.Remove(tt.args.k)
+		})
+	}
+}
+
+func TestEnhancedMap_Size(t *testing.T) {
+	type testCase[K comparable, V any] struct {
+		name string
+		m    EnhancedMap[K, V]
+		want int
+	}
+	tests := []testCase[ /* TODO: Insert concrete types here */ ]{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.m.Size(); got != tt.want {
+				t.Errorf("Size() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEnhancedMap_Values(t *testing.T) {
+	type testCase[K comparable, V any] struct {
+		name string
+		m    EnhancedMap[K, V]
+		want []V
+	}
+	tests := []testCase[ /* TODO: Insert concrete types here */ ]{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.m.Values(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Values() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewEnhancedMap(t *testing.T) {
+	type testCase[K comparable, V any] struct {
+		name string
+		want IMap
+	}
+	tests := []testCase[ /* TODO: Insert concrete types here */ ]{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewEnhancedMap(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewEnhancedMap() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+```
 
 
 
