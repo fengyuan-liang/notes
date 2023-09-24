@@ -17,7 +17,6 @@
   <link rel="stylesheet" href="iconfont.css" />
   <!-- 评论系统 -->
   <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css" /> -->
-  <link rel="stylesheet" href="_custom.css">
 </head>
 
 <body>
@@ -41,82 +40,79 @@
       script.defer = true;
       document.body.appendChild(script);
     }
-    const doc = async () => {
-      window.$docsify = {
-        name: "<h3>Eureka</h3>",
-        nameLink: "/",
-        formatUpdated: "{YYYY}/{MM}/{DD} {HH}:{mm}",
-        plugins: [
-          function (hook, vm) {
-            hook.beforeEach(function (html) {
-              var url =
-                "https://github.com/fengyuan-liang/notes/" + vm.route.file;
-              var editHtml = "[📝 EDIT DOCUMENT](" + url + ")\n";
-              var editHtml_end = "[🖊 Edit Document](" + url + ")\n";
-              return (
-                editHtml +
-                html +
-                "\n----\n" +
-                "> Last Modified {docsify-updated} " +
-                editHtml_end
-              );
-            });
-          },
-          function (hook) {
-            // 获取当前的年份
-            var year = new Date().getFullYear();
-            var url = `'<span><a href="https://github.com/fengyuan-liang">Eureka</a> &copy;${year}.</span>'`;
-            var footer = [
-              "<hr/>",
-              "<footer>",
-              url,
-              "<span>每天都要加油鸭😜</span>",
-              "</footer>",
-            ].join("");
-            const giscus = `<div class="giscus"></div>`;
-            hook.afterEach(function (html) {
-              return html + footer + giscus;
-            });
-            // 加载自定义的评论系统
-            initGiscus()
-          },
-        ], //编辑按钮
-        themeColor: "#2185d5", // 主题颜色
-        coverpage: true, //封面
-        // loadSidebar: true,   // 加载 _sidebar.md
-        onlyCover: true, //只在访问主页时加载封面。
-        // subMaxLevel: 3,      //侧边栏展现目录
-        maxLevel: 4, //最大的内容表级别
-        mergeNavbar: true, //Navbar将在小屏幕上与侧边栏合并
-        loadNavbar: true, //导航栏
-        auto2top: true, //当路线改变时,滚动到屏幕的顶部
-        topMargin: 60, //调整top
-        hideSidebar: false, //完全隐藏侧边栏，侧边栏的任何内容都不会被渲染
-        executeScript: true, //执行文档里的 script 标签里的脚本，只执行第一个 script (demo)。
-        count: {
-          countable: true,
-          fontsize: "0.9em",
-          color: "rgb(90,90,90)",
-          language: "chinese",
-        }, //字数统计
-        search: {
-          paths: "auto",
-          placeholder: "🔍search",
-          noData: "No Result",
-          // Headline depth, 1 - 6
-          depth: 6,
-          maxAge: 86400000, // 过期时间，单位毫秒，默认一天
-        }, //添加搜索框
-        // 代码复制提示
-        copyCode: {
-          buttonText: '<i class="iconfont zhulin-fuzhi"></i>',
-          errorText: "NO",
-          successText: "OK",
+    window.$docsify = {
+      name: "<h3>Eureka</h3>",
+      nameLink: "/",
+      formatUpdated: "{YYYY}/{MM}/{DD} {HH}:{mm}",
+      plugins: [
+        function (hook, vm) {
+          hook.beforeEach(function (html) {
+            var url =
+              "https://github.com/fengyuan-liang/notes/" + vm.route.file;
+            var editHtml = "[📝 EDIT DOCUMENT](" + url + ")\n";
+            var editHtml_end = "[🖊 Edit Document](" + url + ")\n";
+            return (
+              editHtml +
+              html +
+              "\n----\n" +
+              "> Last Modified {docsify-updated} " +
+              editHtml_end
+            );
+          });
         },
-      };
-    }
-    // 加载自定义的样式
-    doc()
+        function (hook) {
+          // 获取当前的年份
+          var year = new Date().getFullYear();
+          var url = `'<span><a href="https://github.com/fengyuan-liang">Eureka</a> &copy;${year}.</span>'`;
+          var footer = [
+            "<hr/>",
+            "<footer>",
+            url,
+            "<span>每天都要加油鸭😜</span>",
+            "</footer>",
+          ].join("");
+          const giscus = `<div class="giscus"></div>`;
+          hook.afterEach(function (html) {
+            return html + footer + giscus;
+          });
+          hook.afterEach(function (html) {
+            initGiscus()
+          });
+        },
+      ], //编辑按钮
+      themeColor: "#2185d5", // 主题颜色
+      coverpage: true, //封面
+      // loadSidebar: true,   // 加载 _sidebar.md
+      onlyCover: true, //只在访问主页时加载封面。
+      // subMaxLevel: 3,      //侧边栏展现目录
+      maxLevel: 4, //最大的内容表级别
+      mergeNavbar: true, //Navbar将在小屏幕上与侧边栏合并
+      loadNavbar: true, //导航栏
+      auto2top: true, //当路线改变时,滚动到屏幕的顶部
+      topMargin: 60, //调整top
+      hideSidebar: false, //完全隐藏侧边栏，侧边栏的任何内容都不会被渲染
+      executeScript: true, //执行文档里的 script 标签里的脚本，只执行第一个 script (demo)。
+      count: {
+        countable: true,
+        fontsize: "0.9em",
+        color: "rgb(90,90,90)",
+        language: "chinese",
+      }, //字数统计
+      search: {
+        paths: "auto",
+        placeholder: "🔍search",
+        noData: "No Result",
+        // Headline depth, 1 - 6
+        depth: 6,
+        maxAge: 86400000, // 过期时间，单位毫秒，默认一天
+      }, //添加搜索框
+      // 代码复制提示
+      copyCode: {
+        buttonText: '<i class="iconfont zhulin-fuzhi"></i>',
+        errorText: "NO",
+        successText: "OK",
+      },
+    };
     // 向下划动的时候上面的导航栏隐藏
     var prevScrollpos = window.pageYOffset;
     window.onscroll = function () {
