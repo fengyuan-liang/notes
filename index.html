@@ -23,14 +23,15 @@
   <div id="app"></div>
   <script>
     const initGiscus = () => {
-      // 使用defer属性延迟加载评论系统的脚本
+      $("#Giscus").remove();
       var script = document.createElement("script");
+      script.id = "Giscus";
       script.src = "https://giscus.app/client.js";
       script.dataset.repo = "fengyuan-liang/notes";
       script.dataset.repoId = "R_kgDOHmWRpQ";
       script.dataset.category = "Q&A";
       script.dataset.categoryId = "DIC_kwDOHmWRpc4CZk_i";
-      script.dataset.mapping = "pathname";
+      script.dataset.mapping = "url";
       script.dataset.strict = "0";
       script.dataset.reactionsEnabled = "1";
       script.dataset.emitMetadata = "0";
