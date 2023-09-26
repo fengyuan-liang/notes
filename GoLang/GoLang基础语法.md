@@ -71,6 +71,15 @@ go env -w GO111MODULE=on
 go env -w GOPROXY="http://goproxy.cn"
 ```
 
+## 0. golang常用交叉编译命令
+
+```shell
+$ go env -w CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+$ go env -w CGO_ENABLED=0 GOOS=windows GOARCH=amd64
+$ go env -w CGO_ENABLED=0 GOOS=darwin GOARCH=amd64
+$ go env -w CGO_ENABLED=0 GOOS=linux GOARCH=arm64
+```
+
 
 
 ## 1. Go相关命令
