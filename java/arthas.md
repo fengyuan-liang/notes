@@ -35,7 +35,7 @@ nohup java -Xms512M -Xmx2048M -Xss1M \
 -XX:ErrorFile=/var/tmp/springboot/vhost/logs/jvm_error.log \
 -Dfastjson.parser.safeMode=true \
 -jar $PKG_NAME \
->  /var/tmp/springboot/vhost/logs/material-web-0.log 2>&1 & 2>&1 &
+>  /var/tmp/springboot/vhost/logs/material-web-0.log 2>&1 &
 ```
 
 ## 1.jdk原生工具诊断
@@ -45,7 +45,7 @@ nohup java -Xms512M -Xmx2048M -Xss1M \
 查看堆空间dump日志
 
 ```shell
-[root@liang qiniu]# jmap -heap 26539
+[root@liang ]# jmap -heap 26539
 Attaching to process ID 26539, please wait...
 Debugger attached successfully.
 Server compiler detected.
@@ -102,7 +102,7 @@ concurrent mark-sweep generation:
 ### 1.2 jmap -histo查看对象数量
 
 ```shell
-[root@liang qiniu]# jmap -histo 26539 | head -n 20
+[root@liang ]# jmap -histo 26539 | head -n 20
 
  num     #instances         #bytes  class name
 ----------------------------------------------
@@ -135,8 +135,8 @@ concurrent mark-sweep generation:
 2023-03-19T12:56:10.410+0800: [GC (Allocation Failure) 2023-03-19T12:56:10.411+0800: [ParNew: 146812K->1803K(157248K), 0.0128073 secs] 459697K->331071K(678724K), 0.0129401 secs] [Times: user=0.10 sys=0.01, real=0.01 secs]
 2023-03-19T12:56:30.722+0800: [GC (Allocation Failure) 2023-03-19T12:56:30.722+0800: [ParNew: 141579K->2285K(157248K), 0.0050544 secs] 470847K->331554K(678724K), 0.0052019 secs] [Times: user=0.03 sys=0.00, real=0.00 secs]
 2023-03-19T12:56:57.568+0800: [GC (Allocation Failure) 2023-03-19T12:56:57.568+0800: [ParNew: 142054K->6983K(157248K), 0.0086751 secs] 471323K->336252K(678724K), 0.0088217 secs] [Times: user=0.04 sys=0.00, real=0.01 secs]
-2023-03-19 12:56:59.010  INFO 26539 --- [  eventPool-1-2] c.y.m.m.third.qiniu.QiniuMediaUtils      : authorization:【{Authorization=Qiniu DkawmEAF0x70rZEq4sTmZGVzGTPNmgwjy4KxhFXu:q0jZS5ZKLvYenqdx7Y1DhkGCpvk=, Content-Type=application/x-www-form-urlencoded}】
-2023-03-19 12:56:59.010  INFO 26539 --- [  eventPool-1-2] com.yima.common.utils.HttpUtils          : headerMap:【{Authorization=Qiniu DkawmEAF0x70rZEq4sTmZGVzGTPNmgwjy4KxhFXu:q0jZS5ZKLvYenqdx7Y1DhkGCpvk=, Content-Type=application/x-www-form-urlencoded}】
+2023-03-19 12:56:59.010  INFO 26539 --- [  eventPool-1-2] c.y.m.m.third..MediaUtils      : authorization:【{Authorization= DkawmEAF0x70rZEq4sTmZGVzGTPNmgwjy4KxhFXu:q0jZS5ZKLvYenqdx7Y1DhkGCpvk=, Content-Type=application/x-www-form-urlencoded}】
+2023-03-19 12:56:59.010  INFO 26539 --- [  eventPool-1-2] com.yima.common.utils.HttpUtils          : headerMap:【{Authorization= DkawmEAF0x70rZEq4sTmZGVzGTPNmgwjy4KxhFXu:q0jZS5ZKLvYenqdx7Y1DhkGCpvk=, Content-Type=application/x-www-form-urlencoded}】
 2023-03-19T12:57:50.214+0800: [GC (Allocation Failure) 2023-03-19T12:57:50.215+0800: [ParNew: 146759K->9193K(157248K), 0.0091186 secs] 476028K->338462K(678724K), 0.0093436 secs] [Times: user=0.05 sys=0.00, real=0.01 secs]
 2023-03-19T13:00:11.470+0800: [GC (Allocation Failure) 2023-03-19T13:00:11.470+0800: [ParNew: 148969K->16274K(157248K), 0.0107459 secs] 478238K->345543K(678724K), 0.0109635 secs] [Times: user=0.08 sys=0.00, real=0.02 secs]
 2023-03-19T13:06:17.970+0800: [GC (Allocation Failure) 2023-03-19T13:06:17.970+0800: [ParNew: 156050K->17030K(157248K), 0.0343616 secs] 485319K->351346K(678724K), 0.0345865 secs] [Times: user=0.11 sys=0.00, real=0.03 secs]

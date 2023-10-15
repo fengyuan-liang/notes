@@ -44,6 +44,7 @@ int size();
 boolean isEmpty();
 void clear();
 boolean contains(String str);
+V get(String key);
 V add(String str, V value);
 V remove(String str);
 boolean starsWith(String prefix);
