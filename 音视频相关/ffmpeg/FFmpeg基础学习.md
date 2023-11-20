@@ -12,13 +12,27 @@ $ ffmpeg -i love-umbrella-adv.mp4 -c:v vp9 -c:a libvorbis  -threads 16 out.webm
 
 耗时
 
->使用gpu
+>使用gpu 失败了 没有vp9_nvenc
 
 ```shell
 $ ffmpeg -hwaccel cuvid -c:v h264_cuvid -i love-umbrella-adv.mp4 -vf "scale_npp=1920:1080" -c:v vp9 -c:a libvorbis -threads 16 out.webm
-ffmpeg -hwaccel cuvid -c:v h264_cuvid -i 0.mp4 -c:v h264_nvenc -y 00.mp4
+$ ffmpeg -hwaccel cuvid -c:v h264_cuvid -i 0.mp4 -c:v h264_nvenc -y 00.mp4
 $ ffmpeg -hwaccel cuvid -c:v h264_cuvid -i love-umbrella-adv.mp4  out.webm
+
+$ ffmpeg -hwaccel cuvid -c:v h264_cuvid -i love-umbrella-adv.mp4 -c:v vp9_nvenc -c:a libopus output.webm
+$ ffmpeg -hwaccel cuvid -c:v h264_cuvid -i love-umbrella-adv.mp4 -c:v h264_nvenc -y 00.mp4
+$ ffmpeg -i input.mp4 -c:v h264_nvenc -c:a copy output.webm
+
+ffmpeg -i love-umbrella-adv.mp4 -c:v av1_nvenc -rc:v vbr -cq:v 20 -b:v 0 -c:a copy output.webm
+ffmpeg -i love-umbrella-adv.mp4 -c:v h264_nvenc -b:v 2M -c:a copy output.webm
+
+ffmpeg -i love-umbrella-adv.mp4 -c:v h264_nvenc -cq:v 18 -b:v 2M -c:a copy output.mp4
+
+# 查看比特率
+ffprobe -v error -select_streams v:0 -show_entries stream=bit_rate -of default=noprint_wrappers=1:nokey=1 love-umbrella-adv.mp4
 ```
+
+耗时
 
 ## 0x02 常用命令
 
