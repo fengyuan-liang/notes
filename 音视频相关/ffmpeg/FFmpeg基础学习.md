@@ -1,5 +1,11 @@
 # FFmpeg基础学习
 
+FFmpeg是一系列音视频工具的工具集，主要包含三个部分
+
+>- ffmpeg
+>- ffprobe
+>- ffmplay
+
 ## 0x01 CPU vs GPU
 
 我们使用cpu和gpu同时对转码进行耗时统计
@@ -11,6 +17,8 @@ $ ffmpeg -i love-umbrella-adv.mp4 -c:v vp9 -c:a libvorbis  -threads 16 out.webm
 ```
 
 耗时
+
+![image-20231123215453076](https://cdn.fengxianhub.top/resources-master/image-20231123215453076.png)
 
 >使用gpu 失败了 没有vp9_nvenc
 
@@ -34,7 +42,7 @@ ffprobe -v error -select_streams v:0 -show_entries stream=bit_rate -of default=n
 
 耗时
 
-
+![image-20231123215521583](https://cdn.fengxianhub.top/resources-master/image-20231123215521583.png)
 
 ## 0x02 常用命令
 
@@ -121,7 +129,7 @@ $ ffprobe -i [文件名] 查看文件详细信息
 
 常见的图片格式有：**jpg、png、gif、psd、tif、bmp等格式**
 
-当然现在也出现了一些新的流行的格式，例如：WebP（2010年发布）、avif（2019年发布）
+当然现在也出现了一些新的流行的格式，例如：`WebP`（2010年发布）、`avif`（2019年发布）
 
 其中webp是现在支持性最好且压缩率最高的图片格式，常见对比如下：
 
@@ -282,8 +290,8 @@ Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'final.mp4':
 - **Video: h264 (High) (avc1 / 0x31637661)**: 表示这是一个 H.264 编码的视频流，使用的是 High Profile，编码格式标识为 `avc1 / 0x31637661`。
 - **yuv420p(progressive)**: 视频的色彩空间为 YUV420P（即每四个 Y 值对应一个 UV 值），并且视频是逐行扫描的，即逐行显示所有的帧。
 - **1080x1920 [SAR 1:1 DAR 9:16]**: 视频的分辨率为 1080x1920，表示宽度为 1080 像素，高度为 1920 像素。`SAR` 表示样本宽高比（Sample Aspect Ratio），这里的 `1:1` 表示每个像素的宽度和高度是相等的。`DAR` 表示显示宽高比（Display Aspect Ratio），这里的 `9:16` 表示视频的宽高比为 9:16。
-- **1300 kb/s**: 视频的比特率为 1300 kb/s，表示每秒传输的数据量为 1300 千比特（kb）。
-- **25 fps**: 视频的帧率为 25 帧每秒（fps），表示每秒播放 25 帧的画面。
+- **1300 kb/s**: 视频的比特率为 `1300` kb/s，表示每秒传输的数据量为 `1300` 千比特（kb）。
+- **25 fps**: 视频的帧率为 `25` 帧每秒（fps），表示每秒播放 `25` 帧的画面。
 - **25 tbr**: 视频的基本时间单位是帧（tbr，Time Base Rate），每秒有 25 帧。
 - **12800 tbn**: 视频的时间基准（tbn，Time Base Number）为 12800，表示每个时间单位对应 1/12800 秒。
 - **(default)**: 表示该流被标记为默认流，可能是因为它是媒体中的默认选择。
