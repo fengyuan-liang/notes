@@ -213,9 +213,24 @@ func Test01(t *testing.T) {
 
 如果父子ctx都有超时时间，并且父短子长，父接受后子也会结束
 
+## 4. golang六边形架构&依赖注入最佳实践
 
+>相关论文：
+>
+>- https://medium.com/@andy.beak/implementing-hexagonal-architecture-in-go-50ef96f93b45
+>- https://github.com/andybeak/hexagonal-demo
 
+下面为笔者的总结
 
+`六边形架构`最早是由 Alistair Cockburn 在2005年定义的。“六边形”这个名称来源于最初的六边形图。图中的边数是任意的，Cockburn 后来将其重命名为“ Ports and Adapter pattern”，即：端口-适配器架构。
+
+既然都叫`端口-适配器架构`了，那我们先从端口和适配器开始进行研究。
+
+<img src="https://cdn.fengxianhub.top/resources-master/image-20231130164355890.png" alt="image-20231130164355890" style="zoom:70%;" />
+
+- 上图来自《实现领域驱动》这本书
+
+在上图中我们将最中间的领域模型区域叫做`核心业务逻辑(Domain)`，在其周边是`适配器(Adapters)`，最外层的是`输入输出端口(Ports)`
 
 
 

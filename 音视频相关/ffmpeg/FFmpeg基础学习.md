@@ -159,7 +159,7 @@ $ ffprobe -i [文件名] 查看文件详细信息
 
 常见的视频格式有：AVI、MOV、WMV、MPEG格式**（文件后缀可以是 .MPG .MPEG .MPE .DAT .VOB .ASF .3GP .MP4等）**、WebP
 
-## 四、FFmpeg使用
+## 四、FFmpeg简单使用
 
 首先我们要知道`FFmpeg`是一系列音视频编解码软件的合集，主要有三部分组成
 
@@ -224,6 +224,42 @@ $ ffmpeg -i input.avi output.mp4
 - `-vn`： 去除视频流
 - `-preset`：指定输出的视频质量，会影响文件的生成速度，有以下几个可用的值 ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow。
 - `-y`：不经过确认，输出时直接覆盖同名文件。
+
+#### 4.2.1 过滤器
+
+我们在在处理一张图片或者音视频的时候常常有裁剪、缩放等需求，`-filter:v`是FFmpeg中用于视频过滤器（Video Filter）的命令行选项
+
+在FFmpeg中，过滤器允许你对音频或视频进行各种修改和处理操作。`-filter:v`用于指定应用于视频流的过滤器。通过使用视频过滤器，你可以对视频进行裁剪、缩放、旋转、滤镜效果等各种处理。
+
+语法上，`-filter:v`后面需要跟着具体的过滤器表达式。过滤器表达式由一个或多个过滤器及其参数组成，多个过滤器之间使用逗号分隔。
+
+以下是一个示例命令，演示如何使用`-filter:v`来应用视频过滤器：
+
+```shell
+$ ffmpeg -i input.mp4 -filter:v "crop=400:300:0:0, rotate=90" output.mp4
+// -filter:v 可以简写为 -vf
+$ ffmpeg -i input.mp4 -vf "crop=400:300:0:0, rotate=90" output.mp4
+```
+
+在上述命令中，`-filter:v`后面的过滤器表达式为`"crop=400:300:0:0, rotate=90"`。这个表达式同时应用了两个过滤器：`crop`和`rotate`。
+
+- `crop=400:300:0:0`表示对视频进行裁剪操作，裁剪出宽度为400像素、高度为300像素的区域，起始坐标为(0, 0)。
+- `rotate=90`表示对视频进行旋转操作，将视频逆时针旋转90度。
+
+这样，上述命令将对输入视频进行裁剪和旋转处理，并将处理后的视频保存为`output.mp4`。
+
+当然过滤器的作用远不止于此，在ffmpeg中过滤器能实现的功能有：
+
+- 裁剪(crop)、缩放(scale)、旋转(rotate)、滤镜(overlay)、截取视频的片段（trim）
+
+我们可以查看ffmpeg中支持的过滤器数量非常多，可以查看官方文档进行详细了解：https://ffmpeg.org/ffmpeg-filters.html
+
+```shell
+$ ➜  ~ ffmpeg -filters -hide_banner | wc -l
+     492
+```
+
+在第五节对过滤器进行详细描述
 
 ### 4.3 常见用法
 
@@ -331,7 +367,9 @@ Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'final.mp4':
 >output.webm # 输出文件
 >```
 
+## 五、ffmpeg之过滤器
 
+>官方文档：https://ffmpeg.org/ffmpeg-filters.html#Description
 
 
 
