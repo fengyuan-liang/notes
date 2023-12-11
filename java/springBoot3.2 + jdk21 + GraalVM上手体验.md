@@ -1,4 +1,4 @@
-# springBoot3.2 + jdk21 + GraalVM上手体验
+# SpringBoot3.2 + jdk21 + GraalVM上手体验
 
 >参考官方文章进行体验：https://spring.io/blog/2023/09/09/all-together-now-spring-boot-3-2-graalvm-native-images-java-21-and-virtual
 >
@@ -29,7 +29,7 @@ public class DemoApplication {
 
 ![image-20231201173556211](https://cdn.fengxianhub.top/resources-master/image-20231201173556211.png)
 
-压测环境内存占用大概70MB左右，空闲时在20MB左右（由于直接打成二进制文件了，不能再使用jconsole、arthas之类的进行监控了），性能上由于不需要JVM预热，性能启动即巅峰。
+压测环境内存占用大概`70MB`左右，空闲时在`20MB`左右（由于直接打成二进制文件了，不能再使用jconsole、arthas之类的进行监控了），性能上由于不需要JVM预热，性能启动即巅峰。
 
 ```shell
 $ ab -c 50 -n 10000 http://localhost:8080/customers
@@ -160,6 +160,74 @@ Total:          1    7  32.3      4     462
 ```
 
 ![image-20231201174441704](https://cdn.fengxianhub.top/resources-master/image-20231201174441704.png)
+
+## 对比Rust
+
+```toml
+[dependencies]
+actix-web = "4"
+```
+
+```rust
+use actix_web::{get, App, HttpRequest, HttpResponse, HttpServer, Responder};
+
+#[get("/customers")]
+async fn echo(req: HttpRequest) -> impl Responder {
+    let url = req.uri().to_string();
+    HttpResponse::Ok().body(url)
+}
+
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new()
+            .service(echo)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
+}
+```
+
+Actix-web空闲时内存占用大概`3MB`左右，压测时占用大概`6MB`左右
+
+```rust
+$ ab -c 50 -n 10000 http://localhost:8080/customers
+Server Software:
+Server Hostname:        127.0.0.1
+Server Port:            8080
+
+Document Path:          /customers
+Document Length:        10 bytes
+
+Concurrency Level:      50
+Time taken for tests:   1.091 seconds
+Complete requests:      10000
+Failed requests:        0
+Total transferred:      860000 bytes
+HTML transferred:       100000 bytes
+Requests per second:    9163.48 [#/sec] (mean)
+Time per request:       5.456 [ms] (mean)
+Time per request:       0.109 [ms] (mean, across all concurrent requests)
+Transfer rate:          769.59 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    2  11.0      2     189
+Processing:     0    3   7.0      3     190
+Waiting:        0    2   7.0      2     189
+Total:          2    5  13.1      4     193
+```
+
+![image-20231204115913574](https://cdn.fengxianhub.top/resources-master/image-20231204115913574.png)
+
+rust虽然有非常厉害的`零成本抽象`，但作为代价其编译时间会比较长（在实际项目中真的特别长😢）
+
+```shell
+$ time cargo build
+cargo build  213.00s user 23.08s system 258% cpu 1:31.39 total
+```
 
 ## 结论
 
