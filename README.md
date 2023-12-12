@@ -131,6 +131,10 @@
 
 [哈夫曼编码](/AlgorithmAndDataStructure/15-哈夫曼编码.md) 
 
+**算法**
+
+[十大经典排序](/AlgorithmAndDataStructure/算法/1-十大经典排序.md) 
+
 ## 🎈 大数据
 
 [MapReduce基本使用](/大数据/hadoop/2-MapReduce/5-MapReduce学习.md)    |    [MapReduce原理剖析](/大数据/hadoop/2-MapReduce/6-MapReduce原理剖析.md)   |    [yarn学习](/大数据/hadoop/3-yarn/yarn学习.md)      
