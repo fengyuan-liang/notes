@@ -191,3 +191,117 @@ func main() {
 
 ```
 
+## 附录 golang原生RPC使用
+
+### server
+
+```go
+package main
+
+import (
+	"fmt"
+	"net"
+	"net/rpc"
+)
+
+func main() {
+	// 1. 注册RPC服务
+	err := rpc.RegisterName("goods", new(Goods))
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	// 2. 监听端口
+	listen, err2 := net.Listen("tcp", "127.0.0.1:8020")
+	if err2 != nil {
+		return
+	}
+	defer listen.Close()
+
+	for {
+		conn, err3 := listen.Accept()
+		fmt.Printf("有连接上来了，他是:[%v]\n", conn.RemoteAddr().String())
+		if err3 != nil {
+			return
+		}
+		rpc.ServeConn(conn)
+        // 可以自定义编码格式 例如json格式
+		rpc.ServeCodec(jsonrpc.NewServerCodec(conn))
+	}
+}
+
+type Goods struct {
+	Name string `json:"name"`
+}
+
+type AddGoodsArgs struct {
+	Good Goods
+}
+
+type AddGoodsReply struct {
+	Code   int
+	Result string
+}
+
+type GetGoodsArgs struct {
+}
+
+type GetGoodsReply struct {
+	Result string
+}
+
+// AddGoods 调用方法的签名是强制的
+func (g *Goods) AddGoods(args *AddGoodsArgs, reply *AddGoodsReply) (err error) {
+	// 添加商品逻辑
+	fmt.Printf("add good: %+v\n", args.Good)
+	reply.Result = "add success"
+	reply.Code = 200
+	return
+}
+
+func (g *Goods) GetGoods(args *GetGoodsArgs, reply *GetGoodsReply) error {
+	// 获取商品逻辑
+	reply.Result = "you got good"
+	return nil
+}
+
+```
+
+### client
+
+```go
+import (
+	"fmt"
+	"net/rpc"
+	"testing"
+)
+
+func main() {
+    // 自定义解码这里改为net.Dial
+	// conn, err := net.Dial("tcp", "127.0.0.1:8020")
+	conn, err := rpc.Dial("tcp", "127.0.0.1:8020")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	defer conn.Close()
+
+	// 调用远程函数
+
+	// 1. 第一个参数 hello.SayHello  hello表示服务名称 SayHello方法名称
+	// 2. 第二个参数 给服务端的req传递数据
+	// 3. 第三个参数 需要传入地址 获取服务返回的参数
+	var reply AddGoodsReply
+    // 自定义解码 使用client.Call
+	//client := rpc.NewClientWithCodec(jsonrpc.NewClientCodec(conn))
+	err = conn.Call("goods.AddGoods", AddGoodsArgs{Good: Goods{Name: "商品1001"}}, &reply)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	// 获取响应
+	fmt.Printf("reply:%v\n", reply)
+}
+```
+
