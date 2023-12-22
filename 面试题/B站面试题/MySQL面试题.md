@@ -8,7 +8,7 @@ Buffer Pool由**缓存数据页(Page)** 和 对缓存数据页进行描述的**�
 
 Buffer Pool默认大小是128M, 以Page页为单位，Page页默认大小16K，而控制块的大小约为数据页的5%，大	概是800字节。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/5b04714e186c412f89efeb7047c34ef2.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/5b04714e186c412f89efeb7047c34ef2.png)
 
 > 注: Buffer Pool大小为128M指的就是缓存页的大小，控制块则一般占5%，所以每次会多申请6M的内存空间用于存放控制块
 
@@ -16,7 +16,7 @@ Buffer Pool默认大小是128M, 以Page页为单位，Page页默认大小16K，�
 
 MySQl中有一个哈希表数据结构，它使用表空间号+数据页号，作为一个key，然后缓冲页对应的控制块作为value。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/79f20665ae0845d08adfbca28d78392c.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/79f20665ae0845d08adfbca28d78392c.png)
 
 * **当需要访问某个页的数据时，先从哈希表中根据表空间号+页号看看是否存在对应的缓冲页。**
 * **如果有，则直接使用；如果没有，就从free链表中选出一个空闲的缓冲页，然后把磁盘中对应的页加载到该缓冲页的位置**
@@ -29,7 +29,7 @@ BP的底层采用链表数据结构管理Page。在InnoDB访问表记录和索�
 
 Page根据状态可以分为三种类型：
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/b5a63ddee29646edaa90695894203203.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/b5a63ddee29646edaa90695894203203.png)
 
 * free page ： 空闲page，未被使用
 * clean page：被使用page，数据没有被修改过
@@ -44,18 +44,18 @@ Page页如何管理
 * free链表是把所有空闲的缓冲页对应的控制块作为一个个的节点放到一个链表中，这个链表便称之为free链表
 * 基节点:  free链表中只有一个基节点是不记录缓存页信息(单独申请空间)，它里面就存放了free链表的头节点的地址，尾节点的地址，还有free链表里当前有多少个节点。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/2cbb45488a444bfea024a5ebba29d6ce.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/2cbb45488a444bfea024a5ebba29d6ce.png)
 
 2.flush list： 表示需要刷新到磁盘的缓冲区，管理dirty page，内部page按修改时间排序。
 
 * InnoDB引擎为了提高处理效率，在每次修改缓冲页后，并不是立刻把修改刷新到磁盘上，而是在未来的某个时间点进行刷新操作. 所以需要使用到flush链表存储脏页，凡是被修改过的缓冲页对应的控制块都会作为节点加入到flush链表.
 * flush链表的结构与free链表的结构相似
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/1ba2e62477434290989d159632574704.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/1ba2e62477434290989d159632574704.png)
 
 **3.lru list**：表示正在使用的缓冲区，管理clean page和dirty page，缓冲区以midpoint为基点，前面链表称为new列表区，存放经常访问的数据，占63%；后面的链表称为old列表区，存放使用较少数据，占37%
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/22d85da8b0ed4c0d9a3f1d88eca9d8d0.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/22d85da8b0ed4c0d9a3f1d88eca9d8d0.png)
 
 # 3.为什么写缓冲区，仅适用于非唯一普通索引页？
 
@@ -65,7 +65,7 @@ Change Buffer：写缓冲区,是针对二级索引(辅助索引) 页的更新优
 
 作用:  在进行DML操作时，如果请求的辅助索引（二级索引）没有在缓冲池中时，并不会立刻将磁盘页加载到缓冲池，而是在CB记录缓冲变更，等未来数据被读取时，再将数据合并恢复到BP中。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/b45afc7c46344260a20480939a88f144.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/b45afc7c46344260a20480939a88f144.png)
 
 1. ChangeBuffer用于存储SQL变更操作，比如Insert/Update/Delete等SQL语句
 2. ChangeBuffer中的每个变更操作都有其对应的数据页，并且该数据页未加载到缓存中；
@@ -74,7 +74,7 @@ Change Buffer：写缓冲区,是针对二级索引(辅助索引) 页的更新优
 
 **change buffer更新流程**
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/1a9194995ec34d0bbb2700ad07aae00b.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/1a9194995ec34d0bbb2700ad07aae00b.png)
 
 写缓冲区，仅适用于非唯一普通索引页，为什么？
 
@@ -86,7 +86,7 @@ Change Buffer：写缓冲区,是针对二级索引(辅助索引) 页的更新优
 
 LRU = Least Recently Used（最近最少使用）: 就是末尾淘汰法，新数据从链表头部加入，释放空间时从末尾淘汰.
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/c734385cef9949b484e42ee60222a97a.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/c734385cef9949b484e42ee60222a97a.png)
 
 1. 当要访问某个页时，如果不在Buffer Pool，需要把该页加载到缓冲池,并且把该缓冲页对应的控制块作为节点添加到LRU链表的头部。
 2. 当要访问某个页时，如果在Buffer Pool中，则直接把该页对应的控制块移动到LRU链表的头部
@@ -103,13 +103,13 @@ LRU = Least Recently Used（最近最少使用）: 就是末尾淘汰法，新�
 * 如果发生全表扫描（比如：没有建立合适的索引 or 查询时使用select * 等），则有很大可能将真正的热数据淘汰掉.
 * 由于MySQL中存在预读机制，很多预读的页都会被放到LRU链表的表头。如果这些预读的页都没有用到的话，这样，会导致很多尾部的缓冲页很快就会被淘汰。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/ebdd36bca2634360979f5462a409b998.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/ebdd36bca2634360979f5462a409b998.png)
 
 **改进型LRU算法**
 
 改进型LRU：将链表分为new和old两个部分，加入元素时并不是从表头插入，而是从中间midpoint位置插入(就是说从磁盘中新读出的数据会放在冷数据区的头部)，如果数据很快被访问，那么page就会向new列表头部移动，如果数据没有被访问，会逐步向old尾部移动，等待淘汰。
 
-![](file:///Users/congqing/Downloads/%2002_%E6%8E%88%E8%AF%BE%E8%B5%84%E6%96%99/MySQL%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98_%E6%9C%80%E7%BB%88%E8%AE%B2%E4%B9%89/02_%E5%9B%BE%E7%89%87/11.jpg?lastModify=1672033423)![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/82e7eef5d5bd4d21844866cdb8655ae5.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/82e7eef5d5bd4d21844866cdb8655ae5.png)
 
 冷数据区的数据页什么时候会被转到到热数据区呢 ?
 
@@ -149,7 +149,7 @@ Page是整个InnoDB存储的最基本构件，也是InnoDB磁盘管理的最小�
 
 Page分为几种类型，常见的页类型有数据页（B+tree Node）Undo页（Undo Log Page）系统页（System Page） 事务数据页（Transaction System Page）等
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/771179e015044ba19f2f04fe4775048d.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/771179e015044ba19f2f04fe4775048d.png)
 
 **Page 各部分说明**
 
@@ -179,19 +179,19 @@ Page分为几种类型，常见的页类型有数据页（B+tree Node）Undo页�
 
 其中比较重要的是在文件头中的 `FIL_PAGE_PREV` 和 `FIL_PAGE_NEXT` 字段，通过这两个字段，我们可以找到该页的上一页和下一页，实际上所有页通过两个字段可以形成一条双向链表
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/ec7e6df344d941649bfc5b7d5e6a5bfc.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/ec7e6df344d941649bfc5b7d5e6a5bfc.png)
 
 2) 记录部分(User Records&Free Space)
 
 页的主要作用是存储记录，所以“最小和最大记录”和“用户记录”部分占了页结构的主要空间。另外空闲空间是个灵活的部分，当有新的记录插入时，会从空闲空间中进行分配用于存储新记录
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/72c8a7b34e04410cae9d6daf7477de4d.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/72c8a7b34e04410cae9d6daf7477de4d.png)
 
 **3)数据目录部分 (Page Directory)**
 
 数据页中行记录按照主键值由小到大顺序串联成一个单链表(**页中记录是以单向链表的形式进行存储的**)，且单链表的链表头为最小记录，链表尾为最大记录。并且为了更快速地定位到指定的行记录，通过 `Page Directory`实现目录的功能，借助 `Page Directory`使用二分法快速找到需要查找的行记录。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/3b5dc41516bd42abbc84dc0e26b7d0c1.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/3b5dc41516bd42abbc84dc0e26b7d0c1.png)
 
 # 7.说一下聚簇索引与非聚簇索引？
 
@@ -214,7 +214,7 @@ InnoDB 主键使用的是聚簇索引，MyISAM 不管是主键索引，还是二
 * 辅助索引
   InnoDB辅助索引，也叫作二级索引，是根据索引列构建 B+Tree结构。但在 B+Tree 的叶子节点中只存了索引列和主键的信息。二级索引占用的空间会比聚簇索引小很多， 通常创建辅助索引就是为了提升查询效率。一个表InnoDB只能创建一个聚簇索引，但可以创建多个辅助索引。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/e66e956acf0c45e19300c4c6ee9b8028.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/e66e956acf0c45e19300c4c6ee9b8028.png)
 
 **非聚簇索引**
 
@@ -222,7 +222,7 @@ InnoDB 主键使用的是聚簇索引，MyISAM 不管是主键索引，还是二
 
 表数据存储在独立的地方，这两颗B+树的叶子节点都使用一个地址指向真正的表数据，对于表数据来说，这两个键没有任何差别。由于 索引树是独立的，通过辅助键检索无需访问主键的索引树 。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/3911e2c181a94bb498acad5540ee87cd.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/3911e2c181a94bb498acad5540ee87cd.png)
 
 **聚簇索引的优点**
 
@@ -242,7 +242,7 @@ InnoDB 主键使用的是聚簇索引，MyISAM 不管是主键索引，还是二
 
 * **这是最基本的索引类型，基于普通字段建立的索引，没有任何限制。**
 
-```
+```sql
 CREATE INDEX <索引的名字> ON tablename (字段名);
 ALTER TABLE tablename ADD INDEX [索引的名字] (字段名);
 CREATE TABLE tablename ( [...], INDEX [索引的名字] (字段名) );
@@ -252,7 +252,7 @@ CREATE TABLE tablename ( [...], INDEX [索引的名字] (字段名) );
 
 * **与"普通索引"类似，不同的就是：索引字段的值必须唯一，但允许有空值 。**
 
-```
+```sql
 CREATE UNIQUE INDEX <索引的名字> ON tablename (字段名);
 ALTER TABLE tablename ADD UNIQUE INDEX [索引的名字] (字段名);
 CREATE TABLE tablename ( [...], UNIQUE [索引的名字] (字段名) ;
@@ -345,7 +345,7 @@ SELECT * FROM users3 WHERE MATCH(NAME) AGAINST('aa*'  IN BOOLEAN MODE);
 * 最佳左前缀底层原理
   MySQL创建联合索引的规则是: 首先会对联合索引最左边的字段进行排序( 例子中是 `user_name` ), 在第一个字段的基础之上 再对第二个字段进行排序 ( 例子中是 `user_age` ) .
 
-  ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/c88122c037b649a5ac198164bc520ab9.png)
+  ![image.png](https://cdn.fengxianhub.top/resources-master/c88122c037b649a5ac198164bc520ab9.png)
 * 最佳左前缀原则其实是和B+树的结构有关系, 最左字段肯定是有序的, 第二个字段则是无序的(联合索引的排序方式是: 先按照第一个字段进行排序,如果第一个字段相等再根据第二个字段排序). 所以如果直接使用第二个字段 `user_age` 通常是使用不到索引的.
 
 # 10.什么是索引下推？
@@ -354,7 +354,7 @@ SELECT * FROM users3 WHERE MATCH(NAME) AGAINST('aa*'  IN BOOLEAN MODE);
 
 需求: 查询users表中 "名字第一个字是张，年龄为10岁的所有记录"。
 
-```
+```sql
 SELECT * FROM users WHERE user_name LIKE '张%' AND user_age = 10;
 ```
 
@@ -362,13 +362,13 @@ SELECT * FROM users WHERE user_name LIKE '张%' AND user_age = 10;
 
 图1: 在 (name,age) 索引里面特意去掉了 age 的值，这个过程 InnoDB 并不会去看 age 的值，只是按顺序把“name 第一个字是’张’”的记录一条条取出来回表。因此，需要回表 4 次
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/fd7f4f815cf24cde9b35c723eaba71ff.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/fd7f4f815cf24cde9b35c723eaba71ff.png)
 
 MySQL 5.6引入了索引下推优化，可以在索引遍历过程中，对索引中包含的字段先做判断，过滤掉不符合条件的记录，减少回表次数。
 
 图2: InnoDB 在 (name,age) 索引内部就判断了 age 是否等于 10，对于不等于 10 的记录，直接判断并跳过,减少回表次数.
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/8832dd9ba9b44f96a92f721fbf3179fc.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/8832dd9ba9b44f96a92f721fbf3179fc.png)
 
 总结
 
@@ -386,23 +386,23 @@ MySQL 5.6引入了索引下推优化，可以在索引遍历过程中，对索�
 
 3、自适应hash索引只适合搜索等值的查询，如select * from table where index_col='xxx'，而对于其他查找类型，如范围查找，是不能使用的；
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/3435b04b2ae34166851e0c3a3aea92c8.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/3435b04b2ae34166851e0c3a3aea92c8.png)
 
 Adaptive Hash Index是针对B+树Search Path的优化，因此所有会涉及到Search Path的操作，均可使用此Hash索引进行优化.
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/60fe814818db44d6a4eae582348080ab.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/60fe814818db44d6a4eae582348080ab.png)
 
 根据索引键值(前缀)快速定位到叶子节点满足条件记录的Offset，减少了B+树Search Path的代价，将B+树从Root节点至Leaf节点的路径定位，优化为Hash Index的快速查询。
 
 InnoDB的自适应Hash索引是默认开启的，可以通过配置下面的参数设置进行关闭。
 
-```
+```sql
 innodb_adaptive_hash_index = off
 ```
 
 自适应Hash索引使用分片进行实现的，分片数可以使用配置参数设置：
 
-```
+```sql
 innodb_adaptive_hash_index_parts = 8
 ```
 
@@ -469,7 +469,7 @@ UUID的缺点：
 
 1、**使用自增 id 的内部结构**
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/965a1eaee74545ce898051078f21eb43.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/965a1eaee74545ce898051078f21eb43.png)
 
 自增的主键的值是顺序的，所以 InnoDB 把每一条记录都存储在一条记录的后面。
 
@@ -481,11 +481,11 @@ UUID的缺点：
 
 插入UUID： 新的记录可能会插入之前记录的中间，因此需要移动之前的记录
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/e55ddabf65f148de983fe7ef1ae2aa16.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/e55ddabf65f148de983fe7ef1ae2aa16.png)
 
 被写满已经刷新到磁盘上的页可能会被重新读取
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/da8ea192750e47d280de25e91af24dcf.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/da8ea192750e47d280de25e91af24dcf.png)
 
 因为 uuid 相对顺序的自增 id 来说是毫无规律可言的，新行的值不一定要比之前的主键的值要大，所以 innodb 无法做到总是把新行插入到索引的最后，而是需要为新行寻找新的合适的位置从而来分配新的空间。
 
@@ -518,7 +518,7 @@ InnoDB和MyISAM是使用MySQL时最常用的两种引擎类型，我们重点来
   InnoDB表对应两个文件，一个.frm表结构文件，一个.ibd数据文件。InnoDB表最大支持64TB；
   MyISAM表对应三个文件，一个.frm表结构文件，一个MYD表数据文件，一个.MYI索引文件。从MySQL5.0开始默认限制是256TB。
 
-  ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/789d8c3ad02743b69ce4123954791b03.png)
+  ![image.png](https://cdn.fengxianhub.top/resources-master/789d8c3ad02743b69ce4123954791b03.png)
 
 MyISAM 适用场景
 
@@ -544,7 +544,7 @@ InnoDB 适用场景
 
 扩展资料：各个存储引擎特性对比
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/2abdf9facc0a46af8b62223bcce85639.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/2abdf9facc0a46af8b62223bcce85639.png)
 
 # 15.B树和B+树的区别是什么？
 
@@ -561,7 +561,7 @@ m阶的B-Tree满足以下条件:
 3. 分支节点至少有(m/2)颗子树 (除去根节点和叶子节点其他都是分支节点)
 4. 所有叶子节点都在同一层,并且以升序排序
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/56ce03b9a0ca4eb4bb704c6341fedb28.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/56ce03b9a0ca4eb4bb704c6341fedb28.png)
 
 **什么是B-Tree的阶 ?**
 所有节点中，节点【60,70,90】拥有的子节点数目最多，四个子节点（灰色节点），所以上面的B-Tree为4阶B树。
@@ -575,7 +575,7 @@ m阶的B-Tree满足以下条件:
 * 每个节点可以存放多个索引值及对应的data数据
 * 树节点中的多个索引值从左到右升序排列
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/f4502da0577d4dc2af9cf8def7c18edd.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/f4502da0577d4dc2af9cf8def7c18edd.png)
 
 **B-Tree的查找操作**
 
@@ -597,7 +597,7 @@ B+Tree是在B-Tree基础上的一种优化，使其更适合实现存储索引�
 - 所有叶子节点之间都有一个链指针.
 - 数据记录都存放在叶子节点中.
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/844e6a92336a4549aa44d237fa1ca447.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/844e6a92336a4549aa44d237fa1ca447.png)
 
 **B+Tree的优势**
 
@@ -611,7 +611,7 @@ B+Tree是在B-Tree基础上的一种优化，使其更适合实现存储索引�
 
 MySQL设计者将一个B+Tree的节点的大小设置为等于一个页. (这样做的目的是每个节点只需要一次I/O就可以完全载入), InnoDB的一个页的大小是16KB,所以每个节点的大小也是16KB, 并且B+Tree的根节点是保存在内存中的,子节点才是存储在磁盘上.
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/ed746f7baf004f1e92a18649e3000bd0.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/ed746f7baf004f1e92a18649e3000bd0.png)
 
 **假设一个B+树高为2，即存在一个根节点和若干个叶子节点，那么这棵B+树的存放总记录数为：**
 
@@ -629,7 +629,7 @@ MySQL设计者将一个B+Tree的节点的大小设置为等于一个页. (这样
 
 **MySQL查询过程**
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/0ffbda5da5ae491bbf13b13bf75fdbdc.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/0ffbda5da5ae491bbf13b13bf75fdbdc.png)
 
 **通过explain我们可以获得以下信息：**
 
@@ -642,7 +642,7 @@ MySQL设计者将一个B+Tree的节点的大小设置为等于一个页. (这样
 
 Explain使用方式: **explain+sql语句**, 通过执行explain可以获得sql语句执行的相关信息
 
-```
+```sql
 explain select * from users;
 ```
 
@@ -656,7 +656,7 @@ explain select * from users;
 
 **下面给出各种连接类型,按照从最佳类型到最坏类型进行排序:**
 
-```
+```sql
 -- 完整的连接类型比较多
 system > const > eq_ref > ref > fulltext > ref_or_null > index_merge > unique_subquery > index_subquery > range > index > ALL
 
@@ -698,7 +698,7 @@ Extra 是 EXPLAIN 输出中另外一个很重要的列，该列显示MySQL在查
 
   一般的分页查询使用简单的 limit 子句就可以实现。limit格式如下：
 
-  ```
+  ```sql
   SELECT * FROM 表名 LIMIT [offset,] rows
   ```
 
@@ -708,7 +708,7 @@ Extra 是 EXPLAIN 输出中另外一个很重要的列，该列显示MySQL在查
 
   **思考1：如果偏移量固定，返回记录量对执行时间有什么影响？**
 
-  ```
+  ```sql
   select * from user limit 10000,1;
   select * from user limit 10000,10;
   select * from user limit 10000,100;
@@ -720,7 +720,7 @@ Extra 是 EXPLAIN 输出中另外一个很重要的列，该列显示MySQL在查
 
   **思考2：如果查询偏移量变化，返回记录数固定对执行时间有什么影响？**
 
-  ```
+  ```sql
   select * from user limit 1,100;
   select * from user limit 10,100;
   select * from user limit 100,100;
@@ -738,13 +738,13 @@ Extra 是 EXPLAIN 输出中另外一个很重要的列，该列显示MySQL在查
 
   假设ID是连续递增的,我们根据查询的页数和查询的记录数可以算出查询的id的范围，然后配合 limit使用
 
-  ```
+  ```sql
   EXPLAIN SELECT * FROM user WHERE id  >= 100001 LIMIT 100;
   ```
 
   **优化2：利用子查询优化**
 
-  ```
+  ```sql
   -- 首先定位偏移位置的id
   SELECT id FROM user_contacts LIMIT 100000,1;
   
@@ -768,7 +768,7 @@ Extra 是 EXPLAIN 输出中另外一个很重要的列，该列显示MySQL在查
 
 1. **默认情况下slow_query_log的值为OFF，表示慢查询日志是禁用的**
 
-```
+```sql
 mysql> show variables like '%slow_query_log%';
 +---------------------+------------------------------+
 | Variable_name       | Value                        |
@@ -780,13 +780,13 @@ mysql> show variables like '%slow_query_log%';
 
 2. **可以通过设置slow_query_log的值来开启**
 
-```
+```sql
 mysql> set global slow_query_log=1;
 ```
 
 3. **使用** `set global slow_query_log=1`  开启了慢查询日志只对当前数据库生效，MySQL重启后则会失效。如果要永久生效，就必须修改配置文件my.cnf（其它系统变量也是如此）
 
-```
+```sql
 -- 编辑配置
 vim /etc/my.cnf
 
@@ -829,7 +829,7 @@ mysql>  show variables like 'long_query_time';
 
 5. **修改了变量long_query_time，但是查询变量long_query_time的值还是10，难道没有修改到呢？注意：使用命令 set global long_query_time=1 修改后，需要重新连接或新开一个会话才能看到修改值。**
 
-```
+```sql
 mysql> show variables like 'long_query_time';
 +-----------------+----------+
 | Variable_name   | Value    |
@@ -840,7 +840,7 @@ mysql> show variables like 'long_query_time';
 
 6. `log_output` 参数是指定日志的存储方式。`log_output='FILE'`  表示将日志存入文件，默认值是'FILE'。`log_output='TABLE'` 表示将日志存入数据库，这样日志信息就会被写入到 mysql.slow_log 表中。
 
-```
+```sql
 mysql> SHOW VARIABLES LIKE '%log_output%';
 +---------------+-------+
 | Variable_name | Value |
@@ -853,7 +853,7 @@ mysql> SHOW VARIABLES LIKE '%log_output%';
 
 7. 系统变量 `log-queries-not-using-indexes`：未使用索引的查询也被记录到慢查询日志中（可选项）。如果调优的话，建议开启这个选项。
 
-```
+```sql
 mysql> show variables like 'log_queries_not_using_indexes';
 +-------------------------------+-------+
 | Variable_name                 | Value |
@@ -876,7 +876,7 @@ mysql> show variables like 'log_queries_not_using_indexes';
 
 1. **执行 test_index.sql 脚本,监控慢查询日志内容**
 
-```
+```sql
 [root@localhost mysql]# tail -f /var/lib/mysql/ruyuan-slow.log 
 /usr/sbin/mysqld, Version: 5.7.30-log (MySQL Community Server (GPL)). started with:
 Tcp port: 0  Unix socket: /var/lib/mysql/mysql.sock
@@ -885,7 +885,7 @@ Time                 Id Command    Argument
 
 2. **执行下面的SQL,执行超时 (超过1秒) 我们去查看慢查询日志**
 
-```
+```sql
 SELECT * FROM test_index WHERE  
 hobby = '20009951' OR hobby = '10009931' OR hobby = '30009931' 
 OR dname = 'name4000' OR dname = 'name6600' ;
@@ -897,7 +897,7 @@ OR dname = 'name4000' OR dname = 'name6600' ;
 
 **如下图是慢日志里其中一条SQL的记录内容，可以看到有时间戳，用户，查询时长及具体的SQL等信息.**
 
-```
+```sql
 # Time: 2022-02-23T13:50:45.005959Z
 # User@Host: root[root] @ localhost []  Id:     3
 # Query_time: 3.724273  Lock_time: 0.000371 Rows_sent: 5  Rows_examined: 5000000
@@ -922,7 +922,7 @@ select * from test_index where hobby = '20009951' or hobby = '10009931' or hobby
 
 - **等待时间长**
 
-  ```
+  ```sql
   锁表导致查询一直处于等待状态，后续我们从MySQL锁的机制去分析SQL执行的原理
   ```
 
@@ -1031,7 +1031,7 @@ MySQL中索引的常用数据结构有两种: 一种是B+Tree,另一种则是Has
 
 Hash底层实现是由Hash表来实现的，是根据键值 <key,value> 存储数据的结构。非常适合根据key查找value值，也就是单个key查询，或者说等值查询。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/07494f5bfaff4208a65c0d7426708b47.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/07494f5bfaff4208a65c0d7426708b47.png)
 
 对于每一行数据，存储引擎都会对所有的索引列计算一个哈希码，哈希码是一个较小的值,如果出现哈希码值相同的情况会拉出一条链表.
 
@@ -1057,7 +1057,7 @@ Buffer Pool参数优化
 
 * **查看缓冲池大小**
 
-  ```
+  ```sql
   mysql> show variables like '%innodb_buffer_pool_size%';
   +-------------------------+-----------+
   | Variable_name           | Value     |
@@ -1076,7 +1076,7 @@ Buffer Pool参数优化
 * **在线调整InnoDB缓冲池大小**
   **innodb_buffer_pool_size可以动态设置，允许在不重新启动服务器的情况下调整缓冲池的大小.**
 
-  ```
+  ```sql
   mysql> SET GLOBAL innodb_buffer_pool_size = 268435456; -- 512
   Query OK, 0 rows affected (0.10 sec)
   
@@ -1090,7 +1090,7 @@ Buffer Pool参数优化
 
   **监控在线调整缓冲池的进度**
 
-  ```
+  ```sql
   mysql> SHOW STATUS WHERE Variable_name='InnoDB_buffer_pool_resize_status';
   +----------------------------------+----------------------------------------------------------------------+
   | Variable_name                    | Value                                                        |
@@ -1105,14 +1105,14 @@ Buffer Pool参数优化
 
 * 以下公式计算InnoDB buffer pool 命中率:
 
-  ```
+  ```sql
   命中率 = innodb_buffer_pool_read_requests / (innodb_buffer_pool_read_requests+innodb_buffer_pool_reads)* 100
   
   参数1: innodb_buffer_pool_reads：表示InnoDB缓冲池无法满足的请求数。需要从磁盘中读取。
   参数2: innodb_buffer_pool_read_requests：表示从内存中读取页的请求数。
   ```
 
-  ```
+  ```sql
   mysql> show status like 'innodb_buffer_pool_read%';
   +---------------------------------------+-------+
   | Variable_name                         | Value |
@@ -1137,7 +1137,7 @@ Buffer Pool参数优化
 
 **查看Page页的大小(默认16KB),**`innodb_page_size`只能在初始化MySQL实例之前配置，不能在之后修改。如果没有指定值，则使用默认页面大小初始化实例。
 
-```
+```sql
 mysql> show variables like '%innodb_page_size%'; 
 +------------------+-------+
 | Variable_name    | Value |
@@ -1148,7 +1148,7 @@ mysql> show variables like '%innodb_page_size%';
 
 **Page页管理状态相关参数**
 
-```
+```sql
 mysql> show global status like '%innodb_buffer_pool_pages%';
 +----------------------------------+-------+
 | Variable_name                    | Value |
@@ -1182,7 +1182,7 @@ mysql> show global status like '%innodb_buffer_pool_pages%';
 
 * **innodb_log_buffer_size 缓冲区大小**
 
-  ```
+  ```sql
   mysql> show variables like 'innodb_log_buffer_size';
   +------------------------+----------+
   | Variable_name          | Value    |
@@ -1194,7 +1194,7 @@ mysql> show global status like '%innodb_buffer_pool_pages%';
 * **innodb_log_files_in_group 日志组文件个数**
   **日志组根据需要来创建。而日志组的成员则需要至少2个，实现循环写入并作为冗余策略。**
 
-  ```
+  ```sql
   mysql> show variables like 'innodb_log_files_in_group';
   +---------------------------+-------+
   | Variable_name             | Value |
@@ -1207,7 +1207,7 @@ mysql> show global status like '%innodb_buffer_pool_pages%';
   **参数innodb_log_file_size用于设定MySQL日志组中每个日志文件的大小(默认48M)。此参数是一个全局的静态参数，不能动态修改。**
   **参数innodb_log_file_size的最大值，二进制日志文件大小（innodb_log_file_size * innodb_log_files_in_group）不能超过512GB.所以单个日志文件的大小不能超过256G.**
 
-  ```
+  ```sql
   mysql> show variables like 'innodb_log_file_size';
   +----------------------+----------+
   | Variable_name        | Value    |
@@ -1238,7 +1238,7 @@ mysql> show global status like '%innodb_buffer_pool_pages%';
 >
 > **自系统修改开始，就不断的生成redo日志。为了记录一共生成了多少日志，于是mysql设计了全局变量log sequence number，简称lsn，但不是从0开始，是从8704字节开始。**
 
-```
+```sql
 -- pager分页工具, 只获取 sequence的信息
 mysql> pager grep sequence;
 PAGER set to 'grep sequence'
@@ -1261,7 +1261,7 @@ PAGER set to stdout
 
 有了一分钟的日志量,据此推算一小时内的日志量
 
-```
+```sql
 mysql> select (5406150 - 5399154) / 1024 as kb_per_min;
 +------------+
 | kb_per_min |
@@ -1289,7 +1289,7 @@ MySQL查询缓存会保存查询返回的完整结果。当查询命中该缓存
 
 1. 查看查询缓存是否开启
 
-```
+```sql
 -- 查询是否支持查询缓存
 mysql> show variables like 'have_query_cache';
 +------------------+-------+
@@ -1309,7 +1309,7 @@ mysql> show variables like '%query_cache_type%';
 
 2. 开启缓存,在my.ini中添加下面一行参数
 
-```
+```sql
 query_cache_size=128M
 query_cache_type=1
 
@@ -1321,7 +1321,7 @@ query_cache_type:
 
 3. 测试能否缓存查询
 
-```
+```sql
   mysql> show status like '%Qcache%';
   +-------------------------+---------+
   | Variable_name           | Value   |
@@ -1350,13 +1350,13 @@ query_cache_type:
 
 MySQL数据库数据变化相对不多，query_cache_size 一般设置为256MB比较合适 ,也可以通过计算Query Cache的命中率来进行调整
 
-```
+```sql
 ( Qcache_hits / ( Qcache_hits + Qcache_inserts ) * 100) )
 ```
 
 2) 参数: innodb_max_dirty_pages_pct 该参数是InnoDB 存储引擎用来控制buffer pool中脏页的百分比，当脏页数量占比超过这个参数设置的值时，InnoDB会启动刷脏页的操作。
 
-```
+```sql
 -- innodb_max_dirty_pages_pct 参数可以动态调整，最小值为0， 最大值为99.99，默认值为 75。
 mysql> show variables like 'innodb_max_dirty_pages_pct';
 +----------------------------+-----------+
@@ -1371,7 +1371,7 @@ mysql> show variables like 'innodb_max_dirty_pages_pct';
 **3) 参数: innodb_old_blocks_pct&innodb_old_blocks_time**
 `innodb_old_blocks_pct` 用来确定LRU链表中old sublist所占比例,默认占用37%
 
-```
+```sql
 mysql> show variables like '%innodb_old_blocks_pct%';
 +-----------------------+-------+
 | Variable_name         | Value |
@@ -1382,7 +1382,7 @@ mysql> show variables like '%innodb_old_blocks_pct%';
 
 `innodb_old_blocks_time`  用来控制old sublist中page的转移策略，新的page页在进入LRU链表中时，会先插入到old sublist的头部，然后page需要在old sublist中停留innodb_old_blocks_time这么久后，下一次对该page的访问才会使其移动到new sublist的头部，默认值1秒.
 
-```
+```sql
 mysql> show variables like '%innodb_old_blocks_time%';
 +------------------------+-------+
 | Variable_name          | Value |
@@ -1399,7 +1399,7 @@ InnoDB的页和操作系统的页大小不一致，InnoDB页大小一般为16K�
 
 如果存储引擎正在写入页的数据到磁盘时发生了宕机，可能出现页只写了一部分的情况，比如只写了4K，就宕机了，这种情况叫做部分写失效（partial page write），可能会导致数据丢失。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672133064003/186aaf40085542d5a790025d9577b34d.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/186aaf40085542d5a790025d9577b34d.png)
 
 **双写缓冲区 Doublewrite Buffer**
 
@@ -1421,7 +1421,7 @@ mysql> show variables like '%innodb_doublewrite%';
 
 数据双写流程
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672133064003/a31680a18f104e0da3f3cb6c1aa71866.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/a31680a18f104e0da3f3cb6c1aa71866.png)
 
 * **step1**：当进行缓冲池中的脏页刷新到磁盘的操作时,并不会直接写磁盘,每次脏页刷新必须要先写double write .
 * **step2**：通过memcpy函数将脏页复制到内存中的double write buffer .
@@ -1466,7 +1466,7 @@ Compact 设计目标是高效地存储数据，一个页中存放的行数据越
 
 Compact行记录由两部分组成: 记录放入额外信息 和  记录的真实数据.
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/55418f9593df402995e37c1b1a0bb05e.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/55418f9593df402995e37c1b1a0bb05e.png)
 
 **记录额外信息部分**
 
@@ -1531,7 +1531,7 @@ Compact行记录由两部分组成: 记录放入额外信息 和  记录的真�
 
   记录的真实数据除了插入的那些列的数据，MySQL会为每个记录默认的添加一些列（也称为隐藏列），具体的列如下：
 
-  ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1607287731925286912/4b5476f2251b45939db29cfb4a7198cc.png)
+  ![image.png](https://cdn.fengxianhub.top/resources-master/4b5476f2251b45939db29cfb4a7198cc.png)
 
   | 列名           | 是否必须 | 占用空间 | 描述                  |
   | -------------- | -------- | -------- | --------------------- |
@@ -1562,7 +1562,7 @@ Compact行记录由两部分组成: 记录放入额外信息 和  记录的真�
   InnoDB 规定一页至少存储两条记录(B+树特点)，如果页中只能存放下一条记录，InnoDB存储引擎会自动将行数据存放到溢出页中.
   当发生行溢出时，数据页只保存了前768字节的前缀数据，接着是20个字节的偏移量，指向行溢出页.
 
-  ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672133064003/0dcc99e8c9ac4b4e92d2fc2cefef9398.png)
+  ![image.png](https://cdn.fengxianhub.top/resources-master/0dcc99e8c9ac4b4e92d2fc2cefef9398.png)
 
 # 28.如何进行JOIN优化？
 
@@ -1570,7 +1570,7 @@ JOIN 是 MySQL 用来进行联表操作的，用来匹配两个表的数据，�
 
 JOIN 操作有多种方式，取决于最终数据的合并效果。常用连接方式的有以下几种:
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672133064003/55df110a70d9450283a9a2bf0269e2b1.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/55df110a70d9450283a9a2bf0269e2b1.png)
 
 什么是驱动表 ?
 
@@ -1591,7 +1591,7 @@ JOIN 操作有多种方式，取决于最终数据的合并效果。常用连接
 
 * **例如有这样一条SQL:**
 
-  ```
+  ```sql
   -- 连接用户表与订单表 连接条件是 u.id = o.user_id
   select * from user t1 left join order t2 on t1.id = t2.user_id;
   -- user表为驱动表,order表为被驱动表
@@ -1599,7 +1599,7 @@ JOIN 操作有多种方式，取决于最终数据的合并效果。常用连接
 
 * 转换成代码执行时的思路是这样的:
 
-  ```
+  ```java
   for(user表行 uRow : user表){
       for(Order表的行 oRow : order表){
           if(uRow.id = oRow.user_id){
@@ -1609,7 +1609,7 @@ JOIN 操作有多种方式，取决于最终数据的合并效果。常用连接
   }
   ```
 
-* **匹配过程如下图**![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672133064003/b471d0b4f2da457892be9bce33827285.png)
+* **匹配过程如下图**![image.png](https://cdn.fengxianhub.top/resources-master/b471d0b4f2da457892be9bce33827285.png)
 
 * **SNL 的特点**
 
@@ -1625,7 +1625,7 @@ JOIN 操作有多种方式，取决于最终数据的合并效果。常用连接
 * 从原来的  `匹配次数 = 外层表行数 * 内层表行数` , 变成了  `匹配次数 = 外层表的行数 * 内层表索引的高度`  ，极大的提升了 join的性能。
 * 当 `order`  表的   `user_id`  为索引的时候执行过程会如下图：
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672133064003/524e38edbd0d46b5a3642a0cc2af786c.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/524e38edbd0d46b5a3642a0cc2af786c.png)
 
 **注意：使用Index Nested-Loop Join 算法的前提是匹配的字段必须建立了索引。**
 
@@ -1634,7 +1634,7 @@ JOIN 操作有多种方式，取决于最终数据的合并效果。常用连接
 如果 join 的字段有索引，MySQL 会使用 INL 算法。如果没有的话，MySQL 会如何处理？
 
 因为不存在索引了，所以被驱动表需要进行扫描。这里 MySQL 并不会简单粗暴的应用 SNL 算法，而是加入了 buffer 缓冲区，降低了内循环的个数，也就是被驱动表的扫描次数。
-![]()![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672133064003/df7920c57eb449a68ae9fb902a976729.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/df7920c57eb449a68ae9fb902a976729.png)
 
 * 在外层循环扫描 user表中的所有记录。扫描的时候，会把需要进行 join 用到的列都缓存到 buffer 中。buffer 中的数据有一个特点，里面的记录不需要一条一条地取出来和 order 表进行比较，而是整个 buffer 和 order表进行批量比较。
 
@@ -1642,7 +1642,7 @@ JOIN 操作有多种方式，取决于最终数据的合并效果。常用连接
 
 * MySQL 默认 buffer 大小 256K，如果有 n 个 join 操作，会生成 n-1 个 join buffer。
 
-  ```
+  ```sql
   mysql> show variables like '%join_buffer%';
   +------------------+--------+
   | Variable_name    | Value  |
@@ -1682,12 +1682,12 @@ JOIN 操作有多种方式，取决于最终数据的合并效果。常用连接
 
 * *将被查询的字段建立普通索引或者联合索引*，这样的话就可以直接返回索引中的的数据，不需要再通过聚集索引去定位行记录，避免了回表的情况发生。
 
-```
+```sql
 EXPLAIN SELECT user_name,user_age,user_level FROM users 
 WHERE user_name = 'tom' AND user_age = 17;
 ```
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672133064003/9fc6c9a655214e6dbec1e82f51e745e1.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/9fc6c9a655214e6dbec1e82f51e745e1.png)
 
 覆盖索引的定义与注意事项:
 
@@ -1705,7 +1705,7 @@ WHERE user_name = 'tom' AND user_age = 17;
 
 InnoDB存储引擎提供了两种事务日志：redo log(重做日志)和undo log(回滚日志)。其中redo log用于保证事务持久性；undo log则是事务原子性和隔离性实现的基础。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1670389670045/c33c69e81e80404a96f4cf49b90a16ab.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/c33c69e81e80404a96f4cf49b90a16ab.png)
 
 每写一个事务,都会修改Buffer Pool,从而产生相应的Redo/Undo日志:
 
@@ -1716,7 +1716,7 @@ InnoDB存储引擎提供了两种事务日志：redo log(重做日志)和undo lo
 
 InnoDB 实现回滚，靠的是undo log ：当事务对数据库进行修改时，InnoDB 会生成对应的undo log  ；如果事务执行失败或调用了rollback ，导致事务需要回滚，便可以利用undo log中的信息将数据回滚到修改之前的样子。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/8133afe062ba49389226210a1bd9a30c.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/8133afe062ba49389226210a1bd9a30c.png)
 
 2）一致性
 
@@ -1725,7 +1725,7 @@ InnoDB 实现回滚，靠的是undo log ：当事务对数据库进行修改时�
 - 约束一致性：创建表结构时所指定的外键、唯一索引等约束。
 - 数据一致性：是一个综合性的规定，因为它是由原子性、持久性、隔离性共同保证的结果，而不是单单依赖于某一种技术。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1670389670045/a885bb90c360436aab888b60e95ab5ab.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/a885bb90c360436aab888b60e95ab5ab.png)
 
 3）隔离性
 
@@ -1748,7 +1748,7 @@ MySQL 事务的持久性保证依赖的日志文件: `redo log`
 * redo log 也包括两部分：一是内存中的日志缓冲(redo log buffer)，该部分日志是易失性的；二是磁盘上的重做日志文件(redo log file)，该部分日志是持久的。redo log是物理日志，记录的是数据库中物理页的情况 。
 * 当数据发生修改时，InnoDB不仅会修改Buffer Pool中的数据，也会在redo log buffer记录这次操作；当事务提交时，会对redo log buffer进行刷盘，记录到redo log file中。如果MySQL宕机，重启时可以读取redo log file中的数据，对数据库进行恢复。这样就不需要每次提交事务都实时进行刷脏了。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/d397f7b8274c418e8e582d7e689a0fbf.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/d397f7b8274c418e8e582d7e689a0fbf.png)
 
 5）ACID总结
 
@@ -1757,7 +1757,7 @@ MySQL 事务的持久性保证依赖的日志文件: `redo log`
 - 在非并发状态下，事务间天然保证隔离性，因此只需要保证事务的原子性即可保证一致性.
 - 在并发状态下，需要严格保证事务的原子性、隔离性。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1670389670045/0e07dadfa29943898a6aaeb3ccb5253b.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/0e07dadfa29943898a6aaeb3ccb5253b.png)
 
 # 32.MySQL 的可重复读怎么实现的？
 
@@ -1775,7 +1775,7 @@ MVCC
 * trx_id: 事务id,记录最近一次更新这条数据的事务id.
 * roll_pointer: 回滚指针,指向之前生成的undo log
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/3914ba59208c40a1816d7aa616bdb00c.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/3914ba59208c40a1816d7aa616bdb00c.png)
 
 每一条数据都有多个版本,版本之间通过undo log链条进行连接通过这样的设计方式,可以保证每个事务提交的时候,一旦需要回滚操作,可以保证同一个事务只能读取到比当前版本更早提交的值,不能看到更晚提交的值。
 
@@ -1792,13 +1792,13 @@ Read View中比较重要的字段有4个:
 * `max_trx_id` : 下一个要生成的事务id值,也就是最大事务id
 * `creator_trx_id`: 就是你这个事务的id
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/10f8a6842fd14b5fa3c510f54bcfac20.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/10f8a6842fd14b5fa3c510f54bcfac20.png)
 
 当一个事务第一次执行查询sql时，会生成一致性视图 read-view（快照），查询时从 undo log 中最新的一条记录开始跟 read-view 做对比，如果不符合比较规则，就根据回滚指针回滚到上一条记录继续比较，直到得到符合比较条件的查询结果。
 
 **Read View判断记录某个版本是否可见的规则如下**
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/29c8f326cf8a484dad8da5e9c157c217.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/29c8f326cf8a484dad8da5e9c157c217.png)
 
 1.如果当前记录的事务id落在绿色部分（trx_id < min_id），表示这个版本是已提交的事务生成的，可读。
 2.如果当前记录的事务id落在红色部分（trx_id > max_id），表示这个版本是由将来启动的事务生成的，不可读。
@@ -1839,7 +1839,7 @@ RC 和 RR 隔离级别都是由 MVCC 实现，区别在于：
 
 假设 select * from where value=1 for update，只在这一行加锁（注意这只是假设），其它行不加锁，那么就会出现如下场景：
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/8b7a527b9b804c649088d8f19f0d298a.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/8b7a527b9b804c649088d8f19f0d298a.png)
 
 Session A的三次查询Q1-Q3都是select * from where value=1 for update，查询的value=1的所有row。
 
@@ -1864,7 +1864,7 @@ Session A的三次查询Q1-Q3都是select * from where value=1 for update，查�
 * GapLock锁：间隙锁，锁定索引记录间隙(不包括记录本身)，确保索引记录的间隙不变。（范围锁，RR隔离级别支持）
 * Next-key Lock 锁：记录锁和间隙锁组合，同时锁住数据，并且锁住数据前后范围。（记录锁+范围锁，RR隔离级别支持）
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/45e0e29471574cf4b2d271caa8344369.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/45e0e29471574cf4b2d271caa8344369.png)
 
 **总结**
 
@@ -1924,7 +1924,7 @@ Session A的三次查询Q1-Q3都是select * from where value=1 for update，查�
 * 共享锁只能兼容共享锁, 不兼容排它锁
 * 排它锁互斥共享锁和其它排它锁
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/8c5348a34dad4631a3113a75b7b6fcf5.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/8c5348a34dad4631a3113a75b7b6fcf5.png)
 
 # 36.InnoDB 的行锁是怎么实现的？
 
@@ -1958,25 +1958,25 @@ I**nnoDB行锁是通过对索引数据页上的记录加锁实现的**，主要�
 
    加锁行为：仅在id=10的主键索引记录上加X锁。
 
-   ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/beb8ed434aa349e789b59c553a9030bc.png)
+   ![image.png](https://cdn.fengxianhub.top/resources-master/beb8ed434aa349e789b59c553a9030bc.png)
 
 2. 唯一键加锁
 
    加锁行为：现在唯一索引id上加X锁，然后在id=10的主键索引记录上加X锁。
 
-   ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/f0787ff46f15443f9e7d14b8a50ee784.png)
+   ![image.png](https://cdn.fengxianhub.top/resources-master/f0787ff46f15443f9e7d14b8a50ee784.png)
 
 3. 非唯一键加锁
 
    加锁行为：对满足id=10条件的记录和主键分别加X锁，然后在(6,c)-(10,b)、(10,b)-(10,d)、(10,d)-(11,f)范围分别加Gap Lock。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/ea4aeac3a77a45488d8f1227e9f83d05.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/ea4aeac3a77a45488d8f1227e9f83d05.png)
 
 4. 无索引加锁
 
    加锁行为：表里所有行和间隙都会加X锁。（当没有索引时，会导致全表锁定，因为InnoDB引擎锁机制是基于索引实现的记录锁定）。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/8b90b13b82a44cd9a013596c04f5e3f9.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/8b90b13b82a44cd9a013596c04f5e3f9.png)
 
 # 37.并发事务会产生哪些问题
 
@@ -1995,7 +1995,7 @@ I**nnoDB行锁是通过对索引数据页上的记录加锁实现的**，主要�
 
 “更新丢失”、”脏读”、“不可重复读”和“幻读”等并发事务问题，其实都是数据库一致性问题，为了解决这些问题，MySQL数据库是通过事务隔离级别来解决的，数据库系统提供了以下 4 种事务隔离级别供用户选择。
 
-![](file:///Users/congqing/Downloads/%2002_%E6%8E%88%E8%AF%BE%E8%B5%84%E6%96%99/MySQL/MySQL%E6%B5%B7%E9%87%8F%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E4%B8%8E%E4%BC%98%E5%8C%96%EF%BC%88%E4%B8%8A%EF%BC%89/images/mysql-2-2.png?lastModify=1673086096)![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/6950c072d1a743a5934510ccbe06e3ec.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/6950c072d1a743a5934510ccbe06e3ec.png)
 
 * **读未提交**
   Read Uncommitted 读未提交：解决了回滚覆盖类型的更新丢失，但可能发生脏读现象，也就是可能读取到其他会话中未提交事务修改的数据。
@@ -2036,7 +2036,7 @@ MVCC（Multi Version Concurrency Control）被称为多版本并发控制，是�
 
 **1）行记录的三个隐藏字段**
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/0f0c75f07cf5455c9f406e5b5ea6489c.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/0f0c75f07cf5455c9f406e5b5ea6489c.png)
 
 * `DB_ROW_ID` : 如果没有为表显式的定义主键，并且表中也没有定义唯一索引，那么InnoDB会自动为表添加一个row_id的隐藏列作为主键。
 * `DB_TRX_ID` : 事务中对某条记录做增删改时,就会将这个事务的事务ID写入到trx_id中.
@@ -2046,11 +2046,11 @@ MVCC（Multi Version Concurrency Control）被称为多版本并发控制，是�
 
 举例：事务 T-100 和 T-120 对表中 id = 1 的数据行做 update 操作，事务 T-130 进行 select 操作，即使 T-100 已经提交修改，三次 select 语句的结果都是“lisi”。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/d5dd8418f3a64bef8aa93bc815176584.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/d5dd8418f3a64bef8aa93bc815176584.png)
 
 * 每一条数据都有多个版本,版本之间通过undo log链条进行连接
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/776f222b82b142e2a219e8dccc828bd3.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/776f222b82b142e2a219e8dccc828bd3.png)
 
 **3）ReadView**
 
@@ -2132,7 +2132,7 @@ SQL语句中不要使用太复杂的关联多表的查询；使用explain“执�
 
 - 两个事务分别想拿到对方持有的锁，互相等待，于是产生死锁
 
-  ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/44213d7bf7b34ccbb340fcf6adb1fb98.png)
+  ![image.png](https://cdn.fengxianhub.top/resources-master/44213d7bf7b34ccbb340fcf6adb1fb98.png)
 
 **产生原因3**：每个事务只有一个SQL,但是有些情况还是会发生死锁.
 
@@ -2140,13 +2140,13 @@ SQL语句中不要使用太复杂的关联多表的查询；使用explain“执�
 2. 事务2，从pubtime索引出发，[10,6],[100,1]均满足过滤条件，同样也会加聚簇索引上的记录X锁，加锁顺序为[6,hdc,10]，后[1,hdc,100]。
 3. 但是加锁时发现跟事务1的加锁顺序正好相反，两个Session恰好都持有了第一把锁，请求加第二把锁，死锁就发生了。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/02a98ff1858547d79bb11523a6abd225.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/02a98ff1858547d79bb11523a6abd225.png)
 
 **解决方案:** 如上面的原因2和原因3,  对索引加锁顺序的不一致很可能会导致死锁，所以如果可以，尽量以相同的顺序来访问索引记录和表。在程序以批量方式处理数据的时候，如果事先对数据排序，保证每个线程按固定的顺序来处理记录，也可以大大降低出现死锁的可能；
 
 # 40.介绍一下MySQL的体系架构？
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/bfe09e96eb434e98a1f5870ba779d576.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/bfe09e96eb434e98a1f5870ba779d576.png)
 
 **MySQL Server架构自顶向下大致可以分网络连接层、服务层、存储引擎层和系统文件层。**
 
@@ -2270,7 +2270,7 @@ Redo Buffer 持久化到 redo log 的策略，可通过 `Innodb_flush_log_at_trx
 | 1  (实时写,实时刷) | 事务每次提交都会将 `redo log buffer`中的日志写入 `os buffer`并 调用 `fsync()`刷到 `redo log file`中。这种方式即使系统崩溃也不会丢失任何数据，但是因为每次提交都写入磁盘，IO的性能较差。 |
 | 2 (实时写, 延时刷) | 每次提交都仅写入到 `os buffer`，然后是每秒调用 `fsync()`将 `os buffer`中的日志写入到 `redo log file`。 |
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/b6fcf484cec943ba99ef0780844c79d2.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/b6fcf484cec943ba99ef0780844c79d2.png)
 
 一般建议选择取值2，因为 MySQL 挂了数据没有损失，整个服务器挂了才会损失1秒的事务提交数据
 
@@ -2299,7 +2299,7 @@ MySQL中的Undo Log严格的讲不是Log，而是数据，因此他的管理和�
 
 * Redo Log 文件内容是以顺序循环的方式写入文件，写满时则回溯到第一个文件，进行覆盖写。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/70fa5785c2044d038e1e6d04b553028d.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/70fa5785c2044d038e1e6d04b553028d.png)
 
 * **write pos**: 表示日志当前记录的位置，当ib_logfile_4写满后，会从ib_logfile_1从头开始记录；
 * **check point**: 表示将日志记录的修改写进磁盘，完成数据落盘，数据落盘后checkpoint会将日志上的相关记录擦除掉，即 `write pos -> checkpoint`  之间的部分是redo log空着的部分，用于记录新的记录，`checkpoint -> write pos` 之间是redo log 待落盘的数据修改记录
@@ -2326,7 +2326,7 @@ binlog日志有三种模式
 * 优点：日志量小，减少磁盘IO，提升存储和恢复速度
 * 缺点：在某些情况下会导致主从数据不一致，比如last_insert_id()、now()等函数。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/b8e6f4dcef054331b143f57c748d9c58.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/b8e6f4dcef054331b143f57c748d9c58.png)
 
 3）MIXED（mixed-based replication, MBR）：以上两种模式的混合使用，一般会使用STATEMENT模式保存binlog，对于STATEMENT模式无法复制的操作使用ROW模式保存binlog，MySQL会根据执行的SQL语句选择写入模式。
 
@@ -2361,7 +2361,7 @@ binlog日志有三种模式
 
 **进行统计操作时,count中的统计条件可以三种选择:**
 
-```
+```sql
 EXPLAIN  SELECT COUNT(*) FROM user;
 
 EXPLAIN  SELECT COUNT(列名) FROM user;
@@ -2392,7 +2392,7 @@ EXPLAIN  SELECT COUNT(1) FROM user;
 
 简单来说，就是指通过某种特定的条件，将我们存放在同一个数据库中的数据分散存放到多个数据库（主机）上面，以达到分散单台设备负载的效果。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1597204636882698240/351672652c6a4a1bb6e648f75651d730.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/351672652c6a4a1bb6e648f75651d730.png)
 
 - 分库分表解决的问题
 
@@ -2417,7 +2417,7 @@ EXPLAIN  SELECT COUNT(1) FROM user;
 
   - 将数据库部署在不同服务器上，从而达到多个服务器共同分摊压力的效果
 
-  ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1597204636882698240/dcbbe3674442421c967fe8541f28b6b0.png)
+  ![image.png](https://cdn.fengxianhub.top/resources-master/dcbbe3674442421c967fe8541f28b6b0.png)
 
 **垂直分表**
 
@@ -2426,7 +2426,7 @@ EXPLAIN  SELECT COUNT(1) FROM user;
 - 将一个表按照字段分成多表，每个表存储其中一部分字段。
 - 对职位表进行垂直拆分, 将职位基本信息放在一张表, 将职位描述信息存放在另一张表
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1597204636882698240/d401ca741da24ac782d6356a38e20311.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/d401ca741da24ac782d6356a38e20311.png)
 
 - 垂直拆分带来的一些提升
   - 解决业务层面的耦合，业务清晰
@@ -2440,13 +2440,13 @@ EXPLAIN  SELECT COUNT(1) FROM user;
 
 - 简单讲就是根据表中的数据的逻辑关系，将同一个表中的数据按照某种条件拆分到多台数据库（主机）上面, 例如将订单表 按照id是奇数还是偶数, 分别存储在不同的库中。
 
-  ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1597204636882698240/ce46a9c5ae894a6da70a4ee5b72df1f2.png)
+  ![image.png](https://cdn.fengxianhub.top/resources-master/ce46a9c5ae894a6da70a4ee5b72df1f2.png)
 
 **水平分表**
 
 - 针对数据量巨大的单张表（比如订单表），按照规则把一张表的数据切分到多张表里面去。 但是这些表还是在同一个库中，所以库级别的数据库操作还是有IO瓶颈。
 
-  ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1597204636882698240/307c531d662c484f9d68d249eb48620d.png)
+  ![image.png](https://cdn.fengxianhub.top/resources-master/307c531d662c484f9d68d249eb48620d.png)
 
 - 总结
 
@@ -2474,7 +2474,7 @@ EXPLAIN  SELECT COUNT(1) FROM user;
 - Mysql 中有一种日志叫做 bin 日志（二进制日志）。这个日志会记录下所有修改了数据库的SQL 语句（insert,update,delete,create/alter/drop table, grant 等等）。
 - 主从复制的原理其实就是把主服务器上的 bin 日志复制到从服务器上执行一遍，这样从服务器上的数据就和主服务器上的数据相同了。
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1597204636882698240/c0327525e85b4d098b0369093290b898.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/c0327525e85b4d098b0369093290b898.png)
 
 1. 主库db的更新事件(update、insert、delete)被写到binlog
 2. 主库创建一个binlog dump thread，把binlog的内容发送到从库
@@ -2484,7 +2484,7 @@ EXPLAIN  SELECT COUNT(1) FROM user;
 
 # 49. 说一下 MySQL 执行一条查询语句的内部执行过程？
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/16657/1672984425088/a2d06073396b4f5b8e0ed33531e8706e.png)
+![image.png](https://cdn.fengxianhub.top/resources-master/a2d06073396b4f5b8e0ed33531e8706e.png)
 
 * ①建立连接（Connectors&Connection Pool），通过客户端/服务器通信协议与MySQL建立连接。MySQL 客户端与服务端的通信方式是 “ 半双工 ”。对于每一个 MySQL 的连接，时刻都有一个线程状态来标识这个连接正在做什么。
   通讯机制：
