@@ -7,11 +7,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
-  <link rel="stylesheet" href="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/vue.css" />
-  <link rel="icon" href="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/img/favicon%20%281%29.ico" />
+  <link rel="stylesheet" href="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/vue.css" />
+  <link rel="icon" href="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/img/favicon%20%281%29.ico" />
   <link rel="stylesheet" href="/_media.css" />
   <!-- alert -->
-  <link rel="stylesheet" href="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/sweetalert.min.css"
+  <link rel="stylesheet" href="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/sweetalert.min.css"
     type="text/css" media="all" />
   <!-- 阿里矢量图 -->
   <link rel="stylesheet" href="iconfont.css" />
@@ -26,7 +26,7 @@
       $("#Giscus").remove();
       var script = document.createElement("script");
       script.id = "Giscus";
-      script.src = "https://giscus.app/client.js";
+      script.src = "//giscus.app/client.js";
       script.dataset.repo = "fengyuan-liang/notes";
       script.dataset.repoId = "R_kgDOHmWRpQ";
       script.dataset.category = "Q&A";
@@ -49,7 +49,7 @@
         function (hook, vm) {
           hook.beforeEach(function (html) {
             var url =
-              "https://github.com/fengyuan-liang/notes/" + vm.route.file;
+              "https://github.com/fengyuan-liang/notes/edit/main/" + vm.route.file;
             var editHtml = "[📝 EDIT DOCUMENT](" + url + ")\n";
             var editHtml_end = "[🖊 Edit Document](" + url + ")\n";
             return (
@@ -127,49 +127,50 @@
     }
   </script>
   <!-- Docsify v4 -->
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify.js"></script>
-  <!-- <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify%404.js"></script> -->
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify.js"></script>
+  <!-- <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify%404.js"></script> -->
   <!-- 字数统计 -->
   <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
   <!-- 图片缩放 -->
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/zoom-image.min.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/zoom-image.min.js"></script>
   <!-- <script src="//unpkg.com/docsify/lib/plugins/zoom-image.js"></script> -->
   <!-- 代码复制 -->
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify-copy-code.min.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify-copy-code.min.js"></script>
   <!-- 代码高亮 -->
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-java.js"></script>
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-textile.min.js"></script>
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-yaml.min.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-java.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-textile.min.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-yaml.min.js"></script>
   <script src="//polyfill.io/v3/polyfill.min.js?features=String.prototype.normalize"></script>
   <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-php.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
   <!-- golang代码高亮 -->
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-go.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-go.min.js"></script>
   <!-- scala代码高亮 -->
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-scala.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-scala.min.js"></script>
   <!-- rust代码高亮 -->
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-rust.min.js"></script>
-  <!--<script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-t4-cs.min.js"></script>-->
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-t4-templating.min.js"></script>
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-t4-vb.min.js"></script>
-  <!--<script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-tsx.min.js"></script>-->
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-bash.min.js"></script>
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-shell-session.min.js"></script>
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-sql.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-rust.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  <!--<script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-t4-cs.min.js"></script>-->
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-t4-templating.min.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-t4-vb.min.js"></script>
+  <!--<script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-tsx.min.js"></script>-->
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-bash.min.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-shell-session.min.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-sql.min.js"></script>
   <!-- 搜索 -->
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/search.min.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/search.min.js"></script>
 
   <!-- 回到顶部 -->
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/jquery.js"></script>
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/jquery.goup.js"></script>
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/emoji.min.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/jquery.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/jquery.goup.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/emoji.min.js"></script>
   <!-- 复制提醒 -->
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/sweetalert2%408.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/sweetalert2%408.js"></script>
 
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify-sidebar-collapse.min.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify-sidebar-collapse.min.js"></script>
   <!-- vue.js -->
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/vue.min.js"></script>
+  <script src="//knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/vue.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>
   <script type="text/javascript">
     $(document).ready(() => {
