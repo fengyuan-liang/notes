@@ -42,7 +42,13 @@
 
 
 
+### pod
 
+Pod（容器组）是k8s中最小的可部署单元，一个Pod至少包含了一个应用程序容器、存储资源、一个唯一的网络ip地址，以及一些确定容器该如何运行的选项
+
+pod中第一个容器是`pause`
+
+![image-20240115230437691](https://cdn.fengxianhub.top/resources-master/image-20240115230437691.png)
 
 
 
