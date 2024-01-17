@@ -52,23 +52,62 @@ pod中第一个容器是`pause`
 
 
 
+## k8s核心概念
+
+![image-20240116220644226](https://cdn.fengxianhub.top/resources-master/image-20240116220644226.png)
+
+### 资源的分类
+
+在k8s集群中，一切皆为资源
+
+![image-20240116205553997](https://cdn.fengxianhub.top/resources-master/image-20240116205553997.png)
+
+
+
+### DamonSet
+
+可以通过节点亲和力来配置当前节点是否启动`DamonSet`的进程
+
+![image-20240116205608350](https://cdn.fengxianhub.top/resources-master/image-20240116205608350.png)
+
+### service/ingress
+
+我们把流量分为`南北流量`和`东西流量`
+
+- service实现`东西流量`
+- ingress实现`南北流量`
+
+![image-20240116210704727](https://cdn.fengxianhub.top/resources-master/image-20240116210704727.png)
+
+下面再来几张图来介绍二者的区别
+
+![image-20240116214727474](https://cdn.fengxianhub.top/resources-master/image-20240116214727474.png)
+
+### 命名空间级别
+
+**configmap**
 
 
 
 
 
+**Secret**
 
 
 
+**downwardAPI**
+
+downwardAPI这个模式和其他模式不一样的地方在于它不是为了存放容器的数据也不是用来进行容器和宿主机的数据交换的，而是让pod里的容器能够直接获取到这个pod对象本身的一些信息
+
+downwardAPI提供了两种方式用于将pod的信息注入到容器内部：
+
+- 环境变量：用于单个变量，可以将pod信息和容器信息直接注入容器内部
+- volume挂载：将pod信息生成为文件，直接挂载到容器内部去
 
 
 
+## kubectl使用
 
+在任意节点使用kubectl
 
-
-
-
-
-
-
-
+![image-20240116221823005](https://cdn.fengxianhub.top/resources-master/image-20240116221823005.png)
