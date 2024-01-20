@@ -111,3 +111,51 @@ downwardAPI提供了两种方式用于将pod的信息注入到容器内部：
 在任意节点使用kubectl
 
 ![image-20240116221823005](https://cdn.fengxianhub.top/resources-master/image-20240116221823005.png)
+
+
+
+### 常用命令
+
+```shell
+$ kubectl scale deploy --replicas=1 deploy名字
+```
+
+
+
+## 核心资源
+
+### Pod探针 
+
+```yaml
+livenessProbe:
+  failureThreshold: 5
+  httpGet:
+    path: /health
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 60
+  periodSeconds: 10
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
