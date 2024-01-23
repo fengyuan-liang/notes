@@ -1,6 +1,6 @@
 # k8s
 
-## 整体架构
+# 整体架构
 
 先上一个总体的架构图
 
@@ -32,17 +32,17 @@
 - Federation：集群间控制
 - es：分布式日志数据搜索
 
-## 资源与对象
+# 资源与对象
 
 >在K8s中将所有的东西都抽象为资源，如`Pod`、`Service`、`Node`等都是资源，**对象**就是资源的**实例**，是持久化的实体，如某个具体的Pod，某个具体的Node，k8s使用这些实体表示整个集群的状态
 >
 >对象的创建、删除、修改都是通过`Api server`组件提供的API接口进行实现的，kubectl也是使用rest API实现的
 
-### 资源清单
+## 资源清单
 
 
 
-### pod
+## pod
 
 Pod（容器组）是k8s中最小的可部署单元，一个Pod至少包含了一个应用程序容器、存储资源、一个唯一的网络ip地址，以及一些确定容器该如何运行的选项
 
@@ -52,11 +52,11 @@ pod中第一个容器是`pause`
 
 
 
-## k8s核心概念
+# k8s核心概念
 
 ![image-20240116220644226](https://cdn.fengxianhub.top/resources-master/image-20240116220644226.png)
 
-### 资源的分类
+## 资源的分类
 
 在k8s集群中，一切皆为资源
 
@@ -64,13 +64,13 @@ pod中第一个容器是`pause`
 
 
 
-### DamonSet
+## DamonSet
 
 可以通过节点亲和力来配置当前节点是否启动`DamonSet`的进程
 
 ![image-20240116205608350](https://cdn.fengxianhub.top/resources-master/image-20240116205608350.png)
 
-### service/ingress
+## service/ingress
 
 我们把流量分为`南北流量`和`东西流量`
 
@@ -83,7 +83,7 @@ pod中第一个容器是`pause`
 
 ![image-20240116214727474](https://cdn.fengxianhub.top/resources-master/image-20240116214727474.png)
 
-### 命名空间级别
+## 命名空间级别
 
 **configmap**
 
@@ -106,7 +106,7 @@ downwardAPI提供了两种方式用于将pod的信息注入到容器内部：
 
 
 
-## kubectl使用
+# kubectl使用
 
 在任意节点使用kubectl
 
@@ -114,7 +114,7 @@ downwardAPI提供了两种方式用于将pod的信息注入到容器内部：
 
 
 
-### 常用命令
+## 常用命令
 
 ```shell
 $ kubectl scale deploy --replicas=1 deploy名字
@@ -122,11 +122,25 @@ $ kubectl scale deploy --replicas=1 deploy名字
 
 
 
-## 核心资源
+# 核心资源
 
-### Pod探针 
+## Pod探针 
+
+![image-20240123231545613](https://cdn.fengxianhub.top/resources-master/image-20240123231545613.png)
+
+
 
 ```yaml
+// 启动探针 注意：需要k8s版本在1.16以上
+startupProbe:
+  httpGet:
+    path: /health
+    port: 8080
+    scheme: HTTP
+  failureThreshold: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+// 存活探针
 livenessProbe:
   failureThreshold: 5
   httpGet:
@@ -134,10 +148,22 @@ livenessProbe:
     port: 8080
     scheme: HTTP
   initialDelaySeconds: 60
-  periodSeconds: 10
+  periodSeconds: 10 // 10s请求一次，探测是否存活了
+// 就绪探针
+readinessProbe:
+  failureThreshold: 5 // 允许最大错误次数
+  httpGet:
+    path: /health
+    port: 8080
+    scheme: HTTP
+  periodSeconds: 60 
+  sucessThreshold: 1 // 指定成功认定为健康的连续探测次数。只有在连续成功探测次数达到该值时，容器才被认为是健康的
+  timeoutSeconds: 10 // 10s请求一次，探测是否存活了
 ```
 
+## pod生命周期
 
+![image-20240124001443837](https://cdn.fengxianhub.top/resources-master/image-20240124001443837.png)
 
 
 
