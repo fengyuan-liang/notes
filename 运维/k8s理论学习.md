@@ -122,7 +122,9 @@ $ kubectl scale deploy --replicas=1 deploy名字
 
 
 
-# 核心资源
+# 深入Pod
+
+![image-20240124225638491](https://cdn.fengxianhub.top/resources-master/image-20240124225638491.png)
 
 ## Pod探针 
 
@@ -165,11 +167,149 @@ readinessProbe:
 
 ![image-20240124001443837](https://cdn.fengxianhub.top/resources-master/image-20240124001443837.png)
 
+### 生命周期参数
+
+我们可以设置pod的生命周期
+
+```yaml
+spec: # 期望按照里面的描述进行创建
+  containers: # 容器的描述
+  - name: nginx-pod
+    image: nginx:1.21.1
+    imagePullPolicy: IfNotPresent # 本地没有再去远程拉取
+    lifecycle: # 生命周期的配置
+      postStart:  # 生命周期启动阶段要做的事情，不一定在容器的command之前运行
+        exec:
+          command:
+          - sh
+          - -c
+          - "echo '<h1>Pre start</h1>' > /usr/share/nginx/html/index.html"
+      preStop:
+        exec:
+          command:
+          - sh
+          - -c
+          - "sleep 50 && echo '<h1>Pre Stop</h1>' > /usr/share/nginx/html/index.html"
+```
+
+可以通过来控制pod销毁后等待的时间
+
+```yaml
+spec: # 期望按照里面的描述进行创建
+  terminationGracePeriodSeconds: 10
+```
+
+![image-20240124230943880](https://cdn.fengxianhub.top/resources-master/image-20240124230943880.png)
+
+也可以修改等待的时间
+
+![image-20240124233648321](https://cdn.fengxianhub.top/resources-master/image-20240124233648321.png)
 
 
 
+## 完整例子
 
+```yaml
+apiVersion: v1
+kind: Pod # 定义资源类型，也可以是Deloyment StatefulSet这一类资源
+metadata: # pod相关的元数据
+  name: nginx-demo
+  labels:
+    type: app
+    version: v1.0.0
+  namespace: test
+spec: # 期望按照里面的描述进行创建
+  terminationGracePeriodSeconds: 10
+  containers: # 容器的描述
+  - name: nginx-pod
+    image: nginx:1.21.1
+    imagePullPolicy: IfNotPresent # 本地没有再去远程拉取
+    lifecycle: # 生命周期的配置
+      postStart:  # 生命周期启动阶段要做的事情，不一定在容器的command之前运行
+        exec:
+          command:
+          - sh
+          - -c
+          - "echo '<h1>Pre start</h1>' > /usr/share/nginx/html/index.html"
+      preStop:
+        exec:
+          command:
+          - sh
+          - -c
+          - "sleep 50 && echo '<h1>Pre Stop</h1>' > /usr/share/nginx/html/index.html"
+    startupProbe:
+      httpGet:
+        path: /index.html
+        port: 80
+        scheme: HTTP
+      failureThreshold: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+    command:
+    - nginx
+    - -g
+    - 'daemon off;' # nginx -g 'daemon off;'
+    workingDir: /usr/share/nginx/html
+    ports:
+    - name: http
+      containerPort: 80
+      protocol: TCP
+    env:
+    - name: JVM_OPTS
+      value: '-Xms128m -Xmx128m'
+    resources:
+      requests: # 最小需要申请多少资源
+        cpu: 100m # 1000m是一个核心 100m即一个核心的百分之十
+        memory: "128Mi" # 现在内存最少使用128M
+      limits: # 资源最多使用
+        cpu: 200m
+        memory: 256Mi
+```
 
+# RS和Deployment
+
+![image-20240124235142206](https://cdn.fengxianhub.top/resources-master/image-20240124235142206.png)
+
+## 修改Label
+
+```shell
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl get po --show-labels -n test
+NAME         READY   STATUS    RESTARTS   AGE   LABELS
+nginx-demo   1/1     Running   0          49s   type=app,version=v1.0.0
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl label po nginx-demo author=lfy -n test
+pod/nginx-demo labeled
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl get po --show-labels -n test
+NAME         READY   STATUS    RESTARTS   AGE     LABELS
+nginx-demo   1/1     Running   0          2m18s   author=lfy,type=app,version=v1.0.0
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl label po nginx-demo author=lfy_v2 --overwrite -n test
+pod/nginx-demo labeled
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl get po --show-labels -n test
+NAME         READY   STATUS    RESTARTS   AGE     LABELS
+nginx-demo   1/1     Running   0          7m10s   author=lfy_v2,type=app,version=v1.0.0
+```
+
+上述方式都是临时修改，可以通过`kubectl edit 资源`修改yml文件
+
+## 查询Label
+
+```shell
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl get po -l type=app -n test --show-labels
+NAME         READY   STATUS    RESTARTS   AGE   LABELS
+nginx-demo   1/1     Running   0          13m   author=lfy_v2,type=app,version=v1.0.0
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl get po -l type=app,version=v1.0.0 -n test --show-labels
+NAME         READY   STATUS    RESTARTS   AGE   LABELS
+nginx-demo   1/1     Running   0          14m   author=lfy_v2,type=app,version=v1.0.0
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl get po -l type=app,version in (v1.0.0, v1.0.1) -n test --show-labels
+-bash: syntax error near unexpected token `('
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl get po -l 'type=app,version in (v1.0.0, v1.0.1)' -n test --show-labels
+NAME         READY   STATUS    RESTARTS   AGE   LABELS
+nginx-demo   1/1     Running   0          14m   author=lfy_v2,type=app,version=v1.0.0
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl get po -l 'type=app,versionv1.0.1)' -n test --show-labels
+Error from server (BadRequest): Unable to find "/v1, Resource=pods" that match label selector "type=app,versionv1.0.1)", field selector "": unable to parse requirement: found ')', expected: in, notin, =, ==, !=, gt, lt
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl get po -l 'type=app,version!=v1.0.1' -n test --show-labels
+NAME         READY   STATUS    RESTARTS   AGE   LABELS
+nginx-demo   1/1     Running   0          15m   author=lfy_v2,type=app,version=v1.0.0
+```
 
 
 
