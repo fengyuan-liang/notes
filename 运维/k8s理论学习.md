@@ -311,15 +311,177 @@ NAME         READY   STATUS    RESTARTS   AGE   LABELS
 nginx-demo   1/1     Running   0          15m   author=lfy_v2,type=app,version=v1.0.0
 ```
 
+三处app: nginx-deploy，第一处是当前deployment自身的标签，第二处是筛选该deployment管理的pod，第三处是pod模板创建的pod的标签，这样理解对不对？
 
 
 
+## 回滚镜像
+
+```shell
+history limit来更改保持的revision数
+
+案例
+更新deployment时参数不小心写错，如nginx:1.9.1写成了nginx:1.91
+kubectl set image deployment/nginx-deploy nginx=nginx:1.91 -n test
+
+监控滚动升级状态，由于镜像名称错误，下载镜像失败，因此更新过程会卡住
+kubectl rollout status deployments nginx-deploy -n test
+为了修复这个问题，我们需要找到需要回退的revision进行回滚，通过【kubectl rollout history deployment/nginx-deploy】可以获取revision的列表
+通过【kubectl rollout history deployment/nginx-deployment --revision=2】可以查看详细信息
+
+确认要回退的版本后，可以通过【kubectl rollout undo deployment/nginx-deploy】可以回滚到上一个版本或者指定的revision版本【kubectl rollout undo deployment/nginx-deploy --to-revision=2】
+
+可以通过设置spec.revisionHistoryLimit来指定deployment保留了多少revision，如果为0就无法进行回滚了
+```
+
+```shell
+kubectl rollout status deployments nginx-deploy -n test
+```
+
+```shell
+// 故意改错template里面的描述
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl set image deployment/nginx-deploy nginx=nginx:1.91 -n test
+deployment.apps/nginx-deploy image updated
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl get po --show-labels -n test
+NAME                            READY   STATUS              RESTARTS   AGE   LABELS
+nginx-demo                      1/1     Running             0          47h   author=lfy_v2,type=app,version=v1.0.0
+nginx-deploy-58d5f88b69-6m6xv   1/1     Running             0          23h   app=nginx-deploy,pod-template-hash=58d5f88b69
+nginx-deploy-58d5f88b69-lv68j   1/1     Running             0          23h   app=nginx-deploy,pod-template-hash=58d5f88b69
+nginx-deploy-58d5f88b69-vtml8   1/1     Running             0          23h   app=nginx-deploy,pod-template-hash=58d5f88b69
+nginx-deploy-66bf86f787-z9f54   0/1     ContainerCreating   0          12s   app=nginx-deploy,pod-template-hash=66bf86f787
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl get po --show-labels -n test
+NAME                            READY   STATUS             RESTARTS   AGE     LABELS
+nginx-demo                      1/1     Running            0          47h     author=lfy_v2,type=app,version=v1.0.0
+nginx-deploy-58d5f88b69-6m6xv   1/1     Running            0          23h     app=nginx-deploy,pod-template-hash=58d5f88b69
+nginx-deploy-58d5f88b69-lv68j   1/1     Running            0          23h     app=nginx-deploy,pod-template-hash=58d5f88b69
+nginx-deploy-58d5f88b69-vtml8   1/1     Running            0          23h     app=nginx-deploy,pod-template-hash=58d5f88b69
+nginx-deploy-66bf86f787-z9f54   0/1     ImagePullBackOff   0          3m52s   app=nginx-deploy,pod-template-hash=66bf86f787
+// 进行回滚，但是之前的有问题所以会报错
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl rollout status deployments nginx-deploy -n test
+Waiting for deployment "nginx-deploy" rollout to finish: 1 out of 3 new replicas have been updated...
+error: deployment "nginx-deploy" exceeded its progress deadline
+// 查看版本记录
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl rollout history deployment/nginx-deploy -n test
+deployment.apps/nginx-deploy
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+3         <none>
+// 数字越大越新 我们可以查看上一个版本的镜像信息
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl rollout history deployment/nginx-deploy --revision=2 -n test
+deployment.apps/nginx-deploy with revision #2
+Pod Template:
+  Labels:       app=nginx-deploy
+        pod-template-hash=58d5f88b69
+  Containers:
+   nginx:
+    Image:      nginx:latest
+    Port:       <none>
+    Host Port:  <none>
+    Environment:        <none>
+    Mounts:     <none>
+  Volumes:      <none>
+ // 进行回滚
+ lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl rollout undo deployment/nginx-deploy --to-revision=2 -n test
+deployment.apps/nginx-deploy rolled back
+lfy@ubuntu:~/k8s/namespace/test/pods$ kubectl get po --show-labels -n test
+NAME                            READY   STATUS    RESTARTS   AGE   LABELS
+nginx-demo                      1/1     Running   0          47h   author=lfy_v2,type=app,version=v1.0.0
+nginx-deploy-58d5f88b69-6m6xv   1/1     Running   0          24h   app=nginx-deploy,pod-template-hash=58d5f88b69
+nginx-deploy-58d5f88b69-lv68j   1/1     Running   0          24h   app=nginx-deploy,pod-template-hash=58d5f88b69
+nginx-deploy-58d5f88b69-vtml8   1/1     Running   0          24h   app=nginx-deploy,pod-template-hash=58d5f88b69
+```
+
+## 扩容缩容
 
 
 
+```shell
+lfy@ubuntu:~$ kubectl scale --replicas=6 deploy nginx-deploy -n test
+deployment.apps/nginx-deploy scaled
+lfy@ubuntu:~$ kubectl get deploy -n test
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-deploy   6/6     6            6           41h
+// 可以看到RS的数量还是三个
+lfy@ubuntu:~$ kubectl get rs -n test
+NAME                      DESIRED   CURRENT   READY   AGE
+nginx-deploy-58d5f88b69   6         6         6       40h
+nginx-deploy-66bf86f787   0         0         0       16h
+nginx-deploy-84657b87     0         0         0       41h
+lfy@ubuntu:~$ kubectl get po -n test
+NAME                            READY   STATUS    RESTARTS   AGE
+nginx-deploy-58d5f88b69-285m9   1/1     Running   0          3m50s
+nginx-deploy-58d5f88b69-6m6xv   1/1     Running   0          40h
+nginx-deploy-58d5f88b69-87wxm   1/1     Running   0          3m50s
+nginx-deploy-58d5f88b69-d2jgf   1/1     Running   0          3m50s
+nginx-deploy-58d5f88b69-lv68j   1/1     Running   0          40h
+nginx-deploy-58d5f88b69-vtml8   1/1     Running   0          40h
+```
+
+## 暂定和恢复
+
+因为每次修改template信息后都会更新pod，我们可以先暂定等修改好了再进行更新
+
+```shell
+由于每次对pod template中的信息发生修改后，都会触发更新deployment操作，那么此时如果频繁修改信息，就会产生多次更新，而实际上只需要执行最后一次更新即可，当出现此类情况时我们就可以暂停【deployment】的【rollout】
+
+通过【kubectl rollout pause deployment <name>】就可以实现暂定，直到你下次继续恢复后才会继续进行滚动更新，通过【kubectl rollout resume deployment <name>】恢复更新
+
+尝试对容器进行修改，然后查看是否发生更新操作
+kubectl set image deploy <name> nginx=nginx:1.17.9
+kubectl get po
+```
 
 
 
+# statefulSet
+
+![image-20240128230505191](https://cdn.fengxianhub.top/resources-master/image-20240128230505191.png)
+
+
+
+# DaemonSet
+
+为每一个匹配的Node都部署一个守护进程
+
+可以使用守护进程收集Node上面的日志信息
+
+![image-20240128232813692](https://cdn.fengxianhub.top/resources-master/image-20240128232813692.png)
+
+
+
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd
+spec:
+  template:
+    metadata
+      labels:
+        app: logging
+        id: fluentd
+    name: fluentd
+    spec:
+      containers:
+      - name: fluentd-es
+        image: agilestacks/fluentd-elasticsearch:v1.3.0
+        env:
+        - name: FLUENTD_ARGS
+          value: -qq
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/lib/docker/containers
+        - name: varlog
+          mountPath: /var/log
+      volumes:
+        - hostPath:
+            path: /var/lib/docker/containers
+          name: containers
+        - hostPath:
+            path: /var/log
+          name: varlog
+```
 
 
 
