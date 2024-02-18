@@ -133,7 +133,7 @@
 
 **算法**
 
-[十大经典排序](/AlgorithmAndDataStructure/算法/1-十大经典排序.md) | [日常刷题](/LeetCode刷题/2-日常刷题.md) 
+[十大经典排序](/AlgorithmAndDataStructure/算法/1-十大经典排序.md) | [日常刷题](/LeetCode刷题/2-日常刷题.md) | [字符串算法](/AlgorithmAndDataStructure/算法/6-KMP、BM、KR、Sunday算法.md) 
 
 ## 🦄️ 408
 
