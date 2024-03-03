@@ -483,6 +483,48 @@ spec:
           name: varlog
 ```
 
+我们可以更加灵活的为node添加标签进行管理
+
+![image-20240225213726715](https://cdn.fengxianhub.top/resources-master/image-20240225213726715.png)
+
+# HPA
+
+HPA是用于控制自动扩容的资源
+
+先准备好一个有做资源限制的deployment
+
+```
+
+
+
+
+
+```shell
+kubectl autoscale deploy nginx-deploy --cpu -percent=20 --min=2 --max=5
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
