@@ -230,11 +230,11 @@
 	.markdown-section pre:after {
 	    content: attr(data-lang);
 	    position: absolute;
-	    top: 0.65em;
+	    top: 0.45em;
 	    right: 0.65em;
 	    opacity: 0.6;
 	    color: #ffffff;
-	    font-size: 0.1rem;
+	    font-size: 0.6rem;
 	    line-height: 1;
 	}
 
