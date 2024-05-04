@@ -200,6 +200,10 @@ dashboard：打开实时监控面板（  具体含义见：[dashboard | arthas (
 
 ![image-20230319185835244](https://cdn.fengxianhub.top/resources-master/202303191858378.png)
 
+
+
+
+
 ### 2.5 trace耗时统计
 
 通过trace命令我们可以对指定方法及其调用方法进行耗时统计，并且会将耗时最长的方法进行高亮
