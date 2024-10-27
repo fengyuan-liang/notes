@@ -9,7 +9,7 @@
   ],
   "docsify": {
     "config": {
-      "basePath": "https://docsify.js.org/",
+      "basePath": "https://blog.fengxianhub.top/",
       "loadSidebar": true,
       "loadNavbar": true,
       "coverpage": true,
