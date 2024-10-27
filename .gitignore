@@ -34,3 +34,4 @@ build/
 
 ### obsidian ###
 .obsidian/
+.vercel
