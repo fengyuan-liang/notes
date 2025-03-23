@@ -213,7 +213,110 @@ func Test01(t *testing.T) {
 
 如果父子ctx都有超时时间，并且父短子长，父接受后子也会结束
 
-## 4. golang六边形架构&依赖注入最佳实践
+## 4. 值接收者 vs 指针接收者
+
+我有如下代码
+
+```go
+type INotifyTokenService interface {
+	// FetchToken 获取发送推送消息的token
+	FetchToken() (string, error)
+}
+
+type notifyTokenService struct {
+	grantType string // 消息推送使用默认值client_credential
+	appid     string
+	secret    string
+	// ================
+	fetchTokenURI string
+	accessToken   string     // 缓存的token
+	expiresIn     int        // 过期时间
+	lastFetchTime *time.Time // 最后一次请求时间
+}
+
+func (svc notifyTokenService) SetExpiresIn(expiresIn int) {
+	svc.expiresIn = expiresIn
+	svc.lastFetchTime = utils.CaseToPoint(time.Now())
+}
+
+func (svc notifyTokenService) FetchToken() (string, error) {
+	// 1. 判断是否过期，优先使用没过期的token
+	if svc.lastFetchTime != nil && time.Now().Sub(*svc.lastFetchTime).Seconds() < float64(svc.expiresIn-100) {
+		return svc.accessToken, nil
+	}
+	type TokenResp struct {
+		AccessToken string `json:"access_token"`
+		ExpiresIn   int    `json:"expires_in"`
+	}
+	// 2. token过期 重新请求
+	tokenResponse, err := utils.Get[TokenResp](svc.fetchTokenURI)
+	if err != nil || tokenResponse == nil {
+		logger.Errorf("fetch token error, %v", err)
+		return "", errors.New("fetch token error")
+	}
+	logger.Infof("fetch token response => %v", utils.ObjToJsonStr(tokenResponse))
+	if tokenResponse.AccessToken != "" {
+		if tokenResponse.ExpiresIn > 0 {
+			svc.SetExpiresIn(tokenResponse.ExpiresIn)
+		}
+		svc.accessToken = tokenResponse.AccessToken
+		return svc.accessToken, nil
+	}
+	return "", nil
+}
+```
+
+这里有一个bug，就是代码
+
+```go
+func (svc notifyTokenService) SetExpiresIn(expiresIn int) {
+	svc.expiresIn = expiresIn
+	svc.lastFetchTime = utils.CaseToPoint(time.Now())
+}
+```
+
+这里设置`lastFetchTime`不会成功，取 `svc.lastFetchTime` 会一直是`nil`
+
+这里其实就对应`值接收者`和`指针接收者`的差异：
+
+- **值接收者**：`func (svc notifyTokenService)`
+   当方法使用值接收者时，Go 会将接收者（即 `svc`）复制一份传递给方法。在方法内部对 `svc` 的修改不会反映到原始对象上，因为方法操作的是一个副本。
+- **指针接收者**：`func (svc *notifyTokenService)`
+   当方法使用指针接收者时，方法接收到的是原始对象的指针（引用）。在方法内部对 `svc` 的修改会直接作用于原始对象。
+
+### 4.1 最佳实践
+
+在 Go 中，如果你需要在方法中修改接收者的状态，应该始终使用指针接收者。尤其是在定义接口实现时，通常推荐使用指针接收者，以避免不必要的拷贝并确保修改能够生效。
+
+因此，**你的代码应该统一使用指针接收者**
+
+### 4.2 总结
+
+- 值接收者会创建接收者的副本，方法内的修改不会影响原始对象。
+- 指针接收者操作的是原始对象的引用，方法内的修改会直接影响原始对象。
+- 在需要修改接收者状态或避免拷贝的情况下，应使用指针接收者。
+
+## 5. 切片和数组
+
+```go
+func main() {
+   a := []int{1, 2, 3}
+   b := a[:2]
+
+   b = append(b, 4)
+   fmt.Println(a)  
+
+   b = append(b, 5)
+   fmt.Println(a)  
+
+   b[0] = 10
+   fmt.Println(a)  
+}
+```
+
+上述代码的打印结果是：1 2 4
+
+# golang六边形架构&依赖注入最佳实践
 
 >相关论文：
 >
