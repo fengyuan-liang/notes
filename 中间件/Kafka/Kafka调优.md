@@ -165,6 +165,14 @@ public void listenGroupPro(ConsumerRecord<String, String> record, Acknowledgment
 
 kafka的顺序消费使用场景不多，因为牺牲掉了性能，但是比如rocketmq在这一块有专门的功能已设计好。
 
+
+
+总结：
+
+1. 使用单分区(单队列) 进行顺序消费 
+   - 优点：简单
+   - 缺点：在高并发的场景下性能低，且不能保证完全顺序消费（例如由于网络问题，投递到队列的两条消息乱序了）
+
 ### 2.4 如何解决消息积压问题
 
 #### 2.4.1 消息积压问题的出现
@@ -189,5 +197,7 @@ kafka的顺序消费使用场景不多，因为牺牲掉了性能，但是比如
 
 
 ## 附录：Kafka常用配置
+
+常用pei'zhi
 
 ![Kafka常用配置](https://cdn.fengxianhub.top/resources-master/202210301651683.png)
