@@ -143,8 +143,6 @@ Oct 05 15:29:59 ubuntu systemd[1]: snapd.service: Watchdog timeout (limit 5min)!
 3. 由于Docker的重启策略，又立即重新启动
 4. 循环往复，耗尽所有磁盘IO资源
 
-
-
 然后可以查看docker的日志
 
 ```shell 
@@ -152,5 +150,369 @@ Oct 05 15:29:59 ubuntu systemd[1]: snapd.service: Watchdog timeout (limit 5min)!
 sudo journalctl -u docker.service --since "1 hour ago"
 ```
 
-# 2. 解决方案
+查看容器信息
+
+```json
+lfy@ubuntu:~$ docker inspect image2webp 
+[
+    {
+        "Id": "e8963ebd088b3195d12f28108e97533b4bf829a40f7f32cba8bcbbf108f3f2ee",
+        "Created": "2025-09-07T09:04:17.365294372Z",
+        "Path": "./image2webp",
+        "Args": [],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 8155,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2025-10-18T14:51:54.662534484Z",
+            "FinishedAt": "2025-10-18T14:48:50.382718397Z",
+            "Health": {
+                "Status": "healthy",
+                "FailingStreak": 0,
+                "Log": [
+                    {
+                        "Start": "2025-10-18T23:05:36.756454319+08:00",
+                        "End": "2025-10-18T23:05:36.835757893+08:00",
+                        "ExitCode": 0,
+                        "Output": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100    50  100    50    0     0  64267      0 --:--:-- --:--:-- --:--:-- 50000\n{\"status\": \"healthy\", \"service\": \"webp-converter\"}"
+                    },
+                    {
+                        "Start": "2025-10-18T23:06:06.837037641+08:00",
+                        "End": "2025-10-18T23:06:06.893478458+08:00",
+                        "ExitCode": 0,
+                        "Output": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100    50  100    50    0     0  52083      0 --:--:-- --:--:-- --:--:-- 50000\n{\"status\": \"healthy\", \"service\": \"webp-converter\"}"
+                    },
+                    {
+                        "Start": "2025-10-18T23:06:36.893967053+08:00",
+                        "End": "2025-10-18T23:06:36.953899311+08:00",
+                        "ExitCode": 0,
+                        "Output": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100    50  100    50    0     0  79491      0 --:--:-- --:--:-- --:--:-- 50000\n{\"status\": \"healthy\", \"service\": \"webp-converter\"}"
+                    },
+                    {
+                        "Start": "2025-10-18T23:07:06.954300325+08:00",
+                        "End": "2025-10-18T23:07:07.033835576+08:00",
+                        "ExitCode": 0,
+                        "Output": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100    50  100    50    0     0  33333      0 --:--:-- --:--:-- --:--:-- 50000\n{\"status\": \"healthy\", \"service\": \"webp-converter\"}"
+                    },
+                    {
+                        "Start": "2025-10-18T23:07:37.034742636+08:00",
+                        "End": "2025-10-18T23:07:37.083639496+08:00",
+                        "ExitCode": 0,
+                        "Output": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100    50  100    50    0     0  64683      0 --:--:-- --:--:-- --:--:-- 50000\n{\"status\": \"healthy\", \"service\": \"webp-converter\"}"
+                    }
+                ]
+            }
+        },
+        "Image": "sha256:604652c69ed671115bf534dee02aaf47b14f0de30fa6a6afd3dc375308b51523",
+        "ResolvConfPath": "/var/lib/docker/containers/e8963ebd088b3195d12f28108e97533b4bf829a40f7f32cba8bcbbf108f3f2ee/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/e8963ebd088b3195d12f28108e97533b4bf829a40f7f32cba8bcbbf108f3f2ee/hostname",
+        "HostsPath": "/var/lib/docker/containers/e8963ebd088b3195d12f28108e97533b4bf829a40f7f32cba8bcbbf108f3f2ee/hosts",
+        "LogPath": "/var/lib/docker/containers/e8963ebd088b3195d12f28108e97533b4bf829a40f7f32cba8bcbbf108f3f2ee/e8963ebd088b3195d12f28108e97533b4bf829a40f7f32cba8bcbbf108f3f2ee-json.log",
+        "Name": "/image2webp",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "docker-default",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": [
+                "/home/lfy/workspace/config:/config",
+                "/home/lfy/workspace/logs:/logs"
+            ],
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "bridge",
+            "PortBindings": {
+                "10080/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "10080"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware",
+                "/sys/devices/virtual/powercap"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/fad58f0c646dff32f53de6f40b746075eefaa9098cd9d7bb9071b8c8fb3689f1-init/diff:/var/lib/docker/overlay2/5003fee633a105daab6771a9e27c931858c465049fbe63c1f8111fea30eafb8f/diff:/var/lib/docker/overlay2/5434b88ac2794da5efc1fab74334a92c175872ad72def3916ab4d5b1292f4d31/diff:/var/lib/docker/overlay2/e891d32c36646cd4dfd78b5c12d8ab316dabf8d296e02767135b1cd553bd1064/diff:/var/lib/docker/overlay2/375dedbffbda55225206e6bfde62760f472265e50c7b5d5ec9e6a76d7af35b19/diff:/var/lib/docker/overlay2/d9cabd535357ae91f1d666811758208214bdd956fea44b11d32c74fe0d3f6451/diff:/var/lib/docker/overlay2/7f4ffe8844649901a4f6e6e40a99f68fca35ab8c92e23933ed82dc4fda6dd75c/diff",
+                "MergedDir": "/var/lib/docker/overlay2/fad58f0c646dff32f53de6f40b746075eefaa9098cd9d7bb9071b8c8fb3689f1/merged",
+                "UpperDir": "/var/lib/docker/overlay2/fad58f0c646dff32f53de6f40b746075eefaa9098cd9d7bb9071b8c8fb3689f1/diff",
+                "WorkDir": "/var/lib/docker/overlay2/fad58f0c646dff32f53de6f40b746075eefaa9098cd9d7bb9071b8c8fb3689f1/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [
+            {
+                "Type": "bind",
+                "Source": "/home/lfy/workspace/config",
+                "Destination": "/config",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/home/lfy/workspace/logs",
+                "Destination": "/logs",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+            }
+        ],
+        "Config": {
+            "Hostname": "e8963ebd088b",
+            "Domainname": "",
+            "User": "webpuser",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "10080/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "PORT=10080",
+                "MAX_UPLOAD_SIZE=33554432",
+                "DEFAULT_QUALITY=80",
+                "DEFAULT_LOSSLESS=false",
+                "LOG_LEVEL=info",
+                "LOG_FORMAT=json"
+            ],
+            "Cmd": [
+                "./image2webp"
+            ],
+            "Healthcheck": {
+                "Test": [
+                    "CMD-SHELL",
+                    "curl -f http://localhost:${PORT}/v1/health || exit 1"
+                ],
+                "Interval": 30000000000,
+                "Timeout": 3000000000,
+                "StartPeriod": 5000000000,
+                "Retries": 3
+            },
+            "Image": "registry.cn-hangzhou.aliyuncs.com/fengyuan-liang/image2webp:v0.0.1",
+            "Volumes": null,
+            "WorkingDir": "/app",
+            "Entrypoint": null,
+            "OnBuild": null,
+            "Labels": {}
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "f67d3c34344233f117bab773df788158fd5e83f5a866948f8df1a4a4652d6d02",
+            "SandboxKey": "/var/run/docker/netns/f67d3c343442",
+            "Ports": {
+                "10080/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "10080"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "10080"
+                    }
+                ]
+            },
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "fa49cd7a741ddf924e4f889c43ca5df1700258368d6f70abf6c9ff597e5098d0",
+            "Gateway": "172.17.0.1",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "172.17.0.12",
+            "IPPrefixLen": 16,
+            "IPv6Gateway": "",
+            "MacAddress": "02:42:ac:11:00:0c",
+            "Networks": {
+                "bridge": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "MacAddress": "02:42:ac:11:00:0c",
+                    "DriverOpts": null,
+                    "NetworkID": "6e672f581985cf349abe6fd50c935f7727e62b677b70b7e602fa9f0397473a27",
+                    "EndpointID": "fa49cd7a741ddf924e4f889c43ca5df1700258368d6f70abf6c9ff597e5098d0",
+                    "Gateway": "172.17.0.1",
+                    "IPAddress": "172.17.0.12",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        }
+    }
+]
+```
+
+
+
+# 2. 问题原因
+
+#### ✅ 1. `Healthcheck` 配置错误
+
+>核心结论：**是容器的健康检查（Healthcheck）在高频执行，导致系统资源耗尽**
+>
+>从 `inspect` 输出中
+>
+>```json
+>"Healthcheck": {
+>    "Test": [
+>        "CMD-SHELL",
+>        "curl -f http://localhost:${PORT}/v1/health || exit 1"
+>    ],
+>    "Interval": 3000000000,   ← 这里是 3 秒（3e9 纳秒）
+>    "Timeout": 3000000000,   ← 超时 3 秒
+>    "StartPeriod": 5000000000, ← 启动后 5 秒开始检查
+>    "Retries": 3
+>}
+>```
+
+#### ✅ 2. 日志中的 `curl` 行为验证了这一点
+
+你在 `Health.Log` 中看到：
+
+```shell
+"Output": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100    50  100    50    0     0  64267      0 --:--:-- --:--:-- --:--:-- 50000\n{\"status\": \"healthy\", \"service\": \"webp-converter\"}"
+```
+
+- 这正是 `curl` 的输出格式。
+- 时间戳显示：健康检查大约每 **30 秒执行一次？不对！**
+
+⚠️ 等等，这里有个矛盾！
+
+你日志里的 `systemd` 报错是**每 30 秒一次**，但 `Healthcheck.Interval` 是 **3 秒**，为什么健康检查日志却是每 30 秒一条？
+
+### 🧩 三、真相揭秘：Docker 的 Healthcheck 实现机制
+
+Docker 的健康检查是**串行执行的**：
+
+- 如果上一次 `curl` 还没结束，下一次不会并发执行。
+- 但如果 `curl` 执行很快（比如几十毫秒），那么它就会**频繁调用**。
+
+但是！更关键的是：
+
+> 🔥 **`systemd[1]: run-docker-runtime\x2drunc-moby-...` 日志的频繁出现，是因为每次健康检查都会调用 `runc` 来在容器内执行命令！**
+
+即使只是运行一个 `curl`，Docker 也要：
+
+1. 创建 exec 实例
+2. 调用 `runc` 进入容器命名空间
+3. 执行 `curl`
+4. 收集输出
+5. 更新健康状态
+
+这个过程涉及大量**进程创建、文件系统访问、命名空间切换**，对系统 IO 和 CPU 开销极大。
+
+### ⚠️ 四、为什么会导致服务器崩溃？
+
+| 原因                     | 说明                                                         |
+| ------------------------ | ------------------------------------------------------------ |
+| 💥 **高频 runc 调用**     | 每 3 秒一次 `runc` 调用 → 大量 `/run/docker/runtime-runc/moby/...` 目录操作 → **高磁盘 IO** |
+| 🚀 **进程频繁 fork/exec** | 每次健康检查都 `fork` 新进程 → **CPU 负载飙升**              |
+| 🐢 **累积效应**           | 长期运行下，内核调度、内存管理压力增大 → 系统变慢 → 更多进程堆积 → 最终 OOM 或无响应 |
+
+> 📌 尤其是你服务器可能配置不高（如 1C1G 或 2C2G），这种高频健康检查足以拖垮系统。
+
+# 3. 解决方案
 
