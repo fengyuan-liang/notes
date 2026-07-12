@@ -130,7 +130,6 @@ func hashsetSolution(nums []int, n int) int {
 2. 原地栈
 3. 快慢指针
 
-1. 冒泡排序
 ```go
 // bubble sort
 // 7 6 5 4
@@ -297,3 +296,67 @@ func trap(height []int) (ans int) {
     return
 }
 ```
+
+
+
+
+
+# [3. 无重复字符的最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/)
+
+```go
+func lengthOfLongestSubstring(s string) int {
+	var (
+		m           = make(map[rune]bool)
+		array       = []rune(s)
+		length = len(array)
+		maxLength   = 0
+		left, right = 0, 0
+	)
+	for left < length &&  right < length {
+		if !m[array[right]] {
+			// 添加
+			m[array[right]] = true
+			right++
+			if right - left > maxLength {
+				maxLength = right - left
+			}
+		} else {
+			// 存在
+			delete(m, array[left])
+			left++
+		}
+	}
+	return maxLength
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
