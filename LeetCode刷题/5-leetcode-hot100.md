@@ -332,13 +332,105 @@ func lengthOfLongestSubstring(s string) int {
 
 
 
+# [438. 找到字符串中所有字母异位词](https://leetcode.cn/problems/find-all-anagrams-in-a-string/)
 
+```go
+// 方法一，暴力解法，枚举所有子字符串，并且统计每个字符出现的频率
+// 时间复杂度：O(m * n)
+// 空间复杂度 O(n) 这里可以把array数组优化掉
+func findAnagrams(s string, p string) (ans []int) {
+	var (
+		array = []rune(s)
+		m     = make(map[rune]struct{})
+	)
+	// 统计每个单词出现的次数
+	cntP := [26]int{}
+	for _, c := range p {
+		cntP[c-'a']++
+	}
+	for _, val := range p {
+		m[val] = struct{}{}
+	}
+	hit := func(chars []rune) bool {
+        // 值类型 会直接复制
+		clone := cntP
+		for _, ch := range chars {
+			clone[ch-'a']--
+			if _, ok := m[ch]; !ok {
+				return false
+			}
+		}
+		// 检查是否所有字符串都匹配
+		for _, val := range clone {
+			if val != 0 {
+				return false
+			}
+		}
+		return true
+	}
+	// 枚举所有字串
+	for i := 0; i <= len(array)-len(p); i++ {
+		if hit(array[i : i+len(p)]) {
+			ans = append(ans, i)
+		}
+	}
+	return
+}
 
+// 方法二，定长滑窗
+// 相当于暴力 时间复杂度 O(m*n)
+func findAnagrams(s string, p string) (ans []int) {
+	var (
+		// 这里map可以用数组替换 cntP := [26]int{} 
+		cntM = make(map[uint8]int)
+		cntP = make(map[uint8]int)
+	)
+	for i := 0; i < len(p); i++ {
+		cntM[p[i]]++
+	}
+	mapEqual := func(a, b map[uint8]int) bool {
+		if maps.Equal(a, b) {
+			return true
+		}
+		for k, v := range a {
+			if v != b[k] {
+				return false
+			}
+		}
+		return true
+	}
+	for i := range s {
+		ch := s[i]
+		cntP[ch]++
+		if i < len(p)-1 {
+			continue
+		}
+		// 判断字串是否满足要求
+		if mapEqual(cntM, cntP) {
+			ans = append(ans, i-len(p)+1)
+		}
+		// 左边弹出出一个
+		cntP[s[i-len(p)+1]]--
+	}
+	return
+}
 
+// TODO@lfy 不定长滑动窗口
+```
 
+>双指针（滑动窗口）依赖于**窗口和的单调性**：
+>
+>- 增加元素 → 和增加（仅当所有数为正）
+>- 减少元素 → 和减少（仅当所有数为正）
+>
+>下面的题就用不了双指针
+>
+>**当有负数时**，破坏了单调性，即缩小窗口，可能和还会增加
 
+# [560. 和为 K 的子数组](https://leetcode.cn/problems/subarray-sum-equals-k/)
 
-
+```go
+```
 
 
 
