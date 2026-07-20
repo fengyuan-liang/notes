@@ -452,3 +452,141 @@ func findAnagrams(s string, p string) (ans []int) {
 
 
 
+# [160. 相交链表](https://leetcode.cn/problems/intersection-of-two-linked-lists/)
+
+```go
+// 方法1，用map保存
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+    var m = map[*ListNode]struct{}{}
+    for headA != nil {
+        m[headA] = struct{}{}
+        headA = headA.Next
+    }
+    for headB != nil {
+        if _, ok := m[headB]; ok {
+            return headB
+        }
+        headB = headB.Next
+    }
+    return nil
+}
+// 方法2，数学方法 这里需要来一个空节点，当不相交时走到空节点
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+    p, q := headA, headB
+    for p != q {
+        if p != nil {
+            p = p.Next
+        } else {
+            p = headB
+        }
+
+        if q != nil {
+            q = q.Next
+        } else {
+            q = headA
+        }
+    }
+    return p
+}
+```
+
+
+
+
+
+# [206. 反转链表](https://leetcode.cn/problems/reverse-linked-list/)
+
+```go
+func reverseList(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+        return head
+    }
+    post := reverseList(head.Next)
+    head.Next.Next = head
+    head.Next = nil
+
+    return post
+}
+```
+
+
+
+
+
+# [234. 回文链表](https://leetcode.cn/problems/palindrome-linked-list/)
+
+```go
+// 方案1：复制后再反转
+func isPalindrome(head *ListNode) bool {
+    // 复制链表
+    dummy := &ListNode{}
+    cur := dummy
+    p := head
+    for p != nil {
+        cur.Next = &ListNode{Val: p.Val}
+        cur = cur.Next
+        p = p.Next
+    }
+    
+    // 反转复制的链表
+    reversed := reverseList(dummy.Next)
+    
+    // 比较
+    for head != nil && reversed != nil {
+        if head.Val != reversed.Val {
+            return false
+        }
+        head = head.Next
+        reversed = reversed.Next
+    }
+    return true
+}
+
+// 方案2：快慢指针（推荐，O(1)空间）
+func isPalindrome(head *ListNode) bool {
+    if head == nil || head.Next == nil {
+        return true
+    }
+    
+    // 1. 找到中点
+    slow, fast := head, head
+    for fast.Next != nil && fast.Next.Next != nil {
+        slow = slow.Next
+        fast = fast.Next.Next
+    }
+    
+    // 2. 反转后半部分
+    secondHalf := reverseList(slow.Next)
+    
+    // 3. 比较前半部分和反转后的后半部分
+    p1, p2 := head, secondHalf
+    for p2 != nil {
+        if p1.Val != p2.Val {
+            return false
+        }
+        p1 = p1.Next
+        p2 = p2.Next
+    }
+    
+    return true
+}
+
+func reverseList(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	post := reverseList(head.Next)
+	head.Next.Next = head
+	head.Next = nil
+	return post
+}
+```
+
+
+
+
+
+
+
+
+
