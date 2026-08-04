@@ -921,3 +921,294 @@ func isSameTree(left, right *TreeNode) bool {
 
 
 
+# [543. 二叉树的直径](https://leetcode.cn/problems/diameter-of-binary-tree/)
+
+```go
+func diameterOfBinaryTree(root *TreeNode) (ans int) {
+	var dfs func(*TreeNode) int
+	dfs = func(root *TreeNode) int {
+		if root == nil {
+            // 对于叶子来说，链长就是 -1+1=0
+			return -1
+		}
+		lLen := dfs(root.Left) + 1
+		rLen := dfs(root.Right) + 1
+		ans = max(ans, lLen+rLen)
+		return max(lLen, rLen)
+	}
+	dfs(root)
+	return
+}
+```
+
+
+
+# [124. 二叉树中的最大路径和](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)
+
+```go
+func maxPathSum(root *TreeNode) (ans int) {
+    var dfs func(*TreeNode) int
+    ans = -10000
+    dfs = func(n *TreeNode) int {
+        if n == nil {
+            return 0
+        }
+        l_len := dfs(n.Left)
+        r_len := dfs(n.Right)
+        ans = max(ans, l_len + r_len + n.Val)
+        return max(max(l_len, r_len) + n.Val, 0)
+    }
+    dfs(root)
+    return
+}
+```
+
+
+
+# [108. 将有序数组转换为二叉搜索树](https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/)
+
+```go
+func sortedArrayToBST(nums []int) *TreeNode {
+	if len(nums) <= 0 {
+		return nil
+	}
+	mid := len(nums) / 2
+	left := sortedArrayToBST(nums[0: mid])
+	right := sortedArrayToBST(nums[mid+1: ])
+	return &TreeNode{
+		Val: nums[mid],
+		Left: left,
+		Right: right,
+	}
+}
+```
+
+
+
+
+
+# [98. 验证二叉搜索树](https://leetcode.cn/problems/validate-binary-search-tree/)
+
+>**每个节点都必须在其祖先划定的范围内：向左走收紧上限，向右走提升下限，当前值必须在 (min, max) 之间。**
+
+```go
+func isValidBST(root *TreeNode) bool {
+	return helper(root, nil, nil)
+}
+
+func helper(root *TreeNode, min, max *int) bool {
+	if root == nil {
+		return true
+	}
+	if min != nil && root.Val <= *min {
+		return false
+	}
+	if max != nil && root.Val >= *max {
+		return false
+	}
+	return helper(root.Left, min, &root.Val) && helper(root.Right, &root.Val, max)
+}
+```
+
+
+
+# [230. 二叉搜索树中第 K 小的元素](https://leetcode.cn/problems/kth-smallest-element-in-a-bst/)
+
+```go
+// 解法1，中序遍历 时间复杂度O(n) 空间复杂度O(n)
+func kthSmallest(root *TreeNode, k int) int {
+    // 中序遍历 拿到排序好的数组
+    return inorderTraversal(root)[k-1]
+}
+
+func inorderTraversal(root *TreeNode) (ans []int) {
+    if root == nil {
+        return nil
+    }
+    ans = append(ans, inorderTraversal(root.Left)...)
+    ans = append(ans, root.Val)
+    ans = append(ans, inorderTraversal(root.Right)...)
+    return
+}
+// 解法2，提前减枝，中序遍历 BST，边遍历边数数，数到第 k 个就喊停，后面的全都不要了！
+func kthSmallest(root *TreeNode, k int) int {
+    var count , result = new(int), new(int)
+    inorderTraversal(root, count, result, k)
+    return *result
+}
+
+func inorderTraversal(root *TreeNode, count, result *int, k int) {
+    if root == nil || *count >= k {
+        return
+    }
+    inorderTraversal(root.Left, count, result, k)
+
+    *count++
+    if *count == k {
+        *result = root.Val
+    }
+
+    inorderTraversal(root.Right, count, result, k)
+}
+```
+
+
+
+# [199. 二叉树的右视图](https://leetcode.cn/problems/binary-tree-right-side-view/)
+
+```go
+func rightSideView(root *TreeNode) (ans []int) {
+    if root == nil {
+        return
+    }
+    var queue = []*TreeNode{root}
+    for ; len(queue) > 0 ; {
+        var arr = make([]int, 0)
+        length := len(queue)
+        for _, val := range queue[0: length] {
+            if val.Left != nil {
+                queue = append(queue, val.Left)
+            }
+            if val.Right != nil {
+                queue = append(queue, val.Right)
+            }
+            arr = append(arr, val.Val)
+        }
+        ans = append(ans, arr[len(arr) - 1])
+        queue = queue[length:]
+    }
+    return
+}
+```
+
+
+
+# [114. 二叉树展开为链表](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/)
+
+```go
+func flatten(root *TreeNode)  {
+    if root == nil {
+        return
+    }
+    ans := preOrder(root)
+    for i := 0; i < len(ans) - 1; i++ {
+        ans[i].Left = nil 
+        ans[i].Right = ans[i+1]
+    }
+    ans[len(ans)-1].Left = nil
+    ans[len(ans)-1].Right = nil
+    return
+}
+
+func preOrder(root *TreeNode) (ans []*TreeNode) {
+    if root == nil {
+        return 
+    }
+    ans = append(ans, root)
+    ans = append(ans, preOrder(root.Left)...)
+    ans = append(ans, preOrder(root.Right)...)
+    return
+}
+```
+
+
+
+
+
+# [105. 从前序与中序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
+
+```go
+// input => preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+// 从中序遍历拿到左子树的个数和右子树的个数
+// 然后能从前序遍历中拿到左子树和右子树d
+func buildTree(preorder []int, inorder []int) *TreeNode {
+    length := len(preorder)
+    if length <= 0 {
+        return nil
+    }
+    // 中序遍历中左子树节点的个数
+    index := indexForSlice(inorder, preorder[0])
+    leftNode := buildTree(preorder[1:index+1], inorder[:index])
+    rightNode := buildTree(preorder[index+1:], inorder[index+1:])
+    return &TreeNode{
+        Val: preorder[0],
+        Left: leftNode,
+        Right: rightNode,
+    }
+}
+
+func indexForSlice[E comparable](arr []E, target E) (index int) {
+	for i, v := range arr {
+		if v == target {
+			return i
+		}
+	}
+	return -1
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
