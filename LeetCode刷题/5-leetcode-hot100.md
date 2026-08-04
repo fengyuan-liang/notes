@@ -586,7 +586,338 @@ func reverseList(head *ListNode) *ListNode {
 
 
 
+# [141. 环形链表](https://leetcode.cn/problems/linked-list-cycle/)
 
+```go
+// 快慢指针不仅能判断是否有环，还能找到链表的中间节点
+func hasCycle(head *ListNode) bool {
+    var slow, fast = head, head
+    for fast != nil && fast.Next != nil {
+        slow = slow.Next
+        fast = fast.Next.Next
+        if slow == fast {
+            return true
+        }
+    }
+    return false
+}
+```
+
+# [876. 链表的中间结点](https://leetcode.cn/problems/middle-of-the-linked-list/)
+
+>思路：快慢指针一起走，当快指针走完的时候，慢指针就恰好到一半的位置
+
+```go
+func middleNode(head *ListNode) *ListNode {
+    slow, fast := head, head
+    for fast != nil && fast.Next != nil {
+        slow = slow.Next
+        fast = fast.Next.Next
+    }
+    return slow
+}
+```
+
+# [142. 环形链表 II](https://leetcode.cn/problems/linked-list-cycle-ii/)
+
+```go
+// 方法1，map 时间复杂度O(n) 空间复杂度O(n)
+func detectCycle(head *ListNode) *ListNode {
+    var m = make(map[*ListNode]int)
+    var cnt = 0
+    for head != nil {
+        if _, ok := m[head]; ok {
+            return head
+        } else {
+            m[head] = cnt
+        }
+        cnt++
+        head = head.Next
+    }
+    return nil
+}
+// 方法二，数学方法
+// 这里有个结论，当快慢指针相遇时，慢指针还没走完一圈（这里可以想象两个人绕着操场跑，慢指针会被套圈）
+
+func detectCycle(head *ListNode) *ListNode {
+    slow, fast := head, head
+    for fast != nil && fast.Next != nil {
+        slow = slow.Next
+        fast = fast.Next.Next
+    }
+    return slow
+}
+```
+
+
+
+# [21. 合并两个有序链表](https://leetcode.cn/problems/merge-two-sorted-lists/)
+
+```go
+// 1. 使用dummyNode来维护结果链表的头位置
+// 2. 最后再连接剩余的链表，不要在for循环里操作
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+	dummy := new(ListNode)
+	result := dummy
+	for list1 != nil && list2 != nil {
+		if list1.Val < list2.Val {
+			dummy.Next = list1
+			list1 = list1.Next
+		} else {
+			dummy.Next = list2
+			list2 = list2.Next
+		}
+		dummy = dummy.Next
+	}
+	// 连接剩余节点
+	if list1 != nil {
+		dummy.Next = list1
+	}
+	if list2 != nil {
+		dummy.Next = list2
+	}
+	return result.Next
+}
+```
+
+
+
+# [2. 两数相加](https://leetcode.cn/problems/add-two-numbers/)
+
+```go
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+    var (
+        dummy = new(ListNode)
+        result = dummy
+        cnt = 0
+    )
+    for l1 != nil || l2 != nil {
+        dummy.Next =  &ListNode{Val: cnt, Next: nil}
+        if l1 != nil {
+            dummy.Next.Val += l1.Val
+            l1 = l1.Next
+        }
+        if l2 != nil {
+            dummy.Next.Val += l2.Val
+            l2 = l2.Next
+        }
+        cnt = dummy.Next.Val / 10
+        dummy.Next.Val %= 10
+        dummy = dummy.Next
+    }
+    // 处理最后一位
+    if cnt > 0 {
+        dummy.Next =  &ListNode{Val: cnt, Next: nil}
+    }
+    return result.Next
+}
+```
+
+
+
+# [19. 删除链表的倒数第 N 个结点](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/)
+
+```go
+// 直接解法，遍历了两次链表，需要注意处理头节点的情况
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+    // 1. 先遍历下，看看链表有多长
+    var (
+        node = head
+        cnt = 0
+    )
+    for node != nil {
+        cnt++
+        node = node.Next
+    }
+    
+    // 如果要删除的是头结点
+    if cnt == n {
+        return head.Next
+    }
+    
+    // 找到要删除结点的前一个结点
+    cnt = cnt - n - 1
+    node = head
+    for cnt > 0 {
+        cnt--
+        node = node.Next
+    }
+    
+    // 删除结点
+    node.Next = node.Next.Next
+    return head
+}
+
+// 前后指针
+// 1 2 3 4 5
+// 删除倒数第2个节点，其实就是一把尺子往后走
+// 0 1 2 3 4 5
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+    dummy := &ListNode{}
+    dummy.Next = head
+    left, right := dummy, dummy
+    for ; n > 0; n-- {
+        right = right.Next
+    }
+    for right.Next != nil {
+        left = left.Next
+        right = right.Next
+    }
+    left.Next = left.Next.Next
+    return dummy.Next
+}
+```
+
+
+
+# [24. 两两交换链表中的节点](https://leetcode.cn/problems/swap-nodes-in-pairs/)
+
+
+
+```go
+func swapPairs(head *ListNode) *ListNode {
+    if head == nil || head.Next == nil {
+        return head
+    }
+    newHead := head.Next
+    head.Next = swapPairs(head.Next.Next)
+    newHead.Next = head
+    return newHead
+}
+```
+
+# [92. 反转链表 II](https://leetcode.cn/problems/reverse-linked-list-ii/)
+
+```go
+```
+
+
+
+
+
+# [25. K 个一组翻转链表](https://leetcode.cn/problems/reverse-nodes-in-k-group/)
+
+```go
+
+```
+
+
+
+# [94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/)
+
+```go
+func inorderTraversal(root *TreeNode) (res []int) {
+	if root == nil {
+		return []int{}
+	}
+	
+	res = append(res, inorderTraversal(root.Left)...)
+	res = append(res, root.Val)
+	res = append(res, inorderTraversal(root.Right)...)
+	return res
+}
+```
+
+# 其他遍历
+
+```go
+// 前序遍历
+func preorderTraversal(root *TreeNode) (res []int) {
+    if root == nil {
+        return []int{}
+    }
+    res = append(res, root.Val)
+    res = append(res, preorderTraversal(root.Left)...)
+    res = append(res, preorderTraversal(root.Right)...)
+    return
+}
+// 后序遍历
+func postorderTraversal(root *TreeNode) (res []int) {
+	if root == nil {
+		return []int{}
+	}
+	res = append(res, postorderTraversal(root.Left)...)
+	res = append(res, postorderTraversal(root.Right)...)
+	res = append(res, root.Val)
+	return
+}
+// 层序遍历
+func levelOrder(root *TreeNode) (result [][]int) {
+    if root == nil {
+        return
+    }
+    queue := []*TreeNode{root}
+    for len(queue) > 0 {
+        levelSize := len(queue)  // 当前层节点数
+        arr := make([]int, 0, levelSize)  // 预分配容量
+        
+        for i := 0; i < levelSize; i++ {
+            node := queue[i]
+            arr = append(arr, node.Val)
+            if node.Left != nil {
+                queue = append(queue, node.Left)
+            }
+            if node.Right != nil {
+                queue = append(queue, node.Right)
+            }
+        }
+        result = append(result, arr)
+        queue = queue[levelSize:]  // 移除已处理的本层节点
+    }
+    return
+}
+```
+
+
+
+# [104. 二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/)
+
+```go
+func maxDepth(root *TreeNode) int {
+    if root == nil {
+        return 0
+    }
+    return max(maxDepth(root.Left), maxDepth(root.Right)) + 1
+}
+```
+
+
+
+# [226. 翻转二叉树](https://leetcode.cn/problems/invert-binary-tree/)
+
+```go
+func invertTree(root *TreeNode) *TreeNode {
+    if root == nil {
+        return nil
+    }
+    left := invertTree(root.Left)
+
+    right := invertTree(root.Right)
+
+    root.Left = right
+    root.Right = left
+
+    return root
+}
+```
+
+
+
+# [101. 对称二叉树](https://leetcode.cn/problems/symmetric-tree/)
+
+```go
+func isSymmetric(root *TreeNode) bool {
+    return isSameTree(root.Left, root.Right)
+}
+
+func isSameTree(left, right *TreeNode) bool {
+    if left == nil || right == nil {
+        return left == right
+    }
+
+    return left.Val == right.Val && isSameTree(left.Left, right.Right) && isSameTree(left.Right, right.Left)
+}
+```
 
 
 
