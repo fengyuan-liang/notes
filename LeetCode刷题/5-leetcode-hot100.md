@@ -1120,7 +1120,7 @@ func preOrder(root *TreeNode) (ans []*TreeNode) {
 ```go
 // input => preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
 // 从中序遍历拿到左子树的个数和右子树的个数
-// 然后能从前序遍历中拿到左子树和右子树d
+// 然后能从前序遍历中拿到左子树和右子树的数组继续递归即可
 func buildTree(preorder []int, inorder []int) *TreeNode {
     length := len(preorder)
     if length <= 0 {
@@ -1152,7 +1152,10 @@ func indexForSlice[E comparable](arr []E, target E) (index int) {
 
 
 
+# [560. 和为 K 的子数组](https://leetcode.cn/problems/subarray-sum-equals-k/)
 
+```go
+```
 
 
 
