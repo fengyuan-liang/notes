@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git show:*)",
+      "Read(//tmp/**)",
+      "Bash(GIT_EDITOR=true git rebase --continue)",
+      "Bash(echo \"---exit: $?\")",
+      "Bash(echo \"marker-check-exit: $?\")"
+    ]
+  }
+}

@@ -1,492 +1,165 @@
-> hot100 link: https://leetcode.cn/studyplan/top-100-liked/
+# 日常刷题
 
+# 回文串相关
 
-# [49. 字母异位词分组](https://leetcode.cn/problems/group-anagrams/description/?envType=study-plan-v2&envId=top-100-liked)
-思路：转换为哈希表，然后排序
-```go 
-func groupAnagrams(strs []string) (result [][]string) {
-	var m = make(map[string][]string)
-	for _, str := range strs {
-		bytes := []byte(str)
-		slices.Sort(bytes)
-		sortedStr := string(bytes)
-		m[sortedStr] = append(m[sortedStr], str)
-	}
-	for _, array := range m {
-		result = append(result, array)
-	}
-	return
-}
-```
+解题思路
 
-# [128. 最长连续序列](https://leetcode.cn/problems/longest-consecutive-sequence/description/?envType=study-plan-v2&envId=top-100-liked)
+1. 双指针
+2. 定长滑动窗口
+3. 不定长滑动窗口
 
-思路：
-1. 因为是O(n)的时间复杂度，所以不能排序，这里可以用map保存每个数，然后遍历map，每个元素找number-1在不在，在就跳过（减枝），找到最长连续序列为止
-2. 用bitmap先开辟【最长连续序列】最小/最大值之间的所有元素，然后把每个数字往里面塞，再找最长连续序列; 这里有个技巧，当数据不大时，用bitmap效果更好，数据大可以退化成map
-   
-```go
-func longestConsecutive(nums []int) int {
-    n := len(nums)
-    if n == 0 {
-        return 0
-    }
-
-    // 1. 找最小最大值
-    minVal, maxVal := nums[0], nums[0]
-    for _, v := range nums {
-        if v < minVal {
-            minVal = v
-        }
-        if v > maxVal {
-            maxVal = v
-        }
-    }
-    size := maxVal - minVal + 1
-
-    // 2. 阈值：10_000_000 bits ≈ 1.25 MB，内存安全且速度极快
-    if size <= 10_000_000 {
-        return bitsetSolution(nums, minVal, size)
-    }
-    return hashsetSolution(nums, n)
-}
-
-// bitsetSolution: 使用 uint64 位图 + 块扫描
-func bitsetSolution(nums []int, minVal, size int) int {
-    // 计算需要的 uint64 数量（向上取整）
-    wordCount := (size + 63) / 64
-    bits := make([]uint64, wordCount)
-
-    // 填充位图
-    for _, num := range nums {
-        pos := num - minVal
-        idx := pos / 64
-        shift := uint(pos & 63) // 等价于 pos % 64
-        bits[idx] |= 1 << shift
-    }
-
-    maxLen := 0
-    curLen := 0
-
-    // 块扫描优化
-    for i := 0; i < wordCount; i++ {
-        w := bits[i]
-        if w == 0xFFFFFFFFFFFFFFFF {
-            // 64 位全 1，直接累加 64
-            curLen += 64
-            if curLen > maxLen {
-                maxLen = curLen
-            }
-            continue
-        }
-        // 否则逐位检查该 uint64 的每一位
-        for j := 0; j < 64; j++ {
-            if (w>>j)&1 == 1 {
-                curLen++
-                if curLen > maxLen {
-                    maxLen = curLen
-                }
-            } else {
-                curLen = 0
-            }
-        }
-    }
-    return maxLen
-}
-
-// hashsetSolution: 标准哈希表解法（起点剪枝）
-func hashsetSolution(nums []int, n int) int {
-    set := make(map[int]struct{}, n)
-    for _, v := range nums {
-        set[v] = struct{}{}
-    }
-
-    maxLen := 0
-    for num := range set {
-        if _, ok := set[num-1]; ok {
-            continue
-        }
-        cur := num
-        length := 1
-        for {
-            if _, ok := set[cur+1]; ok {
-                cur++
-                length++
-            } else {
-                break
-            }
-        }
-        if length > maxLen {
-            maxLen = length
-        }
-    }
-    return maxLen
-}
-```
-
-# [283. 移动零](https://leetcode.cn/problems/move-zeroes/description/?envType=study-plan-v2&envId=top-100-liked)
-思路：
-1. 冒泡排序
-2. 原地栈
-3. 快慢指针
+## [5. 最长回文子串](https://leetcode.cn/problems/longest-palindromic-substring/)
 
 ```go
-// bubble sort
-// 7 6 5 4
-// 6 5 4 7
-// 5 4 6 7
-// 4 5 6 7
-//
-//	for i := 0; i < len(nums); i++ {
-//			index := 0
-//			for j := len(nums) - 1 - i; j > 0; j-- {
-//				if nums[index] > nums[index+1] {
-//					tmp := nums[index]
-//					nums[index] = nums[index+1]
-//					nums[index+1] = tmp
-//				}
-//				index++
-//			}
-//		}
-func moveZeroes(nums []int) {
-	for i := 0; i < len(nums); i++ {
-		index := 0
-		for j := len(nums) - 1 - i; j > 0; j-- {
-			if nums[index] == 0 {
-				nums[index], nums[index+1] = nums[index+1], nums[index]
-			}
-			index++
+func longestPalindrome(s string) string {
+	var (
+		array  = []rune(s)
+		maxStr = ""
+	)
+
+	for i := 0; i < len(array); i++ {
+		// 寻找奇数长度的回文子串
+		oddStr := expandAroundCenter(array, i, i)
+		if len(oddStr) > len(maxStr) {
+			maxStr = oddStr
+		}
+
+		// 寻找偶数长度的回文子串
+		evenStr := expandAroundCenter(array, i, i+1)
+		if len(evenStr) > len(maxStr) {
+			maxStr = evenStr
 		}
 	}
+
+	return maxStr
+}
+
+func expandAroundCenter(s []rune, left, right int) string {
+	for left >= 0 && right < len(s) && s[left] == s[right] {
+		left--
+		right++
+	}
+	return string(s[left+1 : right])
 }
 ```
 
-2. 原地栈
-```go
-func moveZeroes(nums []int) {
-    stackCnt := 0
-    for _, num := range nums {
-        if num == 0 {
-            continue
-        }
-        nums[stackCnt] = num
-        stackCnt++
-    }
-    clear(nums[stackCnt:])
-}
-```
+## [3. 无重复字符的最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/)
 
-3. 快慢指针
-```go
-func moveZeroes(nums []int) {
-    slow := 0  // 指向下一个非零元素应该放的位置
-    for fast := 0; fast < len(nums); fast++ {
-        if nums[fast] != 0 {
-            // 遇到非零元素，把它交换到 slow 的位置
-            nums[slow], nums[fast] = nums[fast], nums[slow]
-            slow++  // slow 向后移动一位，指向下一个空位
-        }
-        // 如果 nums[fast] == 0，什么都不做，fast 继续向前
-    }
-}
-```
-
-
-# [11. 盛最多水的容器](https://leetcode.cn/problems/container-with-most-water/description/?envType=study-plan-v2&envId=top-100-liked)
-思路：双指针，优化暴力求解中重复计算的问题
-```go
-func maxArea(height []int) (ans int) {
-    if len(height) < 2 {
-        return 0
-    }
-    var (
-        left = 0
-        right = len(height) - 1
-    )
-    for left < right {
-        ans = max(ans, min(height[left], height[right]) * (right - left))
-        if height[left] < height[right] {
-            left++
-        } else {
-            right--
-        }
-    }
-    return
-}
-```
-
-# 三数之和
-
-思路：枚举i，然后按照两数之和思路继续，但是这里要注意，需要处理重复元素的情况
-@see [两数之和](https://blog.fengxianhub.top/#/LeetCode%E5%88%B7%E9%A2%98/2-%E6%97%A5%E5%B8%B8%E5%88%B7%E9%A2%98?id=%e5%8f%8c%e6%8c%87%e9%92%88amp%e5%a4%9a%e6%8c%87%e9%92%88)
-```go
-// -1,0,1,2,-1,-4
-// -4 -1 -1 0 1 2
-func threeSum(nums []int) (ans [][]int) {
-    if len(nums) < 3 {
-        return 
-    }
-    ans = make([][]int, 0)
-	sort.Ints(nums)
-    for i := 0; i < len(nums) - 2; i++ {
-        // 跳过重复的元素 当前值和上一个值相等则跳过
-        x := nums[i]
-        if i > 0 && nums[i] == nums[i-1] {
-            continue
-        }
-        j := i + 1
-        k := len(nums) - 1
-        // 变成两数之和
-        for ;j < k; {
-            result := nums[j] + nums[k] + x
-            if result > 0 {
-                k--
-            } else if result < 0 {
-                j++
-            } else {
-                ans = append(ans, []int{nums[i], nums[j], nums[k]})
-                // 移动指针，继续寻找其他解
-                j++
-                k--
-                // 跳过重复的 j 和 k
-                for j < k && nums[j] == nums[j-1] {
-                    j++
-                }
-                for j < k && nums[k] == nums[k+1] {
-                    k--
-                }
+```java
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        int maxLen = 0;// 用于记录最大不重复子串的长度
+        int left = 0;// 滑动窗口左指针
+        for (int i = 0; i < s.length(); i++) {
+            if (map.containsKey(s.charAt(i))) {
+                left = Math.max(left, map.get(s.charAt(i)) + 1);
             }
+            // 不管是否更新left，都要更新 s.charAt(i) 的位置！
+            map.put(s.charAt(i), i);
+            maxLen = Math.max(maxLen, i - left + 1);
         }
-    }
-    return
-}
-```
 
-# [42. 接雨水](https://leetcode.cn/problems/trapping-rain-water/description/?envType=study-plan-v2&envId=top-100-liked)
-
-思路：重点是pre_max记录左侧有效高度，post_max计算右侧有效高度，高度差就是左右两边的有效高度，再减去当前数组的高度，就是雨水的高度
-
-```go
-func trap(height []int) (ans int) {
-    var (
-        pre_max = make([]int, len(height))
-        post_max = make([]int, len(height))
-        rightIndex = len(height) - 1
-        leftCnt = -1
-        rightCnt = -1
-    )
-    for leftIndex, left := range height {
-        right := height[rightIndex]
-        if left > leftCnt {
-            leftCnt = left
-        }
-        if right > rightCnt {
-            rightCnt = right
-        }
-        pre_max[leftIndex] = leftCnt
-        post_max[rightIndex] = rightCnt
-        rightIndex--
+        return maxLen;
     }
-    for index, value := range height {
-        h := min(pre_max[index], post_max[index]) - value
-        if h > 0 {
-            ans += h
-        }
-    }
-    return
 }
 ```
 
 
 
-
-
-# [3. 无重复字符的最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/)
+## [209. 长度最小的子数组](https://leetcode.cn/problems/minimum-size-subarray-sum/)
 
 ```go
-func lengthOfLongestSubstring(s string) int {
-	var (
-		m           = make(map[rune]bool)
-		array       = []rune(s)
-		length = len(array)
-		maxLength   = 0
-		left, right = 0, 0
-	)
-	for left < length &&  right < length {
-		if !m[array[right]] {
-			// 添加
-			m[array[right]] = true
-			right++
-			if right - left > maxLength {
-				maxLength = right - left
-			}
-		} else {
-			// 存在
-			delete(m, array[left])
+// 滑动窗口
+// 这里需要注意的是，当有指针固定时，左边需要持续缩小
+func minSubArrayLen(target int, nums []int) (ans int) {
+	ans = math.MaxInt32
+	left := 0
+	sum := 0
+
+	for right, val := range nums {
+		sum += val
+		// 左指针需要持续缩小
+		for sum >= target {
+			ans = min(ans, right-left+1)
+			sum -= nums[left]
 			left++
 		}
 	}
-	return maxLength
+	if ans == math.MaxInt32 {
+		return 0
+	}
+	return ans
 }
+
+// 还有一种细节调整的写法，在循环外进行比较
+func minSubArrayLen(target int, nums []int) (ans int) {
+	ans = math.MaxInt32
+	left := 0
+	sum := 0
+
+	for right, val := range nums {
+		sum += val
+		// 左指针需要持续缩小
+		for sum-nums[left] >= target {
+			sum -= nums[left]
+			left++
+		}
+		if sum >= target {
+			ans = min(ans, right-left+1)
+		}
+	}
+	if ans == math.MaxInt32 {
+		return 0
+	}
+	return ans
+}
+
 ```
 
 
 
-# [438. 找到字符串中所有字母异位词](https://leetcode.cn/problems/find-all-anagrams-in-a-string/)
+## [1456. 定长子串中元音的最大数目](https://leetcode.cn/problems/maximum-number-of-vowels-in-a-substring-of-given-length/)
 
-```go
-// 方法一，暴力解法，枚举所有子字符串，并且统计每个字符出现的频率
-// 时间复杂度：O(m * n)
-// 空间复杂度 O(n) 这里可以把array数组优化掉
-func findAnagrams(s string, p string) (ans []int) {
-	var (
-		array = []rune(s)
-		m     = make(map[rune]struct{})
-	)
-	// 统计每个单词出现的次数
-	cntP := [26]int{}
-	for _, c := range p {
-		cntP[c-'a']++
-	}
-	for _, val := range p {
-		m[val] = struct{}{}
-	}
-	hit := func(chars []rune) bool {
-        // 值类型 会直接复制
-		clone := cntP
-		for _, ch := range chars {
-			clone[ch-'a']--
-			if _, ok := m[ch]; !ok {
-				return false
-			}
-		}
-		// 检查是否所有字符串都匹配
-		for _, val := range clone {
-			if val != 0 {
-				return false
-			}
-		}
-		return true
-	}
-	// 枚举所有字串
-	for i := 0; i <= len(array)-len(p); i++ {
-		if hit(array[i : i+len(p)]) {
-			ans = append(ans, i)
-		}
-	}
-	return
-}
+<img src="https://cdn.fengxianhub.top/resources-master/image-20260712150343655.png" alt="image-20260712150343655" style="zoom:67%;" />
 
-// 方法二，定长滑窗
-// 相当于暴力 时间复杂度 O(m*n)
-func findAnagrams(s string, p string) (ans []int) {
-	var (
-		// 这里map可以用数组替换 cntP := [26]int{} 
-		cntM = make(map[uint8]int)
-		cntP = make(map[uint8]int)
-	)
-	for i := 0; i < len(p); i++ {
-		cntM[p[i]]++
-	}
-	mapEqual := func(a, b map[uint8]int) bool {
-		if maps.Equal(a, b) {
+```GO
+// 思路：如果枚举所有字串，会有很多重复计算，时间复杂度O(nk)
+// 使用定长滑串，可以将时间复杂度优化到O(1)，思想是定长滑串左右移出一个，右边移进一个
+func maxVowels(s string, k int) (ans int) {
+	isVowel := func(in uint8) bool {
+		if in == 'a' || in == 'e' || in == 'i' || in == 'o' || in == 'u' {
 			return true
 		}
-		for k, v := range a {
-			if v != b[k] {
-				return false
-			}
-		}
-		return true
+		return false
 	}
-	for i := range s {
+	cnt := 0
+	for i := 0; i < len(s); i++ {
 		ch := s[i]
-		cntP[ch]++
-		if i < len(p)-1 {
+		if isVowel(ch) {
+			cnt++
+		}
+        // 需要先固定好k-1的长度，下面的代码直接进行滑动
+		if i < k-1 {
 			continue
 		}
-		// 判断字串是否满足要求
-		if mapEqual(cntM, cntP) {
-			ans = append(ans, i-len(p)+1)
+		// 更新子串最大值
+		ans = max(ans, cnt)
+		// 移除左边的子串
+		if isVowel(s[i-k+1]) {
+			cnt--
 		}
-		// 左边弹出出一个
-		cntP[s[i-len(p)+1]]--
 	}
 	return
 }
 
-// TODO@lfy 不定长滑动窗口
 ```
 
->双指针（滑动窗口）依赖于**窗口和的单调性**：
->
->- 增加元素 → 和增加（仅当所有数为正）
->- 减少元素 → 和减少（仅当所有数为正）
->
->下面的题就用不了双指针
->
->**当有负数时**，破坏了单调性，即缩小窗口，可能和还会增加
-
-# [560. 和为 K 的子数组](https://leetcode.cn/problems/subarray-sum-equals-k/)
+## [76. 最小覆盖子串](https://leetcode.cn/problems/minimum-window-substring/)
 
 ```go
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# [160. 相交链表](https://leetcode.cn/problems/intersection-of-two-linked-lists/)
-
-```go
-// 方法1，用map保存
-func getIntersectionNode(headA, headB *ListNode) *ListNode {
-    var m = map[*ListNode]struct{}{}
-    for headA != nil {
-        m[headA] = struct{}{}
-        headA = headA.Next
-    }
-    for headB != nil {
-        if _, ok := m[headB]; ok {
-            return headB
-        }
-        headB = headB.Next
-    }
-    return nil
-}
-// 方法2，数学方法 这里需要来一个空节点，当不相交时走到空节点
-func getIntersectionNode(headA, headB *ListNode) *ListNode {
-    p, q := headA, headB
-    for p != q {
-        if p != nil {
-            p = p.Next
-        } else {
-            p = headB
-        }
-
-        if q != nil {
-            q = q.Next
-        } else {
-            q = headA
-        }
-    }
-    return p
+func minWindow(s string, t string) string {
+    
 }
 ```
 
@@ -494,432 +167,1577 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 
 
 
-# [206. 反转链表](https://leetcode.cn/problems/reverse-linked-list/)
+# 链表相关
+
+```go
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+```
+
+## [LCR 024. 反转链表](https://leetcode.cn/problems/UHnkqh/)
 
 ```go
 func reverseList(head *ListNode) *ListNode {
-	if head == nil || head.Next == nil {
+    if head == nil || head.Next == nil {
         return head
     }
-    post := reverseList(head.Next)
+    prev := reverseList(head.Next)
     head.Next.Next = head
     head.Next = nil
-
-    return post
-}
-```
-
-
-
-
-
-# [234. 回文链表](https://leetcode.cn/problems/palindrome-linked-list/)
-
-```go
-// 方案1：复制后再反转
-func isPalindrome(head *ListNode) bool {
-    // 复制链表
-    dummy := &ListNode{}
-    cur := dummy
-    p := head
-    for p != nil {
-        cur.Next = &ListNode{Val: p.Val}
-        cur = cur.Next
-        p = p.Next
-    }
-    
-    // 反转复制的链表
-    reversed := reverseList(dummy.Next)
-    
-    // 比较
-    for head != nil && reversed != nil {
-        if head.Val != reversed.Val {
-            return false
-        }
-        head = head.Next
-        reversed = reversed.Next
-    }
-    return true
+    return prev
 }
 
-// 方案2：快慢指针（推荐，O(1)空间）
-func isPalindrome(head *ListNode) bool {
-    if head == nil || head.Next == nil {
-        return true
-    }
-    
-    // 1. 找到中点
-    slow, fast := head, head
-    for fast.Next != nil && fast.Next.Next != nil {
-        slow = slow.Next
-        fast = fast.Next.Next
-    }
-    
-    // 2. 反转后半部分
-    secondHalf := reverseList(slow.Next)
-    
-    // 3. 比较前半部分和反转后的后半部分
-    p1, p2 := head, secondHalf
-    for p2 != nil {
-        if p1.Val != p2.Val {
-            return false
-        }
-        p1 = p1.Next
-        p2 = p2.Next
-    }
-    
-    return true
-}
-
+// 非递归
 func reverseList(head *ListNode) *ListNode {
-	if head == nil || head.Next == nil {
-		return head
+	var (
+		pre *ListNode
+		post *ListNode
+	)
+	
+	for head != nil {
+		post = head.Next
+		head.Next = pre
+		pre = head
+		head = post
 	}
-	post := reverseList(head.Next)
-	head.Next.Next = head
-	head.Next = nil
-	return post
+	
+	return pre
 }
 ```
 
+## [92. 反转链表 II](https://leetcode.cn/problems/reverse-linked-list-ii/)
 
-
-
-
-# [141. 环形链表](https://leetcode.cn/problems/linked-list-cycle/)
+> 翻转指定区间链表
 
 ```go
-// 快慢指针不仅能判断是否有环，还能找到链表的中间节点
-func hasCycle(head *ListNode) bool {
-    var slow, fast = head, head
-    for fast != nil && fast.Next != nil {
-        slow = slow.Next
-        fast = fast.Next.Next
-        if slow == fast {
-            return true
-        }
+func reverseBetween(head *ListNode, left int, right int) *ListNode {
+    if head == nil || left == right {
+        return head
     }
-    return false
-}
-```
 
-# [876. 链表的中间结点](https://leetcode.cn/problems/middle-of-the-linked-list/)
-
->思路：快慢指针一起走，当快指针走完的时候，慢指针就恰好到一半的位置
-
-```go
-func middleNode(head *ListNode) *ListNode {
-    slow, fast := head, head
-    for fast != nil && fast.Next != nil {
-        slow = slow.Next
-        fast = fast.Next.Next
+    var successor *ListNode
+    if left == 1 {
+        successor = reverseN(head, right)
+    } else {
+        head.Next = reverseBetween(head.Next, left-1, right-1)
+        successor = head
     }
-    return slow
+
+    return successor
+}
+
+var successor *ListNode
+
+// 翻转前 N 个节点
+func reverseN(head *ListNode, n int) *ListNode {
+    if n == 1 {
+        successor = head.Next
+        return head
+    }
+
+    last := reverseN(head.Next, n-1)
+    head.Next.Next = head
+    head.Next = successor
+
+    return last
 }
 ```
 
-# [142. 环形链表 II](https://leetcode.cn/problems/linked-list-cycle-ii/)
+## [25. K 个一组翻转链表](https://leetcode.cn/problems/reverse-nodes-in-k-group/)
 
 ```go
-// 方法1，map 时间复杂度O(n) 空间复杂度O(n)
-func detectCycle(head *ListNode) *ListNode {
-    var m = make(map[*ListNode]int)
-    var cnt = 0
-    for head != nil {
-        if _, ok := m[head]; ok {
-            return head
-        } else {
-            m[head] = cnt
-        }
-        cnt++
-        head = head.Next
+
+```
+
+## [21. 合并两个有序链表](https://leetcode.cn/problems/merge-two-sorted-lists/)
+
+```go
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+	prev := new(ListNode)
+	currentNode := prev
+	for list1 != nil && list2 != nil {
+		if list1.Val < list2.Val {
+			currentNode.Next = list1
+			list1 = list1.Next
+		} else {
+			currentNode.Next = list2
+			list2 = list2.Next
+		}
+		currentNode = currentNode.Next
+	}
+	// 将剩余的接上
+	if list1 != nil {
+		currentNode.Next = list1
+	}
+	if list2 != nil {
+		currentNode.Next = list2
+	}
+	return prev.Next
+}
+```
+
+## [23. 合并 K 个升序链表](https://leetcode.cn/problems/merge-k-sorted-lists/)
+
+```go
+func mergeKLists(lists []*ListNode) *ListNode {
+    if len(lists) == 0 {
+		return nil
+	}
+    if len(lists) == 1 {
+		return lists[0]
+	}
+	for i := 0; i + 1 < len(lists); i++ {
+		lists[i+1] = mergeTwoLists(lists[i], lists[i+1])
+	}
+	return lists[len(lists) - 1]
+}
+
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+	prev := new(ListNode)
+	currentNode := prev
+	for list1 != nil && list2 != nil {
+		if list1.Val < list2.Val {
+			currentNode.Next = list1
+			list1 = list1.Next
+		} else {
+			currentNode.Next = list2
+			list2 = list2.Next
+		}
+		currentNode = currentNode.Next
+	}
+	// 将剩余的接上
+	if list1 != nil {
+		currentNode.Next = list1
+	}
+	if list2 != nil {
+		currentNode.Next = list2
+	}
+	return prev.Next
+}
+```
+
+**二分法优化**
+
+```go
+func mergeKLists(lists []*ListNode) *ListNode {
+    if len(lists) == 0 {
+        return nil
+    }
+    return mergeHelper(lists, 0, len(lists)-1)
+}
+
+func mergeHelper(lists []*ListNode, start, end int) *ListNode {
+    if start == end {
+        return lists[start]
+    }
+    if start < end {
+        mid := (start + end) / 2
+        left := mergeHelper(lists, start, mid)
+        right := mergeHelper(lists, mid+1, end)
+        return mergeTwoLists(left, right)
     }
     return nil
 }
-// 方法二，数学方法
-// 这里有个结论，当快慢指针相遇时，慢指针还没走完一圈（这里可以想象两个人绕着操场跑，慢指针会被套圈）
+```
 
-func detectCycle(head *ListNode) *ListNode {
-    slow, fast := head, head
-    for fast != nil && fast.Next != nil {
-        slow = slow.Next
-        fast = fast.Next.Next
-    }
-    return slow
+## [19. 删除链表的倒数第 N 个结点](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/)
+
+快慢指针，快指针先领先 n 个位置，然后一起往后，当快指针为 nil 时，慢指针指向的位置就是需要删除的节点
+
+```go
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+        dummy := &ListNode{0, head}
+        slow, fast := dummy, dummy
+
+        // 移动 fast 指针 N 步
+        for i := 0; i <= n; i++ {
+            fast = fast.Next
+        }
+
+        // 同时移动 slow 和 fast 指针
+        for fast != nil {
+            slow = slow.Next
+            fast = fast.Next
+        }
+
+        // 删除倒数第 N 个节点
+        slow.Next = slow.Next.Next
+
+        return dummy.Next
 }
 ```
 
-
-
-# [21. 合并两个有序链表](https://leetcode.cn/problems/merge-two-sorted-lists/)
+使用哨兵节点进行辅助。什么时候需要使用哨兵节点呢？当需要移除头节点的时候
 
 ```go
-// 1. 使用dummyNode来维护结果链表的头位置
-// 2. 最后再连接剩余的链表，不要在for循环里操作
-func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
-	dummy := new(ListNode)
-	result := dummy
-	for list1 != nil && list2 != nil {
-		if list1.Val < list2.Val {
-			dummy.Next = list1
-			list1 = list1.Next
-		} else {
-			dummy.Next = list2
-			list2 = list2.Next
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	dummy := &ListNode{Next: head}
+	length := findListNodeLength(head)
+	index := length - n
+	temp := dummy
+
+	if index < 0 || head == nil {
+		return nil
+	}
+
+	for i := 0; i < index; i++ {
+		temp = temp.Next
+	}
+
+	// 删除节点
+	if temp.Next != nil {
+		temp.Next = temp.Next.Next
+	}
+
+	return dummy.Next
+}
+
+func findListNodeLength(head *ListNode) int {
+	cnt := 0
+	temp := head
+	for temp != nil {
+		cnt++
+		temp = temp.Next
+	}
+	return cnt
+}
+```
+
+# 动态规划
+
+动态规划的核心是：`状态定义`和`状态转移方程`
+
+![image-20240114231958730](https://cdn.fengxianhub.top/resources-master/image-20240114231958730.png)
+
+## [198. 打家劫舍](https://leetcode.cn/problems/house-robber/)
+
+递归的时间复杂度是指数级别的，下面的代码会超时
+
+```python
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        n = len(nums)
+        def dfs(i):
+            if i < 0:
+                return 0
+            return max(dfs(i-1), dfs(i-2)+nums[i])
+        return dfs(n -1)
+```
+
+这题我们可以先看成简单的回溯题，但是回溯时间复杂度是指数级别，比较高，我们可以缓存一下搜索到的结果
+
+![image-20231225225705498](https://cdn.fengxianhub.top/resources-master/image-20231225225705498.png)
+
+优化后我们可以看到现在这颗 BST 只有 n 个节点了，所以时间复杂度是`O(n)`
+
+![image-20231225225825869](https://cdn.fengxianhub.top/resources-master/image-20231225225825869.png)
+
+python 代码如下
+
+```python
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        n = len(nums)
+        @cache
+        def dfs(i):
+            if i < 0:
+                return 0
+            return max(dfs(i - 1), dfs(i - 2) + nums[i])
+        # 回溯时间复杂度是指数级别
+        return dfs(n - 1)
+```
+
+当然我们可以不用 cache 的装饰器，我们可以自己记录之前搜索过的值
+
+```go
+func rob(nums []int) int {
+    // 缓存子问题的值
+    var (
+        n = len(nums)
+        cache = func() []int {
+            memo := make([]int, n)
+            for i := range memo {
+                memo[i] = -1 // -1 表示没有计算过
+            }
+            return memo
+        }()
+    )
+	var dfs func(int) int
+	dfs = func(index int) (res int) {
+		if index < 0 {
+			return
 		}
-		dummy = dummy.Next
-	}
-	// 连接剩余节点
-	if list1 != nil {
-		dummy.Next = list1
-	}
-	if list2 != nil {
-		dummy.Next = list2
-	}
-	return result.Next
-}
-```
-
-
-
-# [2. 两数相加](https://leetcode.cn/problems/add-two-numbers/)
-
-```go
-func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
-    var (
-        dummy = new(ListNode)
-        result = dummy
-        cnt = 0
-    )
-    for l1 != nil || l2 != nil {
-        dummy.Next =  &ListNode{Val: cnt, Next: nil}
-        if l1 != nil {
-            dummy.Next.Val += l1.Val
-            l1 = l1.Next
+        // 如果已经有子问题的解了 就不往下找了
+        if cache[index] != -1 {
+            return cache[index]
         }
-        if l2 != nil {
-            dummy.Next.Val += l2.Val
-            l2 = l2.Next
-        }
-        cnt = dummy.Next.Val / 10
-        dummy.Next.Val %= 10
-        dummy = dummy.Next
-    }
-    // 处理最后一位
-    if cnt > 0 {
-        dummy.Next =  &ListNode{Val: cnt, Next: nil}
-    }
-    return result.Next
-}
-```
-
-
-
-# [19. 删除链表的倒数第 N 个结点](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/)
-
-```go
-// 直接解法，遍历了两次链表，需要注意处理头节点的情况
-func removeNthFromEnd(head *ListNode, n int) *ListNode {
-    // 1. 先遍历下，看看链表有多长
-    var (
-        node = head
-        cnt = 0
-    )
-    for node != nil {
-        cnt++
-        node = node.Next
-    }
-    
-    // 如果要删除的是头结点
-    if cnt == n {
-        return head.Next
-    }
-    
-    // 找到要删除结点的前一个结点
-    cnt = cnt - n - 1
-    node = head
-    for cnt > 0 {
-        cnt--
-        node = node.Next
-    }
-    
-    // 删除结点
-    node.Next = node.Next.Next
-    return head
-}
-
-// 前后指针
-// 1 2 3 4 5
-// 删除倒数第2个节点，其实就是一把尺子往后走
-// 0 1 2 3 4 5
-func removeNthFromEnd(head *ListNode, n int) *ListNode {
-    dummy := &ListNode{}
-    dummy.Next = head
-    left, right := dummy, dummy
-    for ; n > 0; n-- {
-        right = right.Next
-    }
-    for right.Next != nil {
-        left = left.Next
-        right = right.Next
-    }
-    left.Next = left.Next.Next
-    return dummy.Next
-}
-```
-
-
-
-# [24. 两两交换链表中的节点](https://leetcode.cn/problems/swap-nodes-in-pairs/)
-
-
-
-```go
-func swapPairs(head *ListNode) *ListNode {
-    if head == nil || head.Next == nil {
-        return head
-    }
-    newHead := head.Next
-    head.Next = swapPairs(head.Next.Next)
-    newHead.Next = head
-    return newHead
-}
-```
-
-# [92. 反转链表 II](https://leetcode.cn/problems/reverse-linked-list-ii/)
-
-```go
-```
-
-
-
-
-
-# [25. K 个一组翻转链表](https://leetcode.cn/problems/reverse-nodes-in-k-group/)
-
-```go
-
-```
-
-
-
-# [94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/)
-
-```go
-func inorderTraversal(root *TreeNode) (res []int) {
-	if root == nil {
-		return []int{}
+		// 把问题拆分为最后一个元素 选与不选两种清空
+		res = max(dfs(index-1), dfs(index-2)+nums[index])
+        // 缓存结果
+        cache[index] = res
+        return res
 	}
-	
-	res = append(res, inorderTraversal(root.Left)...)
-	res = append(res, root.Val)
-	res = append(res, inorderTraversal(root.Right)...)
-	return res
+	return dfs(len(nums) - 1)
+}
+
+func max(i, j int) int {
+	if i > j {
+		return i
+	}
+	return j
 }
 ```
 
-# 其他遍历
+还能不能再优化下呢，我们仔细观察就能发现
+
+![image-20231225231830854](https://cdn.fengxianhub.top/resources-master/image-20231225231830854.png)
+
+我们可以将 dfs 改为数组，然后将递归改为循环，注意上面可能产生负数下标，所以进行`+2`
+
+```python
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        n = len(nums)
+        f = [0] * (n + 2)
+        for i, x in enumerate(nums):
+            f[i + 2] = max(f[i + 1], f[i] + x)
+        return f[n + 1]
+```
+
+此时空间复杂度为`O(n)`，那么如何降到`O(1)`呢
+
+![image-20231225234930423](https://cdn.fengxianhub.top/resources-master/image-20231225234930423.png)
+
+```python
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        f0 = f1 = 0
+        for i, x in enumerate(nums):
+            new_f = max(f1, f0 + x)
+            f0 = f1
+            f1 = new_f
+            # f0, f1 = f1, max(f1, f0 + x)
+        return f1
+```
 
 ```go
-// 前序遍历
-func preorderTraversal(root *TreeNode) (res []int) {
-    if root == nil {
-        return []int{}
+func rob(nums []int) int {
+    var f0, f1 int
+    for _, value := range nums {
+        f0, f1 = f1, max(f1, f0 + value)
     }
-    res = append(res, root.Val)
-    res = append(res, preorderTraversal(root.Left)...)
-    res = append(res, preorderTraversal(root.Right)...)
+    println(f0)
+    return f1
+}
+
+func max(i, j int) int {
+	if i > j {
+		return i
+	}
+	return j
+}
+```
+
+## 背包问题
+
+背包问题是选或不选思想的体现
+
+![image-20240114233057463](https://cdn.fengxianhub.top/resources-master/image-20240114233057463.png)
+
+![image-20231226001226570](https://cdn.fengxianhub.top/resources-master/image-20231226001226570.png)
+
+## 背包问题template
+
+常见的`0-1背包`标准代码如下
+
+```python
+# capacity 背包的容量
+# w[i]:第 i 个物品的体积
+# v[i]: 第 i 个物品的价值
+# 返回所选物品体积和不超过capacity的前提下所能得到的最大价值和
+def zero_one_knapsack(capacity: int, w: List[int], v: List[int]) -> int:
+    n = len(w)
+	@cache
+    def dfs(i, c):
+        if i < 0:
+            return 0
+        if c < w[i]:
+            return dfs(i - 1, c)
+        return max(dfs(i - 1, c), dfs(i - 1, c - w[i]) + v[i])
+
+    return dfs(n - 1, capacity)
+```
+
+来份golang的
+
+```go
+// capacity 背包容量 w[i] 第i个物品的体积 v[i] 第i个物品的价值
+func zero_one_knapsack(capacity int, w []int, v []int) (ans int) {
+    var (
+        n = len(w)
+        memo = make([][]int, n)
+        dfs func(i, c int) int
+    )
+    // memo全部初始化为-1表示没有访问过当前index
+    for i := range memo {
+        for j := range memo[i] {
+            memo[i][j] = -1
+        }
+    }
+    dfs = func(i, c int) int {
+        if i < 0 {
+            return 0
+        }
+        // 如果i访问过了 直接返回
+        if memo[i][c] != -1 {
+            return memo[i][c]
+        }
+        // 如果当前物品容量大于背包现有容量 放弃
+        if w[i] > c {
+            return dfs(i-1, c)
+        }
+        res := max(dfs(i-1, c), dfs(i-1, c-w[i]) + v[i])
+        memo[i][c] = res
+        return res
+    }
+    return dfs(n-1, capacity)
+}
+```
+
+
+
+## 01 背包
+
+>01背包：选和不选
+
+
+
+
+
+### [494. 目标和](https://leetcode.cn/problems/target-sum/)
+
+<img src="https://cdn.fengxianhub.top/resources-master/image-20250412133710631.png" alt="image-20250412133710631" style="zoom:67%;" />
+
+这题是 01 背包的变形
+
+![image-20231226003340409](https://cdn.fengxianhub.top/resources-master/image-20231226003340409.png)
+
+```python
+class Solution:
+    def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        # p = 添加正数的数的和
+        # s - p = 添加负数的数（s为总数）
+        # p - (s - p) =  t (target 结果) => 2p - s = t
+        # p = (t + s) / 2
+        target += sum(nums)
+        if target < 0 or target % 2:
+            return 0
+        target //= 2
+        n = len(nums)
+        @cache
+        def dfs(i, c):
+            if i < 0:
+                return 1 if c == 0 else 0
+            if c < nums[i]:
+                return dfs(i - 1, c)
+            return dfs(i - 1, c) + dfs(i - 1, c - nums[i])
+
+        return dfs(n - 1, target)
+
+
+# capacity 背包的容量
+# w[i]:第 i 个物品的体积
+# v[i]: 第 i 个物品的价值
+# 返回所选物品体积和不超过capacity的前提下所能得到的最大价值和
+def zero_one_knapsack(capacity: int, w: List[int], v: List[int]) -> int:
+    n = len(w)
+    @cache
+    def dfs(i, c):
+        if i < 0:
+            return 0
+        if c < w[i]:
+            return dfs(i - 1, c)
+        return max(dfs(i - 1, c), dfs(i - 1, c - w[i]) + v[i])
+
+    return dfs(n - 1, capacity)
+```
+
+> 上面的代码时间复杂度为`o(n * target)`，空间复杂度也一样
+>
+> 这里空间复杂度还可以再优化一下
+
+改成递推式
+
+![image-20240114235816155](https://cdn.fengxianhub.top/resources-master/image-20240114235816155.png)
+
+按照一比一的翻译
+
+```python
+class Solution:
+    def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        # p = 添加正数的数的和
+        # s - p = 添加负数的数（s为总数）
+        # p - (s - p) = t (target 结果) => 2p - s = t
+        # p = (t + s) / 2
+        target += sum(nums)
+        if target < 0 or target % 2:
+            return 0
+        target //= 2
+        n = len(nums)
+        f = [[0] * (target + 1) for _ in range(n + 1)]
+        f[0][0] = 1
+
+        for i, x in enumerate(nums):
+            for c in range(target + 1):
+                if c < x:
+                    f[i + 1][c] = f[i][c]
+                else:
+                    f[i + 1][c] = f[i][c] + f[i][c - x]
+        return f[n][target]
+```
+
+是不是可以再优化一下呢 当然是可以的 我们可以用一个数组并且倒着算来得到正确的结果
+
+```python
+class Solution:
+    def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        target += sum(nums)
+        if target < 0 or target % 2:
+            return 0
+        target //= 2
+
+        n = len(nums)
+        f = [[0] * (target + 1) for _ in range(2)]
+        f[0][0] = 1
+        for i, x in enumerate(nums):
+            for c in range(target + 1):
+                if c < x:
+                    f[(i + 1) % 2][c] = f[i % 2][c]
+                else:
+                    f[(i + 1) % 2][c] = f[i % 2][c] + f[i % 2][c - x]
+        return f[n % 2][target]
+```
+
+当然也可以用回溯来做，但是回溯的时间复杂度是`O(n^2)`
+
+```go
+func findTargetSumWays(nums []int, target int) (result int) {
+    var (
+        n = len(nums)
+        dfs func(i int, currentSum int)
+    )
+
+    dfs = func(i int, currentSum int) {
+        if i == n {
+            if currentSum == target {
+                result++
+            }
+            return
+        }
+		dfs(i + 1, currentSum + nums[i])
+		dfs(i + 1, currentSum - nums[i])
+    }
+
+
+    dfs(0, 0)
+
     return
 }
-// 后序遍历
-func postorderTraversal(root *TreeNode) (res []int) {
-	if root == nil {
-		return []int{}
-	}
-	res = append(res, postorderTraversal(root.Left)...)
-	res = append(res, postorderTraversal(root.Right)...)
-	res = append(res, root.Val)
-	return
-}
-// 层序遍历
-func levelOrder(root *TreeNode) (result [][]int) {
-    if root == nil {
-        return
+```
+
+### [2915. 和为目标值的最长子序列的长度](https://leetcode.cn/problems/length-of-the-longest-subsequence-that-sums-to-target/)
+
+记忆化搜索
+
+```go
+func lengthOfLongestSubsequence(nums []int, target int) (result int) {
+    var (
+        n = len(nums)
+        dfs func(i, c int) int
+        memo = make([][]int, n)
+    )
+    for index := range memo {
+        memo[index] = make([]int, target+1)
     }
-    queue := []*TreeNode{root}
-    for len(queue) > 0 {
-        levelSize := len(queue)  // 当前层节点数
-        arr := make([]int, 0, levelSize)  // 预分配容量
-        
-        for i := 0; i < levelSize; i++ {
-            node := queue[i]
-            arr = append(arr, node.Val)
-            if node.Left != nil {
-                queue = append(queue, node.Left)
+    dfs = func(i, c int) int {
+        if i < 0 {
+            if c == 0 {
+                return 0
             }
-            if node.Right != nil {
-                queue = append(queue, node.Right)
+            return -10000
+        }
+        if memo[i][c] != 0 {
+            return memo[i][c]
+        }
+        if nums[i] > c {
+            return dfs(i - 1, c)
+        }
+        memo[i][c] = max(dfs(i - 1, c), dfs(i - 1, c - nums[i]) + 1)
+        return memo[i][c]
+    }
+    r := dfs(n - 1, target)
+    if r < 0 {
+        return -1
+    }
+    return  r
+}
+```
+
+递推
+
+```go
+func lengthOfLongestSubsequence(nums []int, target int) (result int) {
+    var (
+        n = len(nums)
+        dp = make([][]int, n + 1)
+    )
+    for i := range dp {
+        dp[i] = make([]int, target+1)
+        for j := range dp[i] {
+            dp[i][j] = -1 << 31 // 设置为最小值
+        }
+    }
+
+    dp[0][0] = 0
+
+    for i, x := range nums {
+        for c := 0; c <=  target; c++ {
+            dp[i + 1][c] = max(dp[i][c], dp[i + 1][c])
+            if c >= x {
+                 dp[i + 1][c] = max(dp[i][c - x] + 1, dp[i + 1][c])
             }
         }
-        result = append(result, arr)
-        queue = queue[levelSize:]  // 移除已处理的本层节点
     }
-    return
+    result = dp[n][target]
+    if result <= 0 {
+        return - 1
+    }
+    return result
 }
 ```
 
-
-
-# [104. 二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/)
+优化空间
 
 ```go
-func maxDepth(root *TreeNode) int {
-    if root == nil {
-        return 0
-    }
-    return max(maxDepth(root.Left), maxDepth(root.Right)) + 1
+
+```
+
+## 完全背包
+
+完全背包和 01 背包主要区别就是可以重复选择某个元素，所以递归的`i`并不需要减少
+
+![image-20240120233121363](https://cdn.fengxianhub.top/resources-master/image-20240120233121363.png)
+
+### [322. 零钱兑换](https://leetcode.cn/problems/coin-change/)
+
+```python
+class Solution:
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        n = len(coins)
+        @cache
+        def dfs(i, c):
+            if i < 0:
+                return 0 if c == 0 else inf
+            if c < coins[i]:
+                return dfs(i - 1, c)
+            return min(dfs(i - 1, c), dfs(i, c - coins[i]) + 1)
+        ans = dfs(n - 1, amount)
+        return ans if ans < inf else -1
+```
+
+```go
+func coinChange(coins []int, amount int) int {
+	var (
+		n    = len(coins)
+		dfs  func(i, c int) int
+		memo = make([][]int, n)
+	)
+	for i := range memo {
+		memo[i] = make([]int, amount+1)
+		for j := range memo[i] {
+			memo[i][j] = -1 // 初始化为-1
+		}
+	}
+	dfs = func(i, c int) int {
+		if i < 0 {
+			if c == 0 {
+				return 0
+			} else {
+				return 100000 // 这里如果用math.MaxInt 会溢出变成负数
+			}
+		}
+        if memo[i][c] != -1 {
+            return memo[i][c]
+        }
+		if c < coins[i] {
+			return dfs(i-1, c)
+		}
+		cnt := min(dfs(i-1, c), dfs(i, c-coins[i])+1)
+		memo[i][c] = cnt
+		return cnt
+	}
+	result := dfs(n-1, amount)
+	if result == 100000 {
+		return -1
+	}
+	return result
 }
 ```
 
+改成递推
 
+```python
+func coinChange(coins []int, amount int) int {
+    max := amount + 1
+    dp := make([]int, amount+1)
+    for i := range dp {
+        dp[i] = max
+    }
+    dp[0] = 0
 
-# [226. 翻转二叉树](https://leetcode.cn/problems/invert-binary-tree/)
+    for i := 1; i <= amount; i++ {
+        for j := 0; j < len(coins); j++ {
+            if coins[j] <= i {
+                dp[i] = min(dp[i], dp[i-coins[j]]+1)
+            }
+        }
+    }
+
+    if dp[amount] == max {
+        return -1
+    }
+    return dp[amount]
+}
+```
+
+那啥时候是正序，啥时候是倒序呢
+
+![image-20240121162138766](https://cdn.fengxianhub.top/resources-master/image-20240121162138766.png)
+
+### [518. 零钱兑换 II](https://leetcode.cn/problems/coin-change-ii/)
+
+动态规划解法
 
 ```go
-func invertTree(root *TreeNode) *TreeNode {
-    if root == nil {
+func change(amount int, coins []int) int {
+    dp := make([]int, amount+1)
+    dp[0] = 1
+    for _, coin := range coins {
+        for i := coin; i <= amount; i++ {
+            dp[i] += dp[i-coin]
+        }
+    }
+    return dp[amount]
+}
+```
+
+# 线性 DP
+
+## 字串和编辑距离
+
+![image-20240121213636561](https://cdn.fengxianhub.top/resources-master/image-20240121213636561.png)
+
+![image-20240121214020438](https://cdn.fengxianhub.top/resources-master/image-20240121214020438.png)
+
+![image-20240121214718110](https://cdn.fengxianhub.top/resources-master/image-20240121214718110.png)
+
+改成递推
+
+![image-20240121223044278](https://cdn.fengxianhub.top/resources-master/image-20240121223044278.png)
+
+### [1143. 最长公共子序列](https://leetcode.cn/problems/longest-common-subsequence/)
+
+递归+记忆化搜索 golang 的会超时
+
+```go
+func longestCommonSubsequence(text1 string, text2 string) int {
+    var (
+        n, m = len(text1), len(text2)
+        dfs func(i, j int) int
+        memo = make([][]int, n)
+    )
+
+    for index := range memo {
+        memo[index] = make([]int, m)
+    }
+
+    dfs = func(i, j int) int {
+        if i < 0 || j < 0 {
+            return 0
+        }
+        if memo[i][j] != 0 {
+            return memo[i][j]
+        }
+        if text1[i] == text2[j] {
+            return dfs(i - 1, j - 1) + 1
+        }
+        memo[i][j] = max(dfs(i - 1, j), dfs(i, j - 1))
+        return memo[i][j]
+    }
+
+    return dfs(n - 1, m - 1)
+}
+```
+
+改成递推
+
+```go
+func longestCommonSubsequence(text1 string, text2 string) int {
+    var (
+        n, m = len(text1), len(text2)
+        dp = make([][]int, n + 1)
+    )
+
+    for index := range dp {
+        dp[index] = make([]int, m + 1)
+    }
+
+    for i, x := range text1 {
+        for j, y := range text2 {
+            if x == y {
+                dp[i + 1][j + 1] = dp[i][j] + 1
+            } else {
+                dp[i + 1][j + 1] = max(dp[i][j + 1], dp[i + 1][j])
+            }
+        }
+    }
+
+    return dp[n][m]
+}
+```
+
+改成滚动数组
+
+```go
+func longestCommonSubsequence(s, t string) int {
+    n, m := len(s), len(t)
+    f := [2][]int{make([]int, m+1), make([]int, m+1)}
+    for i, x := range s {
+        for j, y := range t {
+            if x == y {
+                f[(i+1)%2][j+1] = f[i%2][j] + 1
+            } else {
+                f[(i+1)%2][j+1] = max(f[i%2][j+1], f[(i+1)%2][j])
+            }
+        }
+    }
+    return f[n%2][m]
+}
+
+func max(a, b int) int { if a < b { return b }; return a }
+```
+
+用一个数组优化下
+
+```go
+func longestCommonSubsequence(s, t string) int {
+    m := len(t)
+    f := make([]int, m+1)
+    for _, x := range s {
+        pre := 0 // f[0]
+        for j, y := range t {
+            if x == y {
+                f[j+1], pre = pre+1, f[j+1]
+            } else {
+                pre = f[j+1]
+                f[j+1] = max(f[j+1], f[j])
+            }
+        }
+    }
+    return f[m]
+}
+```
+
+### [72. 编辑距离](https://leetcode.cn/problems/edit-distance/)
+
+![image-20240129232421701](https://cdn.fengxianhub.top/resources-master/image-20240129232421701.png)
+
+```python
+class Solution:
+    def minDistance(self, word1: str, word2: str) -> int:
+        n = len(word1)
+        m = len(word2)
+        @cache
+        def dfs(i, j):
+            if i < 0:
+                return j + 1
+            if j < 0:
+                return i + 1
+            if word1[i] == word2[j]:
+                return dfs(i - 1, j - 1)
+            return min(dfs(i - 1, j), dfs(i, j - 1), dfs(i - 1, j - 1)) + 1
+
+        return dfs(n - 1, m - 1)
+```
+
+改成递推
+
+```python
+
+```
+
+## 子序列问题
+
+![image-20240130232739810](https://cdn.fengxianhub.top/resources-master/image-20240130232739810.png)
+
+### [300. 最长递增子序列](https://leetcode.cn/problems/longest-increasing-subsequence/)
+
+两种思路
+
+- 选或不选：为了比大小，需要知道上一个选的数字
+- 枚举选哪个：比较当前选的数字和下一个要选的数字
+
+```python
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        n = len(nums)
+        @cache
+        def dfs(i):
+            res = 0
+            for j in range(i):
+                if nums[j] < nums[i]:
+                    res = max(res, dfs(j))
+            return res + 1
+        return max(dfs(i) for i in range(n))
+```
+
+# 回溯
+
+## 子集型回溯
+
+回溯的时间复杂度是指数级别的
+
+### [17. 电话号码的字母组合](https://leetcode.cn/problems/letter-combinations-of-a-phone-number/)
+
+```go
+func letterCombinations(digits string) (result []string) {
+    var n = len(digits)
+    if n == 0 {
         return nil
     }
-    left := invertTree(root.Left)
 
-    right := invertTree(root.Right)
+    var mapping = [...]string{"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"}
 
-    root.Left = right
-    root.Right = left
+    var (
+        dfs func(i int)
+        path = make([]byte, n)
+    )
+
+    dfs = func(i int) {
+        if i == n {
+            result = append(result, string(path))
+            return
+        }
+
+        for _, value := range mapping[digits[i]-'0'] {
+            path[i] = byte(value)
+            dfs(i + 1)
+        }
+    }
+    dfs(0)
+    return
+}
+```
+
+回溯分为：
+
+- 子集型回溯
+- 组合型
+- 排列型
+
+下面是第一种子集型，一般会涉及到选与不选的情况
+
+![image-20231229010348097](https://cdn.fengxianhub.top/resources-master/image-20231229010348097.png)
+
+选与不选我们可以看下面的题
+
+### [LCR 079. 子集](https://leetcode.cn/problems/TVdhkn/)
+
+```go
+func subsets(nums []int) (result [][]int) {
+    var n = len(nums)
+    if n == 0 {
+        return nil
+    }
+
+    var (
+        dfs func(i int)
+        path = make([]int, 0)
+    )
+
+    dfs = func(i int) {
+        if i == n {
+            back := make([]int, len(path))
+            copy(back, path)
+            result = append(result, back)
+            return
+        }
+
+        // 不选 直接递归
+        dfs(i + 1)
+
+        // 选
+        path = append(path, nums[i])
+
+        dfs(i + 1)
+
+        // 回溯 恢复现场
+        path = path[:len(path) - 1]
+    }
+    dfs(0)
+    return
+}
+```
+
+上述时间复杂度为`O(2^n * n)`
+
+还有一种思路是必须选一个数
+
+```go
+func subsets(nums []int) (result [][]int) {
+    var n = len(nums)
+    if n == 0 {
+        return nil
+    }
+
+    var (
+        dfs func(i int)
+        path = make([]int, 0)
+    )
+
+    dfs = func(i int) {
+        back := make([]int, len(path))
+        copy(back, path)
+        result = append(result, back)
+
+        // if i == n {
+        //     return
+        // }
+
+        // // 不选 直接递归
+        // dfs(i + 1)
+
+        for j := i; j < n; j++ {
+            // 选
+            path = append(path, nums[j])
+            dfs(j + 1)
+            // 回溯 恢复现场
+            path = path[:len(path) - 1]
+        }
+    }
+    dfs(0)
+    return
+}
+```
+
+我们再来看一题
+
+### [131. 分割回文串](https://leetcode.cn/problems/palindrome-partitioning/)
+
+![image-20240111221641466](https://cdn.fengxianhub.top/resources-master/image-20240111221641466.png)
+
+### [77. 组合](https://leetcode.cn/problems/combinations/)
+
+组合型回溯可以进行剪枝
+
+```go
+func combine(n int, k int) (result [][]int) {
+	var (
+		dfs  func(i int)
+		path = make([]int,0,  k)
+	)
+	dfs = func(i int) {
+		if len(path) == k {
+			var temp = make([]int, k)
+			copy(temp, path)
+			result = append(result, temp)
+			return
+		}
+		for j := n; j >= 1; j-- {
+            path = append(path, j)
+			dfs(j - 1)
+			path = path[:len(path)-1]
+		}
+	}
+	dfs(n)
+	return
+}
+```
+
+## 排列型回溯
+
+### [46. 全排列](https://leetcode.cn/problems/permutations/)
+
+和组合型回溯不一样的时，在排列型回溯中，可以再次选择之前路径的元素
+
+![image-20240114221325409](https://cdn.fengxianhub.top/resources-master/image-20240114221325409.png)
+
+例如下面选择了`[1, 2]`后还可以选择`[2, 1]`
+
+我们可以用回溯三问来构造这个问题
+
+![image-20240114221437819](https://cdn.fengxianhub.top/resources-master/image-20240114221437819.png)
+
+```go
+func permute(nums []int) (result [][]int) {
+    var (
+        n = len(nums)
+        path = make([]int, n)
+        dfs  func(i int, s []int)
+    )
+
+    dfs = func(i int, s []int) {
+        if i == n {
+            tmp :=  make([]int, n)
+            copy(tmp, path)
+            result = append(result, tmp)
+            return
+        }
+
+        for _, value := range s {
+            path[i] = value
+            dfs(i + 1, RemoveElement(s, value))
+        }
+        return
+    }
+    dfs(0, nums)
+    return
+}
+
+func RemoveElement(slice []int, num int) []int {
+    var result []int
+
+    for _, value := range slice {
+        if value != num {
+            result = append(result, value)
+        }
+    }
+
+    return result
+}
+```
+
+> 时间复杂度：全排列的时间复杂度是`e * n!`向下取整（可以通过泰勒展开式求出），用大 O 记法为`O(n!)`，但是这里还多了一个`copy`，所以就是`O(n! * n)`
+>
+> 空间复杂度：o(n)
+
+### [51. N 皇后](https://leetcode.cn/problems/n-queens/)
+
+```python
+class Solution:
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        ans = []
+        col = [0] * n
+
+        # def valid(r, c):
+        #     for R in range(r):
+        #         C = col[R]
+        #         # 45°和135°是不是连线了
+        #         if r+c == R+C or r-c == R-C:
+        #             return False
+        #     return True
+        def dfs(r, s):
+            if r == n:
+                ans.append(['.'*c + 'Q' + '.'*(n-1-c) for c in col])
+                return
+
+            for c in s:
+                # if valid(r, c):
+                if all(r+c != R+col[R] and r-c != R-col[R] for R in range(r)):
+                    col[r] = c
+                    dfs(r+1, s-{c})
+        dfs(0, set(range(n)))
+        return ans
+```
+
+> 时间复杂度：`o(n^2 * n!)`
+>
+> 空间复杂度：o(n)
+
+还可以再优化一下
+
+![image-20240114230630891](https://cdn.fengxianhub.top/resources-master/image-20240114230630891.png)
+
+```python
+class Solution:
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        ans = []
+        col = [0] * n
+        on_path = [False] * n
+        m = 2*n -1
+        diag1 = [False] * m
+        diag2 = [False] * m
+        def dfs(r):
+            if r == n:
+                ans.append(['.'*c + 'Q' + '.'*(n-1-c) for c in col])
+                return
+
+            for c in range(n):
+                # 在py中数组负数索引也可以访问，其他语言diag2[r-c]这里可能会出现负数
+                if not on_path[c] and not diag1[r+c] and not diag2[r-c]:
+                    col[r] = c
+                    on_path[c] = diag1[r+c] = diag2[r-c] = True
+                    dfs(r+1)
+                    on_path[c] = diag1[r+c] = diag2[r-c] = False
+        dfs(0)
+        return ans
+```
+
+> 时间复杂度：`o(n * n!)`
+>
+> 空间复杂度：o(n)
+
+### [52. N 皇后 II](https://leetcode.cn/problems/n-queens-ii/)
+
+```python
+class Solution:
+    def totalNQueens(self, n: int) -> int:
+        ans = 0
+        col = [0] * n
+
+        # def valid(r, c):
+        #     for R in range(r):
+        #         C = col[R]
+        #         # 45°和135°是不是连线了
+        #         if r+c == R+C or r-c == R-C:
+        #             return False
+        #     return True
+        def dfs(r, s):
+            if r == n:
+                nonlocal ans
+                ans += 1
+                return
+
+            for c in s:
+                # if valid(r, c):
+                if all(r+c != R+col[R] and r-c != R-col[R] for R in range(r)):
+                    col[r] = c
+                    dfs(r+1, s-{c})
+        dfs(0, set(range(n)))
+        return ans
+```
+
+# 贪心
+
+## [135. 分发糖果](https://leetcode.cn/problems/candy/)
+
+```go
+func candy(ratings []int) int {
+	var (
+		n       = len(ratings)
+		candies = make([]int, n)
+	)
+	candies[0] = 1
+	// 从左到右贪心
+	for i := 1; i < n; i++ {
+		if ratings[i] > ratings[i-1] {
+			candies[i] = candies[i-1] + 1
+		} else {
+			candies[i] = 1
+		}
+	}
+	// 从右往左贪心
+	for i := n - 2; i >= 0; i-- {
+		if ratings[i] > ratings[i+1] && candies[i] <= candies[i+1] {
+			candies[i] = candies[i+1] + 1
+		}
+	}
+	var sum = 0
+	for _, value := range candies {
+		sum += value
+	}
+	return sum
+}
+```
+
+> 贪心算法（Greedy Algorithm）是一种基于贪心策略的算法思想。贪心策略的核心思想是，在每一步选择中都选择当前状态下的最优解，以期望最终获得全局最优解。
+>
+> 在解决问题时，贪心算法每次选择局部最优解，不考虑该选择对未来的影响，并且认为通过一系列局部最优解的选择，可以达到全局最优解。贪心算法通常适用于满足"最优子结构"和"贪心选择性质"的问题。
+>
+> "最优子结构"指的是问题的最优解包含了子问题的最优解。也就是说，通过解决子问题的最优解，可以得到原问题的最优解。
+>
+> "贪心选择性质"指的是贪心算法通过局部最优解的选择，期望最终得到全局最优解。这意味着在每一步的选择中，贪心算法选择当前最优的解决方案，而不考虑其他选择所带来的影响。
+>
+> 在解决问题时，贪心算法不保证能够得到全局最优解，因为它没有考虑所有可能的解决方案。但在一些问题中，贪心算法能够给出近似最优解或者满足问题要求的解。
+>
+> 在分发糖果的问题中，贪心算法的思路是先从左到右遍历一次评分数组，保证相邻两个孩子评分更高的孩子获得更多的糖果；然后再从右到左遍历一次评分数组，确保相邻两个孩子评分更高的孩子获得更多的糖果。通过贪心策略，每次都选择当前最优解，最终得到满足要求的最少糖果数目。
+
+
+
+## [1432. 改变一个整数能得到的最大差值](https://leetcode.cn/problems/max-difference-you-can-get-from-changing-an-integer/)
+
+解题思路：
+
+1. 找最大值：从左往右贪心，找第一个小于9的数字，然后全部替换
+2. 找最小值：从左往右贪心，如果第一位大于1，则全局替换该数字为1，否则往后找第一位大于0的数字全局替换为0
+
+```go
+func maxDiff(num int) int {
+	var numStr = strconv.Itoa(num)
+	maxNum := fetchMaxNum(num, numStr)
+	minNum := fetchMinNum(num, numStr)
+	return maxNum - minNum
+}
+
+func fetchMaxNum(num int, numStr string) int {
+	for index := range numStr {
+		cnt := mustParseInt(string(numStr[index]))
+		if cnt < 9 && index < len(numStr) {
+			replaceAll := strings.ReplaceAll(numStr, string(numStr[index]), "9")
+			return mustParseInt(replaceAll)
+		}
+	}
+	return num
+}
+
+func fetchMinNum(num int, numStr string) int {
+	// 如果第一位大于1，替换为1
+	if mustParseInt(string(numStr[0])) > 1 {
+		replaceAll := strings.ReplaceAll(numStr, string(numStr[0]), "1")
+		return mustParseInt(replaceAll)
+	}
+	// 第一位不为1，则替换后面的为0
+	for index := range numStr {
+		cnt := mustParseInt(string(numStr[index]))
+		if index > 0 && cnt > 1 && index < len(numStr) {
+			replaceAll := strings.ReplaceAll(numStr, string(numStr[index]), "0")
+			return mustParseInt(replaceAll)
+		}
+	}
+	return num
+}
+
+func mustParseInt(str string) int {
+	num, err := strconv.Atoi(str)
+	if err != nil {
+		return 0
+	}
+	return num
+}
+```
+
+
+
+# 反悔贪心
+
+## [LCP 30. 魔塔游戏](https://leetcode.cn/problems/p0NxJO/)
+
+这个题还没做过 mark 一下
+
+# 背包问题
+
+## [322. 零钱兑换](https://leetcode.cn/problems/coin-change/)
+
+```go
+func coinChange(coins []int, amount int) int {
+    // 初始化 dp 数组
+    dp := make([]int, amount+1)
+    for i := 1; i <= amount; i++ {
+        dp[i] = math.MaxInt32
+    }
+
+    // 动态规划计算最少硬币个数
+    for i := 1; i <= amount; i++ {
+        for _, coin := range coins {
+            if i-coin >= 0 && dp[i-coin] != math.MaxInt32 {
+                dp[i] = min(dp[i], dp[i-coin]+1)
+            }
+        }
+    }
+
+    if dp[amount] == math.MaxInt32 {
+        return -1
+    }
+
+    return dp[amount]
+}
+
+func min(a, b int) int {
+    if a < b {
+        return a
+    }
+    return b
+}
+```
+
+## [2140. 解决智力问题](https://leetcode.cn/problems/solving-questions-with-brainpower/)
+
+```go
+func mostPoints(questions [][]int) int64 {
+	var (
+		n = len(questions)
+		dfs func(i int) int64
+        memo = make([]int64, n)
+	)
+
+    for i := range memo {
+		memo[i] = -1
+	}
+
+	dfs = func(i int) (res int64) {
+		if i >= n {
+			return
+		}
+
+        if memo[i] != -1 {
+			return memo[i]
+		}
+
+		memo[i] = max(dfs(i + questions[i][1] + 1) + int64(questions[i][0]), dfs(i + 1))
+
+        return memo[i] 
+	}
+
+	return dfs(0)
+}
+```
+
+# 图算法
+
+## Floyd 算法
+
+## [100156. 转换字符串的最小成本 I](https://leetcode.cn/problems/minimum-cost-to-convert-string-i/)
+
+```go
+
+```
+
+## [1334. 阈值距离内邻居最少的城市](https://leetcode.cn/problems/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/)
+
+# 二叉树
+
+## [106. 从中序与后序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
+
+![image-20240222000956335](https://cdn.fengxianhub.top/resources-master/image-20240222000956335.png)
+
+```go
+func buildTree(inorder, postorder []int) *TreeNode {
+	n := len(postorder)
+	if n == 0 { // 空节点
+		return nil
+	}
+	leftSize := slices.Index(inorder, postorder[n-1]) // 左子树的大小
+	left := buildTree(inorder[:leftSize], postorder[:leftSize])
+	right := buildTree(inorder[leftSize+1:], postorder[leftSize:n-1])
+	return &TreeNode{postorder[n-1], left, right}
+}
+```
+
+## [236. 二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/)
+
+可以先分类讨论
+
+![236.png](https://cdn.fengxianhub.top/resources-master/1681546069-BZfraI-236.png)
+
+```go
+ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+    if root == nil || root == p || root == q {
+        return root
+    }
+    left := lowestCommonAncestor(root.Left, p, q)
+    right := lowestCommonAncestor(root.Right, p, q)
+    // 如果左右都有 说明单前节点比他们都高
+    if left != nil && right != nil {
+        return root
+    }
+    if left != nil {
+        return left
+    }
+    return right
+}
+```
+
+## [235. 二叉搜索树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-search-tree/)
+
+```go
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	// 由题意可得 当前节点肯定不会是空间点
+    x := root.Val
+    if p.Val < x && q.Val < x {
+        return lowestCommonAncestor(root.Left, p, q)
+    }
+
+    if p.Val > x && q.Val > x {
+        return lowestCommonAncestor(root.Right, p, q)
+    }
 
     return root
 }
 ```
 
+# 二分查找
 
+二分查找有很多种写法
 
-# [101. 对称二叉树](https://leetcode.cn/problems/symmetric-tree/)
+- 闭区间
+- 开区间
+- 半闭半开
 
 ```go
-func isSymmetric(root *TreeNode) bool {
-    return isSameTree(root.Left, root.Right)
+// lowerBound 返回最小的满足 nums[i] >= target 的 i
+// 如果数组为空，或者所有数都 < target，则返回 len(nums)
+// 要求 nums 是非递减的，即 nums[i] <= nums[i + 1]
+
+// 闭区间写法
+func lowerBound(nums []int, target int) int {
+    left, right := 0, len(nums)-1 // 闭区间 [left, right]
+    for left <= right {           // 区间不为空
+        // 循环不变量：
+        // nums[left-1] < target
+        // nums[right+1] >= target
+        mid := left + (right-left)/2
+        if nums[mid] < target {
+            left = mid + 1 // 范围缩小到 [mid+1, right]
+        } else {
+            right = mid - 1 // 范围缩小到 [left, mid-1]
+        }
+    }
+    return left
 }
 
-func isSameTree(left, right *TreeNode) bool {
-    if left == nil || right == nil {
-        return left == right
+// 左闭右开区间写法
+func lowerBound2(nums []int, target int) int {
+    left, right := 0, len(nums) // 左闭右开区间 [left, right)
+    for left < right {          // 区间不为空
+        // 循环不变量：
+        // nums[left-1] < target
+        // nums[right] >= target
+        mid := left + (right-left)/2
+        if nums[mid] < target {
+            left = mid + 1 // 范围缩小到 [mid+1, right)
+        } else {
+            right = mid // 范围缩小到 [left, mid)
+        }
     }
+    return left // 返回 left 还是 right 都行，因为循环结束后 left == right
+}
 
-    return left.Val == right.Val && isSameTree(left.Left, right.Right) && isSameTree(left.Right, right.Left)
+// 开区间写法 相当于返回插入位置（即第一个大于等于目标元素的位置）
+// [35. 搜索插入位置](https://leetcode.cn/problems/search-insert-position/)
+func lowerBound3(nums []int, target int) int {
+    left, right := -1, len(nums) // 开区间 (left, right)
+    for left+1 < right {         // 区间不为空
+        // 循环不变量：
+        // nums[left] < target
+        // nums[right] >= target
+        mid := left + (right-left)/2
+        if nums[mid] < target {
+            left = mid // 范围缩小到 (mid, right)
+        } else {
+            right = mid // 范围缩小到 (left, mid)
+        }
+    }
+    return right
 }
 ```
 
+## [34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/)
 
+```go
+
+```
 
 # [543. 二叉树的直径](https://leetcode.cn/problems/diameter-of-binary-tree/)
 
@@ -941,241 +1759,788 @@ func diameterOfBinaryTree(root *TreeNode) (ans int) {
 }
 ```
 
-
-
 # [124. 二叉树中的最大路径和](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)
 
 ```go
-func maxPathSum(root *TreeNode) (ans int) {
-    var dfs func(*TreeNode) int
-    ans = -10000
-    dfs = func(n *TreeNode) int {
-        if n == nil {
-            return 0
-        }
-        l_len := dfs(n.Left)
-        r_len := dfs(n.Right)
-        ans = max(ans, l_len + r_len + n.Val)
-        return max(max(l_len, r_len) + n.Val, 0)
-    }
-    dfs(root)
-    return
-}
+
 ```
 
 
 
-# [108. 将有序数组转换为二叉搜索树](https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/)
+# 滑动窗口
+
+## [3101. 交替子数组计数](https://leetcode.cn/problems/count-alternating-subarrays/)
+
+
+
+## [3208. 交替组 II](https://leetcode.cn/problems/alternating-groups-ii/)
+
+
+
+# 其他
+
+## [146. LRU 缓存](https://leetcode.cn/problems/lru-cache/)
+
+java 版本的比较简单，就是`LinkedHashMap`中使用 hashMap 维护节点快速插入寻找，使用双向链表维护顺序
+
+> 简单介绍 LinkedHashMap（跟题目有关的知识点）
+> HashMap 大家都清楚，底层是 数组 + 红黑树 + 链表 （不清楚也没有关系），同时其是无序的，而 LinkedHashMap 刚好就比 HashMap 多这一个功能，就是其提供 有序，并且，LinkedHashMap 的有序可以按两种顺序排列，一种是按照插入的顺序，一种是按照 读取 的顺序（这个题目的示例就是告诉我们要按照读取的顺序进行排序），而其内部是靠 建立一个双向链表 来维护这个顺序的，在每次插入、删除后，都会调用一个函数来进行 双向链表的维护 ，准确的来说，是有三个函数来做这件事，这三个函数都统称为 回调函数 ，这三个函数分别是：
+>
+> void afterNodeAccess(Node<K,V> p) { }
+> 其作用就是在访问元素之后，将该元素放到双向链表的尾巴处(所以这个函数只有在按照读取的顺序的时候才会执行)，之所以提这个，是建议大家去看看，如何优美的实现在双向链表中将指定元素放入链尾！
+> void afterNodeRemoval(Node<K,V> p) { }
+> 其作用就是在删除元素之后，将元素从双向链表中删除，还是非常建议大家去看看这个函数的，很优美的方式在双向链表中删除节点！
+> void afterNodeInsertion(boolean evict) { }
+> 这个才是我们题目中会用到的，在插入新元素之后，需要回调函数判断是否需要移除一直不用的某些元素！
+> 其次，我再介绍一下 LinkedHashMap 的构造函数！
+> 其主要是两个构造方法，一个是继承 HashMap ，一个是可以选择 accessOrder 的值(默认 false，代表按照插入顺序排序)来确定是按插入顺序还是读取顺序排序
+
+```java
+class LRUCache extends LinkedHashMap<Integer, Integer>{
+    private int capacity;
+
+    public LRUCache(int capacity) {
+        super(capacity, 0.75F, true);
+        this.capacity = capacity;
+    }
+
+    public int get(int key) {
+        return super.getOrDefault(key, -1);
+    }
+
+    // 这个可不写
+    public void put(int key, int value) {
+        super.put(key, value);
+    }
+
+    @Override
+    protected boolean removeEldestEntry(Map.Entry<Integer, Integer> eldest) {
+        return size() > capacity;
+    }
+}
+```
+
+golang
 
 ```go
-func sortedArrayToBST(nums []int) *TreeNode {
-	if len(nums) <= 0 {
+type LRUCache struct {
+    capacity int
+    cache    map[int]*Node
+    head     *Node
+    tail     *Node
+}
+
+type Node struct {
+    key   int
+    value int
+    prev  *Node
+    next  *Node
+}
+
+func Constructor(capacity int) LRUCache {
+    head := &Node{}
+    tail := &Node{}
+    head.next = tail
+    tail.prev = head
+
+    return LRUCache{
+        capacity: capacity,
+        cache:    make(map[int]*Node),
+        head:     head,
+        tail:     tail,
+    }
+}
+
+func (this *LRUCache) Get(key int) int {
+    if node, ok := this.cache[key]; ok {
+        this.moveToHead(node)
+        return node.value
+    }
+    return -1
+}
+
+func (this *LRUCache) Put(key int, value int) {
+    if node, ok := this.cache[key]; ok {
+        node.value = value
+        this.moveToHead(node)
+    } else {
+        newNode := &Node{
+            key:   key,
+            value: value,
+        }
+        this.cache[key] = newNode
+        this.addToHead(newNode)
+        if len(this.cache) > this.capacity {
+            removedNode := this.removeTail()
+            delete(this.cache, removedNode.key)
+        }
+    }
+}
+
+func (this *LRUCache) addToHead(node *Node) {
+    node.prev = this.head
+    node.next = this.head.next
+    this.head.next.prev = node
+    this.head.next = node
+}
+
+func (this *LRUCache) removeNode(node *Node) {
+    node.prev.next = node.next
+    node.next.prev = node.prev
+}
+
+func (this *LRUCache) moveToHead(node *Node) {
+    this.removeNode(node)
+    this.addToHead(node)
+}
+
+func (this *LRUCache) removeTail() *Node {
+    node := this.tail.prev
+    this.removeNode(node)
+    return node
+}
+```
+
+## [103. 二叉树的锯齿形层序遍历](https://leetcode.cn/problems/binary-tree-zigzag-level-order-traversal/)
+
+```go
+func zigzagLevelOrder(root *TreeNode) [][]int {
+	if root == nil {
 		return nil
 	}
-	mid := len(nums) / 2
-	left := sortedArrayToBST(nums[0: mid])
-	right := sortedArrayToBST(nums[mid+1: ])
-	return &TreeNode{
-		Val: nums[mid],
-		Left: left,
-		Right: right,
+
+	var (
+		q      = NewQueue[*TreeNode]()
+		result [][]int
+		level  int
+	)
+
+	q.offer(root)
+	for !q.isEmpty() {
+		level++
+		n := q.size()
+		subArr := make([]int, n)
+		for i := 0; i < n; i++ {
+			element := q.peek()
+			subArr[i] = element.Val
+
+			if element.Left != nil {
+				q.offer(element.Left)
+			}
+			if element.Right != nil {
+				q.offer(element.Right)
+			}
+		}
+
+		if level%2 == 0 {
+			// 偶数层，反转子数组
+			reverse(subArr)
+		}
+
+		result = append(result, subArr)
 	}
+
+	return result
+}
+
+// 反转切片
+func reverse(arr []int) {
+	left, right := 0, len(arr)-1
+	for left < right {
+		arr[left], arr[right] = arr[right], arr[left]
+		left++
+		right--
+	}
+}
+
+type Queue[T any] struct {
+	array []T
+	len   int
+}
+
+func NewQueue[T any]() *Queue[T] {
+	return &Queue[T]{array: make([]T, 0)}
+}
+
+func (q *Queue[T]) offer(element ...T) {
+	// 1. 添加元素
+	q.array = append(q.array, element...)
+	q.len += len(element)
+}
+
+// 从切片的第一个元素弹出
+func (q *Queue[T]) peek() (element T) {
+	if q.len < 1 {
+		panic("cannot pop empty queue !")
+	}
+	element = q.array[0]
+	// 移除第一个元素
+	q.array = q.array[1:]
+	q.len--
+	return
+}
+
+func (q *Queue[T]) isEmpty() bool {
+	return q.len == 0
+}
+
+func (q *Queue[T]) size() int {
+	return q.len
 }
 ```
 
-
-
-
-
-# [98. 验证二叉搜索树](https://leetcode.cn/problems/validate-binary-search-tree/)
-
->**每个节点都必须在其祖先划定的范围内：向左走收紧上限，向右走提升下限，当前值必须在 (min, max) 之间。**
+## [7. 整数反转](https://leetcode.cn/problems/reverse-integer/)
 
 ```go
-func isValidBST(root *TreeNode) bool {
-	return helper(root, nil, nil)
-}
+func reverse(x int) int {
+    y := 0
 
-func helper(root *TreeNode, min, max *int) bool {
-	if root == nil {
-		return true
-	}
-	if min != nil && root.Val <= *min {
-		return false
-	}
-	if max != nil && root.Val >= *max {
-		return false
-	}
-	return helper(root.Left, min, &root.Val) && helper(root.Right, &root.Val, max)
-}
-```
-
-
-
-# [230. 二叉搜索树中第 K 小的元素](https://leetcode.cn/problems/kth-smallest-element-in-a-bst/)
-
-```go
-// 解法1，中序遍历 时间复杂度O(n) 空间复杂度O(n)
-func kthSmallest(root *TreeNode, k int) int {
-    // 中序遍历 拿到排序好的数组
-    return inorderTraversal(root)[k-1]
-}
-
-func inorderTraversal(root *TreeNode) (ans []int) {
-    if root == nil {
-        return nil
-    }
-    ans = append(ans, inorderTraversal(root.Left)...)
-    ans = append(ans, root.Val)
-    ans = append(ans, inorderTraversal(root.Right)...)
-    return
-}
-// 解法2，提前减枝，中序遍历 BST，边遍历边数数，数到第 k 个就喊停，后面的全都不要了！
-func kthSmallest(root *TreeNode, k int) int {
-    var count , result = new(int), new(int)
-    inorderTraversal(root, count, result, k)
-    return *result
-}
-
-func inorderTraversal(root *TreeNode, count, result *int, k int) {
-    if root == nil || *count >= k {
-        return
-    }
-    inorderTraversal(root.Left, count, result, k)
-
-    *count++
-    if *count == k {
-        *result = root.Val
-    }
-
-    inorderTraversal(root.Right, count, result, k)
-}
-```
-
-
-
-# [199. 二叉树的右视图](https://leetcode.cn/problems/binary-tree-right-side-view/)
-
-```go
-func rightSideView(root *TreeNode) (ans []int) {
-    if root == nil {
-        return
-    }
-    var queue = []*TreeNode{root}
-    for ; len(queue) > 0 ; {
-        var arr = make([]int, 0)
-        length := len(queue)
-        for _, val := range queue[0: length] {
-            if val.Left != nil {
-                queue = append(queue, val.Left)
-            }
-            if val.Right != nil {
-                queue = append(queue, val.Right)
-            }
-            arr = append(arr, val.Val)
+    for x !=0{
+        if y < math.MinInt32/10 || y > math.MaxInt32/10 {
+            return 0
         }
-        ans = append(ans, arr[len(arr) - 1])
-        queue = queue[length:]
+        temp := x%10
+        y = y*10+temp
+        x /= 10
     }
-    return
+    return y
 }
 ```
 
+# 双指针&多指针
 
+>     解题思路：使用相向双指针求解，利用数组有序的特点
 
-# [114. 二叉树展开为链表](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/)
+## [LCR 006. 两数之和 II - 输入有序数组](https://leetcode.cn/problems/kLl5u1/description/)
 
 ```go
-func flatten(root *TreeNode)  {
-    if root == nil {
-        return
+func twoSum(nums []int, target int) []int {
+    var (
+        n = len(nums)
+        i = 0
+        j = n - 1
+    )
+    sort.Slice(nums, func(i, j int) bool { return nums[i] - nums[j] < 0 })
+    for i < j {
+        sum := nums[i] + nums[j]
+        if sum == target {
+            return []int {i, j}
+        } else if sum < target {
+            i++
+        } else if sum > target {
+            j--
+        }
     }
-    ans := preOrder(root)
-    for i := 0; i < len(ans) - 1; i++ {
-        ans[i].Left = nil 
-        ans[i].Right = ans[i+1]
-    }
-    ans[len(ans)-1].Left = nil
-    ans[len(ans)-1].Right = nil
-    return
-}
-
-func preOrder(root *TreeNode) (ans []*TreeNode) {
-    if root == nil {
-        return 
-    }
-    ans = append(ans, root)
-    ans = append(ans, preOrder(root.Left)...)
-    ans = append(ans, preOrder(root.Right)...)
-    return
+    return nil
 }
 ```
 
+## [100444. 识别数组中的最大异常值](https://leetcode.cn/problems/identify-the-largest-outlier-in-an-array/description/)
 
-
-
-
-# [105. 从前序与中序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
+> 两数之和变形(用 map 的解法)
 
 ```go
-// input => preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
-// 从中序遍历拿到左子树的个数和右子树的个数
-// 然后能从前序遍历中拿到左子树和右子树的数组继续递归即可
-func buildTree(preorder []int, inorder []int) *TreeNode {
-    length := len(preorder)
-    if length <= 0 {
-        return nil
-    }
-    // 中序遍历中左子树节点的个数
-    index := indexForSlice(inorder, preorder[0])
-    leftNode := buildTree(preorder[1:index+1], inorder[:index])
-    rightNode := buildTree(preorder[index+1:], inorder[index+1:])
-    return &TreeNode{
-        Val: preorder[0],
-        Left: leftNode,
-        Right: rightNode,
-    }
+func getLargestOutlier(nums []int) (ans int) {
+	// k 存放的数字 v 出现的次数
+	m := make(map[int]int)
+	var sum = 0
+	for _, val := range nums {
+		m[val]++
+		sum += val
+	}
+	ans = math.MinInt
+	for _, val := range nums {
+		// 为了防止(sum-val)/2 == 异常值的情况，防止同一个数选了两次
+		m[val]--
+		if (sum - val) % 2 == 0 && m[(sum-val)/2] > 0 {
+			ans = max(ans, val)
+		}
+		m[val]++
+	}
+	return
 }
 
-func indexForSlice[E comparable](arr []E, target E) (index int) {
-	for i, v := range arr {
-		if v == target {
-			return i
+func max(i, j int) int {
+	if i > j {
+		return i
+	}
+	return j
+}
+```
+
+## [15. 三数之和](https://leetcode.cn/problems/3sum/description/)
+
+```go
+func threeSum(nums []int) [][]int {
+    // 先变成有序，利用有序进行三指针
+	sort.Slice(nums, func(i, j int) bool { return nums[i]-nums[j] < 0 })
+	var (
+		n      = len(nums)
+		result = make([][]int, 0)
+	)
+	// 从第一个数开始枚举
+	for i := 0; i < len(nums)-2; i++ {
+		if i > 0 && nums[i-1] == nums[i] {
+			continue
+		}
+		j := i + 1
+		k := n - 1
+		for j < k {
+			sum := nums[i] + nums[j] + nums[k]
+			if sum == 0 {
+				result = append(result, []int{nums[i], nums[j], nums[k]})
+				j++
+                // 下面两步都是为了出现重复元素，进行移动
+				for j < k && nums[j] == nums[j-1] {
+					j++
+				}
+				for k > j && nums[k] == nums[k-1] {
+					k--
+				}
+			} else if sum > 0 {
+				k--
+			} else if sum < 0 {
+				j++
+			}
 		}
 	}
-	return -1
+	return result
 }
-
 ```
 
+## [16. 最接近的三数之和](https://leetcode.cn/problems/3sum-closest/description/)
 
+> 三数之和变形
 
+```java
+class Solution {
+    public int threeSumClosest(int[] nums, int target) {
+        Arrays.sort(nums);
+        int minDiff = 1_000_000;
+        int ans = 0;
+        for (int i = 0; i < nums.length - 2; i++) {
+            int j = i + 1;
+            int k = nums.length - 1;
+            for (; j < k;) {
+                int sum = nums[i] + nums[j] + nums[k];
+                if (sum == target) {
+                    return target;
+                }
+                int diff = Math.abs(sum - target);
+                if (sum > target) {
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        ans = sum;
+                    }
+                    k--;
+                } else if (sum < target) {
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        ans = sum;
+                    }
+                    j++;
+                }
+            }
+        }
+        return ans;
+    }
+}
+```
 
-
-# [560. 和为 K 的子数组](https://leetcode.cn/problems/subarray-sum-equals-k/)
+## [18. 四数之和](https://leetcode.cn/problems/4sum/description/)
 
 ```go
+func fourSum(nums []int, target int) (ans [][]int) {
+	slices.Sort(nums)
+	for i := 0; i < len(nums)-3; i++ {
+		if i > 0 && nums[i] == nums[i-1] {
+			continue
+		}
+		for j := i + 1; j < len(nums)-2; j++ {
+			var (
+				k = j + 1
+				s = len(nums) - 1
+			)
+			if j > i + 1 && nums[j] == nums[j-1] {
+				continue
+			}
+			for k < s {
+				sum := nums[i] + nums[j] + nums[k] + nums[s]
+				if sum == target {
+					ans = append(ans, []int{nums[i], nums[j], nums[k], nums[s]})
+					k++
+                    s--
+					// 去重
+					for k < s && nums[k] == nums[k-1] {
+						k++
+					}
+					for s > k && nums[s] == nums[s+1] {
+						s--
+					}
+				} else if sum > target {
+					s--
+				} else if sum < target {
+					k++
+				}
+			}
+		}
+	}
+	return
+}
+```
+
+## [11. 盛最多水的容器](https://leetcode.cn/problems/container-with-most-water/)
+
+解题思路：双指针，短板效应，那边短移动那边，如果一样长，移动那边都可以
+
+```go
+func maxArea(height []int) (ans int) {
+    var (
+        left = 0
+        right = len(height) - 1
+    )
+    for left < right {
+        ans = max(ans, (right - left) * min(height[left], height[right]))
+        if height[left] < height[right] {
+            left++
+        } else {
+            right--
+        }
+    }
+    return
+}
+```
+
+## [42. 接雨水](https://leetcode.cn/problems/trapping-rain-water/)
+
+### 方法一:前后缀分解
+
+> 思路: min(最大前缀，最大后缀)-当前高度=当前桶可容纳的水滴数
+> 为什么要取左右两边的前缀值呢
+>
+> 1. 如果左边比右边高 水就能留下来
+> 2. 如果左边比右边低 水就留不下来
+
+```go
+func trap(height []int) (ans int) {
+    var (
+        n = len(height)
+        pre_max = make([]int, n)
+        suf_max = make([]int, n)
+    )
+    pre_max[0] = height[0]
+    for i := 1; i < n; i++ {
+        pre_max[i] = max(height[i], pre_max[i-1])
+    }
+    suf_max[n-1] = height[n-1]
+    for i := n-2; i >= 0; i-- {
+        suf_max[i] = max(height[i], suf_max[i+1])
+    }
+    for i := 0; i < n; i++ {
+        ans += min(suf_max[i], pre_max[i]) - height[i]
+    }
+    return
+}
+```
+
+分析下上面的时间复杂度和空间负责度
+
+- 时间复杂度: O(n)
+- 空间复杂度: O(n)
+  时间上已经是最优的了，空间上还可以再进行优化
+
+### 方法二: 相向双指针
+
+>思路:
+>
+>1. 如果前缀最大值比后缀最大值小 => 容量就是前缀最大值 左指针向右移动
+>2. 如果后缀最大值比前缀最大值小 => 容量就是后缀最大值 右指针向左移动
+
+```go
+func trap(height []int) (ans int) {
+    var (
+        n = len(height)
+        left = 0
+        right = n - 1
+        pre_max = 0
+        suf_max = 0
+    )
+    for left < right {
+        pre_max = max(pre_max, height[left])
+        suf_max = max(suf_max, height[right])
+        if pre_max < suf_max {
+            ans += pre_max - height[left]
+            left++
+        } else  {
+            ans += suf_max - height[right]
+            right--
+        }
+    }
+    return
+}
+```
+
+### 方法三: 单调栈
+
+
+
+## [407. 接雨水 II](https://leetcode.cn/problems/trapping-rain-water-ii/)
+
+
+
+## [905. 按奇偶排序数组](https://leetcode.cn/problems/sort-array-by-parity/)
+
+```go
+func sortArrayByParity(nums []int) []int {
+    var (
+        i,j = 0, len(nums) - 1
+    )
+    for i < j {
+        if nums[i] % 2 == 0 {
+            i++
+        } else if nums[j] % 2 == 1 {
+            j--
+        } else {
+            nums[i], nums[j] = nums[j], nums[i]
+        }
+    }
+    return nums
+}
+```
+
+
+## [有序三元组中的最大值 II](https://leetcode.cn/problems/maximum-value-of-an-ordered-triplet-ii)
+
+> 思路: 相向双指针 枚举j
+
+
+```go
+func maximumTripletValue(nums []int) (ans int64) {
+    var (
+        n = len(nums)
+        pre_max = make([]int, n)
+        suf_max = make([]int, n)
+    )
+    pre_max[0] = nums[0]
+    for i := 1; i < n; i++ {
+        pre_max[i] = max(pre_max[i-1], nums[i])
+    }
+    suf_max[n-1] = nums[n-1]
+    for j := n-2; j >= 0; j-- {
+        suf_max[j] = max(suf_max[j+1], nums[j])
+    }
+    // 枚举j
+    for j := 1; j < n - 1; j++ {
+        ans = max(ans, int64((pre_max[j - 1] - nums[j]) * suf_max[j+1]))
+    }
+    return
+}
 ```
 
 
 
+## [922. 按奇偶排序数组 II](https://leetcode.cn/problems/sort-array-by-parity-ii/)
+
+```go
+func sortArrayByParityII(nums []int) []int {
+    var (
+        i, j = 0, 1
+        length = len(nums)
+    )
+    for i < length && j < length {
+        if nums[i] % 2 == 0 {
+            i += 2
+        } else if nums[j] % 2 == 1 {
+            j += 2
+        } else {
+            nums[i], nums[j] = nums[j], nums[i]
+        }
+    }
+    return nums
+}
+```
+
+不使用额外空间
+
+```go
+func sortArrayByParityII(nums []int) []int {
+	for i, j := 0, 1; i < len(nums); i += 2 {
+		if nums[i]%2 == 1 {
+			for nums[j]%2 == 1 {
+				j += 2
+			}
+			nums[i], nums[j] = nums[j], nums[i]
+		}
+	}
+	return nums
+}
+```
 
 
 
+# 堆排序
+
+## [220. 存在重复元素 III](https://leetcode.cn/problems/contains-duplicate-iii/description/)
+
+```go
+func containsNearbyAlmostDuplicate(nums []int, indexDiff int, valueDiff int) bool {
+    if len(nums) <= 1 || indexDiff < 0 || valueDiff < 0 {
+        return false
+    }
+
+    // 桶的宽度设为 t+1 的原因是为了保证同一个桶内的任意两个数都满足条件
+    bucketSize := valueDiff + 1
+    buckets := make(map[int]int)
+
+    for i, num := range nums {
+        // 计算当前数字属于哪个桶
+        bucketNum := getBucketID(num, bucketSize)
+
+        // 检查当前桶及相邻桶
+        // 边界情况，例如 valueDiff = 3, 桶A包含数字10, 11, 12, 13桶B包含数字14, 15, 16, 17，此时两个桶的差值可能小于等于valueDiff
+        if _, ok := buckets[bucketNum]; ok {
+            return true
+        }
+        if val, ok := buckets[bucketNum-1]; ok && abs(val-num) <= valueDiff {
+            return true
+        }
+        if val, ok := buckets[bucketNum+1]; ok && abs(val-num) <= valueDiff {
+            return true
+        }
+
+        // 将当前数字放入桶中
+        buckets[bucketNum] = num
+
+        // 移除超出范围的桶
+        if i >= indexDiff {
+            delete(buckets, getBucketID(nums[i-indexDiff], bucketSize))
+        }
+    }
+    return false
+}
+
+func getBucketID(num int, bucketSize int) int {
+    if num >= 0 {
+        return num / bucketSize
+    }
+    return (num+1)/bucketSize - 1
+}
+
+func abs[T int](num T) T {
+	if num < 0 {
+		return -num
+	}
+	return num
+}
+```
+
+# 前缀和
+
+## [303. 区域和检索 - 数组不可变](https://leetcode.cn/problems/range-sum-query-immutable/)
+
+>用长度为n+1的数组s保存前缀和
+>
+>| arr  | 1    | 2    | 3    | 4    |      |
+>| ---- | ---- | ---- | ---- | ---- | ---- |
+>| s    | 0    | 1    | 3    | 6    | 10   |
+>
+>比如计算`arr[1, 2]`的值，就等于`s[right+1]−s[left]` = `s[3]−s[1]` = 6 -1 = 5
+>
+>推导过程如下：`arr[left, right] ` = ` arr[0, right] - arr[0, left -  1]`  = ` s[right + 1] - s[left]`
+>
+>核心是 **子数组和 = 两个前缀和的差值**
+
+```go
+type NumArray struct {
+	s []int
+}
+
+func Constructor(nums []int) NumArray {
+	s := make([]int, len(nums)+1)
+	s[0] = 0
+	for i := 0; i < len(nums); i++ {
+		s[i+1] = s[i] + nums[i]
+	}
+	return NumArray{s: s}
+}
+
+func (this *NumArray) SumRange(left int, right int) (ans int) {
+	// 公式 arr[left, right] = arr[0, right] - arr[0, left-1] = s[right+1] - s[left]
+	return this.s[right+1] - this.s[left]
+}
+```
 
 
 
+## [560. 和为 K 的子数组](https://leetcode.cn/problems/subarray-sum-equals-k/)
 
+这道题也是用了前缀和的性质，区别是要找任意区间数组和为k的个数，所以得有个for循环来做差
 
+![image-20260816181250630](https://cdn.fengxianhub.top/resources-master/image-20260816181250630.png)
 
+```go
+// 前缀和做法，时间复杂度O(n^2)
+func subarraySum(nums []int, k int) (ans int) {
+	s := make([]int, len(nums) + 1)
+    s[0] = nums[0]
+    for index, _ := range nums {
+        s[index+1] = s[index] + nums[index]
+    }
+    for i := 0; i < len(s); i++ {
+        for j := i + 1; j < len(s); j++ {
+            if s[j] - s[i] == k {
+                ans++
+            }
+        }
+    }
+    return
+}
 
+// 哈希表做法
+// 前缀和：pre[i] = nums[0] + nums[1] + ... + nums[i-1]
+// 子数组 nums[i..j] 的和 = pre[j+1] - pre[i]
+// 要找的是：pre[j+1] - pre[i] = k → pre[i] = pre[j+1] - k
+// 所以当我们遍历到位置 j 时，只需要看之前有没有出现过 pre[j+1] - k 这个值！
+func subarraySum(nums []int, k int) (ans int) {
+	preSum := 0
+    m := map[int]int{0: 1}
+    for _, val := range nums {
+        preSum += val
+        if count, ok := m[preSum-k]; ok {
+            ans += count
+        }
+        m[preSum]++
+    }
+    return
+}
+```
 
+## [437. 路径总和 III](https://leetcode.cn/problems/path-sum-iii/)
 
+这道题跟和为K的子数组一样，只不过需要从上往下遍历树。需要注意的是
 
-
-
-
-
+```go
+func pathSum(root *TreeNode, targetSum int) (ans int) {
+    if root == nil {
+        return 0
+    }
+    m := map[int]int{0: 1}
+    var dfs func(*TreeNode, int)
+    dfs = func(node *TreeNode, s int) {
+        if node == nil {
+            return
+        }
+        s += node.Val
+        ans += m[s-targetSum]
+        m[s]++
+        dfs(node.Left, s)
+        dfs(node.Right, s)
+        m[s]--
+    }
+    dfs(root, 0)
+    return
+}
+```
 
 
 
