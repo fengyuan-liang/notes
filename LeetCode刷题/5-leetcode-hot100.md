@@ -211,44 +211,109 @@ func reverseList(head *ListNode) *ListNode {
 
 > 翻转指定区间链表
 
+思路
+
+<img src="https://cdn.fengxianhub.top/resources-master/image-20260907023259814.png" alt="image-20260907023259814" style="zoom:50%;" />
+
+
+
 ```go
 func reverseBetween(head *ListNode, left int, right int) *ListNode {
-    if head == nil || left == right {
-        return head
-    }
-
-    var successor *ListNode
-    if left == 1 {
-        successor = reverseN(head, right)
-    } else {
-        head.Next = reverseBetween(head.Next, left-1, right-1)
-        successor = head
-    }
-
-    return successor
-}
-
-var successor *ListNode
-
-// 翻转前 N 个节点
-func reverseN(head *ListNode, n int) *ListNode {
-    if n == 1 {
-        successor = head.Next
-        return head
-    }
-
-    last := reverseN(head.Next, n-1)
-    head.Next.Next = head
-    head.Next = successor
-
-    return last
+	dummy := &ListNode{Next: head}
+	p0 := dummy
+	for range left - 1 {
+		p0 = p0.Next
+	}
+	p0Next := p0.Next
+	p1 := dummy.Next
+	for range right - 1 {
+		p1 = p1.Next
+	}
+	var dfs func(node *ListNode) *ListNode
+	dfs = func(node *ListNode) *ListNode {
+		if node == nil || node.Next == nil {
+			return node
+		}
+		post := dfs(node.Next)
+		node.Next.Next = node
+		node.Next = nil
+		return post
+	}
+	p1Next := p1.Next
+	// 切断尾部节点
+	p1.Next = nil
+	reversedList := dfs(p0.Next)
+	p0.Next = reversedList
+	p0Next.Next = p1Next
+	return dummy.Next
 }
 ```
 
 ## [25. K 个一组翻转链表](https://leetcode.cn/problems/reverse-nodes-in-k-group/)
 
-```go
+思路
 
+![image-20260907025957934](https://cdn.fengxianhub.top/resources-master/image-20260907025957934.png)
+
+![image-20260907030010788](https://cdn.fengxianhub.top/resources-master/image-20260907030010788.png)
+
+```go
+func reverseKGroup(head *ListNode, k int) *ListNode {
+	if head == nil || k <= 1 {
+		return head
+	}
+
+	// 计算链表长度
+	cnt := 0
+	for node := head; node != nil; node = node.Next {
+		cnt++
+	}
+
+	// 递归翻转函数
+	var dfs func(node *ListNode) *ListNode
+	dfs = func(node *ListNode) *ListNode {
+		if node == nil || node.Next == nil {
+			return node
+		}
+		newHead := dfs(node.Next)
+		node.Next.Next = node
+		node.Next = nil
+		return newHead
+	}
+
+	dummy := &ListNode{Next: head}
+	p0 := dummy
+
+	// 处理每一组
+	for ; cnt >= k; cnt -= k {
+		// 1. 找到当前组的尾节点 p1
+		p1 := p0
+		for range k {
+			p1 = p1.Next
+		}
+
+		// 2. 保存下一组的起始节点
+		nextGroup := p1.Next
+
+		// 3. 断开当前组
+		p1.Next = nil
+
+		// 4. 保存当前组的起始节点（翻转后会变成尾节点）
+		groupStart := p0.Next
+
+		// 5. 翻转当前组
+		reversedHead := dfs(p0.Next)
+
+		// 6. 连接回链表
+		p0.Next = reversedHead
+		groupStart.Next = nextGroup
+
+		// 7. 移动 p0 到当前组的尾节点
+		p0 = groupStart
+	}
+
+	return dummy.Next
+}
 ```
 
 ## [21. 合并两个有序链表](https://leetcode.cn/problems/merge-two-sorted-lists/)
@@ -1104,6 +1169,8 @@ class Solution:
 ```
 
 # 回溯
+
+![image-20260908005427852](https://cdn.fengxianhub.top/resources-master/image-20260908005427852.png)
 
 ## 子集型回溯
 
