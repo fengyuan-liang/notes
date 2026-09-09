@@ -1170,6 +1170,8 @@ class Solution:
 
 # 回溯
 
+回溯就是for循环里进行递归
+
 ![image-20260908005427852](https://cdn.fengxianhub.top/resources-master/image-20260908005427852.png)
 
 ## 子集型回溯
@@ -1967,6 +1969,264 @@ func (this *LRUCache) removeTail() *Node {
     return node
 }
 ```
+
+带过期时间版本的
+
+```go
+
+// ListNode 双向链表节点
+type ListNode[K comparable, V any] struct {
+	key  K               // 保存key，方便删除时使用
+	data V               // 实际数据
+	next *ListNode[K, V] // 下一个节点
+	prev *ListNode[K, V] // 上一个节点
+	date int64           // 保存的时间戳（毫秒）
+}
+
+// Cache LRU缓存，支持过期时间
+type Cache[K comparable, V any] struct {
+	data map[K]*ListNode[K, V] // 快速查找
+	head *ListNode[K, V]       // 虚拟头节点
+	tail *ListNode[K, V]       // 虚拟尾节点
+	x    int64                 // 过期时间（毫秒）
+	lock *sync.RWMutex         // 读写锁
+	cap  int64                 // 最大容量
+	len  int64                 // 当前长度
+}
+
+// New 创建新的缓存实例
+// @param x 过期时间，单位秒
+// @param cap 最大容量
+func New[K comparable, V any](x int, cap int64) *Cache[K, V] {
+	head := &ListNode[K, V]{}
+	tail := &ListNode[K, V]{}
+	
+	// 初始化虚拟节点的连接
+	head.next = tail
+	tail.prev = head
+	
+	return &Cache[K, V]{
+		data: make(map[K]*ListNode[K, V]),
+		head: head,
+		tail: tail,
+		x:    int64(x * 1000), // 转换为毫秒
+		lock: new(sync.RWMutex),
+		cap:  cap,
+		len:  0,
+	}
+}
+
+// Get 获取缓存数据
+func (c *Cache[K, V]) Get(id K) (v V, ok bool) {
+	c.lock.RLock()
+	node, exists := c.data[id]
+	if !exists {
+		c.lock.RUnlock()
+		var zero V
+		return zero, false
+	}
+	
+	// 检查是否过期
+	if c.isExpired(node) {
+		c.lock.RUnlock()
+		// 获取写锁删除过期数据
+		c.lock.Lock()
+		// 双重检查，防止其他协程已经删除了
+		if node, exists := c.data[id]; exists && c.isExpired(node) {
+			c.removeNode(node)
+			delete(c.data, id)
+			c.len--
+		}
+		c.lock.Unlock()
+		var zero V
+		return zero, false
+	}
+	
+	// 将节点移动到头部（最近使用）
+	c.moveToHead(node)
+	c.lock.RUnlock()
+	return node.data, true
+}
+
+// Put 存入缓存数据
+func (c *Cache[K, V]) Put(id K, v V) {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	
+	// 如果key已存在，更新数据
+	if node, exists := c.data[id]; exists {
+		node.data = v
+		node.date = time.Now().UnixMilli()
+		c.moveToHead(node)
+		return
+	}
+	
+	// 创建新节点
+	node := &ListNode[K, V]{
+		key:  id,
+		data: v,
+		date: time.Now().UnixMilli(),
+	}
+	
+	// 添加到缓存
+	c.data[id] = node
+	c.addToHead(node)
+	c.len++
+	
+	// 如果超过容量，删除最久未使用的节点
+	if c.len > c.cap {
+		c.evictOldest()
+	}
+}
+
+// Delete 删除缓存数据
+func (c *Cache[K, V]) Delete(id K) bool {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	
+	node, exists := c.data[id]
+	if !exists {
+		return false
+	}
+	
+	c.removeNode(node)
+	delete(c.data, id)
+	c.len--
+	return true
+}
+
+// Clear 清空所有缓存
+func (c *Cache[K, V]) Clear() {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	
+	// 清空map
+	c.data = make(map[K]*ListNode[K, V])
+	
+	// 重置链表
+	c.head.next = c.tail
+	c.tail.prev = c.head
+	c.len = 0
+}
+
+// Size 获取当前缓存大小
+func (c *Cache[K, V]) Size() int64 {
+	c.lock.RLock()
+	defer c.lock.RUnlock()
+	return c.len
+}
+
+// Contains 检查key是否存在且未过期
+func (c *Cache[K, V]) Contains(id K) bool {
+	c.lock.RLock()
+	defer c.lock.RUnlock()
+	
+	node, exists := c.data[id]
+	if !exists {
+		return false
+	}
+	
+	return !c.isExpired(node)
+}
+
+// CleanExpired 清理所有过期的数据
+func (c *Cache[K, V]) CleanExpired() int64 {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	
+	cleaned := int64(0)
+	// 遍历所有节点，删除过期的
+	for key, node := range c.data {
+		if c.isExpired(node) {
+			c.removeNode(node)
+			delete(c.data, key)
+			c.len--
+			cleaned++
+		}
+	}
+	return cleaned
+}
+
+// isExpired 检查节点是否过期（需要持有锁）
+func (c *Cache[K, V]) isExpired(node *ListNode[K, V]) bool {
+	return time.Now().UnixMilli()-node.date > c.x
+}
+
+// addToHead 将节点添加到头部（需要持有锁）
+func (c *Cache[K, V]) addToHead(node *ListNode[K, V]) {
+	node.prev = c.head
+	node.next = c.head.next
+	c.head.next.prev = node
+	c.head.next = node
+}
+
+// removeNode 从链表中移除节点（需要持有锁）
+func (c *Cache[K, V]) removeNode(node *ListNode[K, V]) {
+	node.prev.next = node.next
+	node.next.prev = node.prev
+	// 清空节点引用，帮助GC
+	node.prev = nil
+	node.next = nil
+}
+
+// moveToHead 将节点移动到头部（需要持有锁）
+func (c *Cache[K, V]) moveToHead(node *ListNode[K, V]) {
+	c.removeNode(node)
+	c.addToHead(node)
+}
+
+// evictOldest 删除最久未使用的节点（需要持有锁）
+func (c *Cache[K, V]) evictOldest() {
+	if c.len == 0 {
+		return
+	}
+	
+	// 尾节点的前一个节点是最久未使用的
+	node := c.tail.prev
+	if node == c.head {
+		return
+	}
+	
+	c.removeNode(node)
+	delete(c.data, node.key)
+	c.len--
+}
+
+// GetStats 获取缓存统计信息（调试用）
+func (c *Cache[K, V]) GetStats() map[string]interface{} {
+	c.lock.RLock()
+	defer c.lock.RUnlock()
+	
+	return map[string]interface{}{
+		"size":        c.len,
+		"capacity":    c.cap,
+		"expire_ms":   c.x,
+		"expire_sec":  c.x / 1000,
+		"empty":       c.len == 0,
+		"full":        c.len >= c.cap,
+	}
+}
+
+// GetAll 获取所有缓存数据（调试用）
+func (c *Cache[K, V]) GetAll() map[K]V {
+	c.lock.RLock()
+	defer c.lock.RUnlock()
+	
+	result := make(map[K]V)
+	for key, node := range c.data {
+		if !c.isExpired(node) {
+			result[key] = node.data
+		}
+	}
+	return result
+}
+```
+
+
+
+
+
+
 
 ## [103. 二叉树的锯齿形层序遍历](https://leetcode.cn/problems/binary-tree-zigzag-level-order-traversal/)
 
