@@ -1307,6 +1307,42 @@ func subsets(nums []int) (result [][]int) {
 
 ![image-20240111221641466](https://cdn.fengxianhub.top/resources-master/image-20240111221641466.png)
 
+```go
+func partition(s string) (result [][]string) {
+	n := len(s)
+	path := make([]string, 0)
+
+	var dfs func(i int)
+	dfs = func(i int) {
+		if i == n {
+			tmp := make([]string, len(path))
+			copy(tmp, path)
+			result = append(result, tmp)
+			return
+		}
+		for j := i; j < n; j++ {
+			t := s[i : j+1]
+			if t == reverse(t) {
+				path = append(path, t)
+				dfs(j + 1)
+				path = path[:len(path)-1]
+			}
+		}
+	}
+
+	dfs(0)
+	return
+}
+
+func reverse(s string) string {
+	b := []byte(s)
+	for l, r := 0, len(b)-1; l < r; l, r = l+1, r-1 {
+		b[l], b[r] = b[r], b[l]
+	}
+	return string(b)
+}
+```
+
 ### [77. 组合](https://leetcode.cn/problems/combinations/)
 
 组合型回溯可以进行剪枝
@@ -1314,23 +1350,23 @@ func subsets(nums []int) (result [][]int) {
 ```go
 func combine(n int, k int) (result [][]int) {
 	var (
-		dfs  func(i int)
-		path = make([]int,0,  k)
-	)
-	dfs = func(i int) {
-		if len(path) == k {
-			var temp = make([]int, k)
-			copy(temp, path)
-			result = append(result, temp)
-			return
-		}
-		for j := n; j >= 1; j-- {
+        path = make([]int, 0)
+        dfs func(i int)
+    )
+    dfs = func(i int) {
+        if len(path) == k {
+            tmp := make([]int, len(path))
+            copy(tmp, path)
+            result = append(result, tmp)
+            return
+        }
+        for j := i; j > 0; j-- {
             path = append(path, j)
-			dfs(j - 1)
-			path = path[:len(path)-1]
-		}
-	}
-	dfs(n)
+            dfs(j-1)
+            path = path[: len(path) - 1]
+        }
+    }
+    dfs(n)
 	return
 }
 ```
@@ -1499,7 +1535,7 @@ func candy(ratings []int) int {
 		candies = make([]int, n)
 	)
 	candies[0] = 1
-	// 从左到右贪心
+	// 从左到右贪心 糖果变成 1 1 2
 	for i := 1; i < n; i++ {
 		if ratings[i] > ratings[i-1] {
 			candies[i] = candies[i-1] + 1
@@ -1507,7 +1543,7 @@ func candy(ratings []int) int {
 			candies[i] = 1
 		}
 	}
-	// 从右往左贪心
+	// 从右往左贪心 2 1 2
 	for i := n - 2; i >= 0; i-- {
 		if ratings[i] > ratings[i+1] && candies[i] <= candies[i+1] {
 			candies[i] = candies[i+1] + 1
