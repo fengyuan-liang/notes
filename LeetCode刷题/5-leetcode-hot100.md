@@ -10,6 +10,8 @@
 
 ## [5. 最长回文子串](https://leetcode.cn/problems/longest-palindromic-substring/)
 
+中心扩散法，O(n^2)
+
 ```go
 func longestPalindrome(s string) string {
 	var (
