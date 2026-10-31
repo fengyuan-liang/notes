@@ -1,0 +1,79 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.5 Chrome/126.0.6478.183 Electron/31.3.0 Safari/537.36" version="24.7.5">
+  <diagram name="第 1 页" id="sg8XZSAFask439z69L2t">
+    <mxGraphModel dx="793" dy="1197" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="k2hgn9Dceoytbyq07EMz-1" value="电商业务架构｜业务域与职责边界" style="text;fontSize=21;fontStyle=1;align=left;verticalAlign=middle;fontColor=#1f2937;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="14" width="720" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-2" value="清晰划分数据生产、策略决策与页面表达，避免业务域职责越界" style="text;fontSize=12;align=left;verticalAlign=middle;fontColor=#667085;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="47" width="720" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-3" value="" style="rounded=1;fillColor=#f5f7fa;strokeColor=#d5dde7;strokeWidth=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="76" width="740" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-4" value="触点渠道" style="text;fontSize=12;fontStyle=1;align=left;verticalAlign=middle;fontColor=#344054;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="42" y="80" width="96" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-5" value="消费者 App" style="rounded=1;fillColor=#e8f3ff;strokeColor=#6c9bd2;fontColor=#17365d;fontSize=11;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="81" width="142" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-6" value="电商网站" style="rounded=1;fillColor=#e8f3ff;strokeColor=#6c9bd2;fontColor=#17365d;fontSize=11;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="81" width="142" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-7" value="微信小程序" style="rounded=1;fillColor=#e8f3ff;strokeColor=#6c9bd2;fontColor=#17365d;fontSize=11;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="81" width="142" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-8" value="商家运营后台" style="rounded=1;fillColor=#e8f3ff;strokeColor=#6c9bd2;fontColor=#17365d;fontSize=11;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="81" width="145" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-9" value="业务域与职责边界" style="text;fontSize=12;fontStyle=1;align=left;verticalAlign=middle;fontColor=#344054;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="300" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-10" value="&lt;b&gt;商品中心&lt;/b&gt;&lt;br&gt;负责：SPU/SKU 主数据、类目、属性、图文详情&lt;br&gt;不负责：价格、库存、能不能买" style="rounded=1;fillColor=#ffffff;strokeColor=#bcc9d6;fontColor=#243447;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;spacingBottom=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="138" width="240" height="98" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-11" value="&lt;b&gt;价格中心&lt;/b&gt;&lt;br&gt;负责：基础价、活动价、税费、币种换算&lt;br&gt;不负责：谁能看到什么价" style="rounded=1;fillColor=#ffffff;strokeColor=#bcc9d6;fontColor=#243447;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;spacingBottom=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="138" width="240" height="98" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-12" value="&lt;b&gt;库存中心&lt;/b&gt;&lt;br&gt;负责：可售库存、锁定、扣减&lt;br&gt;不负责：“仅剩 3 件”这类话术" style="rounded=1;fillColor=#ffffff;strokeColor=#bcc9d6;fontColor=#243447;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;spacingBottom=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="138" width="240" height="98" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-13" value="&lt;b&gt;营销中心&lt;/b&gt;&lt;br&gt;负责：优惠规则与试算、券&lt;br&gt;不负责：优惠怎么摆到页面上" style="rounded=1;fillColor=#ffffff;strokeColor=#bcc9d6;fontColor=#243447;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;spacingBottom=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="244" width="240" height="98" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-14" value="&lt;b&gt;履约中心&lt;/b&gt;&lt;br&gt;负责：时效、运费、承运、轨迹&lt;br&gt;不负责：商品信息" style="rounded=1;fillColor=#ffffff;strokeColor=#bcc9d6;fontColor=#243447;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;spacingBottom=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="244" width="240" height="98" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-15" value="&lt;b&gt;评价中心&lt;/b&gt;&lt;br&gt;负责：UGC 内容、审核、聚合分&lt;br&gt;不负责：怎么排序、怎么表达心智" style="rounded=1;fillColor=#ffffff;strokeColor=#bcc9d6;fontColor=#243447;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;spacingBottom=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="244" width="240" height="98" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-16" value="&lt;b&gt;搜推引擎&lt;/b&gt;&lt;br&gt;负责：候选与排序&lt;br&gt;不负责：页面呈现" style="rounded=1;fillColor=#ffffff;strokeColor=#bcc9d6;fontColor=#243447;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;spacingBottom=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="350" width="240" height="98" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-17" value="&lt;b&gt;详情域&lt;/b&gt;&lt;br&gt;负责：聚合、编排、表达、兜底&lt;br&gt;不负责：自己生产商品/价格/库存数据" style="rounded=1;fillColor=#e8f3ff;strokeColor=#6c9bd2;fontColor=#17365d;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;spacingBottom=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="350" width="240" height="98" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-18" value="&lt;b&gt;交易域&lt;/b&gt;&lt;br&gt;负责：下单、订单状态、支付&lt;br&gt;不负责：商品信息透出" style="rounded=1;fillColor=#ffffff;strokeColor=#bcc9d6;fontColor=#243447;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;spacingBottom=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="350" width="240" height="98" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-19" value="" style="rounded=1;fillColor=#f5f7fa;strokeColor=#d5dde7;strokeWidth=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="466" width="740" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-20" value="技术底座" style="text;fontSize=12;fontStyle=1;align=left;verticalAlign=middle;fontColor=#344054;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="42" y="492" width="96" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-21" value="数据平台&lt;br&gt;仓库 · 指标 · 分析" style="rounded=1;fillColor=#f0eafa;strokeColor=#9b82be;fontColor=#45305e;fontSize=11;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="481" width="188" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-22" value="应用与集成&lt;br&gt;API · 调度 · 服务治理" style="rounded=1;fillColor=#f0eafa;strokeColor=#9b82be;fontColor=#45305e;fontSize=11;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="366" y="481" width="188" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="k2hgn9Dceoytbyq07EMz-23" value="云基础设施&lt;br&gt;计算 · 存储 · 网络 · 监控" style="rounded=1;fillColor=#f0eafa;strokeColor=#9b82be;fontColor=#45305e;fontSize=11;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="582" y="481" width="168" height="56" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,112 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.5 Chrome/126.0.6478.183 Electron/31.3.0 Safari/537.36" version="24.7.5">
+  <diagram name="第 1 页" id="GmPD26EyR7UL0DLBS4ck">
+    <mxGraphModel dx="1100" dy="21" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-1" value="商品详情系统架构｜高并发与可扩展设计" style="text;fontSize=21;fontStyle=1;align=left;verticalAlign=middle;fontColor=#1f2937;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="29" y="1450" width="730" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-2" value="主链路面向个性化详情请求；爬虫与 SEO 走独立快速渲染链路" style="text;fontSize=11;align=left;verticalAlign=middle;fontColor=#667085;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="29" y="1482" width="730" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-3" value="" style="rounded=1;fillColor=#f5f7fa;strokeColor=#d5dde7;strokeWidth=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="24" y="1510" width="740" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-4" value="端" style="text;fontSize=12;fontStyle=1;align=left;verticalAlign=middle;fontColor=#344054;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="37" y="1515" width="100" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-5" value="渲染容器" style="rounded=1;fillColor=#e8f3ff;strokeColor=#6c9bd2;fontColor=#17365d;fontSize=11;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="154" y="1534" width="160" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-6" value="楼层 Schema 解析" style="rounded=1;fillColor=#e8f3ff;strokeColor=#6c9bd2;fontColor=#17365d;fontSize=11;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="359" y="1534" width="180" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-7" value="Native / 动态卡片" style="rounded=1;fillColor=#e8f3ff;strokeColor=#6c9bd2;fontColor=#17365d;fontSize=11;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="584" y="1534" width="160" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-8" value="" style="rounded=1;fillColor=#f5f7fa;strokeColor=#d5dde7;strokeWidth=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="24" y="1586" width="740" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-9" value="接入" style="text;fontSize=12;fontStyle=1;align=left;verticalAlign=middle;fontColor=#344054;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="37" y="1591" width="100" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-10" value="网关&lt;br&gt;鉴权 · 限流 · 防刷" style="rounded=1;fillColor=#eaf2ff;strokeColor=#6c8ebf;fontColor=#29486b;fontSize=10;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="39" y="1620" width="190" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-11" value="详情 BFF&lt;br&gt;参数校验 · 来源识别 · 实验分桶" style="rounded=1;fillColor=#eaf2ff;strokeColor=#6c8ebf;fontColor=#29486b;fontSize=10;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="244" y="1620" width="245" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-12" value="流量识别与分发&lt;br&gt;普通请求 → BFF　|　爬虫请求 → SEO 链路" style="rounded=1;fillColor=#eaf2ff;strokeColor=#6c8ebf;fontColor=#29486b;fontSize=10;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="504" y="1620" width="245" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-13" value="" style="rounded=1;fillColor=#f5f7fa;strokeColor=#d5dde7;strokeWidth=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="24" y="1682" width="740" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-14" value="详情服务" style="text;fontSize=12;fontStyle=1;align=left;verticalAlign=middle;fontColor=#344054;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="38" y="1690" width="150" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-15" value="编排 Orchestrator&lt;br&gt;并发调度 · 预算控制 · 超时控制&lt;br&gt;强弱依赖隔离 · 降级策略" style="rounded=1;fillColor=#e8f5e9;strokeColor=#75a982;fontColor=#244b2b;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="39" y="1722" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-16" value="多级缓存体系&lt;br&gt;L1 LocalCache&lt;br&gt;L2 分布式缓存&lt;br&gt;L3 CDN 静态化 · 热点保护" style="rounded=1;fillColor=#e8f5e9;strokeColor=#75a982;fontColor=#244b2b;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="274" y="1722" width="235" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-17" value="&lt;b&gt;TMF 框架层｜产品包拓展引擎&lt;/b&gt;&lt;br&gt;Product Package：普通商品 / 预售商品 / 秒杀商品&lt;br&gt;Extension Point：按业务线、商品类目扩展差异化能力&lt;br&gt;奥创协议：按用户标签与场景动态决定楼层、模块及返回数据" style="rounded=1;fillColor=#f0eafa;strokeColor=#9b82be;fontColor=#45305e;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="39" y="1811" width="470" height="99" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-18" value="SSR 首屏 HTML · CSR 后续交互" style="rounded=1;fillColor=#e8f5e9;strokeColor=#75a982;fontColor=#244b2b;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="39" y="1918" width="225" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-19" value="快照服务 · 超时 / 异常兜底" style="rounded=1;fillColor=#e8f5e9;strokeColor=#75a982;fontColor=#244b2b;fontSize=10;align=left;verticalAlign=middle;spacingLeft=9;spacingRight=7;spacingTop=5;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="274" y="1918" width="235" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-20" value="SEO / 爬虫专用链路&lt;br&gt;绕过复杂个性化编排" style="text;fontSize=12;fontStyle=1;align=left;verticalAlign=middle;fontColor=#344054;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="529" y="1720" width="220" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-21" value="静态 HTML / CDN 优先命中" style="rounded=1;fillColor=#fff8e8;strokeColor=#d6a64f;fontColor=#684a16;fontSize=10;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;spacingTop=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="534" y="1763" width="215" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-22" value="未命中：专用爬虫 SSR" style="rounded=1;fillColor=#fff8e8;strokeColor=#d6a64f;fontColor=#684a16;fontSize=10;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;spacingTop=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="534" y="1810" width="215" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-23" value="静态化生成与更新&lt;br&gt;极速抓取 · 提升收录" style="rounded=1;fillColor=#fff8e8;strokeColor=#d6a64f;fontColor=#684a16;fontSize=10;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;spacingTop=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="534" y="1857" width="215" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-24" value="" style="rounded=1;fillColor=#f5f7fa;strokeColor=#d5dde7;strokeWidth=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="24" y="1960" width="740" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-25" value="下游依赖　蓝色：强依赖（商品 / 价格 / 库存）　灰色：弱依赖" style="text;fontSize=12;fontStyle=1;align=left;verticalAlign=middle;fontColor=#344054;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="37" y="1963" width="710" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-26" value="商品中心" style="rounded=1;fillColor=#e8f3ff;strokeColor=#6c9bd2;fontColor=#17365d;fontSize=10;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="39" y="2050" width="80" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-27" value="价格中心" style="rounded=1;fillColor=#e8f3ff;strokeColor=#6c9bd2;fontColor=#17365d;fontSize=10;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="135" y="2050" width="80" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-28" value="营销中心" style="rounded=1;fillColor=#f2f4f7;strokeColor=#aab5c2;fontColor=#475467;fontSize=10;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="224" y="2050" width="80" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-29" value="库存中心" style="rounded=1;fillColor=#e8f3ff;strokeColor=#6c9bd2;fontColor=#17365d;fontSize=10;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="311" y="2050" width="80" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-30" value="评价中心" style="rounded=1;fillColor=#f2f4f7;strokeColor=#aab5c2;fontColor=#475467;fontSize=10;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="399" y="2050" width="80" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-31" value="搜推引擎" style="rounded=1;fillColor=#f2f4f7;strokeColor=#aab5c2;fontColor=#475467;fontSize=10;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="487" y="2050" width="80" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-32" value="履约中心" style="rounded=1;fillColor=#f2f4f7;strokeColor=#aab5c2;fontColor=#475467;fontSize=10;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="575" y="2050" width="80" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-33" value="商家中心" style="rounded=1;fillColor=#f2f4f7;strokeColor=#aab5c2;fontColor=#475467;fontSize=10;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="661" y="2050" width="80" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="xO5_Apc0eI6Ss0IyXT4z-34" value="并发依赖调用" style="rounded=1;fillColor=#fff3df;strokeColor=#d6a64f;fontColor=#684a16;fontSize=11;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="229" y="2000" width="240" height="28" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
