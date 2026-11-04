@@ -45,6 +45,44 @@ func expandAroundCenter(s []rune, left, right int) string {
 }
 ```
 
+```java
+class Solution {
+    public String longestPalindrome(String s) {
+        String maxStr = "";
+        char[] chars = s.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            {
+                String str = fetchLoop(s, chars, i, i);
+                if (str.length() > maxStr.length()) {
+                    maxStr = str;
+                }
+            }
+            {
+                String str = fetchLoop(s, chars, i, i+1);
+                if (str.length() > maxStr.length()) {
+                    maxStr = str;
+                }
+            }
+        }
+        return maxStr;
+    }
+
+    private String fetchLoop(String s, char[] chars, int left, int right) {
+        while (left >= 0 && right < chars.length && chars[left] == chars[right]) {
+            left--;
+            right++;
+        }
+        return s.substring(left+1, right);
+    }
+}
+```
+
+
+
+
+
+
+
 ## [3. 无重复字符的最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/)
 
 ```java
@@ -157,6 +195,41 @@ func maxVowels(s string, k int) (ans int) {
 
 ```
 
+```java
+public int maxVowels(String s, int k) {
+    int max = 0;
+    int cnt = 0;
+    char[] chars = s.toCharArray();
+    Set<Character> set = Set.of('a', 'e', 'i', 'o', 'u');
+    for (int i = 0; i < k; i++) {
+        if (set.contains(chars[i])) {
+            cnt++;
+            max++;
+        }
+    }
+    for (int i = 0; i < chars.length - k ; i++) {
+        // 将index = i 移除
+        if (set.contains(chars[i])) {
+            cnt--;
+        }
+        // 将 i + k加入
+        if (set.contains(chars[i + k])) {
+            cnt++;
+        }
+        if (cnt > max) {
+            max = cnt;
+        }
+    }
+    return max;
+}
+```
+
+
+
+
+
+
+
 ## [76. 最小覆盖子串](https://leetcode.cn/problems/minimum-window-substring/)
 
 ```go
@@ -208,6 +281,26 @@ func reverseList(head *ListNode) *ListNode {
 	return pre
 }
 ```
+
+```java
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        var post = reverseList(head.next);
+        head.next.next = head;
+        head.next = null;
+        return post;
+    }
+}
+```
+
+
+
+
+
+
 
 ## [92. 反转链表 II](https://leetcode.cn/problems/reverse-linked-list-ii/)
 
