@@ -1,6 +1,6 @@
 # 日常刷题
 
-# 回文串相关
+# 回文串&子串相关
 
 解题思路
 
@@ -76,10 +76,6 @@ class Solution {
     }
 }
 ```
-
-
-
-
 
 
 
@@ -226,10 +222,6 @@ public int maxVowels(String s, int k) {
 
 
 
-
-
-
-
 ## [76. 最小覆盖子串](https://leetcode.cn/problems/minimum-window-substring/)
 
 ```go
@@ -300,8 +292,6 @@ class Solution {
 
 
 
-
-
 ## [92. 反转链表 II](https://leetcode.cn/problems/reverse-linked-list-ii/)
 
 > 翻转指定区间链表
@@ -343,6 +333,41 @@ func reverseBetween(head *ListNode, left int, right int) *ListNode {
 	return dummy.Next
 }
 ```
+
+
+
+```java
+public ListNode reverseBetween(ListNode head, int left, int right) {
+    ListNode dummyNode = new ListNode(-1, head);
+    ListNode leftNode = dummyNode, rightNode = head;
+    for (int i = 0; i < left - 1; i++) {
+        leftNode = leftNode.next;
+    }
+    for (int i = 0; i < right - 1; i++) {
+        rightNode = rightNode.next;
+    }
+    ListNode rightNodeNext = rightNode.next;
+    rightNode.next = null;
+    ListNode leftNodeNext = leftNode.next;
+    leftNode.next = reverseList(leftNode.next);
+    leftNodeNext.next = rightNodeNext;
+    return dummyNode.next;
+}
+
+private ListNode reverseList(ListNode head) {
+    if (head == null || head.next == null) {
+        return head;
+    }
+    ListNode post = reverseList(head.next);
+    head.next.next = head;
+    head.next = null;
+    return post;
+}
+```
+
+
+
+
 
 ## [25. K 个一组翻转链表](https://leetcode.cn/problems/reverse-nodes-in-k-group/)
 
@@ -411,6 +436,95 @@ func reverseKGroup(head *ListNode, k int) *ListNode {
 }
 ```
 
+可以把反转链表，反转指定区间链表拼起来一起用
+
+```java
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        int listLength = 0;
+        ListNode cur = head;
+        while (cur != null) {
+            listLength++;
+            cur = cur.next;
+        }
+        for (int i = 0; listLength >= k; listLength -= k, i += k) {
+            head = reverseBetween(head, i + 1, i + k);
+        }
+        return head;
+    }
+
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        ListNode dummyNode = new ListNode(-1, head);
+        ListNode leftNode = dummyNode, rightNode = head;
+        for (int i = 0; i < left - 1; i++) {
+            leftNode = leftNode.next;
+        }
+        for (int i = 0; i < right - 1; i++) {
+            rightNode = rightNode.next;
+        }
+        ListNode rightNodeNext = rightNode.next;
+        rightNode.next = null;
+        ListNode leftNodeNext = leftNode.next;
+        leftNode.next = reverseList(leftNode.next);
+        leftNodeNext.next = rightNodeNext;
+        return dummyNode.next;
+    }
+
+    private ListNode reverseList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode post = reverseList(head.next);
+        head.next.next = head;
+        head.next = null;
+        return post;
+    }
+
+}
+```
+
+
+
+```java
+public ListNode reverseKGroup(ListNode head, int k) {
+    int listLength = 0;
+    ListNode cur = head;
+    while (cur != null) {
+        listLength++;
+        cur = cur.next;
+    }
+    ListNode dummyNode = new ListNode(-1, head);
+    for (int i = 0; i < listLength && listLength - i >= k; i += k) {
+        var p0 = dummyNode;
+        var p1 = dummyNode.next;
+        for (int j = 0; j < i; j++) {
+            p0 = p0.next;
+        }
+        for (int j = 0; j < i + k - 1; j++) {
+            p1 = p1.next;
+        }
+        var p1Next = p1.next;
+        var p0Next = p0.next;
+        p1.next = null;
+        p0.next = reverseList(p0.next);
+        p0Next.next = p1Next;
+    }
+    return dummyNode.next;
+}
+
+private ListNode reverseList(ListNode head) {
+    if (head == null || head.next == null) {
+        return head;
+    }
+    ListNode post = reverseList(head.next);
+    head.next.next = head;
+    head.next = null;
+    return post;
+}
+```
+
+
+
 ## [21. 合并两个有序链表](https://leetcode.cn/problems/merge-two-sorted-lists/)
 
 ```go
@@ -437,6 +551,34 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 	return prev.Next
 }
 ```
+
+```java
+public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+    var dummyNode = new ListNode();
+    var result = dummyNode;
+    while (!(list1 == null || list2 == null)) {
+        if (list1.val < list2.val) {
+            dummyNode.next = list1;
+            list1 = list1.next;
+        } else {
+            dummyNode.next = list2;
+            list2 = list2.next;
+        }
+        dummyNode = dummyNode.next;
+    }
+    if (list1 != null) {
+        dummyNode.next = list1;
+    }
+    if (list2 != null) {
+        dummyNode.next = list2;
+    }
+    return result.next;
+}
+```
+
+
+
+
 
 ## [23. 合并 K 个升序链表](https://leetcode.cn/problems/merge-k-sorted-lists/)
 
@@ -565,6 +707,46 @@ func findListNodeLength(head *ListNode) int {
 }
 ```
 
+
+
+```java
+// 缺点，先遍历了一遍链表，有什么办法只需要遍历一遍链表嘛，
+public ListNode removeNthFromEnd(ListNode head, int n) {
+    var cur = head;
+    int cnt = 0;
+    var dummyNode = new ListNode(-1, head);
+    while (cur != null) {
+        cnt++;
+        cur = cur.next;
+    }
+    cur = dummyNode;
+    for (int i = 0; i < cnt - n; i++) {
+        cur = cur.next;
+    }
+    cur.next = cur.next.next;
+    return dummyNode.next;
+}
+
+// 快慢指针优化
+public ListNode removeNthFromEnd(ListNode head, int n) {
+    var dummyNode = new ListNode(-1, head);
+    ListNode slow = dummyNode, fast = dummyNode;
+    for (int i = 0; i <= n; i++) {
+        fast = fast.next;
+    }
+    while (fast != null) {
+        slow = slow.next;
+        fast = fast.next;
+    }
+    slow.next = slow.next.next;
+    return dummyNode.next;
+}
+```
+
+
+
+
+
 # 动态规划
 
 动态规划的核心是：`状态定义`和`状态转移方程`
@@ -573,20 +755,30 @@ func findListNodeLength(head *ListNode) int {
 
 ## [198. 打家劫舍](https://leetcode.cn/problems/house-robber/)
 
+思路：从最后一个元素进行枚举，如果最后一个元素选，则问题变成【n-2】的子问题，如果选，则变成【n-1】的子问题，所以很容易得到递归方程
+
+```go
+dfs(i) = max(dfs(i - 1), dfs(i - 2) + nums[i])
+```
+
 递归的时间复杂度是指数级别的，下面的代码会超时
 
 ```python
-class Solution:
-    def rob(self, nums: List[int]) -> int:
-        n = len(nums)
-        def dfs(i):
-            if i < 0:
-                return 0
-            return max(dfs(i-1), dfs(i-2)+nums[i])
-        return dfs(n -1)
+public int rob(int[] nums) {
+    return dfs(nums, nums.length - 1);
+}
+
+private int dfs(int[] nums, int n) {
+    if (n < 0) {
+        return 0;
+    }
+    return Math.max(dfs(nums, n - 2) + nums[n], dfs(nums, n - 1));
+}
 ```
 
 这题我们可以先看成简单的回溯题，但是回溯时间复杂度是指数级别，比较高，我们可以缓存一下搜索到的结果
+
+可以看到下面的两棵搜索树里，有重复的`dfs(2)`的计算
 
 ![image-20231225225705498](https://cdn.fengxianhub.top/resources-master/image-20231225225705498.png)
 
@@ -594,19 +786,30 @@ class Solution:
 
 ![image-20231225225825869](https://cdn.fengxianhub.top/resources-master/image-20231225225825869.png)
 
-python 代码如下
+
 
 ```python
-class Solution:
-    def rob(self, nums: List[int]) -> int:
-        n = len(nums)
-        @cache
-        def dfs(i):
-            if i < 0:
-                return 0
-            return max(dfs(i - 1), dfs(i - 2) + nums[i])
-        # 回溯时间复杂度是指数级别
-        return dfs(n - 1)
+public int rob(int[] nums) {
+    return dfs(nums, nums.length - 1);
+}
+
+private final Map<Integer, Integer> memo = new HashMap<>();
+
+private int dfs(int[] nums, int n) {
+    if (n < 0) {
+        return 0;
+    }
+    Integer result = memo.get(n);
+    if (Objects.nonNull(result)) {
+        return result;
+    }
+
+    result = Math.max(dfs(nums, n - 2) + nums[n], dfs(nums, n - 1));
+
+    memo.put(n, result);
+
+    return result;
+}
 ```
 
 当然我们可以不用 cache 的装饰器，我们可以自己记录之前搜索过的值
@@ -652,18 +855,26 @@ func max(i, j int) int {
 
 还能不能再优化下呢，我们仔细观察就能发现
 
-![image-20231225231830854](https://cdn.fengxianhub.top/resources-master/image-20231225231830854.png)
+我们能知道`dfs(1)` 和 `dfs(0)`  归到了 `dfs(2)`，`dfs(2)`  和`dfs(1)` 归到了`dfs(3)` 
+
+所以我们可以直接去掉递归中递的部分，直接从底部往上归
+
+![image-20261108165815743](https://cdn.fengxianhub.top/resources-master/image-20261108165815743.png)
+
+![image-20261108170017342](https://cdn.fengxianhub.top/resources-master/image-20261108170017342.png)
 
 我们可以将 dfs 改为数组，然后将递归改为循环，注意上面可能产生负数下标，所以进行`+2`
 
+可以看到，其实`f[i + 2] = Math.max(f[i] + nums[i], f[i + 1])`跟递归时的`dfs(i) = max(dfs(i - 1), dfs(i - 2) + nums[i])` 是一样的
+
 ```python
-class Solution:
-    def rob(self, nums: List[int]) -> int:
-        n = len(nums)
-        f = [0] * (n + 2)
-        for i, x in enumerate(nums):
-            f[i + 2] = max(f[i + 1], f[i] + x)
-        return f[n + 1]
+public int rob(int[] nums) {
+    int[] f = new int[nums.length + 2];
+    for (int i = 0; i < nums.length; i++) {
+        f[i + 2] = Math.max(f[i] + nums[i], f[i + 1]);
+    }
+    return f[nums.length + 1];
+}
 ```
 
 此时空间复杂度为`O(n)`，那么如何降到`O(1)`呢
@@ -699,6 +910,26 @@ func max(i, j int) int {
 	return j
 }
 ```
+
+## [70. 爬楼梯](https://leetcode.cn/problems/climbing-stairs/)
+
+```java
+private Map<Integer, Integer> memo = new HashMap<>();
+public int climbStairs(int n) {
+    if (n <= 1) {
+        return 1;
+    }
+    Integer count = memo.get(n);
+    if (Objects.nonNull(count)) {
+        return count;
+    }
+    int result = climbStairs(n - 1) + climbStairs(n - 2);
+    memo.put(n, result);
+    return result;
+}
+```
+
+
 
 ## 背包问题
 
@@ -772,10 +1003,6 @@ func zero_one_knapsack(capacity int, w []int, v []int) (ans int) {
 
 >01背包：选和不选
 
-
-
-
-
 ### [494. 目标和](https://leetcode.cn/problems/target-sum/)
 
 <img src="https://cdn.fengxianhub.top/resources-master/image-20250412133710631.png" alt="image-20250412133710631" style="zoom:67%;" />
@@ -823,6 +1050,35 @@ def zero_one_knapsack(capacity: int, w: List[int], v: List[int]) -> int:
 
     return dfs(n - 1, capacity)
 ```
+
+```java
+Map<String, Integer> memo = new HashMap<>();
+
+private int[] nums;
+private int target;
+
+public int findTargetSumWays(int[] nums, int target) {
+    this.nums = nums;
+    this.target = target;
+    return dfs(0, 0);
+}
+
+private int dfs(int n, int sum) {
+    if (n == nums.length) {
+        return sum == target ? 1 : 0;
+    }
+    String key = n + "," + sum;          // 状态 = (下标, 当前和)
+    Integer cached = memo.get(key);
+    if (cached != null) return cached;
+
+    int res = dfs(n + 1, sum + nums[n])   // 选正
+        + dfs(n + 1, sum - nums[n]);  // 选负
+    memo.put(key, res);
+    return res;
+}
+```
+
+
 
 > 上面的代码时间复杂度为`o(n * target)`，空间复杂度也一样
 >
@@ -879,6 +1135,36 @@ class Solution:
                     f[(i + 1) % 2][c] = f[i % 2][c] + f[i % 2][c - x]
         return f[n % 2][target]
 ```
+
+
+
+```java
+public int findTargetSumWays(int[] nums, int target) {
+    int sum = 0;
+    for (int x : nums) sum += x;
+    if (Math.abs(target) > sum) return 0;
+
+    int offset = sum;                 // 和的范围 [-sum, sum] 平移到 [0, 2sum]
+    int width = 2 * sum + 1;
+    int[] dp = new int[width];
+    dp[offset] = 1;                   // 初始和 0 有 1 种方案
+
+    for (int x : nums) {
+        int[] next = new int[width];
+        for (int s = 0; s < width; s++) {
+            if (dp[s] == 0) continue;
+            next[s + x] += dp[s];              // 加正
+            next[s - x] += dp[s];              // 加负
+        }
+        dp = next;
+    }
+    return dp[offset + target];
+}
+```
+
+
+
+
 
 当然也可以用回溯来做，但是回溯的时间复杂度是`O(n^2)`
 
@@ -1305,6 +1591,41 @@ func letterCombinations(digits string) (result []string) {
 }
 ```
 
+```java
+    String[] mapping = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    List<String> strResultList = new ArrayList<>();
+    String[] strPathList = new String[]{};
+
+    public List<String> letterCombinations(String digits) {
+        strPathList = new String[digits.length()];
+        dfsForLetterCombinations(digits, digits.length(), 0);
+        return strResultList;
+    }
+
+    private void dfsForLetterCombinations(String digits, int cnt, int n) {
+        if (n == cnt) {
+            strResultList.add(combine(strPathList));
+            return;
+        }
+        // 注意这里遍历的是号码字符串 (abc)
+        String rawData = mapping[Integer.parseInt(digits.toCharArray()[n] + "")];
+        for (char ch : rawData.toCharArray()) {
+            strPathList[n] = ch + "";
+            dfsForLetterCombinations(digits, cnt, n + 1);
+        }
+    }
+
+    private String combine(String[] strArr) {
+        StringBuilder sb = new StringBuilder();
+        for (String str : strArr) {
+            sb.append(str);
+        }
+        return sb.toString();
+    }
+```
+
+
+
 回溯分为：
 
 - 子集型回溯
@@ -1354,6 +1675,32 @@ func subsets(nums []int) (result [][]int) {
     return
 }
 ```
+
+```java
+List<List<Integer>> resultList = new ArrayList<>();
+List<Integer> pathList = new ArrayList<>();
+
+public List<List<Integer>> subsets(int[] nums) {
+    dfs(nums, 0);
+    return resultList;
+}
+
+private void dfs(int[] nums, int n) {
+    if (n == nums.length) {
+        resultList.add(new ArrayList<>(pathList));
+        return;
+    }
+    // 选
+    pathList.add(nums[n]);
+    dfs(nums, n + 1);
+    // 恢复现场
+    pathList.remove(pathList.size() - 1);
+    // 不选
+    dfs(nums, n + 1);
+}
+```
+
+
 
 上述时间复杂度为`O(2^n * n)`
 
@@ -1516,6 +1863,40 @@ func RemoveElement(slice []int, num int) []int {
     }
 
     return result
+}
+```
+
+```java
+List<List<Integer>> resultList = new ArrayList<>();
+List<Integer> pathList = new ArrayList<>();
+
+public List<List<Integer>> permute(int[] nums) {
+    dfsForPermute(nums);
+    return resultList;
+}
+
+private void dfsForPermute(int[] nums) {
+    if (nums.length == 0) {
+        resultList.add(new ArrayList<>(pathList));
+        return;
+    }
+    for (int num : nums) {
+        // 选
+        pathList.add(num);
+        dfsForPermute(removeElement(nums, num));
+        pathList.remove(pathList.size() - 1);
+    }
+}
+
+private int[] removeElement(int[] nums, int n) {
+    int[] newNums = new int[nums.length - 1];
+    int index = 0;
+    for (int num : nums) {
+        if (num != n) {
+            newNums[index++] = num;
+        }
+    }
+    return newNums;
 }
 ```
 
@@ -1974,6 +2355,53 @@ func diameterOfBinaryTree(root *TreeNode) (ans int) {
 
 
 ## [3208. 交替组 II](https://leetcode.cn/problems/alternating-groups-ii/)
+
+
+
+## [930. 和相同的二元子数组](https://leetcode.cn/problems/binary-subarrays-with-sum/)
+
+```java
+// 解法1，前缀和 时间复杂度O(n)
+public int numSubarraysWithSum(int[] nums, int goal) {
+    int[] s = new int[nums.length + 1];
+    s[0] = 0;
+    for (int i = 0; i < nums.length; i++) {
+        s[i+1] = s[i] + nums[i];
+    }
+    int result = 0;
+    Map<Integer, Integer> map = new HashMap<>(nums.length + 1, 1);
+    for (int sj : s) {
+        result += map.getOrDefault(sj - goal, 0);
+        map.merge(sj, 1, Integer::sum);
+    }
+    return result;
+}
+
+// 由于本地没有负数，所以可以用滑动窗口完成
+public int numSubarraysWithSum(int[] nums, int goal) {
+    int ans = 0;
+    int sum1 = 0, sum2 = 0;
+    int left1 = 0, left2 = 0;
+
+    for (int i = 0; i < nums.length; i++) {
+        sum1 += nums[i];
+        while (left1 <= i && sum1 >= goal) { // 避免 goal = 0 的情况下标越界
+            sum1 -= nums[left1];
+            left1++;
+        }
+        ans += left1; // 先加上 >= goal 的子数组个数
+
+        sum2 += nums[i];
+        while (sum2 > goal) {
+            sum2 -= nums[left2];
+            left2++;
+        }
+        ans -= left2; // 再减去 > goal 的，剩下的就是 = goal 的
+    }
+
+    return ans;
+}
+```
 
 
 
@@ -2834,6 +3262,43 @@ func sortArrayByParityII(nums []int) []int {
 }
 ```
 
+## [26. 删除有序数组中的重复项](https://leetcode.cn/problems/remove-duplicates-from-sorted-array/)
+
+```java
+// 法一，栈实现
+public int removeDuplicates(int[] nums) {
+    int stackSize = 1;
+    for (int i = 1; i < nums.length; i++) {
+        if (nums[stackSize - 1] != nums[i]) {
+            nums[stackSize++] = nums[i];
+        }
+    }
+    return stackSize;
+}
+
+// 法二，双指针 感觉跟栈差不多
+```
+
+
+
+## [80. 删除有序数组中的重复项 II](https://leetcode.cn/problems/remove-duplicates-from-sorted-array-ii/)
+
+```java
+// 方法一，用栈实现，非常巧妙
+public int removeDuplicates(int[] nums) {
+    // 入栈两个元素
+    int stackSize = 2;
+    for (int i = 2; i < nums.length; i++) {
+        // 跟栈底每一层进行比较
+        if (nums[stackSize - 2] != nums[i]) {
+            nums[stackSize] = nums[i];
+            stackSize++;
+        }
+    }
+    return Math.min(stackSize, nums.length);
+}
+```
+
 
 
 # 堆排序
@@ -2932,6 +3397,8 @@ func (this *NumArray) SumRange(left int, right int) (ans int) {
 
 ## [560. 和为 K 的子数组](https://leetcode.cn/problems/subarray-sum-equals-k/)
 
+这个题不满足滑动窗口的解法，滑动窗口需要数组是单调的
+
 这道题也是用了前缀和的性质，区别是要找任意区间数组和为k的个数，所以得有个for循环来做差
 
 ![image-20260816181250630](https://cdn.fengxianhub.top/resources-master/image-20260816181250630.png)
@@ -2973,6 +3440,30 @@ func subarraySum(nums []int, k int) (ans int) {
 }
 ```
 
+
+
+```java
+public int subarraySum(int[] nums, int k) {
+    int[] s = new int[nums.length + 1];
+    s[0] = 0;
+    for (int i = 0; i < nums.length; i++) {
+        s[i + 1] = s[i] + nums[i];
+    }
+    int result = 0;
+    // 公式 arr[left] ... arr[right] = arr[0] ... arr[right] - arr[0] + arr[left-1]  = s[right+1] - s[left]
+    Map<Integer, Integer> map = new HashMap<>(nums.length, 1);
+    for (int sj : s) {
+        result += map.getOrDefault(sj - k, 0);
+        map.merge(sj, 1, Integer::sum); // map[sj]++
+    }
+    return result;
+}
+```
+
+
+
+
+
 ## [437. 路径总和 III](https://leetcode.cn/problems/path-sum-iii/)
 
 这道题跟和为K的子数组一样，只不过需要从上往下遍历树。需要注意的是
@@ -3008,6 +3499,59 @@ func pathSum(root *TreeNode, targetSum int) (ans int) {
 
 
 
+# 单调队列
+
+[239. 滑动窗口最大值](https://leetcode.cn/problems/sliding-window-maximum/)
+
+![image-20261107225720149](https://cdn.fengxianhub.top/resources-master/image-20261107225720149.png)
+
+```java
+// 方法一，用treeMap => O(n logk)
+public int[] maxSlidingWindow(int[] nums, int k) {
+    int[] resultArray = new int[nums.length - k + 1];
+    TreeMap<Integer, Integer> map = new TreeMap<>();
+    for (int i = 0; i < k; i++) {
+        map.merge(nums[i], 1, Integer::sum);
+    }
+    resultArray[0] = map.lastKey();
+    for (int i = 1; i <= nums.length - k; i++) {
+        map.merge(nums[i + k - 1], 1, Integer::sum);
+        Integer count = map.get(nums[i - 1]);
+        if (count != null && count <= 1) {
+            map.remove(nums[i - 1]);
+        } else {
+            map.merge(nums[i - 1], -1, Integer::sum);
+        }
+        Integer max = map.lastKey();
+        resultArray[i] = max;
+    }
+
+    return resultArray;
+}
+
+// 单调队列 O(n)
+public int[] maxSlidingWindow(int[] nums, int k) {
+    int n = nums.length;
+    int[] res = new int[n - k + 1];
+    Deque<Integer> dq = new ArrayDeque<>(); // 存下标
+    for (int i = 0; i < n; i++) {
+        // 队头过期
+        if (!dq.isEmpty() && dq.peekFirst() <= i - k) {
+            dq.pollFirst();
+        }
+        // 队尾维护单调递减
+        while (!dq.isEmpty() && nums[dq.peekLast()] <= nums[i]) {
+            dq.pollLast();
+        }
+        dq.offerLast(i);
+        // 窗口形成后记录
+        if (i >= k - 1) {
+            res[i - k + 1] = nums[dq.peekFirst()];
+        }
+    }
+    return res;
+}
+```
 
 
 
@@ -3023,6 +3567,29 @@ func pathSum(root *TreeNode, targetSum int) (ans int) {
 
 
 
+
+
+# 排序
+
+## 快排
+
+快排 = **选一个基准，把比它小的扔左边、大的扔右边，然后左右两边各自递归**。
+
+```java
+void quickSort(int[] a, int l, int r) {
+    if (l >= r) return;                    // 0 或 1 个元素，不用排
+    int pivot = a[l], i = l, j = r;
+    while (i < j) {
+        while (i < j && a[j] >= pivot) j--; // 右往左找小的
+        a[i] = a[j];                       // 填左坑
+        while (i < j && a[i] <= pivot) i++; // 左往右找大的
+        a[j] = a[i];                       // 填右坑
+    }
+    a[i] = pivot;                          // pivot 归位
+    quickSort(a, l, i - 1);
+    quickSort(a, i + 1, r);
+}
+```
 
 
 

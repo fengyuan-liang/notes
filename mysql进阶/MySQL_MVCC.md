@@ -196,9 +196,19 @@ MVCC 的目的就是多版本并发控制，在数据库中的实现，就是为
 
 
 
+## 常见场景题
 
+从一条update语句，将三种日志串起来`undo log`、`redo log`、`binlog`
 
-
+```shell
+取数据页 -> buffer pool
+写 undo log -> 为了能回滚 + MVCC
+改buffer pool 里的数据页（内存）
+写redo log （prepare） -> 崩溃恢复复用
+写binlog -> 主从复制使用
+redo log 改 commit -> 两阶段提交完成
+后台慢慢刷盘（异步）
+```
 
 
 
