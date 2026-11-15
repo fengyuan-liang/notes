@@ -1362,9 +1362,7 @@ func coinChange(coins []int, amount int) int {
 
 ![image-20240121162138766](https://cdn.fengxianhub.top/resources-master/image-20240121162138766.png)
 
-### [518. 零钱兑换 II](https://leetcode.cn/problems/coin-change-ii/)
-
-动态规划解法
+>动态规划解法
 
 ```go
 func change(amount int, coins []int) int {
@@ -1378,6 +1376,176 @@ func change(amount int, coins []int) int {
     return dp[amount]
 }
 ```
+
+java版本
+
+```java
+public int coinChange(int[] coins, int amount) {
+    int[][] memo = new int[coins.length][amount + 1];
+    for (int[] ints : memo) {
+        Arrays.fill(ints, -1);
+    }
+    int res = dfs(coins.length - 1, amount, coins, memo);
+    return res == Integer.MAX_VALUE ? -1 : res;
+}
+
+private int dfs(int index, int amount, int[] coins, int[][] memo) {
+    if (amount == 0) {
+        return 0;
+    }
+    if (index < 0) {
+        return Integer.MAX_VALUE;
+    }
+    if (memo[index][amount] != -1) {
+        return memo[index][amount];
+    }
+    // 当前金币比背包里的还多，放弃
+    if (coins[index] > amount) {
+        return dfs(index - 1, amount, coins, memo);
+    }
+    // 不选
+    int notUseCnt = dfs(index - 1, amount, coins, memo);
+    // 选
+    int useCnt = dfs(index, amount - coins[index], coins, memo);
+    if (useCnt != Integer.MAX_VALUE) {
+        useCnt++;
+    }
+    int cnt = Math.min(notUseCnt, useCnt);
+    memo[index][amount] = cnt;
+    return cnt;
+}
+```
+
+我们看上面dfs的签名
+
+```java
+dfs(index, amount) // 含义：用 coins[0..index] 凑出 amount 的最少硬币数
+```
+
+翻译成状态转移方程为
+
+>`dp[i][c]` = 用前 `i+1` 种硬币（即 `coins[0..i]`）凑出金额 `c` 的最少硬币数
+>
+>`dp[i][c]`  = min(`dp[i][c - coins[i]]  + 1`, `dp[i-1][c] `)
+
+```java
+// `dp[i][c]`  = min(`dp[i][c - coins[i]]  + 1`, `dp[i-1][c] `)
+public int coinChange(int[] coins, int amount) {
+    int[][] dp = new int[coins.length][amount + 1];
+    int INF = Integer.MAX_VALUE;
+    for (int[] arr : dp) {
+        Arrays.fill(arr, INF);
+    }
+    // 金额为0
+    for (int i = 0; i < coins.length; i++) {
+        dp[i][0] = 0;
+    }
+    // 方程初始项 dp[0][c]
+    for (int c = 1; c <= amount; c++) {
+        if (c % coins[0] == 0) {
+            dp[0][c] = c / coins[0];
+        }
+    }
+    // 状态转移
+    for (int i = 1; i < coins.length; i++) {
+        for (int c = 1; c <= amount; c++) {
+            // 不选
+            dp[i][c] = dp[i - 1][c];
+            // 选 要看是否能选
+            if (coins[i] <= c && dp[i][c - coins[i]] != INF) {
+                dp[i][c] = Math.min(dp[i][c - coins[i]] + 1, dp[i - 1][c]);
+            }
+        }
+    }
+    return dp[coins.length - 1][amount] == INF ? -1 : dp[coins.length - 1][amount];
+}
+```
+
+>上一版的状态转移方程为 ``dp[i][c]`  = min(`dp[i][c - coins[i]]  + 1`, `dp[i-1][c] `)
+>
+>g
+>
+>改成一维为 `dp[c] = min(dp[c], dp[c - coins[i] + 1])`
+
+```java
+public int coinChange(int[] coins, int amount) {
+    int INF = Integer.MAX_VALUE;
+    int[] dp = new int[amount + 1];
+    Arrays.fill(dp, INF);
+    dp[0] = 0;
+
+    for (int coin : coins) {                    // 外层：每种硬币
+        for (int c = coin; c <= amount; c++) {  // 内层：正序，从 coin 开始
+            if (dp[c - coin] != INF) {          // 防 INF + 1 溢出
+                dp[c] = Math.min(dp[c], dp[c - coin] + 1);
+            }
+        }
+    }
+
+    return dp[amount] == INF ? -1 : dp[amount];
+}
+```
+
+
+
+
+
+
+
+### [518. 零钱兑换 II](https://leetcode.cn/problems/coin-change-ii/)
+
+dfs + 记忆化搜索
+
+时间复杂度 `O(n × amount)`，空间 `O(n × amount)`（memo）+ `O(amount)`（栈）
+
+```java
+public int change(int amount, int[] coins) {
+    int[][] memo = new int[coins.length][amount + 1];
+    for (int[] row : memo) Arrays.fill(row, -1);   // -1 表示未计算
+    return dfs(amount, coins.length - 1, coins, memo);
+}
+
+// 返回：用 coins[0..index] 凑出 amount 的方案数
+private int dfs(int amount, int index, int[] coins, int[][] memo) {
+    if (amount == 0) {
+        return 1;                       // 凑好了，算一种方案
+    }
+    if (index < 0) {
+        return 0;                       // 没硬币了还没凑出，0 种
+    }
+    if (memo[index][amount] != -1) {
+        return memo[index][amount];     // 缓存命中
+    }
+
+    int res = 0;
+    // 不选 coins[index]
+    res += dfs(amount, index - 1, coins, memo);
+    // 选一枚 coins[index]，之后还能继续选 coins[index]（完全背包）
+    if (coins[index] <= amount) {
+        res += dfs(amount - coins[index], index, coins, memo);
+    }
+
+    memo[index][amount] = res;
+    return res;
+}
+```
+
+动态规划
+
+```java
+public int change(int amount, int[] coins) {
+    int[] dp = new int[amount + 1];
+    dp[0] = 1;                          // 凑 0 元：1 种方案（什么都不选）
+    for (int coin : coins) {
+        for (int c = coin; c <= amount; c++) {   // 正序！完全背包
+            dp[c] += dp[c - coin];
+        }
+    }
+    return dp[amount];
+}
+```
+
+
 
 # 线性 DP
 
@@ -2101,6 +2269,112 @@ func mustParseInt(str string) int {
 
 
 
+## [55. 跳跃游戏](https://leetcode.cn/problems/jump-game/)
+
+dfs + 记忆化搜索会超时
+
+时间复杂度 （O(n²)）
+
+```java
+public boolean canJump(int[] nums) {
+    isVisited = new boolean[nums.length];
+    dfs(nums, 0);
+    return ans;
+}
+
+private boolean ans = false;
+private boolean[] isVisited;
+
+private void dfs(int[] nums, int index) {
+    if (index >= nums.length - 1) {
+        ans = true;
+        return;
+    }
+    if (isVisited[index]) {
+        return;
+    }
+    isVisited[index] = true;
+    for (int i = 1; i <= nums[index]; i++) {
+        dfs(nums, index + i);
+    }
+}
+```
+
+贪心
+
+```java
+public boolean canJump(int[] nums) {
+    int maxReach = 0;
+    for (int i = 0; i < nums.length - 1; i++) {
+        if (i > maxReach) {
+            return false;
+        }
+        maxReach = Math.max(maxReach, nums[i] + i);
+        if (maxReach >= nums.length - 1) {
+            return true;
+        }
+    }
+    return maxReach >= nums.length - 1;
+}
+```
+
+## [45. 跳跃游戏 II](https://leetcode.cn/problems/jump-game-ii/)
+
+从左往右贪心
+
+```java
+public int jump(int[] nums) {
+    int cnt = 0;
+    int index = nums.length - 1;
+    while (index > 0) {
+        for (int i = 0; i < index; i++) {
+            if (i + nums[i] < index) {
+                continue;
+            }
+            index = i;
+            cnt++;
+        }
+    }
+    return cnt;
+}
+```
+
+## [1306. 跳跃游戏 III](https://leetcode.cn/problems/jump-game-iii/)
+
+思路是BFS
+
+```java
+public boolean canReach(int[] arr, int start) {
+    Queue<Integer> q = new LinkedList<>();
+    q.offer(start);
+    boolean[] visited = new boolean[arr.length];
+    visited[start] = true;
+    while (!q.isEmpty()) {
+        Integer index = q.poll();
+        // i + arr[i] 或者 i - arr[i]
+        int r = index + arr[index];
+        int l = index - arr[index];
+        if ((r < arr.length && arr[r] == 0) || (l >= 0 && arr[l] == 0)) {
+            return true;
+        }
+        // 找过的就不放进去了
+        if (r < arr.length && !visited[r]) {
+            q.offer(r);
+            visited[r] = true;
+        }
+        if (l >= 0 && !visited[l]) {
+            q.offer(l);
+            visited[l] = true;
+        }
+    }
+    return false;
+}
+```
+
+
+
+
+
 # 反悔贪心
 
 ## [LCP 30. 魔塔游戏](https://leetcode.cn/problems/p0NxJO/)
@@ -2247,6 +2521,59 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
     return root
 }
 ```
+
+## [96. 不同的二叉搜索树](https://leetcode.cn/problems/unique-binary-search-trees/)
+
+dfs + 记忆化搜索
+
+```java
+public int numTrees(int n) {
+    memo = new int[n+1];
+    return dfs(n);
+}
+
+private int[] memo;
+
+private int dfs(int n) {
+    if (n <= 1) {
+        return 1;
+    }
+    if (memo[n] != 0) {
+        return memo[n];
+    }
+    int total = 0;
+    for (int i = 0; i < n; i++) {
+        int left = dfs(i); 			// 向左：左子树 i 个节点有几种
+        int right = dfs(n - i - 1); // 向右：右子树 n-1 - i 个节点有几种
+        total += left * right;  	// 组合：乘法原理
+    }
+    memo[n] = total;
+    return total;
+}
+```
+
+改成递推
+
+```java
+public int numTrees(int n) {
+    int[] dp = new int[n + 2];
+    dp[0] = 1; // 乘法组合里用作单位元
+    dp[1] = 1;
+    for (int k = 2; k <= n; k++) {
+        int total = 0;
+        // 递归 dfs(i) * dfs(n-i+1)
+        for (int i = 0; i < k; i++) {
+            total += dp[i] * dp[k-i-1];
+        }
+        dp[k] = total;
+    }
+    return dp[n];
+}
+```
+
+
+
+
 
 # 二分查找
 
@@ -3491,9 +3818,149 @@ func pathSum(root *TreeNode, targetSum int) (ans int) {
 }
 ```
 
+## [1524. 和为奇数的子数组数目](https://leetcode.cn/problems/number-of-sub-arrays-with-odd-sum/)
 
+这个题直接前缀和枚举时间复杂度为`O(n^2)`，会超时
 
+```java
+public int numOfSubarrays(int[] arr) {
+    int[] pre = new int[arr.length + 1];
+    pre[0] = 0;
+    for (int i = 0; i < arr.length; i++) {
+        pre[i + 1] = pre[i] + arr[i];
+    }
+    int ans = 0;
+    // arr[i] ... arr[j] = arr[0] + arr[j] - arr[0] + ... arr[i-1] = pre[j+1] - pre[i]
+    // arr[i] = pre[i+1] - pre[i]
+    for (int i = 0; i < arr.length; i++) {
+        for (int j = i; j < arr.length; j++) {
+            int sum = pre[j + 1] - pre[i];
+            if (sum % 2 != 0){
+                ans++;
+            }
+        }
+    }
+    return ans % ((int) Math.pow(10.0, 9.0) + 7);
+}
+```
 
+>**"子数组和"问题 → 转成"前缀和之差" → 只关心奇偶 → 用两个计数器统计"之前有多少奇/偶前缀"，一次遍历 O(n) 累加。** 这就是子数组计数类题的标准套路（类似"和为 K 的子数组"用哈希计数）
+>
+>**一奇一偶相减 = 奇数**
+>
+>设 `pre[k] = arr[0] + arr[1] + ... + arr[k-1]`（前 k 个数的和，`pre[0]=0`）。
+>
+>那子数组 `arr[i..j]` 的和 = `pre[j+1] - pre[i]`。
+>
+>（比如 `arr[2..4]` 的和 = 前 5 个的和 − 前 2 个的和 = `pre[5] - pre[2]`。）
+>
+>所以**"子数组和是奇数"** 就等价于 **"`pre[j+1]` 和 `pre[i]` 一奇一偶"**。
+>
+>## 第三步：问题变成"数配对"
+>
+>现在问题变成：
+>
+>有一串数 `pre[0], pre[1], ..., pre[n]`，问有多少对 `(i, j)`（`i < j`）是**一奇一偶**？
+>
+>因为每一对一奇一偶的 `(pre[i], pre[j])` 就对应一个和为奇数的子数组。
+>
+>## 第四步：怎么数配对？只数个数就够了！
+>
+>关键洞察：**要数"一奇一偶的配对"，根本不需要两两比较，只需要知道"到目前为止有几个奇数、几个偶数"。**
+>
+>举例。假设前缀和依次是：`0(偶), 1(奇), 3(奇), 4(偶)`。
+>
+>从左往右看，边走边记：
+>
+>| 当前 pre | 奇偶 | 之前有几个偶    | 之前有几个奇 | 新增奇数子数组 | 累计 ans |
+>| :------- | :--- | :-------------- | :----------- | :------------- | :------- |
+>| 0        | 偶   | —（它是第一个） | —            | 0              | 0        |
+>| 1        | 奇   | 1（就是那个 0） | 0            | 配 1 个偶 → +1 | 1        |
+>| 3        | 奇   | 1               | 1            | 配 1 个偶 → +1 | 2        |
+>| 4        | 偶   | 1               | 2            | 配 2 个奇 → +2 | 4        |
+>
+>**每来一个新前缀：**
+>
+>- 如果它是**奇**，就和**之前所有的偶**各配成一对 → `ans += 偶的个数`；
+>- 如果它是**偶**，就和**之前所有的奇**各配成一对 → `ans += 奇的个数`；
+>- 然后把它自己记进"奇/偶个数"里。
+>
+>就这么简单。**一路扫过去，只维护两个计数器：`even` 和 `odd`**
+
+时间复杂度`O(n)`，空间复杂度`O(n)`
+
+```java
+public int numOfSubarrays(int[] arr) {
+    int[] pre = new int[arr.length + 1];
+    pre[0] = 0;
+    for (int i = 0; i < arr.length; i++) {
+        pre[i + 1] = pre[i] + arr[i];
+    }
+    int ans = 0;
+    int oddCnt = 0;
+    int evenCnt = 0;
+    final int MOD = ((int) Math.pow(10.0, 9.0) + 7);
+    for (int n : pre) {
+        if (n % 2 == 0) {
+            ans += oddCnt;
+            evenCnt++;
+        } else {
+            ans += evenCnt;
+            oddCnt++;
+        }
+        // 需要注意，为了防止溢出，每次循环完都取模
+        ans %= MOD;
+    }
+    return ans % MOD;
+}
+```
+
+优化后时间复杂度为`O(1)`
+
+为什么 `0 ^ 1 = 1` 就等于"pre[1] 是奇"？
+
+看 `pre[1]` 是怎么来的：`pre[1] = pre[0] + arr[0]`。
+
+- `pre[0] = 0`，是**偶** → 奇偶位记作 `0`；
+- `arr[0] = 1`，是**奇** → 奇偶位记作 `1`；
+- `pre[1] = pre[0] + arr[0] = 0 + 1 = 1`，是**奇**。
+
+```java
+public int numOfSubarrays(int[] arr) {
+    final int MOD = 1_000_000_007;
+    int evenCnt = 1;      // pre[0]=0，偶数前缀 1 个
+    int oddCnt = 0;
+    int pre = 0;          // 前缀和奇偶：0 偶，1 奇
+    long ans = 0;
+
+    for (int x : arr) {
+        pre ^= (x & 1);   // 更新奇偶
+        if (pre == 0) {
+            ans += oddCnt;
+            evenCnt++;
+        } else {
+            ans += evenCnt;
+            oddCnt++;
+        }
+    }
+    return (int) (ans % MOD);
+}
+```
+
+压行版本
+
+```java
+public int numOfSubarrays(int[] arr) {
+    int sum = 0;
+    int[] count = {1,0};
+    long ans = 0;
+    for (int j : arr) {
+        ans += count[(sum = (sum + j) & 1) ^ 1];
+        count[sum]++;
+    }
+    return (int)(ans % 1_000_000_007);
+}
+```
 
 
 
@@ -3557,13 +4024,107 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 
 
 
+# 单调栈
+
+## [402. 移掉 K 位数字](https://leetcode.cn/problems/remove-k-digits/)
+
+单调栈解法，只要栈顶的元素比当前元素大，就一直弹出
+
+```java
+public String removeKdigits(String num, int k) {
+    Stack<Character> stack = new Stack<>();
+    char[] chars = num.toCharArray();
+    for (int i = 0; i < chars.length; i++) {
+        for (; !stack.isEmpty() && stack.peek() > chars[i] && k > 0; k--) {
+            stack.pop();
+        }
+        stack.push(chars[i]);
+    }
+    while (k > 0 && !stack.isEmpty()) {
+        stack.pop();
+        --k;
+    }
+    StringBuilder sb = new StringBuilder();
+    for (Character ch : stack) {
+        if (sb.length() == 0 && ch == '0') {
+            continue;
+        }
+        sb.append(ch);
+    }
+    String ans = sb.toString();
+    return ans.isEmpty() ? "0" : ans;
+}
+```
 
 
 
+```java
+// 暴力解法 从左往右贪心，删除左边比右边大的数
+// 时间复杂度O(k * n)
+public String removeKdigits(String num, int k) {
+    for (int i = 0; i < k; i++) {
+        num = doRemoveKdigits(num);
+    }
+    if (num == null || num.isEmpty()) {
+        return null;
+    }
+    // 如果左边是0 也要移除
+    while (num.charAt(0) == '0') {
+        num = num.substring(1);
+    }
+    return num;
+}
 
+private String doRemoveKdigits(String nums) {
+    // 从左往右边贪心，如果左边比右边大，移除
+    char[] chars = nums.toCharArray();
+    int index = chars.length - 1;
+    for (int i = 0; i < chars.length - 1; i++) {
+        if (chars[i] > chars[i + 1]) {
+            index = i;
+            break;
+        }
+    }
+    return nums.substring(0, index) + nums.substring(index + 1);
+}
+```
 
+## [316. 去除重复字母](https://leetcode.cn/problems/remove-duplicate-letters/)
 
+这个题跟上面的有点类似，区别是，入栈的条件变成判断当前元素小于栈顶元素，并且右侧还有该元素
 
+```java
+public String removeDuplicateLetters(String s) {
+    int[] count = new int[26];      // 剩余出现次数
+    boolean[] inStack = new boolean[26]; // 是否已在栈中
+    for (char ch : s.toCharArray()) {
+        count[ch - 'a']++;
+    }
+
+    StringBuilder stack = new StringBuilder();
+    for (char ch : s.toCharArray()) {
+        count[ch - 'a']--;          // 当前字符用掉一次
+
+        if (inStack[ch - 'a']) continue; // 已在栈中，跳过
+
+        // 栈顶字符比当前大，且栈顶后面还会出现 → 弹出
+        while (stack.length() > 0) {
+            char top = stack.charAt(stack.length() - 1);
+            if (top > ch && count[top - 'a'] > 0) {
+                stack.deleteCharAt(stack.length() - 1);
+                inStack[top - 'a'] = false;
+            } else {
+                break;
+            }
+        }
+
+        stack.append(ch);
+        inStack[ch - 'a'] = true;
+    }
+
+    return stack.toString();
+}
+```
 
 
 
@@ -3597,11 +4158,167 @@ void quickSort(int[] a, int l, int r) {
 
 
 
+# other
+
+## [3105. 最长的严格递增或递减子数组](https://leetcode.cn/problems/longest-strictly-increasing-or-strictly-decreasing-subarray/)
+
+```java
+public int longestMonotonicSubarray(int[] nums) {
+    if (nums.length == 1) {
+        return 1;
+    }
+    int left = 0;
+    int max = 1;
+    int cnt = nums[1] - nums[0];
+    Boolean isUp = cnt == 0 ? null : cnt > 1;
+    for (int right = 1; right < nums.length; right++) {
+        int offset = nums[right] - nums[right - 1];
+        if (offset == 0) {
+            left = right;
+            isUp = null;
+        } else {
+            if ((offset > 0 && Boolean.FALSE.equals(isUp)) || (offset < 0 && Boolean.TRUE.equals(isUp))) {
+                left = right - 1;
+            }
+            isUp = offset > 0;
+        }
+        max = Math.max(max, right - left + 1);
+    }
+    return max;
+}
+```
 
 
 
 
 
+## [3364. 最小正和子数组](https://leetcode.cn/problems/minimum-positive-sum-subarray/)
+
+方法有很多种
+
+| #    | 解法                                      | 时间复杂度      | 空间复杂度 | 正确性       | 代码量 | 评价                                                         |
+| :--- | :---------------------------------------- | :-------------- | :--------- | :----------- | :----- | :----------------------------------------------------------- |
+| 1    | **暴力枚举左右端点 + 每次求和**           | O(n²·r) ≈ O(n³) | O(1)       | ✅            | 短     | 最原始，纯教学用，必超时                                     |
+| 2    | **枚举长度 + 滑窗**（你第一版）           | O(n·k)          | O(1)       | ✅            | 中     | 思路对，但变量名乱、分支冗余、初始窗口重复算                 |
+| 3    | **前缀和 + 枚举左右端点**（你现在这版）   | O(n·k)          | O(n)       | ✅            | 中     | 逻辑终于对了，但**复杂度和滑窗同阶**，常数还更大（两次查表），"优化了个寂寞" |
+| 4    | **前缀和 + TreeMap（`lowerKey` 找前驱）** | **O(n log n)**  | O(n)       | ✅            | 短     | ⭐ **性价比之王**，`lowerKey` 一行就是题眼，语义天然契合"最小正和" |
+| 5    | **前缀和 + 单调队列**                     | **O(n)**        | O(n)       | ⚠️ 需额外处理 | 中     | 理论最快，但队列存的是窗口最大 `pre`，若 `≥ pre[j]` 不合法，**没法退而求其次找次大值**，要额外维护，实现别扭，**不推荐** |
 
 
+
+前缀和解法
+
+```java
+// 3, -2, 1, 4
+// 0 3 1 2 4
+// num[i] + num[...j] = num[j] - num[i-1] = pre[j+1] - pre[i]
+// num[i] = num[i + 1] - num[i]
+public int minimumSumSubarray(List<Integer> nums, int l, int r) {
+    int[] preSum = new int[nums.size() + 1];
+    int[] arr = nums.stream().mapToInt(Integer::intValue).toArray();
+    preSum[0] = 0;
+    int ans = Integer.MAX_VALUE;
+    for (int i = 1; i <= nums.size(); i++) {
+        preSum[i] = preSum[i - 1] + arr[i - 1];
+    }
+    // 0 - 2, 1 - 3, 2 - 4
+    // 0 - 3, 1 - 4
+    // pre[2+1] - pre[0], pre[3+1] - pre[1], pre[4+1] - pre[2]
+    // pre[3+1] - pre[0], pre[4+1] - pre[1]
+    for (int left = 0; left < nums.size(); left++) {
+        // 右端点需要满足两条约束条件
+        // 1. l ≤ right - left + 1 ≤ r => l + left - 1 <= right <= r + left - 1
+        // 2. 数组越界 right <= n - 1
+        // 取交集  l + left - 1 <= right <= Math.min(n - 1, r + left - 1)
+        // right >= l + left - 1 是恒成立的，可以去掉
+        for (int right = left + l - 1; right >= l + left - 1 && right <= Math.min(nums.size() - 1, r + left - 1); right++) {
+            int sum = preSum[right + 1] - preSum[left];
+            if (sum > 0) {
+                ans = Math.min(ans, sum);
+            }
+        }
+    }
+    return ans == Integer.MAX_VALUE ? -1 : ans;
+}
+```
+
+暴力枚举
+
+```java
+public int minimumSumSubarray(List<Integer> nums, int l, int r) {
+    int ans = Integer.MAX_VALUE;
+    int[] arr = nums.stream().mapToInt(Integer::intValue).toArray();
+    for (int len = l; len <= r && len <= arr.length; len++) {
+        int windowSum = 0;
+        for (int j = 0; j < len; j++) {
+            windowSum += arr[j];
+        }
+        if (windowSum > 0) {
+            ans = Math.min(ans, windowSum);
+        }
+        for (int j = len; j < nums.size(); j++) {
+            windowSum = windowSum + arr[j] -arr[j - len];
+            if (windowSum > 0) {
+                ans = Math.min(ans, windowSum);
+            }
+        }
+    }
+    return ans != Integer.MAX_VALUE ? ans : -1;
+}
+```
+
+
+
+
+
+## [189. 轮转数组](https://leetcode.cn/problems/rotate-array/)
+
+```java
+public void rotate(int[] nums, int k) {
+    k %= nums.length;
+    reverse(nums, 0, nums.length - 1);
+    reverse(nums, 0, k - 1);
+    reverse(nums, k, nums.length - 1);
+}
+
+private void reverse(int[] nums, int left, int right) {
+    while (left < right) {
+        nums[left] ^= nums[right];
+        nums[right] ^= nums[left];
+        nums[left] ^= nums[right];
+        left++;
+        right--;
+    }
+}
+```
+
+## [56. 合并区间](https://leetcode.cn/problems/merge-intervals/)
+
+```java
+public int[][] merge(int[][] intervals) {
+    Arrays.sort(intervals, (a1, a2) -> a1[0] - a2[0]);
+    int[][] ans = new int[intervals.length + 1][2];
+    int[] current = intervals[0];
+    int count = 0;
+    for (int i = 1; i < intervals.length; i++) {
+        // 可以和下一个区间合并
+        if (intervals[i][0] <= current[1]) {
+            current = new int[]{current[0], Math.max(current[1], intervals[i][1])};
+        } else {
+            // 合并不了了 记录答案
+            ans[count++] = new int[]{current[0], current[1]};
+            current = intervals[i];
+        }
+    }
+    ans[count] = current;
+    int[][] result = new int[count + 1][2];
+    count = 0;
+    for (int[] an : ans) {
+        if (an[0] != 0 || an[1] != 0) {
+            result[count++] = an;
+        }
+    }
+    return result;
+}
+```
 
