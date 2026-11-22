@@ -1,6 +1,6 @@
 # 日常刷题
 
-# 回文串&子串相关
+# 回文串&子串相关&子序列
 
 解题思路
 
@@ -230,9 +230,31 @@ func minWindow(s string, t string) string {
 }
 ```
 
+## [128. 最长连续序列](https://leetcode.cn/problems/longest-consecutive-sequence/)
 
-
-
+```java
+public int longestConsecutive(int[] nums) {
+    Set<Integer> set = new HashSet<>();
+    for (int num : nums) {
+        set.add(num);
+    }
+    int ans = 0;
+    for (Integer num : set) {
+        // 如果num-1在集合里，说明不是最小值
+        if (set.contains(num - 1)) {
+            continue;
+        }
+        int cnt = 0;
+        // 找到最小值了
+        while (set.contains(num)) {
+            cnt++;
+            num++;
+        }
+        ans = Math.max(ans, cnt);
+    }
+    return ans;
+}
+```
 
 # 链表相关
 
@@ -1461,7 +1483,7 @@ public int coinChange(int[] coins, int amount) {
 }
 ```
 
->上一版的状态转移方程为 ``dp[i][c]`  = min(`dp[i][c - coins[i]]  + 1`, `dp[i-1][c] `)
+>上一版的状态转移方程为 `dp[i][c]`  = min(`dp[i][c - coins[i]]  + 1`, `dp[i-1][c] `)
 >
 >g
 >
@@ -1486,17 +1508,11 @@ public int coinChange(int[] coins, int amount) {
 }
 ```
 
-
-
-
-
-
-
 ### [518. 零钱兑换 II](https://leetcode.cn/problems/coin-change-ii/)
 
 dfs + 记忆化搜索
 
-时间复杂度 `O(n × amount)`，空间 `O(n × amount)`（memo）+ `O(amount)`（栈）
+时间复杂度 `O(n × amount)`，空间 `O(n × amount)`（memo）+ `O(amount)`
 
 ```java
 public int change(int amount, int[] coins) {
@@ -1544,6 +1560,118 @@ public int change(int amount, int[] coins) {
     return dp[amount];
 }
 ```
+
+## [4123. 删除数组的最小代价](https://leetcode.cn/problems/minimum-cost-to-delete-array/)
+
+状态机dp思路
+
+我们要在`[1, n-2]`中选偶数个数
+
+`[1, i]`中选偶数个数
+
+`nums[i]`不选 => `[1, i-1]`选偶数个数 `f[i-1][0]`
+
+`nums[i]`选 => `[1, i-1]`选奇数个数 `f[i-1][1] + nums[i]`
+
+都能转换为规模更小的子问题
+
+定义`f[i][0]`表示从`[1, i]`选偶数个数的最小元素和
+
+定义`f[i][1]`表示从`[1, i]`选奇数个数的最小元素和
+
+由此可以得出状态转移方程
+
+`f[i][0] = min(f[i-1][0], f[i-1][1] + nums[i])`
+
+`f[i][1] = min(f[i-1][1], f[i-1][0] + nums[i])`
+
+```java
+public long minCost(int[] nums) {
+    int n = nums.length;
+    long[][] dp = new long[n][2];
+    // dp[i][0]: 考虑前 i 个内部节点，第 i 个不选
+    // dp[i][1]: 考虑前 i 个内部节点，第 i 个选
+    dp[0][0] = 0;
+    dp[0][1] = Long.MAX_VALUE / 2;  // 首元素已选，dp[0] 不能选
+
+    for (int i = 1; i < n - 1; i++) {   // 只到 n-2
+        dp[i][0] = Math.min(dp[i-1][0], dp[i-1][1] + nums[i]);
+        dp[i][1] = Math.min(dp[i-1][1], dp[i-1][0] + nums[i]);
+    }
+
+    return nums[0] + nums[n-1] + dp[n-2][0];
+}
+```
+
+简化写法后
+
+```java
+public long minCost(int[] nums) {
+    long f0 = 0;
+    long f1 = Long.MAX_VALUE / 2;  // 首元素已选，dp[0] 不能选
+    for (int i = 1; i < nums.length - 1; i++) {
+        long nf0 = Math.min(f0, f1 + nums[i]);
+        long nf1 = Math.min(f1, f0 + nums[i]);
+        f0 = nf0;
+        f1 = nf1;
+    }
+    return f0 + nums[0] +  nums[nums.length - 1];
+}
+```
+
+## [343. 整数拆分](https://leetcode.cn/problems/integer-break/)
+
+主要看如何拆解子问题，对于`f(n) = 1 * f(n-1) or = 2 * f(n-2)  `
+
+很容易看到递推公式`f(n) = max(1 * f(n-1), 2 * f(n-2)) ... i * f(n - i)  `
+
+所以暴力解法 + 记忆化搜索如下
+
+```java
+// f(n) = max(f(n - 1) * 1, ... f(n - i) * i)
+public int integerBreak(int n) {
+    int[] memo = new int[n + 1];
+    Arrays.fill(memo, -1);
+    return dfs(n, memo);
+}
+
+private int dfs(int n, int[] memo) {
+    if (n == 2) {
+        return 1;
+    }
+    if (memo[n] != -1) {
+        return memo[n];
+    }
+    int ans = -1;
+    for (int i = 1; i < n; i++) {
+        // 当前数i可以选择拆或者不拆
+        // 不拆，则为 i * (n - i), 拆则为 i * integerBreak(n - i)
+        ans = Math.max(ans, Math.max(i * (n - i), i * dfs(n - i, memo)));
+    }
+    memo[n] = ans;
+    return ans;
+}
+```
+
+当然，我们可以改为状态机dp，我们可以定义状态转移方程
+
+![image-20261122235808822](https://cdn.fengxianhub.top/resources-master/image-20261122235808822.png)
+
+```java
+public int integerBreak(int n) {
+    int[] dp = new int[n + 1];
+    dp[2] = 1;                          // 基础情况
+    for (int i = 3; i <= n; i++) {      // 从 3 开始算到 n
+        for (int j = 1; j < i; j++) {   // 枚举拆出的 j
+            // j 不拆；i-j 可拆可不拆，取 max
+            dp[i] = Math.max(dp[i], j * Math.max(i - j, dp[i - j]));
+        }
+    }
+    return dp[n];
+}
+```
+
+
 
 
 
@@ -4321,4 +4449,91 @@ public int[][] merge(int[][] intervals) {
     return result;
 }
 ```
+
+## [394. 字符串解码](https://leetcode.cn/problems/decode-string/)
+
+面试手撕题
+
+```java
+public String decodeString(String s) {
+    Stack<Integer> countStack = new Stack<>();
+    Stack<StringBuilder> strStack = new Stack<>();
+    StringBuilder cur = new StringBuilder();
+    int num = 0;
+
+    for (char ch : s.toCharArray()) {
+        if (Character.isDigit(ch)) {
+            num = num * 10 + (ch - '0');          // 多位数
+        } else if (ch == '[') {
+            countStack.push(num);
+            strStack.push(cur);
+            num = 0;
+            cur = new StringBuilder();             // 重置，处理括号内
+        } else if (ch == ']') {
+            int count = countStack.pop();
+            StringBuilder prev = strStack.pop();
+            prev.append(cur.toString().repeat(count));
+            cur = prev;                            // 拼回外层
+        } else {
+            cur.append(ch);                        // 普通字母
+        }
+    }
+    return cur.toString();
+}
+```
+
+
+
+
+
+
+
+
+
+# 周赛题
+
+## [4121. 使数组中所有元素相等的最小成本](https://leetcode.cn/problems/minimum-cost-to-make-all-array-elements-equal/)
+
+```java
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
