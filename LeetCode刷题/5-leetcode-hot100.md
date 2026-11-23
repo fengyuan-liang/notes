@@ -1671,7 +1671,58 @@ public int integerBreak(int n) {
 }
 ```
 
+## [152. 乘积最大子数组](https://leetcode.cn/problems/maximum-product-subarray/)
 
+这道题一上来，容易列出下面的状态转移方程，其实是不对的，因为会把负数搞丢，比如`[-2, 3, -4]`，当i=2的时候，计算的是`max(-2, 3, -6)`，得到答案为3，这是不对的
+
+```java
+// dp[1] = nums[0]
+// dp[2] = max(dp[1], nums[1], dp[0] * nums[1])
+// dp[3] = max(dp[2], nums[2], dp[2] * nums[2])
+// dp[n] = max(dp[n-1], nums[n-1], dp[n-1]] * nums[n-1]])
+public int maxProduct(int[] nums) {
+    int[] dp = new int[nums.length + 1];
+    dp[1] = nums[0];
+    for (int i = 2; i <= nums.length; i++) {
+        dp[i] = Math.max(dp[i-1], Math.max(nums[i-1], dp[i-1] * nums[i-1]));
+    }
+    return dp[nums.length];
+}
+```
+
+正确思路是，还得维护最小值
+
+- `maxDp[i]`：以 `nums[i]` **结尾**的最大乘积
+- `minDp[i]`：以 `nums[i]` **结尾**的最小乘积
+
+```java
+maxDp[i] = max(nums[i-1], maxDp[i-1]*nums[i-1], minDp[i-1]*nums[i-1])
+minDp[i] = min(nums[i-1], maxDp[i-1]*nums[i-1], minDp[i-1]*nums[i-1])
+ans = max(ans, maxDp[i])
+```
+
+| i    | nums[i-1] | maxDp[i-1] | minDp[i-1] | 候选（x, max×x, min×x） | maxDp[i] | minDp[i] | ans    |
+| :--- | :-------- | :--------- | :--------- | :---------------------- | :------- | :------- | :----- |
+| 1    | -2        | —          | —          | 初始化                  | **-2**   | **-2**   | -2     |
+| 2    | 3         | -2         | -2         | (3, -6, -6)             | **3**    | **-6**   | 3      |
+| 3    | -4        | 3          | -6         | (-4, -12, 24)           | **24**   | **-12**  | **24** |
+
+```java
+public int maxProduct(int[] nums) {
+    int[] maxDp = new int[nums.length + 1];
+    int[] minDp = new int[nums.length + 1];
+    maxDp[0] = nums[0];
+    minDp[0] = nums[0];
+    int ans = nums[0];
+    for (int i = 1; i < nums.length; i++) {
+        int x = nums[i];
+        maxDp[i] = Math.max(x, Math.max(maxDp[i - 1] * x, minDp[i - 1] * x));
+        minDp[i] = Math.min(x, Math.min(maxDp[i - 1] * x, minDp[i - 1] * x));
+        ans = Math.max(ans, maxDp[i]);
+    }
+    return ans;
+}
+```
 
 
 
@@ -4260,6 +4311,10 @@ public String removeDuplicateLetters(String s) {
 
 # 排序
 
+## [912. 排序数组](https://leetcode.cn/problems/sort-an-array/)
+
+这道题单纯快排还不行，在重复数组的case过不了，还需要优化下
+
 ## 快排
 
 快排 = **选一个基准，把比它小的扔左边、大的扔右边，然后左右两边各自递归**。
@@ -4279,10 +4334,6 @@ void quickSort(int[] a, int l, int r) {
     quickSort(a, i + 1, r);
 }
 ```
-
-
-
-
 
 
 
